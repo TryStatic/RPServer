@@ -1,0 +1,4 @@
+﻿<meta>
+  <info name="RPServer" author="Static" type="gamemode"/>
+  <script src="bin/Debug/netcoreapp2.2/RPServer.dll" />
+</meta>

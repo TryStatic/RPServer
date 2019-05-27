@@ -1,0 +1,11 @@
+{
+	"maxplayers" : 10,
+	"name" : "Development Server [DEV]", 
+	"gamemode" : "roleplay", 
+	"stream-distance" : 500.0,
+	"announce" : true,
+	"csharp" : "enabled",
+	"port": 22005,
+	"language" : "en",
+	"allow-cef-debugging": true
+}

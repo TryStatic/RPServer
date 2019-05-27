@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "RPServer": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Games\\RAGEMP\\server-files\\server.exe",
+      "workingDirectory": "C:\\Games\\RAGEMP\\server-files"
+    }
+  }
+}
