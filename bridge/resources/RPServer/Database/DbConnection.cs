@@ -38,6 +38,31 @@ namespace RPServer.Database
             }
         }
 
+        public static bool TestConnection()
+        {
+            using (var dbConn = new DbConnection())
+            {
+                Logger.MySqlInfo(DbStrings.InfoTryDBConnect);
+
+                var connected = false;
+                var tries = 0;
+                do
+                {
+                    tries++;
+                    Logger.MySqlInfo($"{DbStrings.InfoAttempt} #{tries}");
+                    connected = dbConn.OpenConnection();
+                } while (!connected && tries < 10);
+
+                if (tries >= 10)
+                {
+                    Logger.MySqlInfo(DbStrings.InfoFailedDBConnect);
+                    return false;
+                }
+                Logger.MySqlInfo(DbStrings.InfoSuccessDBConnect);
+            }
+            return true;
+        }
+
         public void Dispose()
         {
             Connection.Close();

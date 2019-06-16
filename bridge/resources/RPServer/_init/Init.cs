@@ -1,4 +1,5 @@
 ﻿using GTANetworkAPI;
+using RPServer.Database;
 
 namespace RPServer._init
 {
@@ -15,6 +16,8 @@ namespace RPServer._init
             NAPI.World.SetTime(0, 0, 0);
             NAPI.World.ResetIplList();
 
+            // Test MySql Connection
+            DbConnection.TestConnection();
 
         }
     }
