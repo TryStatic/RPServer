@@ -353,3 +353,5 @@ client_packages/\.listcache
 client_packages/
 
 bridge/server_logs\.txt
+
+bridge/server_exceptions\.txt
