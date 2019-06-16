@@ -20,6 +20,10 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="MySql.Data" Version="8.0.16" />
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="copy /Y &quot;$(SolutionDir)\bridge\runtime\*.dll&quot; &quot;$(TargetDir)&quot; &gt;NUL" />
   </Target>
