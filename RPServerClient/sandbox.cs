@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-using RAGE;
+﻿using RAGE;
 
 namespace RPServerClient
 {
     class Sandbox : Events.Script
     {
+
     }
 }
