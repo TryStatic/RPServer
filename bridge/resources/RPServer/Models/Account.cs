@@ -28,6 +28,8 @@ namespace RPServer.Models
 
         public static Account Create(string username, string password, string regSocialClubName)
         {
+            if (Exists(username))
+                return null;
 
             var hash = new PasswordHash(password).ToArray();
 
@@ -49,7 +51,6 @@ namespace RPServer.Models
                     Logger.MySqlError(ex.Message, ex.Code);
                 }
             }
-
             return Fetch(username);
         }
 
@@ -59,6 +60,9 @@ namespace RPServer.Models
                                  "LastHWID, regsocialclubname, lastsocialclubname, creationdate, lastlogindate " +
                                  "FROM accounts " +
                                  "WHERE username = @username LIMIT 1";
+
+            if (!Exists(username))
+                return null;
 
             using (var dbConn = new DbConnection())
             {
@@ -98,6 +102,29 @@ namespace RPServer.Models
 
                 return null;
             }
+        }
+        public static bool Exists(string username)
+        {
+            const string query = "SELECT accountID FROM accounts WHERE username = @username";
+
+            using (var dbConn = new DbConnection())
+            {
+                try
+                {
+                    var cmd = new MySqlCommand(query, dbConn.Connection);
+                    cmd.Parameters.AddWithValue("@username", username);
+
+                    using (var r = cmd.ExecuteReader())
+                    {
+                        return r.Read() && r.HasRows;
+                    }
+                }
+                catch (MySqlException ex)
+                {
+                    Logger.MySqlError(ex.Message, ex.Code);
+                }
+            }
+            throw new Exception("There was an error in [Account.Exists]");
         }
     }
 }
