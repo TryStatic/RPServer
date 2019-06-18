@@ -126,9 +126,6 @@
   <data name="ErrorUnspecified" xml:space="preserve">
     <value>Unspecified Error</value>
   </data>
-  <data name="InfoAttempt" xml:space="preserve">
-    <value>Attempt</value>
-  </data>
   <data name="InfoFailedDBConnect" xml:space="preserve">
     <value>Failed to establish a connection with the MySQL Database</value>
   </data>

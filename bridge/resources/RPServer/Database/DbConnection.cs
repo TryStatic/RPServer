@@ -42,14 +42,12 @@ namespace RPServer.Database
         {
             using (var dbConn = new DbConnection())
             {
-                Logger.MySqlInfo(DbStrings.InfoTryDBConnect);
-
                 var connected = false;
                 var tries = 0;
                 do
                 {
                     tries++;
-                    Logger.MySqlInfo($"{DbStrings.InfoAttempt} #{tries}");
+                    Logger.MySqlInfo($"{DbStrings.InfoTryDBConnect}... ({tries})");
                     connected = dbConn.OpenConnection();
                 } while (!connected && tries < 10);
 

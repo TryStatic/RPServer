@@ -88,15 +88,6 @@ namespace RPServer.Database {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Attempt.
-        /// </summary>
-        internal static string InfoAttempt {
-            get {
-                return ResourceManager.GetString("InfoAttempt", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Failed to establish a connection with the MySQL Database.
         /// </summary>
         internal static string InfoFailedDBConnect {
