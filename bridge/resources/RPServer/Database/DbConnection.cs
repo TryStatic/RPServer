@@ -7,8 +7,7 @@ namespace RPServer.Database
     internal class DbConnection : IDisposable
     {
         public readonly MySqlConnection Connection;
-
-        public DbConnection()
+        public DbConnection(bool autoConnect = true)
         {
             // Build Connection String
             var mysqlCbs = new MySqlConnectionStringBuilder
@@ -21,6 +20,8 @@ namespace RPServer.Database
             };
             // Create MySQL Connection Instance
             Connection = new MySqlConnection(mysqlCbs.ConnectionString);
+
+            if (autoConnect) Open();
 
         }
 
@@ -40,7 +41,7 @@ namespace RPServer.Database
 
         public static bool TestConnection()
         {
-            using (var dbConn = new DbConnection())
+            using (var dbConn = new DbConnection(false))
             {
                 var connected = false;
                 var tries = 0;
