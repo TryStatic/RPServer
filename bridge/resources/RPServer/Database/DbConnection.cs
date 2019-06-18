@@ -24,7 +24,7 @@ namespace RPServer.Database
 
         }
 
-        private bool OpenConnection()
+        public bool Open()
         {
             try
             {
@@ -48,7 +48,7 @@ namespace RPServer.Database
                 {
                     tries++;
                     Logger.MySqlInfo($"{DbStrings.InfoTryDBConnect}... ({tries})");
-                    connected = dbConn.OpenConnection();
+                    connected = dbConn.Open();
                 } while (!connected && tries < 10);
 
                 if (tries >= 10)
