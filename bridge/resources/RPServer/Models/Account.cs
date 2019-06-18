@@ -53,7 +53,6 @@ namespace RPServer.Models
             }
             return Fetch(username);
         }
-
         public static Account Fetch(string username)
         {
             const string query = "SELECT accountID, username, emailaddress, hash, forumname, nickname, LastIP, " +
@@ -125,6 +124,42 @@ namespace RPServer.Models
                 }
             }
             throw new Exception("There was an error in [Account.Exists]");
+        }
+        public void Save()
+        {
+            const string query = "UPDATE accounts " +
+                                 "SET accountID = @accountID, username = @username, emailaddress = @emailaddress, hash = @hash," +
+                                 "forumname = @forumname, nickname = @nickname, LastIP = @LastIP, LastHWID = @LastHWID," +
+                                 "regsocialclubname = @regsocialclubname, lastsocialclubname = @lastsocialclubname," +
+                                 "creationdate = @creationdate, lastlogindate = @lastlogindate " +
+                                 "WHERE accountID = @sqlId";
+
+            using (var dbConn = new DbConnection())
+            {
+                try
+                {
+                    var cmd = new MySqlCommand(query, dbConn.Connection);
+                    cmd.Parameters.AddWithValue("@sqlId", SqlId);
+
+                    cmd.Parameters.AddWithValue("@accountID", SqlId);
+                    cmd.Parameters.AddWithValue("@username", Username);
+                    cmd.Parameters.AddWithValue("@emailaddress", EmailAddress);
+                    cmd.Parameters.AddWithValue("@hash", Hash);
+                    cmd.Parameters.AddWithValue("@forumname", ForumName);
+                    cmd.Parameters.AddWithValue("@nickname", NickName);
+                    cmd.Parameters.AddWithValue("@LastIP", LastIP);
+                    cmd.Parameters.AddWithValue("@LastHWID", LastHWID);
+                    cmd.Parameters.AddWithValue("@regsocialclubname", RegSocialClubName);
+                    cmd.Parameters.AddWithValue("@lastsocialclubname", LastSocialClubName);
+                    cmd.Parameters.AddWithValue("@creationdate", CreationDate);
+                    cmd.Parameters.AddWithValue("@lastlogindate", LastLoginDate);
+                    cmd.ExecuteNonQuery();
+                }
+                catch (MySqlException ex)
+                {
+                    Logger.MySqlError(ex.Message, ex.Code);
+                }
+            }
         }
     }
 }
