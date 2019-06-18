@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using MySql.Data.MySqlClient;
 using RPServer.Util;
 
@@ -33,7 +33,7 @@ namespace RPServer.Database
             }
             catch (MySqlException ex)
             {
-                HandleMySqlException(ex);
+                Logger.MySqlError(ex.Message, ex.Code);
                 return false;
             }
         }
@@ -66,22 +66,6 @@ namespace RPServer.Database
         public void Dispose()
         {
             Connection.Close();
-        }
-
-        private static void HandleMySqlException(MySqlException ex)
-        {
-            switch (ex.Code)
-            {
-                case (uint)MySqlErrorCode.None: // 0
-                    Logger.MySqlError(DbStrings.ErrorNone, ex.Code);
-                    break;
-                case (uint)MySqlErrorCode.AccessDenied: // 1045
-                    Logger.MySqlError(DbStrings.ErrorAccessDenied, ex.Code);
-                    break;
-                default: // Unspecified
-                    Logger.MySqlError(DbStrings.ErrorUnspecified, ex.Code);
-                    break;
-            }
         }
     }
 }
