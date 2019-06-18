@@ -189,5 +189,31 @@ namespace RPServer.Models
                 return false;
             }
         }
+        public static int? GetSqlId(string username)
+        {
+            const string query = "SELECT accountID FROM accounts WHERE username = @username";
+
+            using (var dbConn = new DbConnection())
+            {
+                try
+                {
+                    var cmd = new MySqlCommand(query, dbConn.Connection);
+                    cmd.Parameters.AddWithValue("@username", username);
+
+                    using (var r = cmd.ExecuteReader())
+                    {
+                        if (!r.Read())
+                            return null;
+
+                        return r.GetInt32("accountID");
+                    }
+                }
+                catch (MySqlException ex)
+                {
+                    Logger.MySqlError(ex.Message, ex.Code);
+                }
+                return null;
+            }
+        }
     }
 }
