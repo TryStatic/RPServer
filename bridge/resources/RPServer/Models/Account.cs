@@ -161,5 +161,33 @@ namespace RPServer.Models
                 }
             }
         }
+
+        public static bool Authenticate(string username, string password)
+        {
+            const string query = "SELECT username, hash FROM accounts WHERE username = @username LIMIT 1";
+
+            using (var dbConn = new DbConnection())
+            {
+                try
+                {
+                    var cmd = new MySqlCommand(query, dbConn.Connection);
+                    cmd.Parameters.AddWithValue("@username", username);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (!reader.Read())
+                            return false;
+
+                        var fetchedPass = reader["hash"] as byte[];
+                        return new PasswordHash(fetchedPass).Verify(password);
+                    }
+                }
+                catch (MySqlException ex)
+                {
+                    Logger.MySqlError(ex.Message, ex.Code);
+                }
+                return false;
+            }
+        }
     }
 }
