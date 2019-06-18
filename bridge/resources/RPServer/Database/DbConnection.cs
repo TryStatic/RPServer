@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using MySql.Data.MySqlClient;
 using RPServer.Util;
 
@@ -18,6 +18,8 @@ namespace RPServer.Database
                 UserID = DbSettings.DB_USERNAME,
                 Password = DbSettings.DB_PASSWORD
             };
+            mysqlCbs.ConvertZeroDateTime = true;
+
             // Create MySQL Connection Instance
             Connection = new MySqlConnection(mysqlCbs.ConnectionString);
 
