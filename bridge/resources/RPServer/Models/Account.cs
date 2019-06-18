@@ -50,8 +50,54 @@ namespace RPServer.Models
                 }
             }
 
-            throw new NotImplementedException();
+            return Fetch(username);
         }
 
+        public static Account Fetch(string username)
+        {
+            const string query = "SELECT accountID, username, emailaddress, hash, forumname, nickname, LastIP, " +
+                                 "LastHWID, regsocialclubname, lastsocialclubname, creationdate, lastlogindate " +
+                                 "FROM accounts " +
+                                 "WHERE username = @username LIMIT 1";
+
+            using (var dbConn = new DbConnection())
+            {
+                try
+                {
+                    var cmd = new MySqlCommand(query, dbConn.Connection);
+                    cmd.Parameters.AddWithValue("@username", username);
+
+                    using (var r = cmd.ExecuteReader())
+                    {
+                        if (!r.Read())
+                            return null;
+
+                        var fetchedAcc = new Account
+                        {
+                            SqlId = r.GetInt32("accountID"),
+                            Username = r.GetSafeString("username"),
+                            EmailAddress = r.GetSafeString("emailaddress"),
+                            Hash = r["hash"] as byte[],
+                            ForumName = r.GetSafeString("forumname"),
+                            NickName = r.GetSafeString("nickname"),
+                            LastIP = r.GetSafeString("LastIP"),
+                            LastHWID = r.GetSafeString("LastHWID"),
+                            RegSocialClubName = r.GetSafeString("regsocialclubname"),
+                            LastSocialClubName = r.GetSafeString("lastsocialclubname"),
+                            CreationDate = r.GetSafeDateTime("creationdate"),
+                            LastLoginDate = r.GetSafeDateTime("lastlogindate")
+                        };
+                        return fetchedAcc;
+
+                    }
+                }
+                catch (MySqlException ex)
+                {
+                    Logger.MySqlError(ex.Message, ex.Code);
+                }
+
+                return null;
+            }
+        }
     }
 }
