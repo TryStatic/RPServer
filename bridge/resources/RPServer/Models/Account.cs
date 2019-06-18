@@ -1,4 +1,8 @@
 ﻿using System;
+using MySql.Data.MySqlClient;
+using RPServer.Database;
+using RPServer.Util;
+
 
 namespace RPServer.Models
 {
@@ -20,6 +24,33 @@ namespace RPServer.Models
         private Account()
         {
 
+        }
+
+        public static Account Create(string username, string password, string regSocialClubName)
+        {
+
+            var hash = new PasswordHash(password).ToArray();
+
+            const string query = "INSERT INTO accounts(username, hash, regsocialclubname, creationdate) VALUES (@username, @hash, @regsocialclubname, @creationdate)";
+
+            using (var dbConn = new DbConnection())
+            {
+                try
+                {
+                    var cmd = new MySqlCommand(query, dbConn.Connection);
+                    cmd.Parameters.AddWithValue("@username", username);
+                    cmd.Parameters.AddWithValue("@hash", hash);
+                    cmd.Parameters.AddWithValue("@regsocialclubname", regSocialClubName);
+                    cmd.Parameters.AddWithValue("@creationdate", DateTime.Now);
+                    cmd.ExecuteNonQuery();
+                }
+                catch (MySqlException ex)
+                {
+                    Logger.MySqlError(ex.Message, ex.Code);
+                }
+            }
+
+            throw new NotImplementedException();
         }
 
     }
