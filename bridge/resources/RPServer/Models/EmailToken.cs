@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using MySql.Data.MySqlClient;
 using RPServer.Database;
 using RPServer.Util;
@@ -139,10 +139,9 @@ namespace RPServer.Models
             throw new NotImplementedException();
         }
 
-        private static bool Remove(Account account)
+        private static void Remove(Account account)
         {
-            if (!Exists(account))
-                return false;
+            if (!Exists(account)) return;
 
             const string query = "DELETE FROM emailtokens WHERE accountID = @accountid";
 
@@ -152,8 +151,8 @@ namespace RPServer.Models
                 {
                     var cmd = new MySqlCommand(query, dbConn.Connection);
                     cmd.Parameters.AddWithValue("@accountid", account.SqlId);
-                    var rows = cmd.ExecuteNonQuery();
-                    return rows > 0;
+                    cmd.ExecuteNonQuery();
+                    return;
                 }
                 catch (MySqlException ex)
                 {
