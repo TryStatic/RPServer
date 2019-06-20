@@ -5,7 +5,7 @@ using MySql.Data.MySqlClient;
 
 namespace RPServer.Util
 {
-    public static class StringExtensions
+    public static class Extensions
     {
         public static string FirstCharToUpper(this string input)
         {
@@ -31,6 +31,5 @@ namespace RPServer.Util
         {
             return !reader.IsDBNull(reader.GetOrdinal(column)) ? reader.GetDateTime(column) : DateTime.MinValue;
         }
-   
     }
 }
