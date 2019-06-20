@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using MySql.Data.MySqlClient;
 using RPServer.Database;
 using RPServer.Util;
@@ -134,9 +134,30 @@ namespace RPServer.Models
             return true;
         }
 
-        private void Save()
+        public void Save()
         {
-            throw new NotImplementedException();
+            const string query = "UPDATE emailtokens " +
+                                 "SET token = @token, emailAddress = @emailaddress, expirydate = @expirydate" +
+                                 "WHERE accountID = @sqlId";
+
+            using (var dbConn = new DbConnection())
+            {
+                try
+                {
+                    var cmd = new MySqlCommand(query, dbConn.Connection);
+                    cmd.Parameters.AddWithValue("@sqlId", Account.SqlId);
+
+                    cmd.Parameters.AddWithValue("@token", Token);
+                    cmd.Parameters.AddWithValue("@emailaddress", EmailAddress);
+                    cmd.Parameters.AddWithValue("@expirydate", ExpiryDate);
+
+                    cmd.ExecuteNonQuery();
+                }
+                catch (MySqlException ex)
+                {
+                    Logger.MySqlError(ex.Message, ex.Code);
+                }
+            }
         }
 
         private static void Remove(Account account)
