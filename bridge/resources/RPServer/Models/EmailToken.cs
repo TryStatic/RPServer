@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using MySql.Data.MySqlClient;
 using RPServer.Database;
 using RPServer.Util;
@@ -134,6 +134,11 @@ namespace RPServer.Models
             return true;
         }
 
+        private void Save()
+        {
+            throw new NotImplementedException();
+        }
+
         private static bool Remove(Account account)
         {
             if (!Exists(account))
@@ -155,7 +160,22 @@ namespace RPServer.Models
                     Logger.MySqlError(ex.Message, ex.Code);
                 }
             }
-            throw  new Exception("Error in [EmailTokens.Remove]");
+            throw new Exception("Error in [EmailTokens.Remove]");
+        }
+
+
+        public static void ChangeEmail(Account account, string newEmailAddress)
+        {
+            var fetchedToken = Fetch(account);
+
+            fetchedToken.EmailAddress = newEmailAddress;
+            fetchedToken.Token = GenerateNewToken();
+            fetchedToken.Save();
+        }
+
+        public static void SendEmail(Account account)
+        {
+            throw new NotImplementedException();
         }
 
         #region TokenCodeGeneration
