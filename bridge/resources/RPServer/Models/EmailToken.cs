@@ -169,6 +169,7 @@ namespace RPServer.Models
 
             fetchedToken.EmailAddress = newEmailAddress;
             fetchedToken.Token = GenerateNewToken();
+            fetchedToken.ExpiryDate = DateTime.Now.AddDays(1);
             fetchedToken.Save();
         }
 
