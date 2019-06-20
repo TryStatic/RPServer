@@ -9,6 +9,7 @@ namespace RPServer.Util
         {
             Username,
             Password,
+            EmailAddress,
             EmailVerificationCode
         }
 
@@ -21,6 +22,9 @@ namespace RPServer.Util
                     break;
                 case ValidationStrings.Password: // pass must be at least 4 chars
                     if (string.IsNullOrEmpty(data) || string.IsNullOrWhiteSpace(data) || data.Length < 4) return false;
+                    break;
+                case ValidationStrings.EmailAddress: // Is actually an email address
+                    if (string.IsNullOrEmpty(data) || string.IsNullOrWhiteSpace(data) || !data.IsValidEmail()) return false;
                     break;
                 case ValidationStrings.EmailVerificationCode: // Provided token's length must much whichever the length is on our side
                     if (string.IsNullOrEmpty(data) || string.IsNullOrWhiteSpace(data) || data.Length < EmailToken.Length) return false;
