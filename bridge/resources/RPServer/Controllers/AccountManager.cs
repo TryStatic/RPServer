@@ -1,4 +1,3 @@
-﻿using System;
 using GTANetworkAPI;
 using RPServer.Models;
 using RPServer.Util;
@@ -27,6 +26,7 @@ namespace RPServer.Controllers
                 client.SendChatMessage("That's not an email address");
                 return;
             }
+
             // Create the Account
             var newAcc = Account.Create(username, password, client.SocialClubName);
 
@@ -72,7 +72,7 @@ namespace RPServer.Controllers
                 return;
             }
 
-            // Email verification already happened
+            // Email verification passed
             // TODO: Toggle logging in screen off
 
         }
@@ -104,8 +104,24 @@ namespace RPServer.Controllers
 
         }
 
+        public static void ChangeVerificationEmail(Client client, string newEmailAddress)
+        {
+            if (!client.IsLoggedIn())
+            {
+                client.SendChatMessage("You must be logged in to change your !_verification_! email address.");
+                return;
+            }
 
+            if (!ValidateString(ValidationStrings.EmailAddress, newEmailAddress))
+            {
+                client.SendChatMessage("That's not an email address");
+                return;
+            }
 
+            EmailToken.ChangeEmail(client.GetAccountData(), newEmailAddress);
+            EmailToken.SendEmail(client.GetAccountData());
+            client.SendChatMessage("New email was sent to your new address, check code and verify");
+        }
 
     }
 }
