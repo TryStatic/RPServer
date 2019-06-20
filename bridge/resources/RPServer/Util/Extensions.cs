@@ -42,6 +42,29 @@ namespace RPServer.Util
         #endregion
 
         #region ClientExtensions
+        internal static bool IsLoggedIn(this Client player)
+        {
+            return player.HasData(Account.DataKey);
+        }
+
+        internal static Account GetAccountData(this Client player)
+        {
+            return player.IsLoggedIn() ? (Account)player.GetData(Account.DataKey) : null;
+        }
+
+        internal static bool Login(this Client player, Account account)
+        {
+            if (player.IsLoggedIn()) return false;
+            player.SetData(Account.DataKey, account);
+            return true;
+        }
+
+        internal static bool Logout(this Client player)
+        {
+            if (!player.IsLoggedIn()) return false;
+            player.ResetData(Account.DataKey);
+            return true;
+        }
 
         #endregion
     }

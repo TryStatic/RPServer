@@ -8,6 +8,8 @@ namespace RPServer.Models
 {
     internal class Account
     {
+        public static readonly string DataKey = "ACCOUNT_DATA";
+
         public int? SqlId { get; private set; }
         public string Username { get; set; }
         public string EmailAddress { get; set; }
