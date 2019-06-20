@@ -8,7 +8,7 @@ namespace RPServer.Controllers
 {
     internal class AccountManager : Script
     {
-        public static void RegisterNewAccount(Client client, string username, string password)
+        public static void RegisterNewAccount(Client client, string username, string password, string emailAddress)
         {
             if (!ValidateString(ValidationStrings.Username, username))
             {
@@ -22,7 +22,18 @@ namespace RPServer.Controllers
                 return;
             }
 
+            if (!ValidateString(ValidationStrings.EmailAddress, emailAddress))
+            {
+                client.SendChatMessage("That's not an email address");
+                return;
+            }
+            // Create the Account
             var newAcc = Account.Create(username, password, client.SocialClubName);
+
+            // Create the Token
+            EmailToken.Create(newAcc, emailAddress);
+
+            // TODO: Send the email (???)
 
             // Auto-login after registration
             client.Login(newAcc);
