@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using MySql.Data.MySqlClient;
 using RPServer.Database;
 using RPServer.Util;
@@ -17,7 +17,7 @@ namespace RPServer.Models
         private EmailToken(Account account, string emailAddress)
         {
             Account = account;
-            Token = GenerateToken();
+            Token = GenerateNewToken();
             EmailAddress = emailAddress;
             ExpiryDate = DateTime.Now.AddDays(1);
         }
@@ -158,7 +158,8 @@ namespace RPServer.Models
             throw  new Exception("Error in [EmailTokens.Remove]");
         }
 
-        private static string GenerateToken()
+        #region TokenCodeGeneration
+        private static string GenerateNewToken()
         {
             return Guid.NewGuid().ToString().Replace("-", "");
         }
@@ -168,5 +169,6 @@ namespace RPServer.Models
             // NewGuid() is always 36 chars hence after Replace(..) the rest is specific too
             return Guid.NewGuid().ToString().Replace("-", "").Length;
         }
+        #endregion
     }
 }
