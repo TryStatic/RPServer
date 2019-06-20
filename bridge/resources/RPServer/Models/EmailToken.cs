@@ -7,6 +7,8 @@ namespace RPServer.Models
 {
     internal class EmailToken
     {
+        public static int Length = GetTokenLength();
+
         public Account Account { get; set; }
         public string Token { get; set; }
         public string EmailAddress { get; set; }
@@ -15,7 +17,7 @@ namespace RPServer.Models
         private EmailToken(Account account, string emailAddress)
         {
             Account = account;
-            Token = Guid.NewGuid().ToString().Replace("-", "");
+            Token = GenerateToken();
             EmailAddress = emailAddress;
             ExpiryDate = DateTime.Now.AddDays(1);
         }
@@ -154,6 +156,17 @@ namespace RPServer.Models
                 }
             }
             throw  new Exception("Error in [EmailTokens.Remove]");
+        }
+
+        private static string GenerateToken()
+        {
+            return Guid.NewGuid().ToString().Replace("-", "");
+        }
+
+        private static int GetTokenLength()
+        {
+            // NewGuid() is always 36 chars hence after Replace(..) the rest is specific too
+            return Guid.NewGuid().ToString().Replace("-", "").Length;
         }
     }
 }
