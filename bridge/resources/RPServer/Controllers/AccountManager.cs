@@ -123,5 +123,17 @@ namespace RPServer.Controllers
             client.SendChatMessage("New email was sent to your new address, check code and verify");
         }
 
+        public static void ResendEmail(Client client)
+        {
+            if (!client.IsLoggedIn())
+            {
+                client.SendChatMessage("You must be logged in to resend to your email address.");
+                return;
+            }
+
+            EmailToken.SendEmail(client.GetAccountData());
+            client.SendChatMessage("New email was sent to your new address, check code and verify");
+
+        }
     }
 }
