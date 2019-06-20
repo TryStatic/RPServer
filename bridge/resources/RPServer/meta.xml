@@ -1,4 +1,13 @@
-﻿<meta>
+<meta>
   <info name="RPServer" author="Static" type="gamemode"/>
   <script src="bin/Debug/netcoreapp2.2/RPServer.dll" />
+
+  <settings>
+    <!-- Database Settings -->
+    <setting name="DB_HOST" value="localhost"/>
+    <setting name="DB_PORT" value="3306"/>
+    <setting name="DB_DATABASE" value="rpserver"/>
+    <setting name="DB_USERNAME" value="root"/>
+    <setting name="DB_PASSWORD" value="root"/>
+  </settings>
 </meta>

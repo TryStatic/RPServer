@@ -30,11 +30,6 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Database\DbSettings.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>DbSettings.resx</DependentUpon>
-    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -42,14 +37,6 @@
       <LastGenOutput>DbStrings.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="Database\DbSettings.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>DbSettings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /Y &quot;$(SolutionDir)\bridge\runtime\*.dll&quot; &quot;$(TargetDir)&quot; &gt;NUL" />
-  </Target>
 
 </Project>

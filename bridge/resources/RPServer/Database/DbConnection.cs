@@ -7,18 +7,25 @@ namespace RPServer.Database
     internal class DbConnection : IDisposable
     {
         public readonly MySqlConnection Connection;
+
+        public static string MySqlHost { get; set; }
+        public static uint MySqlPort { get; set; }
+        public static string MySqlDatabase { get; set; }
+        public static string MySqlUsername { get; set; }
+        public static string MySqlPassword { get; set; }
+
         public DbConnection(bool autoConnect = true)
         {
             // Build Connection String
             var mysqlCbs = new MySqlConnectionStringBuilder
             {
-                Server = DbSettings.DB_HOST,
-                Database = DbSettings.DB_DATABASE,
-                Port = uint.Parse(DbSettings.DB_PORT),
-                UserID = DbSettings.DB_USERNAME,
-                Password = DbSettings.DB_PASSWORD
+                Server = MySqlHost,
+                Port = MySqlPort,
+                Database = MySqlDatabase,
+                UserID = MySqlUsername,
+                Password = MySqlPassword,
+                ConvertZeroDateTime = true
             };
-            mysqlCbs.ConvertZeroDateTime = true;
 
             // Create MySQL Connection Instance
             Connection = new MySqlConnection(mysqlCbs.ConnectionString);
