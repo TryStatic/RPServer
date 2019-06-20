@@ -1,4 +1,4 @@
-using GTANetworkAPI;
+﻿using GTANetworkAPI;
 using RPServer.Models;
 using RPServer.Util;
 using static RPServer.Util.DataValidator;
@@ -33,7 +33,8 @@ namespace RPServer.Controllers
             // Create the Token
             EmailToken.Create(newAcc, emailAddress);
 
-            // TODO: Send the email (???)
+            // Send the Email containing the token
+            EmailToken.SendEmail(newAcc);
 
             // Auto-login after registration
             client.Login(newAcc);
