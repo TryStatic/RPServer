@@ -86,7 +86,7 @@ namespace RPServer.Models
             throw new Exception("There was an error in [EmailToken.Exists]");
         }
 
-        private static EmailToken Fetch(Account account)
+        public static EmailToken Fetch(Account account)
         {
             const string query = "SELECT accountID, token, expirydate, emailaddress FROM emailtokens WHERE accountID = @accountid";
 

@@ -1,4 +1,4 @@
-﻿using GTANetworkAPI;
+using GTANetworkAPI;
 using RPServer.Models;
 using RPServer.Util;
 using static RPServer.Util.DataValidator;
@@ -116,6 +116,12 @@ namespace RPServer.Controllers
             if (!ValidateString(ValidationStrings.EmailAddress, newEmailAddress))
             {
                 client.SendChatMessage("That's not an email address");
+                return;
+            }
+
+            if (EmailToken.Fetch(client.GetAccountData()).EmailAddress == newEmailAddress)
+            {
+                client.SendChatMessage("New email can't be same as the old one. Use /resendemail or choose a different email.");
                 return;
             }
 
