@@ -2,6 +2,7 @@
 using MySql.Data.MySqlClient;
 using RPServer.Database;
 using RPServer.Util;
+using System.Threading.Tasks;
 
 namespace RPServer.Models
 {
@@ -137,7 +138,7 @@ namespace RPServer.Models
         public void Save()
         {
             const string query = "UPDATE emailtokens " +
-                                 "SET token = @token, emailAddress = @emailaddress, expirydate = @expirydate" +
+                                 "SET token = @token, emailAddress = @emailaddress, expirydate = @expirydate " +
                                  "WHERE accountID = @sqlId";
 
             using (var dbConn = new DbConnection())
@@ -196,7 +197,9 @@ namespace RPServer.Models
 
         public static void SendEmail(Account account)
         {
-            throw new NotImplementedException();
+            var tok = Fetch(account);
+            Task.Run(() => EmailSender.SendMailMessageAsync(tok.EmailAddress, "RPServer - Email Verifciaton", $"Your verification token is {tok.Token} and it's valid until {tok.ExpiryDate}."));
+
         }
 
         #region TokenCodeGeneration

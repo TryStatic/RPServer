@@ -10,7 +10,7 @@ namespace RPServer.Util
         public static string SmtpUsername { set; get; }
         public static string SmtpPassword { set; get; }
 
-        public static async Task SendMailMessage(string toEmail, string subject, string body)
+        public static async Task SendMailMessageAsync(string toEmail, string subject, string body)
         {
             using (var mMsg = new MailMessage())
             {
