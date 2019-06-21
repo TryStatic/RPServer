@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using MySql.Data.MySqlClient;
 using RPServer.Database;
 using RPServer.Util;
@@ -155,7 +155,7 @@ namespace RPServer.Models
         public void Save()
         {
             const string query = "UPDATE accounts " +
-                                 "SET accountID = @accountID, username = @username, emailaddress = @emailaddress, hash = @hash," +
+                                 "SET username = @username, emailaddress = @emailaddress, hash = @hash," +
                                  "forumname = @forumname, nickname = @nickname, LastIP = @LastIP, LastHWID = @LastHWID," +
                                  "regsocialclubname = @regsocialclubname, lastsocialclubname = @lastsocialclubname," +
                                  "creationdate = @creationdate, lastlogindate = @lastlogindate " +
@@ -168,7 +168,6 @@ namespace RPServer.Models
                     var cmd = new MySqlCommand(query, dbConn.Connection);
                     cmd.Parameters.AddWithValue("@sqlId", SqlId);
 
-                    cmd.Parameters.AddWithValue("@accountID", SqlId);
                     cmd.Parameters.AddWithValue("@username", Username);
                     cmd.Parameters.AddWithValue("@emailaddress", EmailAddress);
                     cmd.Parameters.AddWithValue("@hash", Hash);
