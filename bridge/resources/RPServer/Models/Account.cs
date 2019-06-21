@@ -3,7 +3,6 @@ using MySql.Data.MySqlClient;
 using RPServer.Database;
 using RPServer.Util;
 
-
 namespace RPServer.Models
 {
     internal class Account
@@ -179,6 +178,29 @@ namespace RPServer.Models
                     cmd.Parameters.AddWithValue("@lastsocialclubname", LastSocialClubName);
                     cmd.Parameters.AddWithValue("@creationdate", CreationDate);
                     cmd.Parameters.AddWithValue("@lastlogindate", LastLoginDate);
+                    cmd.ExecuteNonQuery();
+                }
+                catch (MySqlException ex)
+                {
+                    Logger.MySqlError(ex.Message, ex.Code);
+                }
+            }
+        }
+
+        public void SaveSingle(Savable.Column c)
+        {
+            Savable.GetColumnAndValue(this, c, out var column, out var value);
+
+            var query = $"UPDATE accounts SET {column} = @value WHERE accountID = @sqlId";
+
+            using (var dbConn = new DbConnection())
+            {
+                try
+                {
+                    var cmd = new MySqlCommand(query, dbConn.Connection);
+                    cmd.Parameters.AddWithValue("@sqlId", SqlId);
+                    cmd.Parameters.AddWithValue("@value", value);
+
                     cmd.ExecuteNonQuery();
                 }
                 catch (MySqlException ex)
