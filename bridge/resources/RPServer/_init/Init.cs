@@ -1,5 +1,6 @@
-using GTANetworkAPI;
+﻿using GTANetworkAPI;
 using RPServer.Database;
+using RPServer.Util;
 
 namespace RPServer._init
 {
@@ -24,6 +25,11 @@ namespace RPServer._init
             DbConnection.MySqlPassword = NAPI.Resource.GetSetting<string>(this, "DB_PASSWORD");
             // Test MySql Connection
             DbConnection.TestConnection();
+
+            EmailSender.SmtpHost = NAPI.Resource.GetSetting<string>(this, "SMTP_HOST");
+            EmailSender.SmtpPort = NAPI.Resource.GetSetting<int>(this, "SMTP_PORT");
+            EmailSender.SmtpUsername = NAPI.Resource.GetSetting<string>(this, "SMTP_USERNAME");
+            EmailSender.SmtpPassword = NAPI.Resource.GetSetting<string>(this, "SMTP_PASSWORD");
 
         }
     }

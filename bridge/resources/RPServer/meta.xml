@@ -1,4 +1,4 @@
-<meta>
+﻿<meta>
   <info name="RPServer" author="Static" type="gamemode"/>
   <script src="bin/Debug/netcoreapp2.2/RPServer.dll" />
 
@@ -9,5 +9,11 @@
     <setting name="DB_DATABASE" value="rpserver"/>
     <setting name="DB_USERNAME" value="root"/>
     <setting name="DB_PASSWORD" value="root"/>
+
+    <!-- SMTP Settings -->
+    <setting name="SMTP_HOST" value=""/>
+    <setting name="SMTP_PORT" value=""/>
+    <setting name="SMTP_USERNAME" value=""/>
+    <setting name="SMTP_PASSWORD" value=""/>
   </settings>
 </meta>
