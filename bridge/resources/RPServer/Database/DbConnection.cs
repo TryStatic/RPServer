@@ -1,5 +1,6 @@
 ﻿using System;
 using MySql.Data.MySqlClient;
+using RPServer.Strings;
 using RPServer.Util;
 
 namespace RPServer.Database

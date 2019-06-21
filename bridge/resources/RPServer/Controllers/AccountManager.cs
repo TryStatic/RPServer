@@ -1,6 +1,7 @@
 using System;
 using GTANetworkAPI;
 using RPServer.Models;
+using RPServer.Strings;
 using RPServer.Util;
 using static RPServer.Util.DataValidator;
 
@@ -8,42 +9,41 @@ namespace RPServer.Controllers
 {
     internal class AccountManager : Script
     {
-
         public static void RegisterNewAccount(Client client, string username, string password, string emailAddress)
         {
             if (client.IsLoggedIn())
             {
-                client.SendChatMessage("You are logged in, you can't create an account");
+                client.SendChatMessage(AccountStrings.ErrorAlreadyLoggedIn);
                 return;
             }
 
             if (!ValidateString(ValidationStrings.Username, username))
             {
-                client.SendChatMessage("Username too short, 4 chars min");
+                client.SendChatMessage(AccountStrings.ErrorUsernameInvalid);
                 return;
             }
 
             if (!ValidateString(ValidationStrings.Password, password))
             {
-                client.SendChatMessage("Password too short, 4 chars min");
+                client.SendChatMessage(AccountStrings.ErrorPasswordInvalid);
                 return;
             }
 
             if (!ValidateString(ValidationStrings.EmailAddress, emailAddress))
             {
-                client.SendChatMessage("That's not an email address");
+                client.SendChatMessage(AccountStrings.ErrorEmailInvalid);
                 return;
             }
 
             if (Account.Exists(username))
             {
-                client.SendChatMessage($"There's already an account registered with the username {username}.");
+                client.SendChatMessage(AccountStrings.ErrorUsernameTaken);
                 return;
             }
 
             if (Account.EmailTaken(emailAddress))
             {
-                client.SendChatMessage($"There's already an account registered with that email {emailAddress}.");
+                client.SendChatMessage(AccountStrings.ErrorEmailTaken);
                 return;
             }
 
@@ -51,38 +51,38 @@ namespace RPServer.Controllers
             EmailToken.Create(newAcc, emailAddress);
             EmailToken.SendEmail(newAcc);
 
-            client.SendChatMessage($"Good, use your info now to /login");
+            client.SendChatMessage(AccountStrings.SuccessRegistration);
         }
 
         public static void LoginAccount(Client client, string username, string password)
         {
             if (client.IsLoggedIn())
             {
-                client.SendChatMessage("You are already logged in.");
+                client.SendChatMessage(AccountStrings.ErrorAlreadyLoggedIn);
                 return;
             }
 
             if (!ValidateString(ValidationStrings.Username, username))
             {
-                client.SendChatMessage("Username too short, 4 chars min"); // TODO: Implement proper chat handler
+                client.SendChatMessage(AccountStrings.ErrorUsernameInvalid);
                 return;
             }
 
             if (!ValidateString(ValidationStrings.Password, password))
             {
-                client.SendChatMessage("Password too short, 4 chars min");
+                client.SendChatMessage(AccountStrings.ErrorPasswordInvalid);
                 return;
             }
 
             if (!Account.Exists(username))
             {
-                client.SendChatMessage($"Such account doesn't exist.");
+                client.SendChatMessage(AccountStrings.ErrorUsernameNotExist);
                 return;
             }
 
             if (!Account.Authenticate(username, password))
             {
-                client.SendChatMessage("Wrong pass, try again");
+                client.SendChatMessage(AccountStrings.ErrorInvalidCredentials);
                 return;
             }
 
@@ -96,13 +96,11 @@ namespace RPServer.Controllers
 
             if (EmailToken.Exists(fetchedAcc))
             {
-                client.SendChatMessage("You need to verify your email address now:");
-                client.SendChatMessage("[/verifymail, /changeVerificationMail, /resendMail]");
+                client.SendChatMessage(AccountStrings.ErrorUnverifiedEmail);
                 return;
             }
 
-            client.SendChatMessage($"Welcome back {fetchedAcc.Username}. Have fun!");
-            // Email verification passed
+            client.SendChatMessage(AccountStrings.SuccessLogin);
             // TODO: Toggle logging in screen off
 
         }
@@ -111,68 +109,69 @@ namespace RPServer.Controllers
         {
             if (!client.IsLoggedIn())
             {
-                client.SendChatMessage("You must be logged in to verify your email address.");
+                client.SendChatMessage(AccountStrings.ErrorNotLoggedIn);
                 return;
             }
 
             if (!ValidateString(ValidationStrings.EmailVerificationCode, providedToken))
             {
-                client.SendChatMessage("Invlid Code Length");
+                client.SendChatMessage(AccountStrings.ErrorInvalidVerificationCode);
                 return;
             }
 
             if (!EmailToken.Validate(client.GetAccountData(), providedToken))
             {
-                client.SendChatMessage("The code you provided is wrong, try again.");
+                client.SendChatMessage(AccountStrings.ErrorInvalidVerificationCode);
                 return;
             }
 
             // Success, when EmailToken.Validate(..) return true the entry from EmailTokens is already removed.
-            client.SendChatMessage("Email Verificaton passed. Welcome to someservername Roleplay yadayada!.");
+            client.SendChatMessage(AccountStrings.SuccessEmailVerification);
 
+            // TODO: Toggle logging in screen off
         }
 
         public static void ChangeVerificationEmail(Client client, string newEmailAddress)
         {
             if (!client.IsLoggedIn())
             {
-                client.SendChatMessage("You must be logged in to change your !_verification_! email address.");
+                client.SendChatMessage(AccountStrings.ErrorNotLoggedIn);
                 return;
             }
 
             if (!ValidateString(ValidationStrings.EmailAddress, newEmailAddress))
             {
-                client.SendChatMessage("That's not an email address");
+                client.SendChatMessage(AccountStrings.ErrorEmailInvalid);
                 return;
             }
 
             if (EmailToken.Fetch(client.GetAccountData()).EmailAddress == newEmailAddress)
             {
-                client.SendChatMessage("New email can't be same as the old one. Use /resendemail or choose a different email.");
+                client.SendChatMessage(AccountStrings.ErrorChangeVerificationEmailDuplicate);
                 return;
             }
 
             EmailToken.ChangeEmail(client.GetAccountData(), newEmailAddress);
             EmailToken.SendEmail(client.GetAccountData());
-            client.SendChatMessage("New email was sent to your new address, check code and verify");
+            client.SendChatMessage(AccountStrings.SuccessChangeVerificationEmailAddress);
         }
 
         public static void ResendEmail(Client client)
         {
             if (!client.IsLoggedIn())
             {
-                client.SendChatMessage("You must be logged in to resend to your email address.");
+                client.SendChatMessage(AccountStrings.ErrorNotLoggedIn);
                 return;
             }
 
             if (!EmailToken.Exists(client.GetAccountData()))
             {
-                client.SendChatMessage("You account is already verified.");
+                client.SendChatMessage(AccountStrings.ErrorEmailAlreadyVerified);
                 return;
             }
 
             EmailToken.SendEmail(client.GetAccountData());
-            client.SendChatMessage("New email was sent to your new address, check code and verify");
+            client.SendChatMessage(AccountStrings.SuccessResendVerificationEmail);
 
         }
     }
