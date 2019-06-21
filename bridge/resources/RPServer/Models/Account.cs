@@ -127,6 +127,31 @@ namespace RPServer.Models
             }
             throw new Exception("There was an error in [Account.Exists]");
         }
+
+        public static bool EmailTaken(string emailAddress)
+        {
+            const string query = "SELECT accountID FROM accounts WHERE emailaddress = @emailaddress";
+
+            using (var dbConn = new DbConnection())
+            {
+                try
+                {
+                    var cmd = new MySqlCommand(query, dbConn.Connection);
+                    cmd.Parameters.AddWithValue("@emailaddress", emailAddress);
+
+                    using (var r = cmd.ExecuteReader())
+                    {
+                        return r.Read() && r.HasRows;
+                    }
+                }
+                catch (MySqlException ex)
+                {
+                    Logger.MySqlError(ex.Message, ex.Code);
+                }
+            }
+            throw new Exception("There was an error in [Account.EmailTaken]");
+        }
+
         public void Save()
         {
             const string query = "UPDATE accounts " +
