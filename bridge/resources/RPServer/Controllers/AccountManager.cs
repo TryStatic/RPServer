@@ -41,7 +41,7 @@ namespace RPServer.Controllers
                 return;
             }
 
-            if (Account.EmailTaken(emailAddress))
+            if (Account.IsEmailTaken(emailAddress))
             {
                 client.SendChatMessage(AccountStrings.ErrorEmailTaken);
                 return;

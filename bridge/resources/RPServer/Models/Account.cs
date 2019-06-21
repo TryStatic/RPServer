@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using MySql.Data.MySqlClient;
 using RPServer.Database;
 using RPServer.Util;
@@ -27,6 +27,7 @@ namespace RPServer.Models
 
         }
 
+        #region CRUD
         public static Account Create(string username, string password, string regSocialClubName)
         {
             if (Exists(username))
@@ -126,31 +127,6 @@ namespace RPServer.Models
             }
             throw new Exception("There was an error in [Account.Exists]");
         }
-
-        public static bool EmailTaken(string emailAddress)
-        {
-            const string query = "SELECT accountID FROM accounts WHERE emailaddress = @emailaddress";
-
-            using (var dbConn = new DbConnection())
-            {
-                try
-                {
-                    var cmd = new MySqlCommand(query, dbConn.Connection);
-                    cmd.Parameters.AddWithValue("@emailaddress", emailAddress);
-
-                    using (var r = cmd.ExecuteReader())
-                    {
-                        return r.Read() && r.HasRows;
-                    }
-                }
-                catch (MySqlException ex)
-                {
-                    Logger.MySqlError(ex.Message, ex.Code);
-                }
-            }
-            throw new Exception("There was an error in [Account.EmailTaken]");
-        }
-
         public void Save()
         {
             const string query = "UPDATE accounts " +
@@ -186,7 +162,6 @@ namespace RPServer.Models
                 }
             }
         }
-
         public void SaveSingle(Savable.Column c)
         {
             Savable.GetColumnAndValue(this, c, out var column, out var value);
@@ -209,6 +184,7 @@ namespace RPServer.Models
                 }
             }
         }
+        #endregion
 
         public static bool Authenticate(string username, string password)
         {
@@ -237,6 +213,31 @@ namespace RPServer.Models
                 return false;
             }
         }
+
+        public static bool IsEmailTaken(string emailAddress)
+        {
+            const string query = "SELECT accountID FROM accounts WHERE emailaddress = @emailaddress";
+
+            using (var dbConn = new DbConnection())
+            {
+                try
+                {
+                    var cmd = new MySqlCommand(query, dbConn.Connection);
+                    cmd.Parameters.AddWithValue("@emailaddress", emailAddress);
+
+                    using (var r = cmd.ExecuteReader())
+                    {
+                        return r.Read() && r.HasRows;
+                    }
+                }
+                catch (MySqlException ex)
+                {
+                    Logger.MySqlError(ex.Message, ex.Code);
+                }
+            }
+            throw new Exception("There was an error in [Account.EmailTaken]");
+        }
+
         public static int? GetSqlId(string username)
         {
             const string query = "SELECT accountID FROM accounts WHERE username = @username";
