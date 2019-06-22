@@ -32,11 +32,11 @@ namespace RPServer.Models
         }
 
 
-        public static bool Create(Account account, string emailAddress)
+        public static async Task<bool> CreateAsync(Account account, string emailAddress)
         {
             const string query = "INSERT INTO emailtokens(accountID, token, expirydate, emailaddress) VALUES (@accountid, @token, @expirydate, @emailaddress)";
 
-            if (Exists(account))
+            if (await ExistsAsync(account))
                 return false;
 
             var emailToken = new EmailToken(account, emailAddress);
@@ -50,7 +50,8 @@ namespace RPServer.Models
                     cmd.Parameters.AddWithValue("@token", emailToken.Token);
                     cmd.Parameters.AddWithValue("@emailaddress", emailToken.EmailAddress);
                     cmd.Parameters.AddWithValue("@expirydate", emailToken.ExpiryDate);
-                    cmd.ExecuteNonQuery();
+                    await dbConn.OpenAsync();
+                    await cmd.ExecuteNonQueryAsync();
                     return true;
                 }
                 catch (MySqlException ex)
@@ -61,7 +62,7 @@ namespace RPServer.Models
             }
         }
 
-        public static bool Exists(Account account)
+        public static async Task<bool> ExistsAsync(Account account)
         {
             const string query = "SELECT accountID FROM emailtokens WHERE accountID = @accountid";
 
@@ -72,9 +73,10 @@ namespace RPServer.Models
                     var cmd = new MySqlCommand(query, dbConn.Connection);
                     cmd.Parameters.AddWithValue("@accountid", account.SqlId);
 
-                    using (var r = cmd.ExecuteReader())
+                    await dbConn.OpenAsync();
+                    using (var r = await cmd.ExecuteReaderAsync())
                     {
-                        if (!r.Read()) return false;
+                        if (!await r.ReadAsync()) return false;
                         return r.HasRows;
                     }
                 }
@@ -83,14 +85,14 @@ namespace RPServer.Models
                     Logger.MySqlError(ex.Message, ex.Code);
                 }
             }
-            throw new Exception("There was an error in [EmailToken.Exists]");
+            throw new Exception("There was an error in [EmailToken.ExistsAsync]");
         }
 
-        public static EmailToken Fetch(Account account)
+        public static async Task<EmailToken> FetchAsync(Account account)
         {
             const string query = "SELECT accountID, token, expirydate, emailaddress FROM emailtokens WHERE accountID = @accountid";
 
-            if (!Exists(account))
+            if (!await ExistsAsync(account))
                 return null;
 
             using (var dbConn = new DbConnection())
@@ -100,10 +102,11 @@ namespace RPServer.Models
                     var cmd = new MySqlCommand(query, dbConn.Connection);
                     cmd.Parameters.AddWithValue("@accountid", account.SqlId);
 
-                    using (var r = cmd.ExecuteReader())
+                    await dbConn.OpenAsync();
+                    using (var r = await cmd.ExecuteReaderAsync())
                     {
-                        if (!r.Read()) return null;
-                        return new EmailToken(account, r.GetSafeString("token"), r.GetSafeDateTime("expirydate"), r.GetSafeString("emailaddress"));
+                        if (!await r.ReadAsync()) return null;
+                        return new EmailToken(account, r.GetStringExtended("token"), r.GetDateTimeExtended("expirydate"), r.GetStringExtended("emailaddress"));
                     }
                 }
                 catch (MySqlException ex)
@@ -111,31 +114,31 @@ namespace RPServer.Models
                     Logger.MySqlError(ex.Message, ex.Code);
                 }
             }
-            throw new Exception("Error in [EmailToken.Fetch]");
+            throw new Exception("Error in [EmailToken.FetchAsync]");
         }
 
-        public static bool Validate(Account account, string token)
+        public static async Task<bool> ValidateAsync(Account account, string token)
         {
-            if (!Exists(account))
+            if (!await ExistsAsync(account))
                 return false;
 
-            var fetchedToken = Fetch(account);
+            var fetchedToken = await FetchAsync(account);
 
 
             if (fetchedToken.ExpiryDate < DateTime.Now)
             { // Expired Token
-                Remove(account);
+                await RemoveAsync(account);
                 return false;
             }
             if (fetchedToken.Token != token) 
                 return false;
 
             account.EmailAddress = fetchedToken.EmailAddress;
-            Remove(account);
+            await RemoveAsync(account);
             return true;
         }
 
-        public void Save()
+        public async Task SaveAsync()
         {
             const string query = "UPDATE emailtokens " +
                                  "SET token = @token, emailAddress = @emailaddress, expirydate = @expirydate " +
@@ -152,7 +155,8 @@ namespace RPServer.Models
                     cmd.Parameters.AddWithValue("@emailaddress", EmailAddress);
                     cmd.Parameters.AddWithValue("@expirydate", ExpiryDate);
 
-                    cmd.ExecuteNonQuery();
+                    await dbConn.OpenAsync();
+                    await cmd.ExecuteNonQueryAsync();
                 }
                 catch (MySqlException ex)
                 {
@@ -161,9 +165,9 @@ namespace RPServer.Models
             }
         }
 
-        private static void Remove(Account account)
+        private static async Task RemoveAsync(Account account)
         {
-            if (!Exists(account)) return;
+            if (!await ExistsAsync(account)) return;
 
             const string query = "DELETE FROM emailtokens WHERE accountID = @accountid";
 
@@ -173,7 +177,9 @@ namespace RPServer.Models
                 {
                     var cmd = new MySqlCommand(query, dbConn.Connection);
                     cmd.Parameters.AddWithValue("@accountid", account.SqlId);
-                    cmd.ExecuteNonQuery();
+
+                    await dbConn.OpenAsync();
+                    await cmd.ExecuteNonQueryAsync();
                     return;
                 }
                 catch (MySqlException ex)
@@ -181,24 +187,24 @@ namespace RPServer.Models
                     Logger.MySqlError(ex.Message, ex.Code);
                 }
             }
-            throw new Exception("Error in [EmailTokens.Remove]");
+            throw new Exception("Error in [EmailTokens.RemoveAsync]");
         }
 
 
-        public static void ChangeEmail(Account account, string newEmailAddress)
+        public static async Task ChangeEmailAsync(Account account, string newEmailAddress)
         {
-            var fetchedToken = Fetch(account);
+            var fetchedToken = await FetchAsync(account);
 
             fetchedToken.EmailAddress = newEmailAddress;
             fetchedToken.Token = GenerateNewToken();
             fetchedToken.ExpiryDate = DateTime.Now.AddDays(1);
-            fetchedToken.Save();
+            await fetchedToken.SaveAsync();
         }
 
-        public static void SendEmail(Account account)
+        public static async Task SendEmail(Account account)
         {
-            var tok = Fetch(account);
-            Task.Run(() => EmailSender.SendMailMessageAsync(tok.EmailAddress, "RPServer - Email Verifciaton", $"Your verification token is {tok.Token} and it's valid until {tok.ExpiryDate}."));
+            var tok = await FetchAsync(account);
+            await EmailSender.SendMailMessageAsync(tok.EmailAddress, "RPServer - Email Verifciaton", $"Your verification token is {tok.Token} and it's valid until {tok.ExpiryDate}.");
 
         }
 

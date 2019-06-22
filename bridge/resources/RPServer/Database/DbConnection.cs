@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using RPServer.Strings;
 using RPServer.Util;
@@ -15,7 +16,7 @@ namespace RPServer.Database
         public static string MySqlUsername { get; set; }
         public static string MySqlPassword { get; set; }
 
-        public DbConnection(bool autoConnect = true)
+        public DbConnection()
         {
             // Build Connection String
             var mysqlCbs = new MySqlConnectionStringBuilder
@@ -30,16 +31,13 @@ namespace RPServer.Database
 
             // Create MySQL Connection Instance
             Connection = new MySqlConnection(mysqlCbs.ConnectionString);
-
-            if (autoConnect) Open();
-
         }
 
-        public bool Open()
+        public async Task<bool> OpenAsync()
         {
             try
             {
-                Connection.Open();
+                await Connection.OpenAsync();
                 return true;
             }
             catch (MySqlException ex)
@@ -49,9 +47,9 @@ namespace RPServer.Database
             }
         }
 
-        public static bool TestConnection()
+        public static async Task<bool> TestConnection()
         {
-            using (var dbConn = new DbConnection(false))
+            using (var dbConn = new DbConnection())
             {
                 var connected = false;
                 var tries = 0;
@@ -59,7 +57,7 @@ namespace RPServer.Database
                 {
                     tries++;
                     Logger.MySqlInfo($"{DbStrings.InfoTryDBConnect}... ({tries})");
-                    connected = dbConn.Open();
+                    connected = await dbConn.OpenAsync();
                 } while (!connected && tries < 10);
 
                 if (tries >= 10)

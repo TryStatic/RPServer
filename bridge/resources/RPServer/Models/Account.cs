@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Data;
+using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using RPServer.Database;
 using RPServer.Util;
@@ -28,9 +30,9 @@ namespace RPServer.Models
         }
 
         #region CRUD
-        public static Account Create(string username, string password, string regSocialClubName)
+        public static async Task<Account> CreateAsync(string username, string password, string regSocialClubName)
         {
-            if (Exists(username))
+            if (await ExistsAsync(username))
                 return null;
 
             var hash = new PasswordHash(password).ToArray();
@@ -46,23 +48,24 @@ namespace RPServer.Models
                     cmd.Parameters.AddWithValue("@hash", hash);
                     cmd.Parameters.AddWithValue("@regsocialclubname", regSocialClubName);
                     cmd.Parameters.AddWithValue("@creationdate", DateTime.Now);
-                    cmd.ExecuteNonQuery();
+                    await dbConn.OpenAsync();
+                    await cmd.ExecuteNonQueryAsync();
                 }
                 catch (MySqlException ex)
                 {
                     Logger.MySqlError(ex.Message, ex.Code);
                 }
             }
-            return Fetch(username);
+            return await FetchAsync(username);
         }
-        public static Account Fetch(string username)
+        public static async Task<Account> FetchAsync(string username)
         {
             const string query = "SELECT accountID, username, emailaddress, hash, forumname, nickname, LastIP, " +
                                  "LastHWID, regsocialclubname, lastsocialclubname, creationdate, lastlogindate " +
                                  "FROM accounts " +
                                  "WHERE username = @username LIMIT 1";
 
-            if (!Exists(username))
+            if (!await ExistsAsync(username))
                 return null;
 
             using (var dbConn = new DbConnection())
@@ -71,26 +74,26 @@ namespace RPServer.Models
                 {
                     var cmd = new MySqlCommand(query, dbConn.Connection);
                     cmd.Parameters.AddWithValue("@username", username);
-
-                    using (var r = cmd.ExecuteReader())
+                    await dbConn.OpenAsync();
+                    using (var r = await cmd.ExecuteReaderAsync(CommandBehavior.SequentialAccess))
                     {
-                        if (!r.Read())
+                        if (!await r.ReadAsync())
                             return null;
 
                         var fetchedAcc = new Account
                         {
-                            SqlId = r.GetInt32("accountID"),
-                            Username = r.GetSafeString("username"),
-                            EmailAddress = r.GetSafeString("emailaddress"),
+                            SqlId = r.GetInt32Extended("accountID"),
+                            Username = r.GetStringExtended("username"),
+                            EmailAddress = r.GetStringExtended("emailaddress"),
                             Hash = r["hash"] as byte[],
-                            ForumName = r.GetSafeString("forumname"),
-                            NickName = r.GetSafeString("nickname"),
-                            LastIP = r.GetSafeString("LastIP"),
-                            LastHWID = r.GetSafeString("LastHWID"),
-                            RegSocialClubName = r.GetSafeString("regsocialclubname"),
-                            LastSocialClubName = r.GetSafeString("lastsocialclubname"),
-                            CreationDate = r.GetSafeDateTime("creationdate"),
-                            LastLoginDate = r.GetSafeDateTime("lastlogindate")
+                            ForumName = r.GetStringExtended("forumname"),
+                            NickName = r.GetStringExtended("nickname"),
+                            LastIP = r.GetStringExtended("LastIP"),
+                            LastHWID = r.GetStringExtended("LastHWID"),
+                            RegSocialClubName = r.GetStringExtended("regsocialclubname"),
+                            LastSocialClubName = r.GetStringExtended("lastsocialclubname"),
+                            CreationDate = r.GetDateTimeExtended("creationdate"),
+                            LastLoginDate = r.GetDateTimeExtended("lastlogindate")
                         };
                         return fetchedAcc;
 
@@ -104,7 +107,7 @@ namespace RPServer.Models
                 return null;
             }
         }
-        public static bool Exists(string username)
+        public static async Task<bool> ExistsAsync(string username)
         {
             const string query = "SELECT accountID FROM accounts WHERE username = @username";
 
@@ -114,10 +117,10 @@ namespace RPServer.Models
                 {
                     var cmd = new MySqlCommand(query, dbConn.Connection);
                     cmd.Parameters.AddWithValue("@username", username);
-
-                    using (var r = cmd.ExecuteReader())
+                    await dbConn.OpenAsync();
+                    using (var r = await cmd.ExecuteReaderAsync())
                     {
-                        return r.Read() && r.HasRows;
+                        return await r.ReadAsync() && r.HasRows;
                     }
                 }
                 catch (MySqlException ex)
@@ -125,9 +128,9 @@ namespace RPServer.Models
                     Logger.MySqlError(ex.Message, ex.Code);
                 }
             }
-            throw new Exception("There was an error in [Account.Exists]");
+            throw new Exception("There was an error in [Account.ExistsAsync]");
         }
-        public void Save()
+        public async Task SaveAsync()
         {
             const string query = "UPDATE accounts " +
                                  "SET username = @username, emailaddress = @emailaddress, hash = @hash," +
@@ -154,7 +157,9 @@ namespace RPServer.Models
                     cmd.Parameters.AddWithValue("@lastsocialclubname", LastSocialClubName);
                     cmd.Parameters.AddWithValue("@creationdate", CreationDate);
                     cmd.Parameters.AddWithValue("@lastlogindate", LastLoginDate);
-                    cmd.ExecuteNonQuery();
+
+                    await dbConn.OpenAsync();
+                    await cmd.ExecuteNonQueryAsync();
                 }
                 catch (MySqlException ex)
                 {
@@ -162,7 +167,7 @@ namespace RPServer.Models
                 }
             }
         }
-        public void SaveSingle(Savable.Column c)
+        public async Task SaveSingleAsync(Savable.Column c)
         {
             Savable.GetColumnAndValue(this, c, out var column, out var value);
 
@@ -176,7 +181,8 @@ namespace RPServer.Models
                     cmd.Parameters.AddWithValue("@sqlId", SqlId);
                     cmd.Parameters.AddWithValue("@value", value);
 
-                    cmd.ExecuteNonQuery();
+                    await dbConn.OpenAsync();
+                    await cmd.ExecuteNonQueryAsync();
                 }
                 catch (MySqlException ex)
                 {
@@ -186,7 +192,7 @@ namespace RPServer.Models
         }
         #endregion
 
-        public static bool Authenticate(string username, string password)
+        public static async Task<bool> AuthenticateAsync(string username, string password)
         {
             const string query = "SELECT username, hash FROM accounts WHERE username = @username LIMIT 1";
 
@@ -197,9 +203,10 @@ namespace RPServer.Models
                     var cmd = new MySqlCommand(query, dbConn.Connection);
                     cmd.Parameters.AddWithValue("@username", username);
 
-                    using (var reader = cmd.ExecuteReader())
+                    await dbConn.OpenAsync();
+                    using (var reader = await cmd.ExecuteReaderAsync())
                     {
-                        if (!reader.Read())
+                        if (!await reader.ReadAsync())
                             return false;
 
                         var fetchedPass = reader["hash"] as byte[];
@@ -214,7 +221,7 @@ namespace RPServer.Models
             }
         }
 
-        public static bool IsEmailTaken(string emailAddress)
+        public static async Task<bool> IsEmailTakenAsync(string emailAddress)
         {
             const string query = "SELECT accountID FROM accounts WHERE emailaddress = @emailaddress";
 
@@ -225,9 +232,10 @@ namespace RPServer.Models
                     var cmd = new MySqlCommand(query, dbConn.Connection);
                     cmd.Parameters.AddWithValue("@emailaddress", emailAddress);
 
-                    using (var r = cmd.ExecuteReader())
+                    await dbConn.OpenAsync();
+                    using (var r = await cmd.ExecuteReaderAsync())
                     {
-                        return r.Read() && r.HasRows;
+                        return await r.ReadAsync() && r.HasRows;
                     }
                 }
                 catch (MySqlException ex)
@@ -235,34 +243,7 @@ namespace RPServer.Models
                     Logger.MySqlError(ex.Message, ex.Code);
                 }
             }
-            throw new Exception("There was an error in [Account.EmailTaken]");
-        }
-
-        public static int? GetSqlId(string username)
-        {
-            const string query = "SELECT accountID FROM accounts WHERE username = @username";
-
-            using (var dbConn = new DbConnection())
-            {
-                try
-                {
-                    var cmd = new MySqlCommand(query, dbConn.Connection);
-                    cmd.Parameters.AddWithValue("@username", username);
-
-                    using (var r = cmd.ExecuteReader())
-                    {
-                        if (!r.Read())
-                            return null;
-
-                        return r.GetInt32("accountID");
-                    }
-                }
-                catch (MySqlException ex)
-                {
-                    Logger.MySqlError(ex.Message, ex.Code);
-                }
-                return null;
-            }
+            throw new Exception("There was an error in [Account.IsEmailTakenAsync]");
         }
     }
 }

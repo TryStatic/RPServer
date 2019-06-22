@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using GTANetworkAPI;
 using RPServer.Models;
 using RPServer.Strings;
@@ -22,11 +23,12 @@ namespace RPServer.Controllers
             if (!player.IsLoggedIn()) return;
 
             var acc = player.GetAccountData();
-            acc.Save();
+            Task.Run(async() => await acc.SaveAsync());
             player.Logout();
+
         }
 
-        public static void RegisterNewAccount(Client client, string username, string password, string emailAddress)
+        public static async Task RegisterNewAccountAsync(Client client, string username, string password, string emailAddress)
         {
             if (client.IsLoggedIn())
             {
@@ -52,26 +54,26 @@ namespace RPServer.Controllers
                 return;
             }
 
-            if (Account.Exists(username))
+            if (await Account.ExistsAsync(username))
             {
                 client.SendChatMessage(AccountStrings.ErrorUsernameTaken);
                 return;
             }
 
-            if (Account.IsEmailTaken(emailAddress))
+            if (await Account.IsEmailTakenAsync(emailAddress))
             {
                 client.SendChatMessage(AccountStrings.ErrorEmailTaken);
                 return;
             }
 
-            var newAcc = Account.Create(username, password, client.SocialClubName);
-            EmailToken.Create(newAcc, emailAddress);
-            EmailToken.SendEmail(newAcc);
+            var newAcc = await Account.CreateAsync(username, password, client.SocialClubName);
+            await EmailToken.CreateAsync(newAcc, emailAddress);
+            await EmailToken.SendEmail(newAcc);
 
             client.SendChatMessage(AccountStrings.SuccessRegistration);
         }
 
-        public static void LoginAccount(Client client, string username, string password)
+        public static async Task LoginAccountAsync(Client client, string username, string password)
         {
             if (client.IsLoggedIn())
             {
@@ -91,27 +93,27 @@ namespace RPServer.Controllers
                 return;
             }
 
-            if (!Account.Exists(username))
+            if (!await Account.ExistsAsync(username))
             {
                 client.SendChatMessage(AccountStrings.ErrorUsernameNotExist);
                 return;
             }
 
-            if (!Account.Authenticate(username, password))
+            if (!await Account.AuthenticateAsync(username, password))
             {
                 client.SendChatMessage(AccountStrings.ErrorInvalidCredentials);
                 return;
             }
 
-            var fetchedAcc = Account.Fetch(username);
+            var fetchedAcc = await Account.FetchAsync(username);
             fetchedAcc.LastHWID = client.Serial;
             fetchedAcc.LastIP = client.Address;
             fetchedAcc.LastLoginDate = DateTime.Now;
             fetchedAcc.LastSocialClubName = client.SocialClubName;
             client.Login(fetchedAcc);
-            fetchedAcc.Save();
+            await fetchedAcc.SaveAsync();
 
-            if (EmailToken.Exists(fetchedAcc))
+            if (await EmailToken.ExistsAsync(fetchedAcc))
             {
                 client.SendChatMessage(AccountStrings.ErrorUnverifiedEmail);
                 return;
@@ -121,7 +123,7 @@ namespace RPServer.Controllers
             SetLoginState(client, false);
         }
 
-        public static void VerifyEmail(Client client, string providedToken)
+        public static async Task VerifyEmailAsync(Client client, string providedToken)
         {
             if (!client.IsLoggedIn())
             {
@@ -135,18 +137,18 @@ namespace RPServer.Controllers
                 return;
             }
 
-            if (!EmailToken.Validate(client.GetAccountData(), providedToken))
+            if (!await EmailToken.ValidateAsync(client.GetAccountData(), providedToken))
             {
                 client.SendChatMessage(AccountStrings.ErrorInvalidVerificationCode);
                 return;
             }
 
-            // Success, when EmailToken.Validate(..) return true the entry from EmailTokens is already removed.
+            // Success, when EmailToken.ValidateAsync(..) return true the entry from EmailTokens is already removed.
             client.SendChatMessage(AccountStrings.SuccessEmailVerification);
             SetLoginState(client, false);
         }
 
-        public static void ChangeVerificationEmail(Client client, string newEmailAddress)
+        public static async Task ChangeVerificationEmailAsync(Client client, string newEmailAddress)
         {
             if (!client.IsLoggedIn())
             {
@@ -160,18 +162,19 @@ namespace RPServer.Controllers
                 return;
             }
 
-            if (EmailToken.Fetch(client.GetAccountData()).EmailAddress == newEmailAddress)
+            var tok = await EmailToken.FetchAsync(client.GetAccountData());
+            if (tok.EmailAddress == newEmailAddress)
             {
                 client.SendChatMessage(AccountStrings.ErrorChangeVerificationEmailDuplicate);
                 return;
             }
 
-            EmailToken.ChangeEmail(client.GetAccountData(), newEmailAddress);
-            EmailToken.SendEmail(client.GetAccountData());
+            await EmailToken.ChangeEmailAsync(client.GetAccountData(), newEmailAddress);
+            await EmailToken.SendEmail(client.GetAccountData());
             client.SendChatMessage(AccountStrings.SuccessChangeVerificationEmailAddress);
         }
 
-        public static void ResendEmail(Client client)
+        public static async Task ResendEmailAsync(Client client)
         {
             if (!client.IsLoggedIn())
             {
@@ -179,13 +182,13 @@ namespace RPServer.Controllers
                 return;
             }
 
-            if (!EmailToken.Exists(client.GetAccountData()))
+            if (!await EmailToken.ExistsAsync(client.GetAccountData()))
             {
                 client.SendChatMessage(AccountStrings.ErrorEmailAlreadyVerified);
                 return;
             }
 
-            EmailToken.SendEmail(client.GetAccountData());
+            await EmailToken.SendEmail(client.GetAccountData());
             client.SendChatMessage(AccountStrings.SuccessResendVerificationEmail);
 
         }

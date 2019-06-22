@@ -1,8 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Data.Common;
 using System.Linq;
 using GTANetworkAPI;
-using MySql.Data.MySqlClient;
 using RPServer.Models;
 
 namespace RPServer.Util
@@ -32,14 +32,21 @@ namespace RPServer.Util
         #endregion
 
         #region MySQLExtensions
-        public static string GetSafeString(this MySqlDataReader reader, string column)
+        public static int GetInt32Extended(this DbDataReader reader, string column)
         {
-            return !reader.IsDBNull(reader.GetOrdinal(column)) ? reader.GetString(column) : null;
+            var ordinal = reader.GetOrdinal(column);
+            return !reader.IsDBNull(ordinal) ? reader.GetInt32(ordinal) : -1;
+        }
+        public static string GetStringExtended(this DbDataReader reader, string column)
+        {
+            var ordinal = reader.GetOrdinal(column);
+            return !reader.IsDBNull(ordinal) ? reader.GetString(ordinal) : null;
         }
 
-        public static DateTime GetSafeDateTime(this MySqlDataReader reader, string column)
+        public static DateTime GetDateTimeExtended(this DbDataReader reader, string column)
         {
-            return !reader.IsDBNull(reader.GetOrdinal(column)) ? reader.GetDateTime(column) : DateTime.MinValue;
+            var ordinal = reader.GetOrdinal(column);
+            return !reader.IsDBNull(ordinal) ? reader.GetDateTime(ordinal) : DateTime.MinValue;
         }
 
         #endregion
