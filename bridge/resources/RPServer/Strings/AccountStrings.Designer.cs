@@ -106,6 +106,15 @@ namespace RPServer.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to That email address is already set to be verified..
+        /// </summary>
+        internal static string ErrorEmailTokenAddressTaken {
+            get {
+                return ResourceManager.GetString("ErrorEmailTokenAddressTaken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You have provided invalid an invalid username/password combination..
         /// </summary>
         internal static string ErrorInvalidCredentials {

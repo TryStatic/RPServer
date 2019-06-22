@@ -113,6 +113,12 @@ namespace RPServer.Controllers
                 return;
             }
 
+            if (await EmailToken.IsEmailTakenAsync(emailAddress))
+            {
+                client.SendChatMessage(AccountStrings.ErrorEmailTokenAddressTaken);
+                return;
+            }
+
             var newAcc = await Account.CreateAsync(username, password, client.SocialClubName);
             await EmailToken.CreateAsync(newAcc, emailAddress);
             await EmailToken.SendEmail(newAcc);

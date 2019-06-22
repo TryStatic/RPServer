@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using MySql.Data.MySqlClient;
 using RPServer.Database;
 using RPServer.Util;
@@ -86,6 +86,32 @@ namespace RPServer.Models
                 }
             }
             throw new Exception("There was an error in [EmailToken.ExistsAsync]");
+        }
+
+        public static async Task<bool> IsEmailTakenAsync(string emailAddress)
+        {
+            const string query = "SELECT emailaddress FROM emailtokens WHERE emailaddress = @emailaddress";
+
+            using (var dbConn = new DbConnection())
+            {
+                try
+                {
+                    var cmd = new MySqlCommand(query, dbConn.Connection);
+                    cmd.Parameters.AddWithValue("@emailaddress", emailAddress);
+
+                    await dbConn.OpenAsync();
+                    using (var r = await cmd.ExecuteReaderAsync())
+                    {
+                        if (!await r.ReadAsync()) return false;
+                        return r.HasRows;
+                    }
+                }
+                catch (MySqlException ex)
+                {
+                    Logger.MySqlError(ex.Message, ex.Code);
+                }
+            }
+            throw new Exception("There was an error in [EmailToken.IsEmailTakenAsync]");
         }
 
         public static async Task<EmailToken> FetchAsync(Account account)

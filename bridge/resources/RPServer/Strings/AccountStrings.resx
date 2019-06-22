@@ -132,6 +132,9 @@
   <data name="ErrorEmailTaken" xml:space="preserve">
     <value>That email address is already taken.</value>
   </data>
+  <data name="ErrorEmailTokenAddressTaken" xml:space="preserve">
+    <value>That email address is already set to be verified.</value>
+  </data>
   <data name="ErrorInvalidCredentials" xml:space="preserve">
     <value>You have provided invalid an invalid username/password combination.</value>
   </data>
