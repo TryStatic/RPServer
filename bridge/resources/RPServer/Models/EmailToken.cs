@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using MySql.Data.MySqlClient;
 using RPServer.Database;
 using RPServer.Util;
@@ -191,6 +191,27 @@ namespace RPServer.Models
             }
         }
 
+        public static async Task RemoveExpiredCodesAsync()
+        {
+            const string query = "DELETE FROM emailtokens WHERE expirydate < @current";
+
+            using (var dbConn = new DbConnection())
+            {
+                try
+                {
+                    var cmd = new MySqlCommand(query, dbConn.Connection);
+                    cmd.Parameters.AddWithValue("@current", DateTime.Now);
+
+                    await dbConn.OpenAsync();
+                    await cmd.ExecuteNonQueryAsync();
+                }
+                catch (MySqlException ex)
+                {
+                    Logger.MySqlError(ex.Message, ex.Code);
+                }
+            }
+        }
+
         private static async Task RemoveAsync(Account account)
         {
             if (!await ExistsAsync(account)) return;
@@ -215,7 +236,6 @@ namespace RPServer.Models
             }
             throw new Exception("Error in [EmailTokens.RemoveAsync]");
         }
-
 
         public static async Task ChangeEmailAsync(Account account, string newEmailAddress)
         {
