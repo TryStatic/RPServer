@@ -13,6 +13,7 @@ namespace RPServer.Controllers
         public void OnPlayerConnected(Client client)
         {
             client.SendChatMessage(AccountStrings.InfoWelcome);
+            SetLoginState(client, true);
         }
 
         [ServerEvent(Event.PlayerDisconnected)]
@@ -117,8 +118,7 @@ namespace RPServer.Controllers
             }
 
             client.SendChatMessage(AccountStrings.SuccessLogin);
-            // TODO: Toggle logging in screen off
-
+            SetLoginState(client, false);
         }
 
         public static void VerifyEmail(Client client, string providedToken)
@@ -143,8 +143,7 @@ namespace RPServer.Controllers
 
             // Success, when EmailToken.Validate(..) return true the entry from EmailTokens is already removed.
             client.SendChatMessage(AccountStrings.SuccessEmailVerification);
-
-            // TODO: Toggle logging in screen off
+            SetLoginState(client, false);
         }
 
         public static void ChangeVerificationEmail(Client client, string newEmailAddress)
@@ -189,6 +188,21 @@ namespace RPServer.Controllers
             EmailToken.SendEmail(client.GetAccountData());
             client.SendChatMessage(AccountStrings.SuccessResendVerificationEmail);
 
+        }
+
+        private static void SetLoginState(Client client, bool state)
+        {
+            if (state)
+            {
+                client.Transparency = 0;
+                client.Dimension = (uint)client.Value + 1500;
+            }
+            else
+            {
+                client.Transparency = 255;
+                client.Dimension = 0;
+            }
+            NAPI.ClientEvent.TriggerClientEvent(client, "SetLoginScreen", state);
         }
     }
 }
