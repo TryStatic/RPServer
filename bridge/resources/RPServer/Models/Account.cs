@@ -11,7 +11,7 @@ namespace RPServer.Models
     {
         public static readonly string DataKey = "ACCOUNT_DATA";
 
-        public int? SqlId { get; private set; }
+        public int SqlId { get; }
         public string Username { get; set; }
         public string EmailAddress { get; set; }
         public byte[] Hash { get; set; }
@@ -24,9 +24,9 @@ namespace RPServer.Models
         public DateTime CreationDate { get; set; }
         public DateTime LastLoginDate { get; set; }
 
-        private Account()
+        private Account(int sqlId)
         {
-
+            SqlId = sqlId;
         }
 
         #region CRUD
@@ -80,9 +80,10 @@ namespace RPServer.Models
                         if (!await r.ReadAsync())
                             return null;
 
-                        var fetchedAcc = new Account
+                        var sqlId = r.GetInt32Extended("accountID");
+                        if(sqlId < 0) throw new Exception("Error fetching AccountID (SqlID) from the database");
+                        var fetchedAcc = new Account(sqlId)
                         {
-                            SqlId = r.GetInt32Extended("accountID"),
                             Username = r.GetStringExtended("username"),
                             EmailAddress = r.GetStringExtended("emailaddress"),
                             Hash = r["hash"] as byte[],
@@ -244,6 +245,34 @@ namespace RPServer.Models
                 }
             }
             throw new Exception("There was an error in [Account.IsEmailTakenAsync]");
+        }
+
+        protected bool Equals(Account other)
+        {
+            return SqlId == other.SqlId;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Account)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return SqlId;
+        }
+
+        public static bool operator ==(Account left, Account right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(Account left, Account right)
+        {
+            return !Equals(left, right);
         }
     }
 }
