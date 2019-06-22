@@ -117,8 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ErrorAlreadyLoggedIn" xml:space="preserve">
-    <value>You are already logged in.</value>
+  <data name="ErrorAccountAlreadyLoggedIn" xml:space="preserve">
+    <value>This account is already logged into the server.</value>
   </data>
   <data name="ErrorChangeVerificationEmailDuplicate" xml:space="preserve">
     <value>The new email address must be different than the old one.</value>
@@ -138,11 +138,14 @@
   <data name="ErrorInvalidVerificationCode" xml:space="preserve">
     <value>You have provided an invalid verification token.</value>
   </data>
-  <data name="ErrorNotLoggedIn" xml:space="preserve">
-    <value>You are not logged in.</value>
-  </data>
   <data name="ErrorPasswordInvalid" xml:space="preserve">
     <value>This is not a valid password.</value>
+  </data>
+  <data name="ErrorPlayerAlreadyLoggedIn" xml:space="preserve">
+    <value>You are already logged in.</value>
+  </data>
+  <data name="ErrorPlayerNotLoggedIn" xml:space="preserve">
+    <value>You are not logged in.</value>
   </data>
   <data name="ErrorUnverifiedEmail" xml:space="preserve">
     <value>You haven't verified your email address yet.</value>

@@ -61,11 +61,11 @@ namespace RPServer.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You are already logged in..
+        ///   Looks up a localized string similar to This account is already logged into the server..
         /// </summary>
-        internal static string ErrorAlreadyLoggedIn {
+        internal static string ErrorAccountAlreadyLoggedIn {
             get {
-                return ResourceManager.GetString("ErrorAlreadyLoggedIn", resourceCulture);
+                return ResourceManager.GetString("ErrorAccountAlreadyLoggedIn", resourceCulture);
             }
         }
         
@@ -124,20 +124,29 @@ namespace RPServer.Strings {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to You are not logged in..
-        /// </summary>
-        internal static string ErrorNotLoggedIn {
-            get {
-                return ResourceManager.GetString("ErrorNotLoggedIn", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to This is not a valid password..
         /// </summary>
         internal static string ErrorPasswordInvalid {
             get {
                 return ResourceManager.GetString("ErrorPasswordInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You are already logged in..
+        /// </summary>
+        internal static string ErrorPlayerAlreadyLoggedIn {
+            get {
+                return ResourceManager.GetString("ErrorPlayerAlreadyLoggedIn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You are not logged in..
+        /// </summary>
+        internal static string ErrorPlayerNotLoggedIn {
+            get {
+                return ResourceManager.GetString("ErrorPlayerNotLoggedIn", resourceCulture);
             }
         }
         

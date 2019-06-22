@@ -79,7 +79,7 @@ namespace RPServer.Controllers
         {
             if (client.IsLoggedIn())
             {
-                client.SendChatMessage(AccountStrings.ErrorAlreadyLoggedIn);
+                client.SendChatMessage(AccountStrings.ErrorPlayerAlreadyLoggedIn);
                 return;
             }
 
@@ -124,7 +124,7 @@ namespace RPServer.Controllers
         {
             if (client.IsLoggedIn())
             {
-                client.SendChatMessage(AccountStrings.ErrorAlreadyLoggedIn);
+                client.SendChatMessage(AccountStrings.ErrorPlayerAlreadyLoggedIn);
                 return;
             }
 
@@ -153,6 +153,13 @@ namespace RPServer.Controllers
             }
 
             var fetchedAcc = await Account.FetchAsync(username);
+
+            if (IsAccountLoggedIn(fetchedAcc))
+            {
+                client.SendChatMessage(AccountStrings.ErrorAccountAlreadyLoggedIn);
+                return;
+            }
+
             fetchedAcc.LastHWID = client.Serial;
             fetchedAcc.LastIP = client.Address;
             fetchedAcc.LastLoginDate = DateTime.Now;
@@ -174,7 +181,7 @@ namespace RPServer.Controllers
         {
             if (!client.IsLoggedIn())
             {
-                client.SendChatMessage(AccountStrings.ErrorNotLoggedIn);
+                client.SendChatMessage(AccountStrings.ErrorPlayerNotLoggedIn);
                 return;
             }
 
@@ -199,7 +206,7 @@ namespace RPServer.Controllers
         {
             if (!client.IsLoggedIn())
             {
-                client.SendChatMessage(AccountStrings.ErrorNotLoggedIn);
+                client.SendChatMessage(AccountStrings.ErrorPlayerNotLoggedIn);
                 return;
             }
 
@@ -225,7 +232,7 @@ namespace RPServer.Controllers
         {
             if (!client.IsLoggedIn())
             {
-                client.SendChatMessage(AccountStrings.ErrorNotLoggedIn);
+                client.SendChatMessage(AccountStrings.ErrorPlayerNotLoggedIn);
                 return;
             }
 
@@ -238,6 +245,16 @@ namespace RPServer.Controllers
             await EmailToken.SendEmail(client.GetAccountData());
             client.SendChatMessage(AccountStrings.SuccessResendVerificationEmail);
 
+        }
+        private static bool IsAccountLoggedIn(Account fetchedAcc)
+        {
+            foreach (var p in NAPI.Pools.GetAllPlayers())
+            {
+                if (!p.IsLoggedIn()) continue;
+                if (p.GetAccountData() != fetchedAcc) continue;
+                return true;
+            }
+            return false;
         }
 
         private static void SetLoginState(Client client, bool state)
