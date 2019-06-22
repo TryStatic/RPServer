@@ -1,11 +1,16 @@
-﻿using GTANetworkAPI;
+using System;
+using System.Threading;
+using GTANetworkAPI;
 using RPServer.Database;
+using RPServer.Models;
 using RPServer.Util;
 
 namespace RPServer._init
 {
     internal class Init : Script
     {
+        private static Timer _expiredEmailTokensTimer;
+
         [ServerEvent(Event.ResourceStart)]
         public async void OnResourceStart()
         {
@@ -23,7 +28,6 @@ namespace RPServer._init
             DbConnection.MySqlDatabase = NAPI.Resource.GetSetting<string>(this, "DB_DATABASE");
             DbConnection.MySqlUsername = NAPI.Resource.GetSetting<string>(this, "DB_USERNAME");
             DbConnection.MySqlPassword = NAPI.Resource.GetSetting<string>(this, "DB_PASSWORD");
-            
             // Test MySql Connection
             await DbConnection.TestConnection();
 
@@ -31,6 +35,16 @@ namespace RPServer._init
             EmailSender.SmtpPort = NAPI.Resource.GetSetting<int>(this, "SMTP_PORT");
             EmailSender.SmtpUsername = NAPI.Resource.GetSetting<string>(this, "SMTP_USERNAME");
             EmailSender.SmtpPassword = NAPI.Resource.GetSetting<string>(this, "SMTP_PASSWORD");
+            // Remove expired tokens from the Database
+            await EmailToken.RemoveExpiredCodesAsync();
+            // Have expired tokens get removed once per hour
+            _expiredEmailTokensTimer = new Timer(OnRemoveExpiredVerificationCodes, null, TimeSpan.FromHours(1).Milliseconds, Timeout.Infinite);
+        }
+
+        private async void OnRemoveExpiredVerificationCodes(object state)
+        {
+            await EmailToken.RemoveExpiredCodesAsync();
+            _expiredEmailTokensTimer.Change(1000 * 5, Timeout.Infinite);
 
         }
     }
