@@ -28,6 +28,53 @@ namespace RPServer.Controllers
 
         }
 
+        [Command("register", "Usage: /register [username] [password] [emailaddress]", SensitiveInfo = true)]
+        public void Cmd_Register(Client player, string username, string password, string emailAddress)
+        {
+            Task.Run(async () => await RegisterNewAccountAsync(player, username, password, emailAddress));
+        }
+
+
+        [Command("login", "Usage: /login [username] [password]", SensitiveInfo = true)]
+        public void Cmd_Login(Client player, string username, string password)
+        {
+            Task.Run(async () => await LoginAccountAsync(player, username, password));
+        }
+
+        [Command("logout")]
+        public void Cmd_Logout(Client player)
+        {
+            if (!player.IsLoggedIn())
+            {
+                player.SendChatMessage("You are not logged in.");
+                return;
+            }
+            var acc = player.GetAccountData();
+            Task.Run(async () => await acc.SaveAsync());
+
+            player.Logout();
+            player.SendChatMessage("Bye!");
+            SetLoginState(player, true);
+        }
+
+        [Command("verifyemail", "Usage: /verify(e)mail [code]", SensitiveInfo = true, Alias = "verifymail")]
+        public void Cmd_VerifyEmail(Client player, string code)
+        {
+            Task.Run(async () => await VerifyEmailAsync(player, code));
+        }
+
+        [Command("changeverificationmail", "Usage: /changeVerificationMail [new email]", SensitiveInfo = true)]
+        public void Cmd_ChangeVerEmail(Client player, string newEmail)
+        {
+            Task.Run(async () => await ChangeVerificationEmailAsync(player, newEmail));
+        }
+
+        [Command("resendemail", "Usage: /resendemail", SensitiveInfo = true)]
+        public void Cmd_ResendEmail(Client player)
+        {
+            Task.Run(async () => await ResendEmailAsync(player));
+        }
+
         public static async Task RegisterNewAccountAsync(Client client, string username, string password, string emailAddress)
         {
             if (client.IsLoggedIn())
