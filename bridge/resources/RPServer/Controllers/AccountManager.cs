@@ -9,6 +9,22 @@ namespace RPServer.Controllers
 {
     internal class AccountManager : Script
     {
+        [ServerEvent(Event.PlayerConnected)]
+        public void OnPlayerConnected(Client client)
+        {
+            client.SendChatMessage(AccountStrings.InfoWelcome);
+        }
+
+        [ServerEvent(Event.PlayerDisconnected)]
+        public void OnPlayerDisconnected(Client player, DisconnectionType type, string reason)
+        {
+            if (!player.IsLoggedIn()) return;
+
+            var acc = player.GetAccountData();
+            acc.Save();
+            player.Logout();
+        }
+
         public static void RegisterNewAccount(Client client, string username, string password, string emailAddress)
         {
             if (client.IsLoggedIn())

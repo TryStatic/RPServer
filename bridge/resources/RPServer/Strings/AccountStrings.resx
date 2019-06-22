@@ -156,6 +156,9 @@
   <data name="ErrorUsernameTaken" xml:space="preserve">
     <value>That username is already taken.</value>
   </data>
+  <data name="InfoWelcome" xml:space="preserve">
+    <value>Hello welcome to our server. Please /login or /register appropriately.</value>
+  </data>
   <data name="SuccessChangeVerificationEmailAddress" xml:space="preserve">
     <value>You have changed your verification email address. Check your inbox.</value>
   </data>

@@ -178,6 +178,15 @@ namespace RPServer.Strings {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Hello welcome to our server. Please /login or /register appropriately..
+        /// </summary>
+        internal static string InfoWelcome {
+            get {
+                return ResourceManager.GetString("InfoWelcome", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You have changed your verification email address. Check your inbox..
         /// </summary>
         internal static string SuccessChangeVerificationEmailAddress {
