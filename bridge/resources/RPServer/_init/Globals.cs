@@ -7,8 +7,10 @@ using RPServer.Util;
 
 namespace RPServer._init
 {
-    internal class Init : Script
+    internal class Globals : Script
     {
+        public static RandomGenerator Random = new RandomGenerator();
+
         private static Timer _expiredEmailTokensTimer;
 
         [ServerEvent(Event.ResourceStart)]

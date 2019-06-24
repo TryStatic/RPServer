@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Data;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
+using RPServer._init;
 using RPServer.Database;
 using RPServer.Util;
 
@@ -24,7 +25,7 @@ namespace RPServer.Models
         public string LastHWID { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime LastLoginDate { get; set; }
-        public bool HasEnabledTwoStepByEmail { private get; set; }
+        public bool HasEnabledTwoStepByEmail { get; set; }
         public byte[] TwoFactorGASharedKey { get; private set; }
         #endregion
 
@@ -269,7 +270,7 @@ namespace RPServer.Models
         public void GenerateTwoFactorGASharedKey()
         {
             TwoFactorGASharedKey = new byte[50];
-            new Random().NextBytes(TwoFactorGASharedKey);
+            TwoFactorGASharedKey = Globals.Random.GenerateRandomBytes(50);
         }
 
         public void RemoveTwoFactorGASharedKey()
