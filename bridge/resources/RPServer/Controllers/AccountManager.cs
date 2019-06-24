@@ -173,7 +173,7 @@ namespace RPServer.Controllers
             client.Login(fetchedAcc);
             await fetchedAcc.SaveAsync();
 
-            if (await EmailToken.ExistsAsync(fetchedAcc))
+            if (!fetchedAcc.HasVerifiedEmail())
             {
                 client.SendChatMessage(AccountStrings.ErrorUnverifiedEmail);
                 return;
@@ -183,6 +183,7 @@ namespace RPServer.Controllers
             SetLoginState(client, false);
         }
 
+        #region InitialEmailVerificaiton
         public static async Task OnVerifyEmailAsync(Client client, string providedToken)
         {
             if (!client.IsLoggedIn())
@@ -197,13 +198,22 @@ namespace RPServer.Controllers
                 return;
             }
 
+            if (client.GetAccountData().HasVerifiedEmail())
+            {
+                client.SendChatMessage(AccountStrings.ErrorEmailAlreadyVerified);
+                return;
+            }
+
+            var tok = await EmailToken.FetchAsync(client.GetAccountData());
+            var storedEmail = tok.EmailAddress;
+
             if (!await EmailToken.ValidateAsync(client.GetAccountData(), providedToken))
             {
                 client.SendChatMessage(AccountStrings.ErrorInvalidVerificationCode);
                 return;
             }
 
-            // Success, when EmailToken.ValidateAsync(..) return true the entry from EmailTokens is already removed.
+            client.GetAccountData().EmailAddress = storedEmail;
             client.SendChatMessage(AccountStrings.SuccessEmailVerification);
             SetLoginState(client, false);
         }
@@ -222,17 +232,23 @@ namespace RPServer.Controllers
                 return;
             }
 
+            if (client.GetAccountData().HasVerifiedEmail())
+            {
+                client.SendChatMessage(AccountStrings.ErrorEmailAlreadyVerified);
+                return;
+            }
+
             var tok = await EmailToken.FetchAsync(client.GetAccountData());
             if (tok.EmailAddress == newEmailAddress)
             {
                 client.SendChatMessage(AccountStrings.ErrorChangeVerificationEmailDuplicate);
                 return;
             }
-
             await EmailToken.ChangeEmailAsync(client.GetAccountData(), newEmailAddress);
             await EmailToken.SendEmail(client.GetAccountData());
             client.SendChatMessage(AccountStrings.SuccessChangeVerificationEmailAddress);
         }
+        #endregion
 
         public static async Task OnResendEmailAsync(Client client)
         {

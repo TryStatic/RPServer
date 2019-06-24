@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
@@ -256,6 +256,10 @@ namespace RPServer.Models
             throw new Exception("There was an error in [Account.IsEmailTakenAsync]");
         }
 
+        public bool HasVerifiedEmail()
+        {
+            return !string.IsNullOrEmpty(EmailAddress) && !string.IsNullOrWhiteSpace(EmailAddress);
+        }
 
         public bool Is2FAbyEmailEnabled() => HasEnabledTwoStepByEmail;
         public bool Is2FAbyGAEnabled() => TwoFactorGASharedKey != null;

@@ -37,7 +37,9 @@ namespace RPServer.Models
             const string query = "INSERT INTO emailtokens(accountID, token, expirydate, emailaddress) VALUES (@accountid, @token, @expirydate, @emailaddress)";
 
             if (await ExistsAsync(account))
-                return false;
+            {
+                await RemoveAsync(account);
+            }
 
             var emailToken = new EmailToken(account, emailAddress);
 
@@ -150,7 +152,6 @@ namespace RPServer.Models
 
             var fetchedToken = await FetchAsync(account);
 
-
             if (fetchedToken.ExpiryDate < DateTime.Now)
             { // Expired Token
                 await RemoveAsync(account);
@@ -159,7 +160,6 @@ namespace RPServer.Models
             if (fetchedToken.Token != token) 
                 return false;
 
-            account.EmailAddress = fetchedToken.EmailAddress;
             await RemoveAsync(account);
             return true;
         }
