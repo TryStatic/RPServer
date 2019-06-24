@@ -75,6 +75,7 @@ namespace RPServer.Controllers
             Task.Run(async () => await OnResendEmailAsync(player));
         }
 
+        #region LoginRegister
         public static async Task OnRegisterNewAccountAsync(Client client, string username, string password, string emailAddress)
         {
             if (client.IsLoggedIn())
@@ -166,12 +167,7 @@ namespace RPServer.Controllers
                 return;
             }
 
-            fetchedAcc.LastHWID = client.Serial;
-            fetchedAcc.LastIP = client.Address;
-            fetchedAcc.LastLoginDate = DateTime.Now;
-            fetchedAcc.LastSocialClubName = client.SocialClubName;
-            client.Login(fetchedAcc);
-            await fetchedAcc.SaveAsync();
+            LoginAccount(fetchedAcc, client);
 
             if (!fetchedAcc.HasVerifiedEmail())
             {
@@ -179,9 +175,108 @@ namespace RPServer.Controllers
                 return;
             }
 
-            client.SendChatMessage(AccountStrings.SuccessLogin);
+            if (fetchedAcc.Is2FAbyEmailEnabled())
+            {
+                client.SetData("HasPassedTwoStepByEmail", false);
+                await EmailToken.CreateAsync(fetchedAcc, fetchedAcc.EmailAddress);
+                await EmailToken.SendEmail(fetchedAcc);
+
+                client.SendChatMessage("Verify 2FA by Email to continue");
+            }
+
+            if (fetchedAcc.Is2FAbyGAEnabled())
+            {
+                client.SetData("HasPassedTwoStepByGA", false);
+                client.SendChatMessage("Verify 2FA by GA to continue");
+            }
+        }
+        #endregion
+
+
+        #region TwoStepVerification
+        public static async Task OnVerifyTwoStepByEmail(Client client, string providedToken)
+        {
+            var accountData = client.GetAccountData();
+
+            if (!client.IsLoggedIn())
+            {
+                client.SendChatMessage(AccountStrings.ErrorPlayerNotLoggedIn);
+                return;
+            }
+
+            if (!ValidateString(ValidationStrings.EmailVerificationCode, providedToken))
+            {
+                client.SendChatMessage(AccountStrings.ErrorInvalidVerificationCode);
+                return;
+            }
+
+            if (!accountData.HasVerifiedEmail()) throw new Exception("Tried to verify Two-Step by Email when user has no email set"); // Dummy check
+
+            if (!accountData.Is2FAbyEmailEnabled())
+            {
+                client.SendChatMessage("2FA by EMAIL is not enabled for this account.");
+                return;
+            }
+
+            if (!await EmailToken.ValidateAsync(accountData, providedToken))
+            {
+                client.SendChatMessage(AccountStrings.ErrorInvalidVerificationCode);
+                return;
+            }
+
+            client.SendChatMessage("Verifed 2FA by EMAIL");
+            client.SetData("HasPassedTwoStepByEmail", true);
+
+            if (!client.GetData("HasPassedTwoStepByGA") && accountData.Is2FAbyGAEnabled())
+            {
+                client.SendChatMessage("Verify 2FA by Google Auth to continue...");
+                return;
+            }
+            client.SendChatMessage("Login finalized. Go play.");
             SetLoginState(client, false);
         }
+
+        public static void OnVerifyTwoStepByGA(Client client, string providedGAKey)
+        {
+            var accountData = client.GetAccountData();
+
+            if (!client.IsLoggedIn())
+            {
+                client.SendChatMessage(AccountStrings.ErrorPlayerNotLoggedIn);
+                return;
+            }
+
+            if (!ValidateString(ValidationStrings.GoogleAuthenticatorCode, providedGAKey))
+            {
+                client.SendChatMessage("Must be 6 characters and only digits");
+                return;
+            }
+
+            if (!accountData.HasVerifiedEmail()) throw new Exception("Tried to verify Two-Step by GA when user has no email set"); // Dummy check
+
+            if (!accountData.Is2FAbyGAEnabled())
+            {
+                client.SendChatMessage("Two Step auth by GA is not enabled for this account.");
+                return;
+            }
+
+            if (GoogleAuthenticator.GeneratePin(accountData.TwoFactorGASharedKey) != providedGAKey)
+            {
+                client.SendChatMessage("Wrong 2FA code, try again");
+                return;
+            }
+
+            client.SendChatMessage("Verified Two-Step by GA");
+            client.SetData("HasPassedTwoStepByGA", true);
+            if (!client.GetData("HasPassedTwoStepByEmail") && accountData.Is2FAbyEmailEnabled())
+            {
+                client.SendChatMessage("Now need to verify by EMAIL");
+                return;
+            }
+            client.SendChatMessage("Finally Logged in now");
+            SetLoginState(client, false);
+        }
+        #endregion
 
         #region InitialEmailVerificaiton
         public static async Task OnVerifyEmailAsync(Client client, string providedToken)
@@ -260,11 +355,12 @@ namespace RPServer.Controllers
 
             if (!await EmailToken.ExistsAsync(client.GetAccountData()))
             {
-                client.SendChatMessage(AccountStrings.ErrorEmailAlreadyVerified);
+                client.SendChatMessage("Error No Token for that Account");
                 return;
             }
 
             await EmailToken.SendEmail(client.GetAccountData());
+
             client.SendChatMessage(AccountStrings.SuccessResendVerificationEmail);
 
         }
@@ -278,7 +374,16 @@ namespace RPServer.Controllers
             }
             return false;
         }
-
+        private static async void LoginAccount(Account fetchedAcc, Client client)
+        {
+            fetchedAcc.LastHWID = client.Serial;
+            fetchedAcc.LastIP = client.Address;
+            fetchedAcc.LastLoginDate = DateTime.Now;
+            fetchedAcc.LastSocialClubName = client.SocialClubName;
+            client.Login(fetchedAcc);
+            await fetchedAcc.SaveAsync();
+            client.SendChatMessage(AccountStrings.SuccessLogin);
+        }
         private static void SetLoginState(Client client, bool state)
         {
             if (state)
