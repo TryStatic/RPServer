@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Data;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
@@ -11,6 +11,7 @@ namespace RPServer.Models
     {
         public static readonly string DataKey = "ACCOUNT_DATA";
 
+        #region SQL_SAVEABLE_DATA
         public int SqlId { get; }
         public string Username { get; set; }
         public string EmailAddress { get; set; }
@@ -23,6 +24,9 @@ namespace RPServer.Models
         public string LastHWID { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime LastLoginDate { get; set; }
+        public bool HasEnabledTwoStepByEmail { private get; set; }
+        public byte[] TwoFactorGASharedKey { get; private set; }
+        #endregion
 
         private Account(int sqlId)
         {
@@ -61,8 +65,9 @@ namespace RPServer.Models
         public static async Task<Account> FetchAsync(string username)
         {
             const string query = "SELECT accountID, username, emailaddress, hash, forumname, nickname, LastIP, " +
-                                 "LastHWID, regsocialclubname, lastsocialclubname, creationdate, lastlogindate " +
-                                 "FROM accounts " +
+                                 "LastHWID, regsocialclubname, lastsocialclubname, creationdate, lastlogindate, " +
+                                 "enabled2FAbyemail, twofactorsharedkey" +
+                                 " FROM accounts " +
                                  "WHERE username = @username LIMIT 1";
 
             if (!await ExistsAsync(username))
@@ -94,7 +99,9 @@ namespace RPServer.Models
                             RegSocialClubName = r.GetStringExtended("regsocialclubname"),
                             LastSocialClubName = r.GetStringExtended("lastsocialclubname"),
                             CreationDate = r.GetDateTimeExtended("creationdate"),
-                            LastLoginDate = r.GetDateTimeExtended("lastlogindate")
+                            LastLoginDate = r.GetDateTimeExtended("lastlogindate"),
+                            HasEnabledTwoStepByEmail = r.GetBooleanExtended("enabled2FAbyemail"),
+                            TwoFactorGASharedKey = r["twofactorsharedkey"] as byte[]
                         };
                         return fetchedAcc;
 
@@ -137,7 +144,7 @@ namespace RPServer.Models
                                  "SET username = @username, emailaddress = @emailaddress, hash = @hash," +
                                  "forumname = @forumname, nickname = @nickname, LastIP = @LastIP, LastHWID = @LastHWID," +
                                  "regsocialclubname = @regsocialclubname, lastsocialclubname = @lastsocialclubname," +
-                                 "creationdate = @creationdate, lastlogindate = @lastlogindate " +
+                                 "creationdate = @creationdate, lastlogindate = @lastlogindate, enabled2FAbyemail = @enabled2FAbyemail, twofactorsharedkey = @twofactorsharedkey " +
                                  "WHERE accountID = @sqlId";
 
             using (var dbConn = new DbConnection())
@@ -158,6 +165,8 @@ namespace RPServer.Models
                     cmd.Parameters.AddWithValue("@lastsocialclubname", LastSocialClubName);
                     cmd.Parameters.AddWithValue("@creationdate", CreationDate);
                     cmd.Parameters.AddWithValue("@lastlogindate", LastLoginDate);
+                    cmd.Parameters.AddWithValue("@enabled2FAbyemail", HasEnabledTwoStepByEmail);
+                    cmd.Parameters.AddWithValue("@twofactorsharedkey", TwoFactorGASharedKey);
 
                     await dbConn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
@@ -245,6 +254,20 @@ namespace RPServer.Models
                 }
             }
             throw new Exception("There was an error in [Account.IsEmailTakenAsync]");
+        }
+
+
+        public bool Is2FAbyEmailEnabled() => HasEnabledTwoStepByEmail;
+        public bool Is2FAbyGAEnabled() => TwoFactorGASharedKey != null;
+        public void GenerateTwoFactorGASharedKey()
+        {
+            TwoFactorGASharedKey = new byte[50];
+            new Random().NextBytes(TwoFactorGASharedKey);
+        }
+
+        public void RemoveTwoFactorGASharedKey()
+        {
+            TwoFactorGASharedKey = null;
         }
 
         protected bool Equals(Account other)

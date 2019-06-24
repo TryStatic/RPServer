@@ -16,7 +16,9 @@ namespace RPServer.Models
             LastIP,
             LastHWID,
             CreationDate,
-            LastLoginDate
+            LastLoginDate,
+            HasEnabledTwoStepByEmail,
+            TwoFactorGASharedKey
         }
 
         public static void GetColumnAndValue(Account acc, Column c, out string column, out object value)
@@ -45,6 +47,10 @@ namespace RPServer.Models
                     column = "creationdate"; value = acc.CreationDate; break;
                 case Column.LastLoginDate:
                     column = "lastlogindate"; value = acc.LastLoginDate; break;
+                case Column.HasEnabledTwoStepByEmail:
+                    column = "enabled2FAbyemail"; value = acc.HasEnabledTwoStepByEmail; break;
+                case Column.TwoFactorGASharedKey:
+                    column = "twofactorsharedkey"; value = acc.TwoFactorGASharedKey; break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(c), c, null);
             }

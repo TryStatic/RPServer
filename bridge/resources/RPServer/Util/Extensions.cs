@@ -42,12 +42,17 @@ namespace RPServer.Util
             var ordinal = reader.GetOrdinal(column);
             return !reader.IsDBNull(ordinal) ? reader.GetString(ordinal) : null;
         }
-
         public static DateTime GetDateTimeExtended(this DbDataReader reader, string column)
         {
             var ordinal = reader.GetOrdinal(column);
             return !reader.IsDBNull(ordinal) ? reader.GetDateTime(ordinal) : DateTime.MinValue;
         }
+        public static bool GetBooleanExtended(this DbDataReader reader, string column)
+        {
+            var ordinal = reader.GetOrdinal(column);
+            return reader.GetBoolean(ordinal);
+        }
+
 
         #endregion
 
