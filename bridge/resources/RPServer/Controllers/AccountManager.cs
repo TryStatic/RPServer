@@ -200,7 +200,7 @@ namespace RPServer.Controllers
 
             if (fetchedAcc.Is2FAbyEmailEnabled())
             {
-                client.SetData("HasPassedTwoStepByEmail", false);
+                fetchedAcc.HasPassedTwoStepByEmail = false;
                 await EmailToken.CreateAsync(fetchedAcc, fetchedAcc.EmailAddress);
                 await EmailToken.SendEmail(fetchedAcc);
 
@@ -209,7 +209,7 @@ namespace RPServer.Controllers
 
             if (fetchedAcc.Is2FAbyGAEnabled())
             {
-                client.SetData("HasPassedTwoStepByGA", false);
+                fetchedAcc.HasPassedTwoStepByGA = false;
                 client.SendChatMessage("Verify 2FA by GA to continue");
             }
         }
@@ -255,9 +255,9 @@ namespace RPServer.Controllers
             }
 
             client.SendChatMessage("Verifed 2FA by EMAIL");
-            client.SetData("HasPassedTwoStepByEmail", true);
+            accountData.HasPassedTwoStepByEmail = true;
 
-            if (accountData.Is2FAbyGAEnabled() && !client.GetData("HasPassedTwoStepByGA"))
+            if (accountData.Is2FAbyGAEnabled() && !accountData.HasPassedTwoStepByGA)
             {
                 client.SendChatMessage("Verify 2FA by Google Auth to continue...");
                 return;
@@ -296,8 +296,9 @@ namespace RPServer.Controllers
             }
 
             client.SendChatMessage("Verified Two-Step by GA");
-            client.SetData("HasPassedTwoStepByGA", true);
-            if (accountData.Is2FAbyEmailEnabled() && !client.GetData("HasPassedTwoStepByEmail"))
+            accountData.HasPassedTwoStepByGA = true;
+
+            if (accountData.Is2FAbyEmailEnabled() && !accountData.HasPassedTwoStepByGA)
             {
                 client.SendChatMessage("Now need to verify by EMAIL");
                 return;
@@ -369,7 +370,6 @@ namespace RPServer.Controllers
             await EmailToken.SendEmail(client.GetAccountData());
             client.SendChatMessage(AccountStrings.SuccessChangeVerificationEmailAddress);
         }
-
         public static async Task OnResendEmailAsync(Client client)
         {
             if (!client.IsLoggedIn())

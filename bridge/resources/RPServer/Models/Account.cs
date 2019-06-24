@@ -28,6 +28,9 @@ namespace RPServer.Models
         public byte[] TwoFactorGASharedKey { get; private set; }
         #endregion
 
+        public bool HasPassedTwoStepByGA = false;
+        public bool HasPassedTwoStepByEmail = false;
+
         private Account(int sqlId)
         {
             SqlId = sqlId;
