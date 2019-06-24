@@ -257,7 +257,7 @@ namespace RPServer.Controllers
             client.SendChatMessage("Verifed 2FA by EMAIL");
             client.SetData("HasPassedTwoStepByEmail", true);
 
-            if (!client.GetData("HasPassedTwoStepByGA") && accountData.Is2FAbyGAEnabled())
+            if (accountData.Is2FAbyGAEnabled() && !client.GetData("HasPassedTwoStepByGA"))
             {
                 client.SendChatMessage("Verify 2FA by Google Auth to continue...");
                 return;
@@ -297,7 +297,7 @@ namespace RPServer.Controllers
 
             client.SendChatMessage("Verified Two-Step by GA");
             client.SetData("HasPassedTwoStepByGA", true);
-            if (!client.GetData("HasPassedTwoStepByEmail") && accountData.Is2FAbyEmailEnabled())
+            if (accountData.Is2FAbyEmailEnabled() && !client.GetData("HasPassedTwoStepByEmail"))
             {
                 client.SendChatMessage("Now need to verify by EMAIL");
                 return;
