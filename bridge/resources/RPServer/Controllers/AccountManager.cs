@@ -28,6 +28,18 @@ namespace RPServer.Controllers
 
         }
 
+        #region CMDS
+        [Command("cmds", "USAGE", SensitiveInfo = true)]
+        public void Cmd_cmds(Client player)
+        {
+            player.SendChatMessage("-----------------------------------");
+            player.SendChatMessage("/register /login /logout");
+            player.SendChatMessage("/verifyemail /changeverificationmail /resendemail /forgotpass");
+            player.SendChatMessage("/verifytwostepemail /verifytwostepga");
+            player.SendChatMessage("-----------------------------------");
+
+        }
+
         [Command("register", "Usage: /register [username] [password] [emailaddress]", SensitiveInfo = true)]
         public void Cmd_Register(Client player, string username, string password, string emailAddress)
         {
@@ -74,6 +86,19 @@ namespace RPServer.Controllers
         {
             Task.Run(async () => await OnResendEmailAsync(player));
         }
+
+        [Command("verifytwostepemail", "Usage: ", SensitiveInfo = true)]
+        public void cmd_verifytwostepemail(Client player, string token)
+        {
+            Task.Run(async () => await OnVerifyTwoStepByEmail(player, token));
+        }
+
+        [Command("verifytwostepga", "Usage: ", SensitiveInfo = true)]
+        public void cmd_verifytwostepga(Client player, string token)
+        {
+            OnVerifyTwoStepByGA(player, token);
+        }
+        #endregion
 
         #region LoginRegister
         public static async Task OnRegisterNewAccountAsync(Client client, string username, string password, string emailAddress)
