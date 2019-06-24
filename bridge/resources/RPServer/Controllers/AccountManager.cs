@@ -31,14 +31,14 @@ namespace RPServer.Controllers
         [Command("register", "Usage: /register [username] [password] [emailaddress]", SensitiveInfo = true)]
         public void Cmd_Register(Client player, string username, string password, string emailAddress)
         {
-            Task.Run(async () => await RegisterNewAccountAsync(player, username, password, emailAddress));
+            Task.Run(async () => await OnRegisterNewAccountAsync(player, username, password, emailAddress));
         }
 
 
         [Command("login", "Usage: /login [username] [password]", SensitiveInfo = true)]
         public void Cmd_Login(Client player, string username, string password)
         {
-            Task.Run(async () => await LoginAccountAsync(player, username, password));
+            Task.Run(async () => await OnLoginAccountAsync(player, username, password));
         }
 
         [Command("logout")]
@@ -60,22 +60,22 @@ namespace RPServer.Controllers
         [Command("verifyemail", "Usage: /verify(e)mail [code]", SensitiveInfo = true, Alias = "verifymail")]
         public void Cmd_VerifyEmail(Client player, string code)
         {
-            Task.Run(async () => await VerifyEmailAsync(player, code));
+            Task.Run(async () => await OnVerifyEmailAsync(player, code));
         }
 
         [Command("changeverificationmail", "Usage: /changeVerificationMail [new email]", SensitiveInfo = true)]
         public void Cmd_ChangeVerEmail(Client player, string newEmail)
         {
-            Task.Run(async () => await ChangeVerificationEmailAsync(player, newEmail));
+            Task.Run(async () => await OnChangeVerificationEmailAsync(player, newEmail));
         }
 
         [Command("resendemail", "Usage: /resendemail", SensitiveInfo = true)]
         public void Cmd_ResendEmail(Client player)
         {
-            Task.Run(async () => await ResendEmailAsync(player));
+            Task.Run(async () => await OnResendEmailAsync(player));
         }
 
-        public static async Task RegisterNewAccountAsync(Client client, string username, string password, string emailAddress)
+        public static async Task OnRegisterNewAccountAsync(Client client, string username, string password, string emailAddress)
         {
             if (client.IsLoggedIn())
             {
@@ -126,7 +126,7 @@ namespace RPServer.Controllers
             client.SendChatMessage(AccountStrings.SuccessRegistration);
         }
 
-        public static async Task LoginAccountAsync(Client client, string username, string password)
+        public static async Task OnLoginAccountAsync(Client client, string username, string password)
         {
             if (client.IsLoggedIn())
             {
@@ -183,7 +183,7 @@ namespace RPServer.Controllers
             SetLoginState(client, false);
         }
 
-        public static async Task VerifyEmailAsync(Client client, string providedToken)
+        public static async Task OnVerifyEmailAsync(Client client, string providedToken)
         {
             if (!client.IsLoggedIn())
             {
@@ -208,7 +208,7 @@ namespace RPServer.Controllers
             SetLoginState(client, false);
         }
 
-        public static async Task ChangeVerificationEmailAsync(Client client, string newEmailAddress)
+        public static async Task OnChangeVerificationEmailAsync(Client client, string newEmailAddress)
         {
             if (!client.IsLoggedIn())
             {
@@ -234,7 +234,7 @@ namespace RPServer.Controllers
             client.SendChatMessage(AccountStrings.SuccessChangeVerificationEmailAddress);
         }
 
-        public static async Task ResendEmailAsync(Client client)
+        public static async Task OnResendEmailAsync(Client client)
         {
             if (!client.IsLoggedIn())
             {
