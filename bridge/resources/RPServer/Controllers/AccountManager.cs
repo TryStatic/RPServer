@@ -198,6 +198,7 @@ namespace RPServer.Controllers
                 return;
             }
 
+            var flag = false;
             if (fetchedAcc.Is2FAbyEmailEnabled())
             {
                 fetchedAcc.HasPassedTwoStepByEmail = false;
@@ -205,13 +206,17 @@ namespace RPServer.Controllers
                 await EmailToken.SendEmail(fetchedAcc);
 
                 client.SendChatMessage("Verify 2FA by Email to continue");
+                flag = true;
             }
 
             if (fetchedAcc.Is2FAbyGAEnabled())
             {
                 fetchedAcc.HasPassedTwoStepByGA = false;
                 client.SendChatMessage("Verify 2FA by GA to continue");
+                flag = true;
             }
+
+            if(!flag) SetLoginState(client, false);
         }
         private static async void LoginAccount(Account fetchedAcc, Client client)
         {
@@ -411,7 +416,7 @@ namespace RPServer.Controllers
                 client.Transparency = 255;
                 client.Dimension = 0;
             }
-            NAPI.ClientEvent.TriggerClientEvent(client, "SetLoginScreen", state);
+            client.TriggerEvent("SetLoginScreen", state);
         }
     }
 }
