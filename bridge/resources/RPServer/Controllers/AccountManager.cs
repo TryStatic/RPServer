@@ -90,7 +90,7 @@ namespace RPServer.Controllers
         [Command("verifytwostepemail", "Usage: ", SensitiveInfo = true)]
         public void cmd_verifytwostepemail(Client player, string token)
         {
-            Task.Run(async () => await OnVerifyTwoStepByEmail(player, token));
+            Task.Run(async () => await OnVerifyTwoStepByEmailAsync(player, token));
         }
 
         [Command("verifytwostepga", "Usage: ", SensitiveInfo = true)]
@@ -100,7 +100,6 @@ namespace RPServer.Controllers
         }
         #endregion
 
-        #region LoginRegister
         public static async Task OnRegisterNewAccountAsync(Client client, string username, string password, string emailAddress)
         {
             if (client.IsLoggedIn())
@@ -134,13 +133,13 @@ namespace RPServer.Controllers
             }
 
             if (await Account.IsEmailTakenAsync(emailAddress))
-            {
+            { // Another account with the that email address
                 client.SendChatMessage(AccountStrings.ErrorEmailTaken);
                 return;
             }
 
             if (await EmailToken.IsEmailTakenAsync(emailAddress))
-            {
+            { // Another account in the list of email tokens with that address
                 client.SendChatMessage(AccountStrings.ErrorEmailTokenAddressTaken);
                 return;
             }
@@ -151,7 +150,6 @@ namespace RPServer.Controllers
 
             client.SendChatMessage(AccountStrings.SuccessRegistration);
         }
-
         public static async Task OnLoginAccountAsync(Client client, string username, string password)
         {
             if (client.IsLoggedIn())
@@ -215,11 +213,18 @@ namespace RPServer.Controllers
                 client.SendChatMessage("Verify 2FA by GA to continue");
             }
         }
-        #endregion
+        private static async void LoginAccount(Account fetchedAcc, Client client)
+        {
+            fetchedAcc.LastHWID = client.Serial;
+            fetchedAcc.LastIP = client.Address;
+            fetchedAcc.LastLoginDate = DateTime.Now;
+            fetchedAcc.LastSocialClubName = client.SocialClubName;
+            client.Login(fetchedAcc);
+            await fetchedAcc.SaveAsync();
+            client.SendChatMessage(AccountStrings.SuccessLogin);
+        }
 
-
-        #region TwoStepVerification
-        public static async Task OnVerifyTwoStepByEmail(Client client, string providedToken)
+        public static async Task OnVerifyTwoStepByEmailAsync(Client client, string providedEmailToken)
         {
             var accountData = client.GetAccountData();
 
@@ -229,7 +234,7 @@ namespace RPServer.Controllers
                 return;
             }
 
-            if (!ValidateString(ValidationStrings.EmailVerificationCode, providedToken))
+            if (!ValidateString(ValidationStrings.EmailVerificationCode, providedEmailToken))
             {
                 client.SendChatMessage(AccountStrings.ErrorInvalidVerificationCode);
                 return;
@@ -243,7 +248,7 @@ namespace RPServer.Controllers
                 return;
             }
 
-            if (!await EmailToken.ValidateAsync(accountData, providedToken))
+            if (!await EmailToken.ValidateAsync(accountData, providedEmailToken))
             {
                 client.SendChatMessage(AccountStrings.ErrorInvalidVerificationCode);
                 return;
@@ -260,7 +265,6 @@ namespace RPServer.Controllers
             client.SendChatMessage("Login finalized. Go play.");
             SetLoginState(client, false);
         }
-
         public static void OnVerifyTwoStepByGA(Client client, string providedGAKey)
         {
             var accountData = client.GetAccountData();
@@ -301,10 +305,8 @@ namespace RPServer.Controllers
             client.SendChatMessage("Finally Logged in now");
             SetLoginState(client, false);
         }
-        #endregion
 
-        #region InitialEmailVerificaiton
-        public static async Task OnVerifyEmailAsync(Client client, string providedToken)
+        public static async Task OnVerifyEmailAsync(Client client, string providedEmailToken)
         {
             if (!client.IsLoggedIn())
             {
@@ -312,7 +314,7 @@ namespace RPServer.Controllers
                 return;
             }
 
-            if (!ValidateString(ValidationStrings.EmailVerificationCode, providedToken))
+            if (!ValidateString(ValidationStrings.EmailVerificationCode, providedEmailToken))
             {
                 client.SendChatMessage(AccountStrings.ErrorInvalidVerificationCode);
                 return;
@@ -327,7 +329,7 @@ namespace RPServer.Controllers
             var tok = await EmailToken.FetchAsync(client.GetAccountData());
             var storedEmail = tok.EmailAddress;
 
-            if (!await EmailToken.ValidateAsync(client.GetAccountData(), providedToken))
+            if (!await EmailToken.ValidateAsync(client.GetAccountData(), providedEmailToken))
             {
                 client.SendChatMessage(AccountStrings.ErrorInvalidVerificationCode);
                 return;
@@ -337,7 +339,6 @@ namespace RPServer.Controllers
             client.SendChatMessage(AccountStrings.SuccessEmailVerification);
             SetLoginState(client, false);
         }
-
         public static async Task OnChangeVerificationEmailAsync(Client client, string newEmailAddress)
         {
             if (!client.IsLoggedIn())
@@ -368,7 +369,6 @@ namespace RPServer.Controllers
             await EmailToken.SendEmail(client.GetAccountData());
             client.SendChatMessage(AccountStrings.SuccessChangeVerificationEmailAddress);
         }
-        #endregion
 
         public static async Task OnResendEmailAsync(Client client)
         {
@@ -389,25 +389,15 @@ namespace RPServer.Controllers
             client.SendChatMessage(AccountStrings.SuccessResendVerificationEmail);
 
         }
-        private static bool IsAccountLoggedIn(Account fetchedAcc)
+        private static bool IsAccountLoggedIn(Account account)
         {
             foreach (var p in NAPI.Pools.GetAllPlayers())
             {
                 if (!p.IsLoggedIn()) continue;
-                if (p.GetAccountData() != fetchedAcc) continue;
+                if (p.GetAccountData() != account) continue;
                 return true;
             }
             return false;
-        }
-        private static async void LoginAccount(Account fetchedAcc, Client client)
-        {
-            fetchedAcc.LastHWID = client.Serial;
-            fetchedAcc.LastIP = client.Address;
-            fetchedAcc.LastLoginDate = DateTime.Now;
-            fetchedAcc.LastSocialClubName = client.SocialClubName;
-            client.Login(fetchedAcc);
-            await fetchedAcc.SaveAsync();
-            client.SendChatMessage(AccountStrings.SuccessLogin);
         }
         private static void SetLoginState(Client client, bool state)
         {
