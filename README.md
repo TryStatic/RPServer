@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.com/TryStatic/RPServer.svg?token=wqJBVyZappUyxaXkhnsG&branch=master)](https://travis-ci.com/TryStatic/RPServer)
 # Setup
 1) Install [RageMP](https://rage.mp/ "RageMP").
 2) Install the [Bridge](https://wiki.gtanet.work/index.php?title=Setting_up_the_Bridge_on_Linux/Windows "Bridge") Plugin.
