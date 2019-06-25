@@ -15,16 +15,20 @@
 
 <body>
     <div id="container-login">
-        <div id="title">
-            <i class="material-icons lock">lock</i> New Email Address
+        <div id="title2">
+            <i class="material-icons lock">email</i> Change Email Address
+        </div><br>
+        <div class="forgot-password2">
+            <a href="login.html" onclick="BackToLogin()"><i class="material-icons lock">replay</i><br>Back to Login Screen</a>
         </div>
-        <p>Please enter <strong><u>a new</u></strong> email address</p>
+        ---
+        <div class="forgot-password">To change your current account email, add a new one in the box below.</div>
 		<div id="displayerror-box" style="margin-top: 5px; overflow-wrap: break-word; display:none;">
 			<span id="displayerror-text" style="color: red">{errormsg}</span>
 		</div>
         <form>
             <div class="input">
-                <div class="input-addon">
+                <div class="input-addon2">
                     <i class="material-icons">email</i>
                 </div>
                 <input id="newemail" placeholder="New Email Address" type="email" required class="validate" autocomplete="off" minlength="5">
@@ -33,8 +37,7 @@
             <div class="clearfix"></div>
             <div class="remember-me">
             </div>
-
-            <input type="submit" value="Submit" />
+            <input type="submit" value="Submit" /><br><br>---<br><img src="agglika.png"></img>
         </form>
         <br />
         <div class="forgot-password">

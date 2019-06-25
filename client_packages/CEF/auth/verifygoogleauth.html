@@ -15,10 +15,16 @@
 
 <body>
     <div id="container-login">
-        <div id="title">
-            <i class="material-icons lock">lock</i> Two-Factor Authentication
+        <div id="title2">
+            <i class="material-icons lock">done_all</i> Two-Factor Authentication
         </div>
-        <p>Open the two-factor authentication app on your device to view your authentication code and verify your identity.</p>
+        <br>
+        <div class="forgot-password2">
+            <a href="#" onclick="BackToLogin()"><i class="material-icons lock">replay</i><br>Back to Login Screen</a>
+        </div>
+        ---
+        <br>
+        <div class="forgot-password">Open the two-factor authentication app on your device to view your authentication code and verify your identity.</div>
 		<div id="displayerror-box" style="margin-top: 5px; overflow-wrap: break-word; display:none;">
 			<span id="displayerror-text" style="color: red">{errormsg}</span>
 		</div>
@@ -36,9 +42,8 @@
 
             <input type="submit" value="Submit" />
         </form>
-        <br />
-        <div class="forgot-password">
-            <a href="#" onclick="BackToLogin()">Back to login</a>
+        ---
+        <br /><img src="agglika.png"></img>
         </div>
         <br />
     </div>

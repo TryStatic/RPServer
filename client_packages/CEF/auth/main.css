@@ -12,7 +12,7 @@ body {
     top: 20%;
     margin: auto;
     width: 340px;
-    height: 445px;
+    height: 520px;
     border-radius: 0.35em;
     box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.2);
     text-align: center;
@@ -24,7 +24,7 @@ body {
     top: 20%;
     margin: auto;
     width: 340px;
-    height: 480px;
+    height: 520px;
     border-radius: 0.35em;
     box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.2);
     text-align: center;
@@ -33,11 +33,25 @@ body {
 #title {
     position: relative;
     background-color: #1A1C1D;
+	color: #3CD070;
     width: 100%;
     padding: 20px 0px;
     border-radius: 0.35em;
     font-size: 22px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+#title2 {
+    position: relative;
+    background-color: #1A1C1D;
+	color: #3CD070;
+    width: 100%;
+    padding: 20px 0px;
+    border-radius: 0.35em;
+    font-size: 22px;
+    //border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+	border-bottom: 1px #C1C3C6;
+	border-bottom-style:dashed;
 }
 
 .lock {
@@ -47,6 +61,8 @@ body {
 
 .input {
     margin: auto;
+	color:#ECECEC;
+	text-align: center;
     width: 240px;
     border-radius: 4px;
     background-color: #373b3d;
@@ -62,12 +78,21 @@ body {
     border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+.input-addon2 {
+    float: left;
+    background-color: #373b3d;
+	color: #8AE2A9;
+    border: 1px solid #373b3d;
+    padding: 4px 8px;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
 input[type=checkbox] {
     cursor: pointer;
 }
 
 input[type=text] {
-    color: #949494;
+	color: #609e76;
     margin: 0;
     background-color: #373b3d;
     border: 1px solid #373b3d;
@@ -80,7 +105,7 @@ input[type=text]:focus {
 }
 
 input[type=password] {
-    color: #949494;
+    color: #609e76;
     margin: 0;
     background-color: #373b3d;
     border: 1px solid #373b3d;
@@ -93,7 +118,7 @@ input[type=password]:focus {
 }
 
 input[type=email] {
-    color: #949494;
+    color: #609e76;
     margin: 0;
     background-color: #373b3d;
     border: 1px solid #373b3d;
@@ -106,22 +131,92 @@ input[type=email]:focus {
 }
 
 .forgot-password {
-    position: relative;
-    bottom: 0%;
+    margin: auto;
+    padding: 10px 0;
+    text-align: center;
+    margin-top: 0px;
+	color:C1C3C6;
+    width: 85%; 
+	font-size: 11px;
+    //border-top: 1px solid #C1C3C6;
+	//border-top-style: dotted;
 }
 
 .forgot-password a:link {
     color: #C1C3C6;
+	font-size: 11px;
     text-decoration: none;
 }
 
 .forgot-password a:visited {
     color: #C1C3C6;
+	font-size: 11px;
     text-decoration: none;
 }
 
 .forgot-password a:hover {
     color: #FFF;
+	font-size: 11px;
+    transition: color 1s;
+}
+
+.forgot-password2 {
+    margin: auto;
+    padding: 10px 0;
+    text-align: center;
+    margin-top: 0px;
+	color:C1C3C6;
+    width: 85%; 
+	font-size: 11px;
+    //border-top: 1px solid #C1C3C6;
+	//border-top-style: dotted;
+}
+
+.forgot-password2 a:link {
+    color: #C1C3C6;
+	font-size: 11px;
+    text-decoration: none;
+}
+
+.forgot-password2 a:visited {
+    color: #C1C3C6;
+	font-size: 11px;
+    text-decoration: none;
+}
+
+.forgot-password2 a:hover {
+    color: #FFF;
+	font-size: 11px;
+    transition: color 1s;
+}
+
+.forgot-password3 {
+    margin: auto;
+    padding: 10px 0;
+    text-align: center;
+    margin-top: 0px;
+	color:#609e76;
+    width: 85%; 
+	font-size: 11px;
+    //border-top: 1px solid #C1C3C6;
+	//border-top-style: dotted;
+}
+
+.forgot-password3 a:link {
+    color: #d85b42;
+	font-size: 11px;
+    text-decoration: none;
+}
+
+.forgot-password3 a:visited {
+    color: #d85b42;
+	font-size: 11px;
+    text-decoration: none;
+}
+
+.forgot-password3 a:hover {
+    color: #ed3f1d;
+	font-size: 11px;
     transition: color 1s;
 }
 
@@ -133,7 +228,7 @@ input[type=email]:focus {
 }
 
 .privacy a:link {
-    color: #949494;
+    color: #943494;
     text-decoration: none;
 }
 
@@ -152,7 +247,13 @@ input[type=email]:focus {
 }
 
 .remember-me {
-    margin: 10px 0;
+    margin: 10px 0px 15px 52px;
+	//border-top: 1px solid #C1C3C6;
+	//border-top-style: dotted;
+	color:C1C3C6;
+	font-size: 11px;
+	text-align: center;
+	width: 70%; 
 }
 
 input[type=submit] {
@@ -167,11 +268,16 @@ input[type=submit] {
 
 .register {
     margin: auto;
-    padding: 16px 0;
+    padding: 10px 0px 15px;
     text-align: center;
-    margin-top: 40px;
-    width: 85%;
+    margin-top: 15px;
+	color:C1C3C6;
+    width: 70%; 
+	font-size: 11px;
     border-top: 1px solid #C1C3C6;
+	border-top-style: dotted;
+	//border-bottom: 1px solid #C1C3C6;
+	//border-bottom-style: dotted;
 }
 
 .clearfix {
@@ -187,4 +293,16 @@ input[type=submit] {
     border: 0 none;
     cursor: pointer;
     border-radius: 3px;
+}
+
+.table {
+	margin: auto;
+    padding: 20px 0;
+    text-align: center;
+    margin-top: 0px;
+	color:#C1C3C6;
+    width: 90%; 
+	font-size: 10px;
+    border-top: 1px solid #C1C3C6;
+	border-top-style: dashed;
 }

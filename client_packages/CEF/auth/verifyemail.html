@@ -15,16 +15,20 @@
 
 <body>
     <div id="container-login">
-        <div id="title">
-            <i class="material-icons lock">lock</i> Email Verification Code
+        <div id="title2">
+            <i class="material-icons lock">dialpad</i> Email Verification Code
+        </div><br>
+        <div class="forgot-password2">
+            <a href="#" onclick="BackToLogin()"><i class="material-icons lock">replay</i><br>Back to Login Screen</a>
         </div>
-        <p>An email was sent to your inbox containing a verification code. Please check your inbox and provide us with that code.</p>
-		<div id="displayerror-box" style="margin-top: 5px; overflow-wrap: break-word; display:none;">
+        ---
+      <div class="forgot-password">We've sent an email with your verification code. Please check your email inbox and enter that code below.</div>
+	  <div id="displayerror-box" style="margin-top: 5px; overflow-wrap: break-word; display:none;">
 			<span id="displayerror-text" style="color: red">{errormsg}</span>
 		</div>
         <form>
             <div class="input">
-                <div class="input-addon">
+                <div class="input-addon2">
                     <i class="material-icons">code</i>
                 </div>
                 <input id="email_token" placeholder="Code" type="text" required class="validate" autocomplete="off">
@@ -36,10 +40,12 @@
 
             <input type="submit" value="Submit" />
         </form>
-        <br />
-        <div class="forgot-password">
-            <a href="#" onclick="BackToLogin()">Back to login</a>
+        ---
+        <div class="forgot-password3">
+            <a href="#" onclick="resendMail()"><i class="material-icons lock">report_problem</i><br>I didn't recieve the email</a>
         </div>
+        ---
+      <br /><img src="agglika.png"></img>
         <br />
         <div class="forgot-password">
             <a href="#" onclick="resendMail()">I didn't recieve the email</a>

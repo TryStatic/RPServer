@@ -15,23 +15,28 @@
 
 <body>
     <div id="container-register">
-        <div id="title">
-            <i class="material-icons lock">lock</i> Set New Password
+        <div id="title2">
+            <i class="material-icons lock">fiber_new</i> Set New Password
         </div>
-        <p>Type in a new password</p>
+        <br>
+        <div class="forgot-password2">
+            <a href="login.html" onclick="BackToLogin()"><i class="material-icons lock">replay</i><br>Back to Login Screen</a>
+        </div>
+        ---
+        <div class="forgot-password">If you are unable to remember your password, correctly fill in the information below and we will send you a new one.</div>
 		<div id="displayerror-box" style="margin-top: 5px; overflow-wrap: break-word; display:none;">
 			<span id="displayerror-text" style="color: red">{errormsg}</span>
 		</div>
         <form>
             <div class="clearfix"></div>
             <div class="input">
-                <div class="input-addon">
+                <div class="input-addon2">
                     <i class="material-icons">vpn_key</i>
                 </div>
                 <input id="password" placeholder="Password" type="password" required class="validate" autocomplete="off" minlength="5">
             </div>
             <div class="input">
-                <div class="input-addon">
+                <div class="input-addon2">
                     <i class="material-icons">vpn_key</i>
                 </div>
                 <input id="password_verify" placeholder="Verify Password" type="password" required class="validate" autocomplete="off" minlength="5">
@@ -39,13 +44,13 @@
             <div class="remember-me">
             </div>
             <input type="submit" value="Submit" />
-        </form>
-        <br/><br/>
+        </form><br /><img src="agglika.png"></img>
+        <br/>
         <div class="forgot-password">
                 <a href="#" onclick="BackToLogin()">Back to login</a>
             </div>
-    </div>
-    
+</div>
+	
     <div id="container-register" class="loading" style="display: none">
 
             <div id="title">

@@ -15,15 +15,13 @@
 
 <body>
     <div id="container-register" class="canbehidden">
-        <div id="title">
-            <i class="material-icons lock">lock</i> Register
-        </div>
+        <div id="title2"><em class="material-icons lock">account_circle</em> Account Registration </div>
 		<div id="displayerror-box" style="margin-top: 5px; overflow-wrap: break-word; display:none;">
 			<span id="displayerror-text" style="color: red">{errormsg}</span>
 		</div>
         <form>
-            <div class="input">
-                <div class="input-addon">
+          <div class="input">
+                <div class="input-addon2">
                     <i class="material-icons">face</i>
                 </div>
                 <input id="username" placeholder="Username" type="text" required class="validate" autocomplete="off" minlength="5">
@@ -31,8 +29,8 @@
 
             <div class="clearfix"></div>
 
-            <div class="input">
-                <div class="input-addon">
+          <div class="input">
+                <div class="input-addon2">
                     <i class="material-icons">email</i>
                 </div>
                 <input id="email" placeholder="Email" type="email" required class="validate" autocomplete="off">
@@ -40,8 +38,8 @@
 
             <div class="clearfix"></div>
 
-            <div class="input">
-                <div class="input-addon">
+          <div class="input">
+                <div class="input-addon2">
                     <i class="material-icons">vpn_key</i>
                 </div>
                 <input id="password" placeholder="Password" type="password" required class="validate" autocomplete="off" minlength="5">
@@ -49,23 +47,23 @@
 
             <div class="clearfix"></div>
             
-            <div class="input">
-                <div class="input-addon">
+          <div class="input">
+                <div class="input-addon2">
                     <i class="material-icons">vpn_key</i>
                 </div>
                 <input id="password_verify" placeholder="Verify Password" type="password" required class="validate" autocomplete="off" minlength="5">
             </div>
 
-            <div class="remember-me">
-            </div>
-
-            <input type="submit" value="Register" />
+          <div class="remember-me">
+          </div>
+          <input type="submit" value="Register" />
         </form>
 
         <div class="register">
             Do you already have an account?
-            <a href="login.html"><button id="register-link">Log In here</button></a>
-        </div>
+            <a href="login.html">
+            <button id="register-link">Login</button></a>
+        </div><img src="agglika.png"></img>
     </div>
     
     <div id="container-register" class="loading" style="display: none">

@@ -13,17 +13,15 @@
     </style>
 </head>
 
-<body>
-    <div id="container-login">
-        <div id="title">
-            <i class="material-icons lock">lock</i> Login
-        </div>
+	<body>
+   <div id="container-login">
+        <div id="title2"><em class="material-icons lock">vertical_align_bottom</em> Server Login </div>
 		<div id="displayerror-box" style="margin-top: 5px; overflow-wrap: break-word; display:none;">
 			<span id="displayerror-text" style="color: red">{errormsg}</span>
 		</div>
         <form>
             <div class="input">
-                <div class="input-addon">
+                <div class="input-addon2">
                     <i class="material-icons">face</i>
                 </div>
                 <input id="username" placeholder="Username" type="text" required class="validate" autocomplete="off" minlength="5">
@@ -32,7 +30,7 @@
             <div class="clearfix"></div>
 
             <div class="input">
-                <div class="input-addon">
+                <div class="input-addon2">
                     <i class="material-icons">vpn_key</i>
                 </div>
                 <input id="password" placeholder="Password" type="password" required class="validate" autocomplete="off" minlength="5">
@@ -40,16 +38,15 @@
 
             <div class="remember-me">
             </div>
-
-            <input type="submit" value="Log In" />
         </form>
 
         <div class="forgot-password">
             <a href="forgot.html">Forgot your password?</a>
         </div>
+        <input type="submit" value="Login" />
         <div class="register">
-            Don't have an account yet? <a href="register.html"><button id="register-link">Register here</button></a>
-        </div>
+			<i class="material-icons lock">account_circle</i><br>Don't have an account yet? <a href="register.html"><button id="register-link">Register</button></a>
+        </div><img src="agglika.png"></img>
     </div>
 
     <div id="container-register" class="loading" style="display: none">

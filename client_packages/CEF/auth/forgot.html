@@ -15,22 +15,25 @@
 
 <body>
     <div id="container-login">
-        <div id="title">
-            <i class="material-icons lock">lock</i> Forgot Pass
+        <div id="title2">
+            <i class="material-icons lock">link_off</i> Forgot Password
+        </div><br>
+        <div class="forgot-password2">
+            <a href="login.html" onclick="BackToLogin()"><i class="material-icons lock">replay</i><br>Back to Login Screen</a>
         </div>
-        <p>Type in your email address</p>
+        <div class="forgot-password">If you are unable to remember your password, correctly fill in the information below and we will send you a new one.</div>
 		<div id="displayerror-box" style="margin-top: 5px; overflow-wrap: break-word; display:none;">
 			<span id="displayerror-text" style="color: red">{errormsg}</span>
 		</div>
         <form>
             <div class="input">
-                <div class="input-addon">
+                <div class="input-addon2">
                     <i class="material-icons">face</i>
                 </div>
                 <input id="username" placeholder="Username" type="text" required class="validate" autocomplete="off" minlength="5">
             </div>
             <div class="input">
-                <div class="input-addon">
+                <div class="input-addon2">
                     <i class="material-icons">email</i>
                 </div>
                 <input id="email" placeholder="Email" type="email" required class="validate" autocomplete="off">
@@ -43,7 +46,7 @@
 
             <input type="submit" value="Submit" />
         </form>
-        <br />
+        <br /><img src="agglika.png"></img>
         <div class="forgot-password">
             <a href="login.html" onclick="">Back to Login</a>
         </div>
