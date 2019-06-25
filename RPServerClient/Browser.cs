@@ -1,0 +1,73 @@
+﻿using System.Linq;
+using RAGE;
+using RAGE.Ui;
+
+namespace RPServerClient
+{
+    class Browser : Events.Script
+    {
+        private static object[] _parameters;
+        public static HtmlWindow MainBrowser;
+
+        public Browser()
+        {
+            Events.Add("createBrowser", CreateBrowser);
+            Events.Add("executeFunction", ExecuteFunction);
+            Events.Add("destroyBrowser", DestroyBrowser);
+            Events.OnBrowserCreated += OnBrowserCreated;
+        }
+
+        public static void CreateBrowser(object[] args)
+        {
+            if (MainBrowser != null) return;
+            
+            // Get the URL from the parameters
+            var url = args[0].ToString();
+            // Save the rest of the parameters
+            _parameters = args.Skip(1).ToArray();
+            // Create the browser
+            MainBrowser = new HtmlWindow(url);
+        }
+
+        public static void ExecuteFunction(object[] args)
+        {
+            // Check for the parameters
+            var input = string.Empty;
+
+            // Split the function and arguments
+            var function = args[0].ToString();
+            object[] arguments = args.Skip(1).ToArray();
+
+            foreach (object arg in arguments)
+            {
+                // Append all the arguments
+                input += input.Length > 0 ? (", '" + arg.ToString() + "'") : ("'" + arg.ToString() + "'");
+            }
+            // Call the function with the parameters
+            MainBrowser.ExecuteJs(function + "(" + input + ");");
+        }
+
+        public static void DestroyBrowser(object[] args)
+        {
+            // Disable the cursor
+            Cursor.Visible = false;
+            // Destroy the browser
+            MainBrowser.Destroy();
+            MainBrowser = null;
+        }
+
+        public static void OnBrowserCreated(HtmlWindow window)
+        {
+            if (window.Id != MainBrowser.Id) return;
+            
+            // Enable the cursor
+            Cursor.Visible = true;
+
+            if (_parameters.Length > 0)
+            {
+                // Call the function passed as parameter
+                ExecuteFunction(_parameters);
+            }
+        }
+    }
+}
