@@ -350,7 +350,7 @@ plugins/
 
 client_packages/\.listcache
 
-client_packages/
+client_packages/cs_packages
 
 bridge/server_logs\.txt
 

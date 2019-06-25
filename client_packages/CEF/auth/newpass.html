@@ -1,0 +1,80 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Newpass</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="main.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body {
+            background-image: url("background.jpg");
+            background-color: #303641;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container-register">
+        <div id="title">
+            <i class="material-icons lock">lock</i> Set New Password
+        </div>
+        <p>Type in a new password</p>
+		<div id="displayerror-box" style="margin-top: 5px; overflow-wrap: break-word; display:none;">
+			<span id="displayerror-text" style="color: red">{errormsg}</span>
+		</div>
+        <form>
+            <div class="clearfix"></div>
+            <div class="input">
+                <div class="input-addon">
+                    <i class="material-icons">vpn_key</i>
+                </div>
+                <input id="password" placeholder="Password" type="password" required class="validate" autocomplete="off" minlength="5">
+            </div>
+            <div class="input">
+                <div class="input-addon">
+                    <i class="material-icons">vpn_key</i>
+                </div>
+                <input id="password_verify" placeholder="Verify Password" type="password" required class="validate" autocomplete="off" minlength="5">
+            </div>
+            <div class="remember-me">
+            </div>
+            <input type="submit" value="Submit" />
+        </form>
+        <br/><br/>
+        <div class="forgot-password">
+                <a href="#" onclick="BackToLogin()">Back to login</a>
+            </div>
+    </div>
+	
+	<script src="jquery.js"></script>
+	<script src="main.js"></script>
+	<script>
+	var password = document.getElementById("password"), confirm_password = document.getElementById("password_verify");
+
+	function validatePassword(){
+	  if(password.value != confirm_password.value) {
+		confirm_password.setCustomValidity("Passwords Don't Match");
+	  } else {
+		confirm_password.setCustomValidity('');
+	  }
+	}
+	password.onchange = validatePassword;
+    confirm_password.onkeyup = validatePassword;
+    
+	function BackToLogin() {
+		mp.trigger("onBackToLogin");
+	}
+
+	jQuery(function ($) {
+		$("form").on('submit', function (e) {
+			e.preventDefault();
+			var pass = $("#password").val();
+			var vpas = $("#password_verify").val();
+			mp.trigger("onSubmitNewPass", pass);
+		});
+	})
+	</script>
+</body>
+
+</html>

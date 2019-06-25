@@ -1,0 +1,63 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Verify Two Factor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="main.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body {
+            background-image: url("background.jpg");
+            background-color: #303641;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container-login">
+        <div id="title">
+            <i class="material-icons lock">lock</i> Two-Factor Authentication
+        </div>
+        <p>Open the two-factor authentication app on your device to view your authentication code and verify your identity.</p>
+		<div id="displayerror-box" style="margin-top: 5px; overflow-wrap: break-word; display:none;">
+			<span id="displayerror-text" style="color: red">{errormsg}</span>
+		</div>
+        <form>
+            <div class="input">
+                <div class="input-addon">
+                    <i class="material-icons">code</i>
+                </div>
+                <input id="auth_code" placeholder="Authentication Code" type="text" required class="validate" autocomplete="off" minlength="6">
+            </div>
+
+            <div class="clearfix"></div>
+            <div class="remember-me">
+            </div>
+
+            <input type="submit" value="Submit" />
+        </form>
+        <br />
+        <div class="forgot-password">
+            <a href="#" onclick="BackToLogin()">Back to login</a>
+        </div>
+        <br />
+    </div>
+	<script src="jquery.js"></script>
+    <script src="main.js"></script>
+    <script>
+	jQuery(function ($) {
+		$("form").on('submit', function (e) {
+			e.preventDefault();
+			var code = $("#auth_code").val();
+			mp.trigger("onSubmitGoogleAuthCode", code);
+		});
+	})
+
+	function BackToLogin() {
+		mp.trigger("onBackToLogin");
+    }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,84 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Verify FIRST Email</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="main.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body {
+            background-image: url("background.jpg");
+            background-color: #303641;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container-login">
+        <div id="title">
+            <i class="material-icons lock">lock</i> Email Verification Code
+        </div>
+        <p>An email was sent to your inbox containing a verification code. Please check your inbox and provide us with that code.</p>
+		<div id="displayerror-box" style="margin-top: 5px; overflow-wrap: break-word; display:none;">
+			<span id="displayerror-text" style="color: red">{errormsg}</span>
+		</div>
+        <form>
+            <div class="input">
+                <div class="input-addon">
+                    <i class="material-icons">code</i>
+                </div>
+                <input id="email_token" placeholder="Code" type="text" required class="validate" autocomplete="off">
+            </div>
+
+            <div class="clearfix"></div>
+            <div class="remember-me">
+            </div>
+
+            <input type="submit" value="Submit" />
+        </form>
+        <br />
+        <div class="forgot-password">
+            <a href="#" onclick="BackToLogin()">Back to login</a>
+        </div>
+        <br />
+        <div class="forgot-password">
+            <a href="#" onclick="resendMail()">I didn't recieve the email</a>
+        </div>
+		<div class="forgot-password">
+            <a href="changemail.html">I want to choose another email</a>
+        </div>
+    </div>
+	<script src="sweetalert.js"></script>
+	<script src="jquery.js"></script>
+	<script src="main.js"></script>
+	<script>
+            function resendMail() {
+                Swal.fire({
+                    title: 'Send again', 
+                    text: 'Do you want us to try and resend the email?', 
+                    showCancelButton: true
+                }).then((result) => {
+                    if (result.value) {
+                        mp.trigger("onResendMail");
+                    }
+                })
+            }
+	
+            jQuery(function ($) {
+                $("form").on('submit', function (e) {
+                    e.preventDefault();
+                    var token = $("#email_token").val();
+                    mp.trigger("onSubmitFirstEmailToken", token);
+                });
+            })
+
+            function BackToLogin() {
+                mp.trigger("onBackToLogin");
+            }
+
+            
+	</script>
+</body>
+
+</html>
