@@ -29,6 +29,19 @@ namespace RPServerClient
             MainBrowser = new HtmlWindow(url);
         }
 
+        public static void ExecuteFunction(string funcName)
+        {
+
+            if (string.IsNullOrEmpty(funcName) || string.IsNullOrWhiteSpace(funcName))
+            {
+                Chat.Output("[ExecuteFunction(string fn)]: fn null or empty or whitespace");
+                return;
+            }
+
+            MainBrowser.ExecuteJs($"{funcName}();");
+
+        }
+
         public static void ExecuteFunction(object[] args)
         {
             // Check for the parameters
@@ -41,10 +54,10 @@ namespace RPServerClient
             foreach (object arg in arguments)
             {
                 // Append all the arguments
-                input += input.Length > 0 ? (", '" + arg.ToString() + "'") : ("'" + arg.ToString() + "'");
+                input += input.Length > 0 ? (", '" + arg + "'") : ("'" + arg + "'");
             }
             // Call the function with the parameters
-            MainBrowser.ExecuteJs(function + "(" + input + ");");
+            MainBrowser.ExecuteJs($"{function}({input});");
         }
 
         public static void DestroyBrowser(object[] args)
