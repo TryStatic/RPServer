@@ -7,4 +7,5 @@
 5) Make sure your Visual Studio installation has the **.NET Core cross-platform development** workload.
 6) Open the solution. (RPServer.sln)
 7) Build the solution.
-8) Run server.exe
+8) Make sure you have created an empty "enable-clientside-cs.txt" file in your RageMP installation root folder.
+9) Run server.exe
