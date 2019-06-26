@@ -3,6 +3,7 @@ using MySql.Data.MySqlClient;
 using RPServer.Database;
 using RPServer.Util;
 using System.Threading.Tasks;
+using RPServer._init;
 
 namespace RPServer.Models
 {
@@ -257,13 +258,12 @@ namespace RPServer.Models
         #region TokenCodeGeneration
         private static string GenerateNewToken()
         {
-            return Guid.NewGuid().ToString().Replace("-", "");
+            return Globals.Random.Next(100000, 1000000).ToString();
         }
 
         private static int GetTokenLength()
         {
-            // NewGuid() is always 36 chars hence after Replace(..) the rest is specific too
-            return Guid.NewGuid().ToString().Replace("-", "").Length;
+            return 6;
         }
         #endregion
     }
