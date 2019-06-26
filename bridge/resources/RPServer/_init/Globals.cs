@@ -1,4 +1,3 @@
-using System;
 using System.Threading;
 using GTANetworkAPI;
 using RPServer.Database;
@@ -40,14 +39,13 @@ namespace RPServer._init
             // Remove expired tokens from the Database
             await EmailToken.RemoveExpiredCodesAsync();
             // Have expired tokens get removed once per hour
-            _expiredEmailTokensTimer = new Timer(OnRemoveExpiredEmailTokens, null, TimeSpan.FromHours(1).Milliseconds, Timeout.Infinite);
-
+            _expiredEmailTokensTimer = new Timer(OnRemoveExpiredEmailTokens, null, 1000 * 60 * 60, Timeout.Infinite);
         }
 
         private async void OnRemoveExpiredEmailTokens(object state)
         {
             await EmailToken.RemoveExpiredCodesAsync();
-            _expiredEmailTokensTimer.Change(TimeSpan.FromHours(1).Milliseconds, Timeout.Infinite);
+            _expiredEmailTokensTimer.Change(1000 * 60 * 60, Timeout.Infinite);
 
         }
     }

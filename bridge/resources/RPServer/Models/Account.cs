@@ -262,7 +262,10 @@ namespace RPServer.Models
 
         public bool HasVerifiedEmail()
         {
-            return !string.IsNullOrEmpty(EmailAddress) && !string.IsNullOrWhiteSpace(EmailAddress);
+            if (string.IsNullOrEmpty(EmailAddress) || string.IsNullOrWhiteSpace(EmailAddress))
+                return false;
+            return true;
+
         }
 
         public bool Is2FAbyEmailEnabled() => HasEnabledTwoStepByEmail;
