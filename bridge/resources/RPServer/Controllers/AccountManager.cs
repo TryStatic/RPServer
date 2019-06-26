@@ -274,7 +274,7 @@ namespace RPServer.Controllers
 
             accountData.HasPassedTwoStepByGA = true;
 
-            if (accountData.Is2FAbyEmailEnabled() && !accountData.HasPassedTwoStepByGA)
+            if (accountData.Is2FAbyEmailEnabled() && !accountData.HasPassedTwoStepByEmail)
             {
                 client.TriggerEvent(ServerToClient.Show2FAbyEmailAddress);
                 return;
