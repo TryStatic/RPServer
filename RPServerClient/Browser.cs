@@ -71,8 +71,8 @@ namespace RPServerClient
 
         public static void OnBrowserCreated(HtmlWindow window)
         {
-            if (window.Id != MainBrowser.Id) return;
-            
+            if (MainBrowser != null && window.Id != MainBrowser.Id) return;
+
             // Enable the cursor
             Cursor.Visible = true;
 

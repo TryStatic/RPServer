@@ -234,12 +234,14 @@ namespace RPServerClient
                 Chat.Output("FROM:SERVER|OnSetLoginScreen => Display:login.html");
                 Browser.CreateBrowser(new object[] { "package://CEF/auth/login.html" });
                 RAGE.Game.Graphics.TransitionToBlurred(200);
+                Events.CallLocal("setEnabled", false);
             }
             else
             {
                 Chat.Output("FROM:SERVER|OnSetLoginScreen => CLIENT:DestroyBrowser()");
                 Browser.DestroyBrowser(null);
                 RAGE.Game.Graphics.TransitionFromBlurred(200);
+                Events.CallLocal("setEnabled", true);
             }
         }
     }
