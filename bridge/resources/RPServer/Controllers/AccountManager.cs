@@ -35,7 +35,7 @@ namespace RPServer.Controllers
         }
 
 
-        [Command("toggletwofactoremail")]
+        [Command(CmdStrings.CMD_ToggleTwoFactorEmail)]
         public void CMD_ToggleTwoFactorEmail(Client client)
         {
             if (!client.IsLoggedIn()) return;
@@ -44,7 +44,7 @@ namespace RPServer.Controllers
             client.SendChatMessage($"2FA by Email has been {acc.HasEnabledTwoStepByEmail}");
         }
 
-        [Command("toggletwofactorga")]
+        [Command(CmdStrings.CMD_ToggleTwoFactorGA)]
         public void CMD_ToggleTwoFactorGA(Client client)
         {
             if (!client.IsLoggedIn()) return;
@@ -71,7 +71,7 @@ namespace RPServer.Controllers
 
         }
 
-        [Command("logout")]
+        [Command(CmdStrings.CMD_Logout)]
         public void Cmd_Logout(Client player)
         {
             if (!player.CanRunTask()) return;
