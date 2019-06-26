@@ -1,7 +1,19 @@
 function showError(message) {
 	$("form").trigger('reset');
+	$('#displayerror-text').css("color", "red");
 	 $('#displayerror-text').text(message);
      $('#displayerror-box').show();
+	 
+	setTimeout(function(){
+     $('#displayerror-box').hide();
+	}, 15000);
+}
+
+function showSuccess(message) {
+	$("form").trigger('reset');
+	$('#displayerror-text').css("color", "green");
+	$('#displayerror-text').text(message);
+	$('#displayerror-box').show();
 	 
 	setTimeout(function(){
      $('#displayerror-box').hide();
