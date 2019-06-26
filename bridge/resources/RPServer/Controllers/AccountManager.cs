@@ -411,14 +411,8 @@ namespace RPServer.Controllers
         [RemoteEvent(ClientToServer.SubmitBackToLogin)]
         public void ClientEvent_OnSubmitBackToLogin(Client player)
         {
-            if (player.IsLoggedIn())
-            {
-                var accData = player.GetAccountData();
-                Task.Run(async () => await accData.SaveAsync());
-                player.Logout();
-            }
+            if (player.IsLoggedIn()) player.Logout();
             player.TriggerEvent(ServerToClient.ShowLoginPage);
-
         }
 
         [RemoteEvent(ClientToServer.SubmitEnableGoogleAuthCode)]
