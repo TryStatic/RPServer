@@ -207,6 +207,7 @@ namespace RPServer.Controllers
             if (fetchedAcc.Is2FAbyGAEnabled())
             {
                 fetchedAcc.HasPassedTwoStepByGA = false;
+                client.TriggerEvent(ServerToClient.Show2FAbyGoogleAuth);
                 return;
             }
 
