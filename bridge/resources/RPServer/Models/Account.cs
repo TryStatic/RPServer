@@ -2,7 +2,6 @@ using System;
 using System.Data;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
-using RPServer._init;
 using RPServer.Database;
 using RPServer.Util;
 
@@ -26,11 +25,12 @@ namespace RPServer.Models
         public DateTime CreationDate { get; set; }
         public DateTime LastLoginDate { get; set; }
         public bool HasEnabledTwoStepByEmail { get; set; }
-        public byte[] TwoFactorGASharedKey { get; private set; }
+        public byte[] TwoFactorGASharedKey { get; set; }
         #endregion
 
         public bool HasPassedTwoStepByGA = false;
         public bool HasPassedTwoStepByEmail = false;
+        public byte[] TempTwoFactorGASharedKey = null;
 
         private Account(int sqlId)
         {
@@ -270,16 +270,6 @@ namespace RPServer.Models
 
         public bool Is2FAbyEmailEnabled() => HasEnabledTwoStepByEmail;
         public bool Is2FAbyGAEnabled() => TwoFactorGASharedKey != null;
-        public void GenerateTwoFactorGASharedKey()
-        {
-            TwoFactorGASharedKey = new byte[50];
-            TwoFactorGASharedKey = Globals.Random.GenerateRandomBytes(50);
-        }
-
-        public void RemoveTwoFactorGASharedKey()
-        {
-            TwoFactorGASharedKey = null;
-        }
 
         protected bool Equals(Account other)
         {

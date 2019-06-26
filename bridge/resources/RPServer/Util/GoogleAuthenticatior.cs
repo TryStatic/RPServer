@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
+using RPServer._init;
 
 namespace RPServer.Util
 {
@@ -27,10 +28,10 @@ namespace RPServer.Util
         /// <summary>
         ///   Generates a QR code bitmap for provisioning.
         /// </summary>
-        public static string GenerateProvisioningImage(string identifier, byte[] key, int width, int height)
+        public static string GetGQCodeImageLink(string username, byte[] key, int width, int height)
         {
             var keyString = Encoder.Base32Encode(key);
-            var provisionUrl = Encoder.UrlEncode($"otpauth://totp/{identifier}?secret={keyString}&issuer=MyCompany");
+            var provisionUrl = Encoder.UrlEncode($"otpauth://totp/{username}?secret={keyString}&issuer=AlphaRoleplay");
 
             var chartUrl = $"https://chart.apis.google.com/chart?cht=qr&chs={width}x{height}&chl={provisionUrl}";
             return chartUrl;
@@ -38,6 +39,11 @@ namespace RPServer.Util
             {
                 return client.DownloadData(chartUrl);
             }*/
+        }
+
+        public static byte[] GenerateTwoFactorGASharedKey()
+        {
+            return Globals.Random.GenerateRandomBytes(50);
         }
 
         /// <summary>
