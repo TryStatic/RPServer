@@ -174,7 +174,7 @@ namespace RPServer.Controllers
                 return;
             }
 
-            LoginAccount(fetchedAcc, client);
+            await LoginAccount(fetchedAcc, client);
 
             if (!fetchedAcc.HasVerifiedEmail())
             {
@@ -446,7 +446,7 @@ namespace RPServer.Controllers
         }
 
 
-        private static async void LoginAccount(Account fetchedAcc, Client client)
+        private static async Task LoginAccount(Account fetchedAcc, Client client)
         {
             fetchedAcc.LastHWID = client.Serial;
             fetchedAcc.LastIP = client.Address;
