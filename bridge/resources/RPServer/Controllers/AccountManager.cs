@@ -16,18 +16,22 @@ namespace RPServer.Controllers
         public void OnPlayerConnected(Client client)
         {
             client.SendChatMessage(AccountStrings.InfoWelcome);
+            client.SetCanRunTask(true);
             SetLoginState(client, true);
         }
 
         [ServerEvent(Event.PlayerDisconnected)]
         public void OnPlayerDisconnected(Client player, DisconnectionType type, string reason)
         {
+            if (!player.CanRunTask()) return;
             if (!player.IsLoggedIn()) return;
 
             var acc = player.GetAccountData();
-            Task.Run(async() => await acc.SaveAsync());
-            player.Logout();
 
+            player.SetCanRunTask(false);
+            Task.Run(async () => await acc.SaveAsync()).ContinueWith(HandleTaskCompletion).ContinueWith(task => player.SetCanRunTask(true));
+
+            player.Logout();
         }
 
 
@@ -58,8 +62,11 @@ namespace RPServer.Controllers
             }
             else
             {
+                if (!client.CanRunTask()) return;
                 acc.TwoFactorGASharedKey = null;
-                Task.Run(() => acc.SaveSingleAsync(Column.TwoFactorGASharedKey));
+
+                client.SetCanRunTask(false);
+                Task.Run(async () => await acc.SaveSingleAsync(Column.TwoFactorGASharedKey)).ContinueWith(HandleTaskCompletion).ContinueWith(task => client.SetCanRunTask(true));
             }
 
         }
@@ -67,13 +74,17 @@ namespace RPServer.Controllers
         [Command("logout")]
         public void Cmd_Logout(Client player)
         {
+            if (!player.CanRunTask()) return;
             if (!player.IsLoggedIn())
             {
                 player.SendChatMessage("You are not logged in.");
                 return;
             }
+
             var acc = player.GetAccountData();
-            Task.Run(async () => await acc.SaveAsync());
+
+            player.SetCanRunTask(false);
+            Task.Run(async () => await acc.SaveAsync()).ContinueWith(HandleTaskCompletion).ContinueWith(task => player.SetCanRunTask(true));
 
             player.Logout();
             player.SendChatMessage("Bye!");
@@ -84,6 +95,7 @@ namespace RPServer.Controllers
         [RemoteEvent(ClientToServer.SubmitRegisterAccount)]
         public void ClientEvent_OnSubmitRegisterAccount(Client client, string username, string emailAddress, string password)
         {
+            if(!client.CanRunTask()) return;
             if (client.IsLoggedIn())
             {
                 client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorPlayerAlreadyLoggedIn);
@@ -105,7 +117,8 @@ namespace RPServer.Controllers
                 return;
             }
 
-            Task.Run(async () => await OnRegisterNewAccountAsync(client, username, emailAddress, password));
+            client.SetCanRunTask(false);
+            Task.Run(async () => await OnRegisterNewAccountAsync(client, username, emailAddress, password)).ContinueWith(HandleTaskCompletion).ContinueWith(task => client.SetCanRunTask(true));
         }
         public static async Task OnRegisterNewAccountAsync(Client client, string username, string emailAddress, string password)
         {
@@ -135,6 +148,7 @@ namespace RPServer.Controllers
         [RemoteEvent(ClientToServer.SubmitLoginAccount)]
         public void ClientEvent_OnSubmitLoginAccount(Client client, string username, string password)
         {
+            if (!client.CanRunTask()) return;
             if (client.IsLoggedIn())
             {
                 client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorPlayerAlreadyLoggedIn);
@@ -151,7 +165,8 @@ namespace RPServer.Controllers
                 return;
             }
 
-            Task.Run(async () => await OnLoginAccountAsync(client, username, password));
+            client.SetCanRunTask(false);
+            Task.Run(async () => await OnLoginAccountAsync(client, username, password)).ContinueWith(HandleTaskCompletion).ContinueWith(task => client.SetCanRunTask(true));
         }
         public static async Task OnLoginAccountAsync(Client client, string username, string password)
         {
@@ -201,6 +216,7 @@ namespace RPServer.Controllers
         [RemoteEvent(ClientToServer.SubmitEmailToken)]
         public void ClientEvent_OnSubmitEmailToken(Client client, string token)
         {
+            if(!client.CanRunTask()) return;
             if (!client.IsLoggedIn())
             {
                 client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorPlayerNotLoggedIn);
@@ -213,7 +229,8 @@ namespace RPServer.Controllers
                 return;
             }
 
-            Task.Run(async () => await OnVerifyTwoStepByEmailAsync(client, token));
+            client.SetCanRunTask(false);
+            Task.Run(async () => await OnVerifyTwoStepByEmailAsync(client, token)).ContinueWith(HandleTaskCompletion).ContinueWith(task => client.SetCanRunTask(true));
         }
         public static async Task OnVerifyTwoStepByEmailAsync(Client client, string providedEmailToken)
         {
@@ -283,10 +300,11 @@ namespace RPServer.Controllers
             SetLoginState(client, false);
         }
 
-
         [RemoteEvent(ClientToServer.SubmitFirstEmailToken)]
         public void ClientEvent_OnSubmitFirstEmailToken(Client client, string providedToken)
         {
+            if (!client.CanRunTask()) return;
+
             if (!client.IsLoggedIn())
             {
                 client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorPlayerNotLoggedIn);
@@ -303,8 +321,10 @@ namespace RPServer.Controllers
                 return;
             }
 
-            Task.Run(async () => await OnVerifyEmailAsync(client, providedToken));
+            client.SetCanRunTask(false);
+            Task.Run(async () => await OnVerifyEmailAsync(client, providedToken)).ContinueWith(HandleTaskCompletion).ContinueWith(task => client.SetCanRunTask(true));
         }
+
         public static async Task OnVerifyEmailAsync(Client client, string providedToken)
         {
             var accData = client.GetAccountData();
@@ -327,6 +347,7 @@ namespace RPServer.Controllers
         [RemoteEvent(ClientToServer.SubmitNewVerificationEmail)]
         public void ClientEvent_OnSubmitNewVerificationEmail(Client client, string newEmail)
         {
+            if(!client.CanRunTask()) return;
             if (!client.IsLoggedIn())
             {
                 client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorPlayerNotLoggedIn);
@@ -345,7 +366,8 @@ namespace RPServer.Controllers
                 return;
             }
 
-            Task.Run(async () => await OnChangeVerificationEmailAsync(client, newEmail));
+            client.SetCanRunTask(false);
+            Task.Run(async () => await OnChangeVerificationEmailAsync(client, newEmail)).ContinueWith(HandleTaskCompletion).ContinueWith(task => client.SetCanRunTask(true));
         }
         public static async Task OnChangeVerificationEmailAsync(Client client, string newEmail)
         {
@@ -384,18 +406,20 @@ namespace RPServer.Controllers
         }
 
         [RemoteEvent(ClientToServer.SubmitResendEmail)]
-        public void ClientEvent_OnSubmitResendEmail(Client player)
+        public void ClientEvent_OnSubmitResendEmail(Client client)
         {
-            Task.Run(async () => await OnResendEmailAsync(player));
-        }
-        public static async Task OnResendEmailAsync(Client client)
-        {
+            if(!client.CanRunTask()) return;
             if (!client.IsLoggedIn())
             {
                 client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorPlayerNotLoggedIn);
                 return;
             }
 
+            client.SetCanRunTask(false);
+            Task.Run(async () => await OnResendEmailAsync(client)).ContinueWith(HandleTaskCompletion).ContinueWith(task => client.SetCanRunTask(true));
+        }
+        public static async Task OnResendEmailAsync(Client client)
+        {
             if (!await EmailToken.ExistsAsync(client.GetAccountData()))
             {
                 client.TriggerEvent(ServerToClient.DisplayError, "Error No Token for that Account");
@@ -418,6 +442,7 @@ namespace RPServer.Controllers
         [RemoteEvent(ClientToServer.SubmitEnableGoogleAuthCode)]
         public void ClientEvent_OnSubmitEnableGoogleAuthCode(Client player, string code)
         {
+            if(!player.CanRunTask()) return;
             if (!player.IsLoggedIn()) return;
             var acc = player.GetAccountData();
             if (acc.TempTwoFactorGASharedKey == null) return;
@@ -435,7 +460,10 @@ namespace RPServer.Controllers
             }
 
             acc.TwoFactorGASharedKey = acc.TempTwoFactorGASharedKey;
-            Task.Run(async () => await acc.SaveSingleAsync(Column.TwoFactorGASharedKey));
+
+            player.SetCanRunTask(false);
+            Task.Run(async () => await acc.SaveSingleAsync(Column.TwoFactorGASharedKey)).ContinueWith(HandleTaskCompletion).ContinueWith(task => player.SetCanRunTask(true));
+
             player.TriggerEvent(ServerToClient.ShowQRCodeEnabled);
         }
 
@@ -474,6 +502,11 @@ namespace RPServer.Controllers
             }
             client.TriggerEvent(ServerToClient.SetLoginScreen, state);
         }
+        private static void HandleTaskCompletion(Task t)
+        {
+            if (t.IsFaulted && t.Exception != null) throw t.Exception;
+        }
+
 
     }
 }

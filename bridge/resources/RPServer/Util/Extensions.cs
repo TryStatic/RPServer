@@ -81,6 +81,16 @@ namespace RPServer.Util
             return true;
         }
 
+        internal static bool CanRunTask(this Client player)
+        {
+            return player != null && (bool) player.GetData("CAN_RUN_TASK");
+        }
+
+        internal static void SetCanRunTask(this Client player, bool state)
+        {
+            if(player != null) player.SetData("CAN_RUN_TASK", state);
+        }
+
         #endregion
     }
 }

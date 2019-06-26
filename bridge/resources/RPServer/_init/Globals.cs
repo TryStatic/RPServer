@@ -18,6 +18,7 @@ namespace RPServer._init
             // Server Settings
             //NAPI.Server.SetAutoSpawnOnConnect(false);
             //NAPI.Server.SetAutoRespawnAfterDeath(false);
+            //NAPI.Server.SetDefaultSpawnLocation();
             NAPI.Server.SetGlobalServerChat(false);
 
             // Sever World Settings

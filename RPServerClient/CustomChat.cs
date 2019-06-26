@@ -1,5 +1,4 @@
-﻿using System.Data;
-using RAGE;
+﻿using RAGE;
 using RAGE.Ui;
 
 namespace RPServerClient
