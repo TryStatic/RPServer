@@ -6,8 +6,9 @@ let chat =
 	enabled: true,
     active: true,
     timer: null,
-    previous: "",
-	hide_chat: 15*1000 // 15 - seconds
+    history: [],
+    history_position: -1,
+    hide_chat: 15*1000 // 15 - seconds
 };
 function enableChatInput(enable)
 {
@@ -84,6 +85,18 @@ function setEnabled(state) {
     chat.enabled = state;
 }
 
+function setChatFieldFromHistory() {
+    if (chat.history_position <= -1) {
+        chat.history_position = -1;
+        chat.input.children("input").val("");
+    }
+    else {
+        if (chat.history_position >= chat.history.length) {
+            chat.history_position = chat.history.length - 1;
+        }
+        chat.input.children("input").val(chat.history[chat.history_position]);
+    }
+}
 
 $(document).ready(function()
 {
@@ -99,9 +112,9 @@ $(document).ready(function()
         }
         else if (event.which == 13 && chat.input != null) {
             var value = chat.input.children("input").val();
-
+            chat.history_position = -1;
             if (value.length > 0) {
-                chat.previous = value;
+                chat.history.unshift(value);
                 if (value[0] == "/") {
                     value = value.substr(1);
 
@@ -120,8 +133,17 @@ $(document).ready(function()
             enableChatInput(false);
             hide();
         }
-        else if (event.which == 38 && chat.input != null) {
-            chat.input.children("input").val(chat.previous);
+        // 38 is Up Arrow   
+        else if (event.which == 38 && chat.history.length > 0) {
+            event.preventDefault();
+            chat.history_position++;
+            setChatFieldFromHistory();
+        }
+        // 40 is Down Arrow
+        else if (event.which == 40 && chat.history.length > 0) {
+            event.preventDefault();
+            chat.history_position--;
+            setChatFieldFromHistory();
         }
     });
 });
