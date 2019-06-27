@@ -2,6 +2,7 @@
 {
     public static class ClientToServer
     {
+        // Authentication Events
         public const string SubmitRegisterAccount = "SubmitRegisterAccount";
         public const string SubmitLoginAccount = "SubmitLoginAccount";
         public const string SubmitEmailToken = "SubmitEmailToken";
@@ -11,10 +12,14 @@
         public const string SubmitResendEmail = "SubmitResendEmail";
         public const string SubmitBackToLogin = "SubmitBackToLogin";
         public const string SubmitEnableGoogleAuthCode = "SubmitEnableGoogleAuthCode";
+
+        // Other
+        public const string SubmitPlayerCommand = "SubmitPlayerCommand";
     }
 
     public static class ServerToClient
     {
+        // Authentication Events
         public const string SetLoginScreen = "SetLoginScreen";
         public const string DisplayError = "DisplayError";
         public const string RegistrationSuccess = "RegistrationSuccess";

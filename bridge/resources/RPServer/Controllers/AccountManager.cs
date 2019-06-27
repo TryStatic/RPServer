@@ -22,23 +22,34 @@ namespace RPServer.Controllers
             client.SendChatMessage(AccountStrings.InfoWelcome);
             client.SetCanRunTask(true);
             SetLoginState(client, true);
+            Logger.AuthLog($"Player (name: {client.Name}, social: {client.SocialClubName}, IP: {client.Address}) has connected to the server.");
+
         }
 
         [ServerEvent(Event.PlayerDisconnected)]
-        public void OnPlayerDisconnected(Client player, DisconnectionType type, string reason)
+        public void OnPlayerDisconnected(Client client, DisconnectionType type, string reason)
         {
-            if (!player.CanRunTask()) return;
-            if (!player.IsLoggedIn()) return;
+            string str = $"Player (name: {client.Name}";
+            if (client.IsLoggedIn())
+            {
+                var acc = client.GetAccountData();
+                Task.Run(async () => await acc.SaveAsync()).ContinueWith(HandleTaskCompletion);
+                str = $"Registered (user: {acc.Username}";
+                client.Logout();
+            }
 
-            var acc = player.GetAccountData();
-
-            player.SetCanRunTask(false);
-            Task.Run(async () => await acc.SaveAsync()).ContinueWith(HandleTaskCompletion).ContinueWith(task => player.SetCanRunTask(true));
-
-            player.Logout();
+            switch (type)
+            {
+                case DisconnectionType.Left:
+                    Logger.AuthLog($"{str}, social: {client.SocialClubName}, IP: {client.Address}) has left the server."); break;
+                case DisconnectionType.Timeout:
+                    Logger.AuthLog($"{str}, social: {client.SocialClubName}, IP: {client.Address}) has left the server. (timed out)"); break;
+                case DisconnectionType.Kicked:
+                    Logger.AuthLog($"{str}, social: {client.SocialClubName}, IP: {client.Address}) has been kicked off the server. Reason: {reason}"); break;
+                default: throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
         }
-
-
+        
         [Command(CmdStrings.CMD_ToggleTwoFactorEmail)]
         public void CMD_ToggleTwoFactorEmail(Client client)
         {
@@ -60,7 +71,6 @@ namespace RPServer.Controllers
                 var link = GoogleAuthenticator.GetGQCodeImageLink(acc.Username, key, 150, 150);
 
                 client.TriggerEvent(ServerToClient.ShowQRCode, link);
-                Console.WriteLine(link.Length);
                 if (acc.TempTwoFactorGASharedKey == null) acc.TempTwoFactorGASharedKey = new byte[50];
                 acc.TempTwoFactorGASharedKey = key;
             }

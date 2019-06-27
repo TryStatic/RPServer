@@ -1,4 +1,6 @@
+using System;
 using System.Threading;
+using EventNames;
 using GTANetworkAPI;
 using RPServer.Database;
 using RPServer.Models;
@@ -42,6 +44,18 @@ namespace RPServer._init
             await EmailToken.RemoveExpiredCodesAsync();
             // Have expired tokens get removed once per hour
             _expiredEmailTokensTimer = new Timer(OnRemoveExpiredEmailTokens, null, 1000 * 60 * 60, Timeout.Infinite);
+        }
+
+        [RemoteEvent(ClientToServer.SubmitPlayerCommand)]
+        public void ClientEvent_OnPlayerCommand(Client client, string cmd)
+        {
+            var username = "UNREGISTERED";
+            if (client.IsLoggedIn())
+            {
+                var accData = client.GetAccountData();
+                username = accData.Username;
+            }
+            Logger.CommandLog(username, cmd);
         }
 
         private async void OnRemoveExpiredEmailTokens(object state)
