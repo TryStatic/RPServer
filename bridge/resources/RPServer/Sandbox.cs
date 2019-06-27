@@ -1,4 +1,5 @@
 ﻿using GTANetworkAPI;
+using RPServer.Util;
 
 namespace RPServer
 {
@@ -6,6 +7,125 @@ namespace RPServer
     {
         public Sandbox()
         {
+        }
+
+
+        [Command("cmds")]
+        public void Cmds(Client player)
+        {
+            player.SendChatMessage("/logout /toggletwofactorga /toggletwofactoremail");
+            player.SendChatMessage("/veh /ecc /heal /hmc /time /weather /getping /onlineppl /givegun");
+
+        }
+
+        [Command("givegun")]
+        public void GiveGun(Client player, string weaponName, int ammo)
+        {
+            if (ammo <= 0) ammo = 1000;
+            WeaponHash wepHash = NAPI.Util.WeaponNameToModel(weaponName);
+            player.GiveWeapon(wepHash, ammo);
+        }
+
+
+        [Command("getping")]
+        public void GetPing(Client player)
+        {
+            player.SendChatMessage("Your ping: " + player.Ping);
+        }
+
+        [Command("onlineppl")]
+        public void OnlinePpl(Client player)
+        {
+            player.SendChatMessage("---[Online]---");
+            foreach (var p in NAPI.Pools.GetAllPlayers())
+            {
+                if (!p.IsLoggedIn()) player.SendChatMessage($"[UNAUTHED]: Social: {p.SocialClubName}, ClientName: {p.Name}, Ping: {p.Ping}");
+                else player.SendChatMessage($"[{p.GetAccountData().Username}]: Social: {p.SocialClubName}, ClientName: {p.Name}, Ping: {p.Ping}");
+            }
+        }
+
+        [Command("veh")]
+        public void Veh(Client player, string vehicleName = "")
+        {
+            if (player.HasData("PERSONAL_VEHICLE"))
+            {
+                Entity veh = player.GetData("PERSONAL_VEHICLE");
+                veh.Delete();
+                player.ResetData("PERSONAL_VEHICLE");
+            }
+
+            VehicleHash vehHash = NAPI.Util.VehicleNameToModel(vehicleName);
+            if (vehHash.ToString().Equals("0"))
+                return;
+            Vehicle v = NAPI.Vehicle.CreateVehicle(vehHash, player.Position.Around(5), 0f, 0, 0);
+            v.NumberPlate = "STATIQUE";
+            v.WindowTint = 5;
+            v.NumberPlateStyle = 2;
+            player.SetData("PERSONAL_VEHICLE", v);
+            NAPI.Chat.SendChatMessageToPlayer(player, "Spawned a " + vehicleName + ".");
+
+        }
+        [Command("ecc")]
+        public void ecc(Client player)
+        {
+            var vehicles = NAPI.Pools.GetAllVehicles();
+            Vector3 playerpos = player.Position;
+            Vehicle closest = null;
+            float distance = 999999f;
+
+
+            foreach (var v in vehicles)
+            {
+                float cardist = v.Position.DistanceTo(playerpos);
+                if (cardist < distance)
+                {
+                    distance = cardist;
+                    closest = v;
+                }
+            }
+
+            if (closest != null)
+            {
+                NAPI.Player.SetPlayerIntoVehicle(player, closest, -1);
+            }
+            else
+            {
+                NAPI.Chat.SendChatMessageToPlayer(player, "No car");
+            }
+        }
+
+        [Command("heal")]
+        public void CmdHeal(Client player)
+        {
+            player.Health = 100;
+            player.Armor = 1000;
+        }
+
+        [Command("hmc")]
+        public void CmdFixMyCar(Client player)
+        {
+            if (player.IsInVehicle)
+            {
+                Vehicle veh = player.Vehicle;
+                veh.Health = 100.0f;
+                veh.Repair();
+                player.SendChatMessage("Your vehicle has been fixed.");
+
+            }
+        }
+
+        [Command("time")]
+        public void CmdExplodeMyCar(Client player, int time)
+        {
+            NAPI.World.SetTime(time, 0, 0);
+
+        }
+
+        [Command("weather")]
+        public void cmdWeather(Client player, string weather)
+        {
+            NAPI.World.SetWeather(weather);
+
         }
     }
 }

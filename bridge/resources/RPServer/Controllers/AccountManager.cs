@@ -492,6 +492,7 @@ namespace RPServer.Controllers
             client.Login(fetchedAcc);
             await fetchedAcc.SaveAsync();
             client.SendChatMessage(AccountStrings.SuccessLogin);
+            client.SendChatMessage("SUM COMMANDS: /cmds");
         }
         private static bool IsAccountLoggedIn(Account account)
         {

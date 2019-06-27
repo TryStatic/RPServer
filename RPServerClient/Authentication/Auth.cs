@@ -71,7 +71,6 @@ namespace RPServerClient.Authentication
         {
             if (args[0] == null) return;
             var link = args[0].ToString();
-            Chat.Output(link.Length.ToString());
             Browser.CreateBrowser(new []{ "package://CEF/auth/enablegoogleauth.html" });
             Browser.ExecuteFunction(new object[] { "addImage", link });
         }
