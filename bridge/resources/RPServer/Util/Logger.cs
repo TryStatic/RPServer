@@ -16,6 +16,7 @@ namespace RPServer.Util
         {
             AppDomain.CurrentDomain.ProcessExit += OnServerShutdown;
 
+            Directory.CreateDirectory(LogsFolder);
             FileWrite(MySqlLogFn, $"------------------------ [SERVER STARTED AT: {DateTime.Now}] ------------------------");
             FileWrite(CommandLogFn, $"------------------------ [SERVER STARTED AT: {DateTime.Now}] ------------------------");
             FileWrite(AuthLogFn, $"------------------------ [SERVER STARTED AT: {DateTime.Now}] ------------------------");
