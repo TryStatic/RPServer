@@ -46,7 +46,9 @@ namespace RPServer.Controllers
                     Logger.AuthLog($"{str}, social: {client.SocialClubName}, IP: {client.Address}) has left the server. (timed out)"); break;
                 case DisconnectionType.Kicked:
                     Logger.AuthLog($"{str}, social: {client.SocialClubName}, IP: {client.Address}) has been kicked off the server. Reason: {reason}"); break;
-                default: throw new ArgumentOutOfRangeException(nameof(type), type, null);
+                default:
+                    Logger.AuthLog($"{str}, social: {client.SocialClubName}, IP: {client.Address}) has left the server. (default case)"); break;
+
             }
         }
         
