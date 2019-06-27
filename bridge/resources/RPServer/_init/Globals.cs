@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using EventNames;
 using GTANetworkAPI;
@@ -9,13 +10,24 @@ namespace RPServer._init
 {
     internal class Globals : Script
     {
-        public static RandomGenerator Random = new RandomGenerator();
+        public const string SERVER_NAME = "AlphaRP";
+        public const uint VERSION_MAJOR = 0;
+        public const uint VERSION_MINOR = 1;
+        public const uint VERSION_PATCH = 0;
+        public const string PRE_RELEASE = "";
 
+        public static RandomGenerator Random = new RandomGenerator();
         private static Timer _expiredEmailTokensTimer;
 
         [ServerEvent(Event.ResourceStart)]
         public async void OnResourceStart()
         {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.BackgroundColor = ConsoleColor.Blue;
+            Console.WriteLine($"\n\n---------------------------- STARTING {SERVER_NAME} ({VERSION_MAJOR}.{VERSION_MINOR}.{VERSION_PATCH}{PRE_RELEASE}) ----------------------------");
+            Console.ResetColor();
+            Console.WriteLine();
+
             // Server Settings
             //NAPI.Server.SetAutoSpawnOnConnect(false);
             //NAPI.Server.SetAutoRespawnAfterDeath(false);
