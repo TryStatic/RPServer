@@ -1,5 +1,4 @@
 ﻿using EventNames;
-using RAGE;
 
 namespace RPServerClient.Globals
 {

@@ -1,16 +1,16 @@
 ﻿using RAGE;
 using RAGE.Ui;
 
-namespace RPServerClient
+namespace RPServerClient.Globals
 {
-    internal class CustomChat : Events.Script
+    internal class CustomChat : RAGE.Events.Script
     {
         public static HtmlWindow ChatBrowser;
 
         public CustomChat()
         {
-            Events.Add("SendToChat", OnSendToChat);
-            Events.Add("setEnabled", OnSetEnabled);
+            RAGE.Events.Add("SendToChat", OnSendToChat);
+            RAGE.Events.Add("setEnabled", OnSetEnabled);
             Chat.Show(false);
             ChatBrowser = new HtmlWindow("package://CEF/chat/index.html");
             ChatBrowser.MarkAsChat();

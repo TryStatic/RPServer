@@ -2,19 +2,19 @@
 using RAGE;
 using RAGE.Ui;
 
-namespace RPServerClient
+namespace RPServerClient.Globals
 {
-    class Browser : Events.Script
+    class Browser : RAGE.Events.Script
     {
         private static object[] _parameters;
         public static HtmlWindow MainBrowser;
 
         public Browser()
         {
-            Events.Add("createBrowser", CreateBrowser);
-            Events.Add("executeFunction", ExecuteFunction);
-            Events.Add("destroyBrowser", DestroyBrowser);
-            Events.OnBrowserCreated += OnBrowserCreated;
+            RAGE.Events.Add("createBrowser", CreateBrowser);
+            RAGE.Events.Add("executeFunction", ExecuteFunction);
+            RAGE.Events.Add("destroyBrowser", DestroyBrowser);
+            RAGE.Events.OnBrowserCreated += OnBrowserCreated;
         }
 
         public static void CreateBrowser(object[] args)
@@ -76,7 +76,7 @@ namespace RPServerClient
             // Enable the cursor
             Cursor.Visible = true;
 
-            if (_parameters.Length > 0)
+            if (_parameters != null && _parameters.Length > 0)
             {
                 // Call the function passed as parameter
                 ExecuteFunction(_parameters);

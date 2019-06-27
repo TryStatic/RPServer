@@ -1,10 +1,12 @@
 ﻿using EventNames;
 using RAGE;
 using RAGE.Elements;
+using RPServerClient.Globals;
+using Events = RAGE.Events;
 
 // ReSharper disable CommentTypo
 
-namespace RPServerClient
+namespace RPServerClient.Authentication
 {
     internal class Auth : Events.Script
     {
