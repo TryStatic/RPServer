@@ -1,4 +1,5 @@
 ﻿using GTANetworkAPI;
+using RPServer.Util;
 
 namespace RPServer.Chat
 {
@@ -7,7 +8,11 @@ namespace RPServer.Chat
         [ServerEvent(Event.ChatMessage)]
         public void OnChatMessage(Client client, string message)
         {
-            client.TriggerEvent("SendToChat", message);
+            if(!client.IsLoggedIn()) return;
+            var acc = client.GetAccountData();
+            var sendMsg = $"{acc.Username}: {message}";
+            NAPI.ClientEvent.TriggerClientEventForAll("SendToChat", sendMsg);
+
         }
     }
 }
