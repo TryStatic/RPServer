@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Linq.Expressions;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
@@ -8,24 +9,37 @@ using RPServer.Util;
 
 namespace RPServer.Models
 {
-    internal class Account
+    internal class Account : SaveableData
     {
         public static readonly string DataKey = "ACCOUNT_DATA";
 
         #region SQL_SAVEABLE_DATA
         public int SqlId { get; }
+        [SqlColumnName("username")]
         public string Username { get; set; }
+        [SqlColumnName("emailaddress")]
         public string EmailAddress { get; set; }
+        [SqlColumnName("hash")]
         public byte[] Hash { get; set; }
+        [SqlColumnName("forumname")]
         public string ForumName { get; set; }
+        [SqlColumnName("nickname")]
         public string NickName { get; set; }
+        [SqlColumnName("regsocialclubname")]
         public string RegSocialClubName { get; set; }
+        [SqlColumnName("lastsocialclubname")]
         public string LastSocialClubName { get; set; }
+        [SqlColumnName("LastIP")]
         public string LastIP { get; set; }
+        [SqlColumnName("LastHWID")]
         public string LastHWID { get; set; }
+        [SqlColumnName("creationdate")]
         public DateTime CreationDate { get; set; }
+        [SqlColumnName("lastlogindate")]
         public DateTime LastLoginDate { get; set; }
+        [SqlColumnName("enabled2FAbyemail")]
         public bool HasEnabledTwoStepByEmail { get; set; }
+        [SqlColumnName("twofactorsharedkey")]
         public byte[] TwoFactorGASharedKey { get; set; }
         #endregion
 
@@ -34,6 +48,7 @@ namespace RPServer.Models
         public bool HasPassedTwoStepByEmail = false;
         public byte[] TempTwoFactorGASharedKey = null;
         #endregion
+
         private Account(int sqlId)
         {
             SqlId = sqlId;
@@ -182,11 +197,13 @@ namespace RPServer.Models
                 }
             }
         }
-        public async Task SaveSingleAsync(Savable.Column c)
+        public async Task SaveSingleAsync<T>(Expression<Func<T>> expression)
         {
-            Savable.GetColumnAndValue(this, c, out var column, out var value);
+            var column = GetColumnName(expression, out var value);
+            if(string.IsNullOrEmpty(column) || string.IsNullOrWhiteSpace(column)) throw new Exception("Invalid Column Name");
 
             var query = $"UPDATE accounts SET {column} = @value WHERE accountID = @sqlId";
+
 
             using (var dbConn = new DbConnection())
             {

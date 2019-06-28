@@ -8,7 +8,6 @@ using RPServer.Strings;
 using RPServer.Util;
 using EventNames;
 using RPServer._init;
-using static RPServer.Models.Savable;
 using static RPServer.Util.DataValidator;
 using Task = System.Threading.Tasks.Task;
 
@@ -82,7 +81,7 @@ namespace RPServer.Controllers
                 acc.TwoFactorGASharedKey = null;
 
                 client.SetCanRunTask(false);
-                Task.Run(async () => await acc.SaveSingleAsync(Column.TwoFactorGASharedKey)).ContinueWith(HandleTaskCompletion).ContinueWith(task => client.SetCanRunTask(true));
+                Task.Run(async () => await acc.SaveSingleAsync(() => acc.TwoFactorGASharedKey)).ContinueWith(HandleTaskCompletion).ContinueWith(task => client.SetCanRunTask(true));
             }
 
         }
@@ -356,7 +355,7 @@ namespace RPServer.Controllers
             }
 
             accData.EmailAddress = accEmail;
-            await accData.SaveSingleAsync(Column.EmailAddress);
+            await accData.SaveSingleAsync(() => accData.EmailAddress);
             client.SendChatMessage(AccountStrings.SuccessEmailVerification);
 
             SetLoginState(client, false);
@@ -480,7 +479,7 @@ namespace RPServer.Controllers
             acc.TwoFactorGASharedKey = acc.TempTwoFactorGASharedKey;
 
             player.SetCanRunTask(false);
-            Task.Run(async () => await acc.SaveSingleAsync(Column.TwoFactorGASharedKey)).ContinueWith(HandleTaskCompletion).ContinueWith(task => player.SetCanRunTask(true));
+            Task.Run(async () => await acc.SaveSingleAsync(() => acc.TwoFactorGASharedKey).ContinueWith(HandleTaskCompletion).ContinueWith(task => player.SetCanRunTask(true)));
 
             player.TriggerEvent(ServerToClient.ShowQRCodeEnabled);
         }
