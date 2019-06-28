@@ -205,6 +205,12 @@ namespace RPServer.Models
                 }
             }
         }
+        public static async Task<bool> DeleteAsync(string username)
+        {
+            // TODO: Delete pending email tokens related to that account
+            // TODO: Delete characters related to that account
+            throw new NotImplementedException();
+        }
         #endregion
 
         public static async Task<bool> AuthenticateAsync(string username, string password)
