@@ -30,6 +30,18 @@ body {
     text-align: center;
 }
 
+#container-info {
+    background-color: #1D1F20;
+    position: relative;
+    top: 20%;
+    margin: auto;
+    width: 600px;
+    height: 520px;
+    border-radius: 0.35em;
+    box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
 #title {
     position: relative;
     background-color: #1A1C1D;
@@ -43,6 +55,20 @@ body {
 
 #title2 {
     position: relative;
+    background-color: #1A1C1D;
+	color: #3CD070;
+    width: 100%;
+    padding: 20px 0px;
+    border-radius: 0.35em;
+    font-size: 22px;
+    //border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+	border-bottom: 1px #C1C3C6;
+	border-bottom-style:dashed;
+}
+
+#title3 {
+    position: relative;
+	text-align: left;
     background-color: #1A1C1D;
 	color: #3CD070;
     width: 100%;
@@ -217,6 +243,34 @@ input[type=email]:focus {
 .forgot-password3 a:hover {
     color: #ed3f1d;
 	font-size: 11px;
+    transition: color 1s;
+}
+
+.forgot-password4 {
+    margin: auto;
+    padding: 10px 0;
+    text-align: center;
+    margin-top: px;
+	color:#10331C;
+    width: 85%; 
+	font-size: 13px;
+}
+.forgot-password4 a:link {
+    color: #10331C;
+	font-size: 13px;
+    text-decoration: none;
+}
+
+.forgot-password4 a:visited {
+    color: #10331C;
+	font-size: 13px;
+    text-decoration: none;
+}
+
+.forgot-password4 a:hover {
+    color: #07170D;
+	font-size: 15px;
+	text-shadow: 0.5px 0.5px green;
     transition: color 1s;
 }
 
