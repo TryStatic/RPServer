@@ -78,7 +78,7 @@ namespace RPServer.Models
                 }
                 catch (MySqlException ex)
                 {
-                    Logger.MySqlError(ex.Message, ex.Code);
+                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
                 }
             }
         }
@@ -129,7 +129,7 @@ namespace RPServer.Models
                 }
                 catch (MySqlException ex)
                 {
-                    Logger.MySqlError(ex.Message, ex.Code);
+                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
                 }
 
                 return null;
@@ -153,7 +153,7 @@ namespace RPServer.Models
                 }
                 catch (MySqlException ex)
                 {
-                    Logger.MySqlError(ex.Message, ex.Code);
+                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
                 }
             }
             throw new Exception("There was an error in [Account.ExistsAsync]");
@@ -193,7 +193,7 @@ namespace RPServer.Models
                 }
                 catch (MySqlException ex)
                 {
-                    Logger.MySqlError(ex.Message, ex.Code);
+                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
                 }
             }
         }
@@ -218,14 +218,15 @@ namespace RPServer.Models
                 }
                 catch (MySqlException ex)
                 {
-                    Logger.MySqlError(ex.Message, ex.Code);
+                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
                 }
             }
         }
-        public static async Task<bool> DeleteAsync(string username)
+        public static async Task DeleteAsync(string username)
         {
             // TODO: Delete pending email tokens related to that account
             // TODO: Delete characters related to that account
+            // TODO: Or not do anything and enable cascade? mmm
             throw new NotImplementedException();
         }
         #endregion
@@ -253,7 +254,7 @@ namespace RPServer.Models
                 }
                 catch (MySqlException ex)
                 {
-                    Logger.MySqlError(ex.Message, ex.Code);
+                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
                 }
                 return false;
             }
@@ -277,7 +278,7 @@ namespace RPServer.Models
                 }
                 catch (MySqlException ex)
                 {
-                    Logger.MySqlError(ex.Message, ex.Code);
+                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
                 }
             }
             throw new Exception("There was an error in [Account.IsEmailTakenAsync]");

@@ -16,7 +16,6 @@ namespace RPServer._init
         public const uint VERSION_PATCH = 0;
         public const string PRE_RELEASE = "";
 
-        public static RandomGenerator Random = new RandomGenerator();
         private static Timer _expiredEmailTokensTimer;
 
         [ServerEvent(Event.ResourceStart)]
@@ -37,7 +36,10 @@ namespace RPServer._init
             // Sever World Settings
             NAPI.World.SetTime(0, 0, 0);
             NAPI.World.ResetIplList();
-            
+
+            // Initialize the Logger 
+            Logger.GetInstance();
+
             // Geyt Database Settings (meta.xml)
             DbConnection.MySqlHost = NAPI.Resource.GetSetting<string>(this, "DB_HOST");
             DbConnection.MySqlPort = NAPI.Resource.GetSetting<uint>(this, "DB_PORT");
@@ -66,7 +68,7 @@ namespace RPServer._init
                 var accData = client.GetAccountData();
                 username = accData.Username;
             }
-            Logger.CommandLog(username, cmd);
+            Logger.GetInstance().CommandLog(username, cmd);
         }
 
         private async void OnRemoveExpiredEmailTokens(object state)

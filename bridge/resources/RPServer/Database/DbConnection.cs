@@ -42,7 +42,7 @@ namespace RPServer.Database
             }
             catch (MySqlException ex)
             {
-                Logger.MySqlError(ex.Message, ex.Code);
+                Logger.GetInstance().MySqlError(ex.Message, ex.Code);
                 return false;
             }
         }
@@ -56,16 +56,16 @@ namespace RPServer.Database
                 do
                 {
                     tries++;
-                    Logger.MySqlInfo($"{DbStrings.InfoTryDBConnect}... ({tries})");
+                    Logger.GetInstance().MySqlInfo($"{DbStrings.InfoTryDBConnect}... ({tries})");
                     connected = await dbConn.OpenAsync();
                 } while (!connected && tries < 10);
 
                 if (tries >= 10)
                 {
-                    Logger.MySqlInfo(DbStrings.InfoFailedDBConnect);
+                    Logger.GetInstance().MySqlInfo(DbStrings.InfoFailedDBConnect);
                     return false;
                 }
-                Logger.MySqlInfo(DbStrings.InfoSuccessDBConnect);
+                Logger.GetInstance().MySqlInfo(DbStrings.InfoSuccessDBConnect);
             }
             return true;
         }

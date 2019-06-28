@@ -3,14 +3,12 @@ using System.Security.Cryptography;
 
 namespace RPServer.Util
 {
-    public class RandomGenerator
+    internal sealed class RandomGenerator
     {
+        private static RandomGenerator _randomGenerator;
         private readonly RNGCryptoServiceProvider _csp;
 
-        public RandomGenerator()
-        {
-            _csp = new RNGCryptoServiceProvider();
-        }
+        private RandomGenerator() => _csp = new RNGCryptoServiceProvider();
 
         public int Next(int minValue, int maxExclusiveValue)
         {
@@ -27,18 +25,18 @@ namespace RPServer.Util
             } while (ui >= upperBound);
             return (int)(minValue + (ui % diff));
         }
-
         private uint GetRandomUInt()
         {
             var randomBytes = GenerateRandomBytes(sizeof(uint));
             return BitConverter.ToUInt32(randomBytes, 0);
         }
-
         public byte[] GenerateRandomBytes(int bytesNumber)
         {
             byte[] buffer = new byte[bytesNumber];
             _csp.GetBytes(buffer);
             return buffer;
         }
+
+        public static RandomGenerator GetInstance() => _randomGenerator ?? (_randomGenerator = new RandomGenerator());
     }
 }

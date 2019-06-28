@@ -21,7 +21,7 @@ namespace RPServer.Controllers
             client.SendChatMessage(AccountStrings.InfoWelcome);
             client.SetCanRunTask(true);
             SetLoginState(client, true);
-            Logger.AuthLog($"Player (name: {client.Name}, social: {client.SocialClubName}, IP: {client.Address}) has connected to the server.");
+            Logger.GetInstance().AuthLog($"Player (name: {client.Name}, social: {client.SocialClubName}, IP: {client.Address}) has connected to the server.");
 
         }
 
@@ -40,13 +40,13 @@ namespace RPServer.Controllers
             switch (type)
             {
                 case DisconnectionType.Left:
-                    Logger.AuthLog($"{str}, social: {client.SocialClubName}, IP: {client.Address}) has left the server."); break;
+                    Logger.GetInstance().AuthLog($"{str}, social: {client.SocialClubName}, IP: {client.Address}) has left the server."); break;
                 case DisconnectionType.Timeout:
-                    Logger.AuthLog($"{str}, social: {client.SocialClubName}, IP: {client.Address}) has left the server. (timed out)"); break;
+                    Logger.GetInstance().AuthLog($"{str}, social: {client.SocialClubName}, IP: {client.Address}) has left the server. (timed out)"); break;
                 case DisconnectionType.Kicked:
-                    Logger.AuthLog($"{str}, social: {client.SocialClubName}, IP: {client.Address}) has been kicked off the server. Reason: {reason}"); break;
+                    Logger.GetInstance().AuthLog($"{str}, social: {client.SocialClubName}, IP: {client.Address}) has been kicked off the server. Reason: {reason}"); break;
                 default:
-                    Logger.AuthLog($"{str}, social: {client.SocialClubName}, IP: {client.Address}) has left the server. (default case)"); break;
+                    Logger.GetInstance().AuthLog($"{str}, social: {client.SocialClubName}, IP: {client.Address}) has left the server. (default case)"); break;
 
             }
         }
@@ -563,7 +563,7 @@ namespace RPServer.Controllers
 
         public static byte[] GenerateTwoFactorGASharedKey()
         {
-            return Globals.Random.GenerateRandomBytes(50);
+            return RandomGenerator.GetInstance().GenerateRandomBytes(50);
         }
 
         /// <summary>

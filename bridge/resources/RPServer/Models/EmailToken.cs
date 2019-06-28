@@ -3,7 +3,6 @@ using MySql.Data.MySqlClient;
 using RPServer.Database;
 using RPServer.Util;
 using System.Threading.Tasks;
-using RPServer._init;
 
 namespace RPServer.Models
 {
@@ -59,7 +58,7 @@ namespace RPServer.Models
                 }
                 catch (MySqlException ex)
                 {
-                    Logger.MySqlError(ex.Message, ex.Code);
+                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
                 }
                 return false;
             }
@@ -85,7 +84,7 @@ namespace RPServer.Models
                 }
                 catch (MySqlException ex)
                 {
-                    Logger.MySqlError(ex.Message, ex.Code);
+                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
                 }
             }
             throw new Exception("There was an error in [EmailToken.ExistsAsync]");
@@ -111,7 +110,7 @@ namespace RPServer.Models
                 }
                 catch (MySqlException ex)
                 {
-                    Logger.MySqlError(ex.Message, ex.Code);
+                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
                 }
             }
             throw new Exception("There was an error in [EmailToken.IsEmailTakenAsync]");
@@ -140,7 +139,7 @@ namespace RPServer.Models
                 }
                 catch (MySqlException ex)
                 {
-                    Logger.MySqlError(ex.Message, ex.Code);
+                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
                 }
             }
             throw new Exception("Error in [EmailToken.FetchAsync]");
@@ -187,7 +186,7 @@ namespace RPServer.Models
                 }
                 catch (MySqlException ex)
                 {
-                    Logger.MySqlError(ex.Message, ex.Code);
+                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
                 }
             }
         }
@@ -208,7 +207,7 @@ namespace RPServer.Models
                 }
                 catch (MySqlException ex)
                 {
-                    Logger.MySqlError(ex.Message, ex.Code);
+                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
                 }
             }
         }
@@ -232,7 +231,7 @@ namespace RPServer.Models
                 }
                 catch (MySqlException ex)
                 {
-                    Logger.MySqlError(ex.Message, ex.Code);
+                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
                 }
             }
             throw new Exception("Error in [EmailTokens.RemoveAsync]");
@@ -258,7 +257,7 @@ namespace RPServer.Models
         #region TokenCodeGeneration
         private static string GenerateNewToken()
         {
-            return Globals.Random.Next(100000, 1000000).ToString();
+            return RandomGenerator.GetInstance().Next(100000, 1000000).ToString();
         }
 
         private static int GetTokenLength()
