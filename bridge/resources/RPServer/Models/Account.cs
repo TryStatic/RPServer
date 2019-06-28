@@ -29,20 +29,21 @@ namespace RPServer.Models
         public byte[] TwoFactorGASharedKey { get; set; }
         #endregion
 
+        #region Per_Client_Session_Variables
         public bool HasPassedTwoStepByGA = false;
         public bool HasPassedTwoStepByEmail = false;
         public byte[] TempTwoFactorGASharedKey = null;
-
+        #endregion
         private Account(int sqlId)
         {
             SqlId = sqlId;
         }
 
         #region CRUD
-        public static async Task<Account> CreateAsync(string username, string password, string regSocialClubName)
+        public static async Task CreateAsync(string username, string password, string regSocialClubName)
         {
             if (await ExistsAsync(username))
-                return null;
+                return;
 
             var hash = new PasswordHash(password).ToArray();
 
@@ -65,7 +66,6 @@ namespace RPServer.Models
                     Logger.MySqlError(ex.Message, ex.Code);
                 }
             }
-            return await FetchAsync(username);
         }
         public static async Task<Account> FetchAsync(string username)
         {

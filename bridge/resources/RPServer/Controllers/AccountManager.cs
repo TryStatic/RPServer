@@ -154,7 +154,8 @@ namespace RPServer.Controllers
                 return;
             }
 
-            var newAcc = await Account.CreateAsync(username, password, client.SocialClubName);
+            await Account.CreateAsync(username, password, client.SocialClubName);
+            var newAcc = await Account.FetchAsync(username);
             await EmailToken.CreateAsync(newAcc, emailAddress);
             await EmailToken.SendEmail(newAcc);
 
