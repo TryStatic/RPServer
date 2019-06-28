@@ -241,7 +241,6 @@ namespace RPServer.Models
                 return false;
             }
         }
-
         public static async Task<bool> IsEmailTakenAsync(string emailAddress)
         {
             const string query = "SELECT accountID FROM accounts WHERE emailaddress = @emailaddress";
@@ -266,7 +265,6 @@ namespace RPServer.Models
             }
             throw new Exception("There was an error in [Account.IsEmailTakenAsync]");
         }
-
         public bool HasVerifiedEmail()
         {
             if (string.IsNullOrEmpty(EmailAddress) || string.IsNullOrWhiteSpace(EmailAddress))
@@ -274,7 +272,6 @@ namespace RPServer.Models
             return true;
 
         }
-
         public bool Is2FAbyEmailEnabled() => HasEnabledTwoStepByEmail;
         public bool Is2FAbyGAEnabled() => TwoFactorGASharedKey != null;
 
@@ -282,7 +279,6 @@ namespace RPServer.Models
         {
             return SqlId == other.SqlId;
         }
-
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
@@ -290,17 +286,14 @@ namespace RPServer.Models
             if (obj.GetType() != this.GetType()) return false;
             return Equals((Account)obj);
         }
-
         public override int GetHashCode()
         {
             return SqlId;
         }
-
         public static bool operator ==(Account left, Account right)
         {
             return Equals(left, right);
         }
-
         public static bool operator !=(Account left, Account right)
         {
             return !Equals(left, right);
