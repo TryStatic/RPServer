@@ -13,7 +13,7 @@ using Task = System.Threading.Tasks.Task;
 
 namespace RPServer.Controllers
 {
-    internal class AccountManager : Script
+    internal class AuthenticationManager : Script
     {
         [ServerEvent(Event.PlayerConnected)]
         public void OnPlayerConnected(Client client)
