@@ -11,7 +11,7 @@
  Target Server Version : 80016
  File Encoding         : 65001
 
- Date: 27/06/2019 09:44:01
+ Date: 29/06/2019 03:55:27
 */
 
 SET NAMES utf8mb4;
@@ -39,7 +39,22 @@ CREATE TABLE `accounts`  (
   PRIMARY KEY (`accountID`) USING BTREE,
   UNIQUE INDEX `username_UNIQUE`(`username`) USING BTREE,
   UNIQUE INDEX `emailaddress_UNIQUE`(`emailaddress`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 227 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 231 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for characters
+-- ----------------------------
+DROP TABLE IF EXISTS `characters`;
+CREATE TABLE `characters`  (
+  `characterID` int(11) NOT NULL AUTO_INCREMENT,
+  `charownerID` int(11) NOT NULL,
+  `charname` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `skinmodel` int(11) UNSIGNED NOT NULL DEFAULT 1885233650,
+  PRIMARY KEY (`characterID`) USING BTREE,
+  UNIQUE INDEX `name_UNIQUE`(`charname`) USING BTREE,
+  INDEX `fkey_idx`(`charownerID`) USING BTREE,
+  CONSTRAINT `fkey_acc_to_char` FOREIGN KEY (`charownerID`) REFERENCES `accounts` (`accountID`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for emailtokens
@@ -53,7 +68,7 @@ CREATE TABLE `emailtokens`  (
   PRIMARY KEY (`accountID`) USING BTREE,
   UNIQUE INDEX `emailaddress_UNIQUE`(`emailaddress`) USING BTREE,
   INDEX `accountID_UNIQUE`(`accountID`) USING BTREE,
-  CONSTRAINT `fkey` FOREIGN KEY (`accountID`) REFERENCES `accounts` (`accountID`) ON DELETE RESTRICT ON UPDATE RESTRICT
+  CONSTRAINT `fkey_acc_to_emailtoken` FOREIGN KEY (`accountID`) REFERENCES `accounts` (`accountID`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;
