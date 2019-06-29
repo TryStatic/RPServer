@@ -23,7 +23,7 @@ namespace RPServer.Util
 
         public static bool IsValidEmail(this string emailString)
         {// TODO: Implement better way for validating emails
-            if (string.IsNullOrWhiteSpace(emailString) || string.IsNullOrEmpty(emailString))
+            if (string.IsNullOrWhiteSpace(emailString))
                 return false;
 
             return new EmailAddressAttribute().IsValid(emailString);

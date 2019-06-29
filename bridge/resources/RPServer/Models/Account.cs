@@ -201,7 +201,7 @@ namespace RPServer.Models
         public async Task SaveSingleAsync<T>(Expression<Func<T>> expression)
         {
             var column = GetColumnName(expression, out var value);
-            if(string.IsNullOrEmpty(column) || string.IsNullOrWhiteSpace(column)) throw new Exception("Invalid Column Name");
+            if(string.IsNullOrWhiteSpace(column)) throw new Exception("Invalid Column Name");
 
             var query = $"UPDATE accounts SET {column} = @value WHERE accountID = @sqlId";
 
@@ -328,7 +328,7 @@ namespace RPServer.Models
 
         public bool HasVerifiedEmail()
         {
-            if (string.IsNullOrEmpty(EmailAddress) || string.IsNullOrWhiteSpace(EmailAddress))
+            if (string.IsNullOrWhiteSpace(EmailAddress))
                 return false;
             return true;
 

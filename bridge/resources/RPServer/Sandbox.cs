@@ -15,15 +15,15 @@ namespace RPServer
         {
             player.SendChatMessage("/logout /toggletwofactorga /toggletwofactoremail");
             player.SendChatMessage("/veh /ecc /heal /hmc /time /weather /getping /onlineppl /givegun");
-            player.SendChatMessage("/setskin /setnickname");
+            player.SendChatMessage("/setskin /setnick");
 
         }
 
-        [Command("setnickname")]
+        [Command("setnick")]
         public void SetNickName(Client player, string nick)
         {
             if (!player.IsLoggedIn()) return;
-            if (string.IsNullOrEmpty(nick) || string.IsNullOrWhiteSpace(nick))
+            if (string.IsNullOrWhiteSpace(nick))
             {
                 player.SendChatMessage("Can't be empty");
                 return;
@@ -44,6 +44,8 @@ namespace RPServer
             {
                 NAPI.Entity.SetEntityModel(player.Handle, (uint) NAPI.Util.PedNameToModel(skinName));
             }
+
+            player.SendChatMessage("You set your skin to: " + skinName);
         }
 
         [Command("givegun")]
@@ -52,6 +54,8 @@ namespace RPServer
             if (ammo <= 0) ammo = 1000;
             WeaponHash wepHash = NAPI.Util.WeaponNameToModel(weaponName);
             player.GiveWeapon(wepHash, ammo);
+            player.SendChatMessage($"Gave you gun {weaponName} with {ammo} ammo.");
+
         }
 
 

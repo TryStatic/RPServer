@@ -181,7 +181,7 @@ namespace RPServer.Models
         public async Task SaveSingleAsync<T>(Expression<Func<T>> expression)
         {
             var column = GetColumnName(expression, out var value);
-            if (string.IsNullOrEmpty(column) || string.IsNullOrWhiteSpace(column))
+            if (string.IsNullOrWhiteSpace(column))
                 throw new Exception("Invalid Column Name");
 
             var query = $"UPDATE characters SET {column} = @value WHERE characterID = @sqlId";

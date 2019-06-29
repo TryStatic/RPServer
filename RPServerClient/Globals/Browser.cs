@@ -32,7 +32,7 @@ namespace RPServerClient.Globals
         public static void ExecuteFunction(string funcName)
         {
 
-            if (string.IsNullOrEmpty(funcName) || string.IsNullOrWhiteSpace(funcName))
+            if (string.IsNullOrWhiteSpace(funcName))
             {
                 Chat.Output("[ExecuteFunction(string fn)]: fn null or empty or whitespace");
                 return;
