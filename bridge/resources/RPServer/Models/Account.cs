@@ -55,7 +55,7 @@ namespace RPServer.Models
             SqlId = sqlId;
         }
 
-        #region CRUD
+        #region DATABASE
         public static async Task CreateAsync(string username, string password, string regSocialClubName)
         {
             if (await ExistsAsync(username))
@@ -271,9 +271,7 @@ namespace RPServer.Models
                 return -1;
             }
         }
-        public async Task<List<Character>> GetCharactersAsync(string username) => await Character.FetchAsync(this);
-        #endregion
-
+        public async Task<List<Character>> GetCharactersAsync(string username) => await Character.FetchAllAsync(this);
         public static async Task<bool> AuthenticateAsync(string username, string password)
         {
             const string query = "SELECT username, hash FROM accounts WHERE username = @username LIMIT 1";
@@ -326,6 +324,8 @@ namespace RPServer.Models
             }
             throw new Exception("There was an error in [Account.IsEmailTakenAsync]");
         }
+        #endregion
+
         public bool HasVerifiedEmail()
         {
             if (string.IsNullOrEmpty(EmailAddress) || string.IsNullOrWhiteSpace(EmailAddress))

@@ -28,6 +28,7 @@ namespace RPServer.Models
             SqlId = sqlId;
         }
 
+        #region DATABASE
         public static async Task CreateNewAsync(Account account, string charName)
         {
             if (await ExistsAsync(await GetSqlIdAsync(charName)))
@@ -51,11 +52,9 @@ namespace RPServer.Models
                 }
             }
         }
-
-        public static async Task<List<Character>> FetchAsync(Account account)
+        public static async Task<List<Character>> FetchAllAsync(Account account)
         {
-            const string query =
-                "SELECT characterID, charname, skinmodel FROM characters WHERE charownerID = @accountID";
+            const string query = "SELECT characterID, charname, skinmodel FROM characters WHERE charownerID = @accountID";
 
             using (var dbConn = new DbConnection())
             {
@@ -90,7 +89,6 @@ namespace RPServer.Models
                 return null;
             }
         }
-
         public static async Task<Character> FetchAsync(int charId)
         {
             const string query =
@@ -128,7 +126,6 @@ namespace RPServer.Models
                 return null;
             }
         }
-
         public static async Task<bool> ExistsAsync(int sqlId)
         {
 
@@ -156,7 +153,6 @@ namespace RPServer.Models
 
             throw new Exception("There was an error in [Character.ExistsAsync]");
         }
-
         public async Task SaveAsync()
         {
             const string query = "UPDATE characters " +
@@ -182,7 +178,6 @@ namespace RPServer.Models
                 }
             }
         }
-
         public async Task SaveSingleAsync<T>(Expression<Func<T>> expression)
         {
             var column = GetColumnName(expression, out var value);
@@ -209,12 +204,26 @@ namespace RPServer.Models
                 }
             }
         }
-
-        public static async Task DeleteAsync(string username)
+        public static async Task DeleteAsync(int charId)
         {
-            throw new NotImplementedException();
-        }
+            const string query = "DELETE FROM characters WHERE characterID = @charId";
 
+            using (var dbConn = new DbConnection())
+            {
+                try
+                {
+                    var cmd = new MySqlCommand(query, dbConn.Connection);
+                    cmd.Parameters.AddWithValue("@characterID", charId);
+
+                    await dbConn.OpenAsync();
+                    await cmd.ExecuteNonQueryAsync();
+                }
+                catch (MySqlException ex)
+                {
+                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                }
+            }
+        }
         public static async Task<int> GetSqlIdAsync(string charName)
         {
             const string query = "SELECT characterID FROM characters WHERE charname = @name LIMIT 1";
@@ -244,5 +253,6 @@ namespace RPServer.Models
                 return -1;
             }
         }
+        #endregion
     }
 }
