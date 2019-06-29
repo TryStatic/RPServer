@@ -15,7 +15,35 @@ namespace RPServer
         {
             player.SendChatMessage("/logout /toggletwofactorga /toggletwofactoremail");
             player.SendChatMessage("/veh /ecc /heal /hmc /time /weather /getping /onlineppl /givegun");
+            player.SendChatMessage("/setskin /setnickname");
 
+        }
+
+        [Command("setnickname")]
+        public void SetNickName(Client player, string nick)
+        {
+            if (!player.IsLoggedIn()) return;
+            if (string.IsNullOrEmpty(nick) || string.IsNullOrWhiteSpace(nick))
+            {
+                player.SendChatMessage("Can't be empty");
+                return;
+            }
+            player.GetAccountData().NickName = nick;
+            player.SendChatMessage("You set your nick to: " + nick);
+        }
+
+        [Command("setskin")]
+        public void SetSkin(Client player, string skinName)
+        {
+            if (DataValidator.IsDigitsOnly(skinName))
+            {
+                var skinId = uint.Parse(skinName);
+                NAPI.Entity.SetEntityModel(player.Handle, skinId);
+            }
+            else
+            {
+                NAPI.Entity.SetEntityModel(player.Handle, (uint) NAPI.Util.PedNameToModel(skinName));
+            }
         }
 
         [Command("givegun")]

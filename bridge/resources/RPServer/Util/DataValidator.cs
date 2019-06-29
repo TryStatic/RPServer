@@ -39,7 +39,7 @@ namespace RPServer.Util
             return true;
         }
 
-        private static bool IsDigitsOnly(string str)
+        public static bool IsDigitsOnly(string str)
         {
             foreach (char c in str)
             {
