@@ -225,10 +225,23 @@ namespace RPServer.Models
         }
         public static async Task DeleteAsync(string username)
         {
-            // TODO: Delete pending email tokens related to that account
-            // TODO: Delete characters related to that account
-            // TODO: Or not do anything and enable cascade? mmm
-            throw new NotImplementedException();
+            const string query = "DELETE FROM accounts WHERE username = @username";
+
+            using (var dbConn = new DbConnection())
+            {
+                try
+                {
+                    var cmd = new MySqlCommand(query, dbConn.Connection);
+                    cmd.Parameters.AddWithValue("@username", username);
+
+                    await dbConn.OpenAsync();
+                    await cmd.ExecuteNonQueryAsync();
+                }
+                catch (MySqlException ex)
+                {
+                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                }
+            }
         }
         public static async Task<int> GetSqlIdAsync(string username)
         {
