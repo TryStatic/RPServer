@@ -31,7 +31,7 @@ namespace RPServer.Models
             ExpiryDate = expiryDate;
         }
 
-
+        #region DATABASE
         public static async Task<bool> CreateAsync(Account account, string emailAddress)
         {
             const string query = "INSERT INTO emailtokens(accountID, token, expirydate, emailaddress) VALUES (@accountid, @token, @expirydate, @emailaddress)";
@@ -63,7 +63,6 @@ namespace RPServer.Models
                 return false;
             }
         }
-
         public static async Task<bool> ExistsAsync(Account account)
         {
             const string query = "SELECT accountID FROM emailtokens WHERE accountID = @accountid";
@@ -89,7 +88,6 @@ namespace RPServer.Models
             }
             throw new Exception("There was an error in [EmailToken.ExistsAsync]");
         }
-
         public static async Task<bool> IsEmailTakenAsync(string emailAddress)
         {
             const string query = "SELECT emailaddress FROM emailtokens WHERE emailaddress = @emailaddress";
@@ -115,7 +113,6 @@ namespace RPServer.Models
             }
             throw new Exception("There was an error in [EmailToken.IsEmailTakenAsync]");
         }
-
         public static async Task<EmailToken> FetchAsync(Account account)
         {
             const string query = "SELECT accountID, token, expirydate, emailaddress FROM emailtokens WHERE accountID = @accountid";
@@ -144,7 +141,6 @@ namespace RPServer.Models
             }
             throw new Exception("Error in [EmailToken.FetchAsync]");
         }
-
         public static async Task<bool> ValidateAsync(Account account, string token)
         {
             if (!await ExistsAsync(account))
@@ -163,7 +159,6 @@ namespace RPServer.Models
             await RemoveAsync(account);
             return true;
         }
-
         public async Task SaveAsync()
         {
             const string query = "UPDATE emailtokens " +
@@ -190,7 +185,6 @@ namespace RPServer.Models
                 }
             }
         }
-
         public static async Task RemoveExpiredCodesAsync()
         {
             const string query = "DELETE FROM emailtokens WHERE expirydate < @current";
@@ -211,7 +205,6 @@ namespace RPServer.Models
                 }
             }
         }
-
         private static async Task RemoveAsync(Account account)
         {
             if (!await ExistsAsync(account)) return;
@@ -236,7 +229,6 @@ namespace RPServer.Models
             }
             throw new Exception("Error in [EmailTokens.RemoveAsync]");
         }
-
         public static async Task ChangeEmailAsync(Account account, string newEmailAddress)
         {
             var fetchedToken = await FetchAsync(account);
@@ -246,20 +238,19 @@ namespace RPServer.Models
             fetchedToken.ExpiryDate = DateTime.Now.AddDays(1);
             await fetchedToken.SaveAsync();
         }
-
         public static async Task SendEmail(Account account)
         {
             var tok = await FetchAsync(account);
             await EmailSender.SendMailMessageAsync(tok.EmailAddress, "RPServer - Email Verifciaton", $"Your verification token is {tok.Token} and it's valid until {tok.ExpiryDate}.");
 
         }
+        #endregion
 
         #region TokenCodeGeneration
         private static string GenerateNewToken()
         {
             return RandomGenerator.GetInstance().Next(100000, 1000000).ToString();
         }
-
         private static int GetTokenLength()
         {
             return 6;
