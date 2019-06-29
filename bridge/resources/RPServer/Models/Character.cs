@@ -14,12 +14,11 @@ namespace RPServer.Models
         public static readonly string DataKey = "ACTIVE_CHARACTER_DATA";
 
         #region SQL_SAVEABLE_DATA
-        [SqlColumnName("characterid")]
-        public int SqlId { get; }
-        [SqlColumnName("name")]
-        public string Name { set; get; }
-        [SqlColumnName("skinmodel")]
-        public int SkinModel { set; get; }
+
+        [SqlColumnName("characterid")] public int SqlId { get; }
+        [SqlColumnName("charname")] public string Name { set; get; }
+        [SqlColumnName("skinmodel")] public int SkinModel { set; get; }
+
         #endregion
 
         public Account Owner { get; set; }
@@ -52,13 +51,50 @@ namespace RPServer.Models
                 }
             }
         }
+
         public static async Task<List<Character>> FetchAsync(Account account)
         {
-            throw new NotImplementedException();
+            const string query =
+                "SELECT characterID, charname, skinmodel FROM characters WHERE charownerID = @accountID";
+
+            using (var dbConn = new DbConnection())
+            {
+                try
+                {
+                    var cmd = new MySqlCommand(query, dbConn.Connection);
+                    cmd.Parameters.AddWithValue("@accountID", account.SqlId);
+                    await dbConn.OpenAsync();
+                    using (var r = await cmd.ExecuteReaderAsync(CommandBehavior.SequentialAccess))
+                    {
+                        var chars = new List<Character>();
+                        while (await r.ReadAsync())
+                        {
+                            var fetchedChar = new Character(r.GetInt32Extended("characterID"))
+                            {
+                                Owner = account,
+                                Name = r.GetStringExtended("charname"),
+                                SkinModel = r.GetInt32Extended("skinmodel")
+                            };
+                            chars.Add(fetchedChar);
+                        }
+
+                        return chars;
+
+                    }
+                }
+                catch (MySqlException ex)
+                {
+                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                }
+
+                return null;
+            }
         }
+
         public static async Task<Character> FetchAsync(int charId)
         {
-            const string query = "SELECT characterID, charownerID, charname, skinmodel FROM characters WHERE characterID = @characterid";
+            const string query =
+                "SELECT characterID, charownerID, charname, skinmodel FROM characters WHERE characterID = @characterid";
 
             if (!await ExistsAsync(charId))
                 return null;
@@ -75,12 +111,12 @@ namespace RPServer.Models
                         if (!await r.ReadAsync())
                             return null;
 
-                        var fetchedAcc = new Character(charId)
+                        var fetched = new Character(charId)
                         {
                             Name = r.GetStringExtended("charname"),
                             SkinModel = r.GetInt32Extended("skinmodel")
                         };
-                        return fetchedAcc;
+                        return fetched;
 
                     }
                 }
@@ -92,9 +128,13 @@ namespace RPServer.Models
                 return null;
             }
         }
+
         public static async Task<bool> ExistsAsync(int sqlId)
         {
-            const string query = "SELECT characterID FROM characters WHERE characerID = @sqlid";
+
+            if (sqlId < 0) return false;
+
+            const string query = "SELECT characterID FROM characters WHERE characterID = @sqlid";
 
             using (var dbConn = new DbConnection())
             {
@@ -113,30 +153,96 @@ namespace RPServer.Models
                     Logger.GetInstance().MySqlError(ex.Message, ex.Code);
                 }
             }
+
             throw new Exception("There was an error in [Character.ExistsAsync]");
         }
+
         public async Task SaveAsync()
         {
-            throw new NotImplementedException();
+            const string query = "UPDATE characters " +
+                                 "SET charname = @charname, skinmodel = @skinmodel " +
+                                 "WHERE characterID = @characterID";
+
+            using (var dbConn = new DbConnection())
+            {
+                try
+                {
+                    var cmd = new MySqlCommand(query, dbConn.Connection);
+                    cmd.Parameters.AddWithValue("@characterID", SqlId);
+
+                    cmd.Parameters.AddWithValue("@charname", Name);
+                    cmd.Parameters.AddWithValue("@skinmodel", SkinModel);
+
+                    await dbConn.OpenAsync();
+                    await cmd.ExecuteNonQueryAsync();
+                }
+                catch (MySqlException ex)
+                {
+                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                }
+            }
         }
 
         public async Task SaveSingleAsync<T>(Expression<Func<T>> expression)
         {
-            throw new NotImplementedException();
+            var column = GetColumnName(expression, out var value);
+            if (string.IsNullOrEmpty(column) || string.IsNullOrWhiteSpace(column))
+                throw new Exception("Invalid Column Name");
+
+            var query = $"UPDATE characters SET {column} = @value WHERE characterID = @sqlId";
+
+
+            using (var dbConn = new DbConnection())
+            {
+                try
+                {
+                    var cmd = new MySqlCommand(query, dbConn.Connection);
+                    cmd.Parameters.AddWithValue("@sqlId", SqlId);
+                    cmd.Parameters.AddWithValue("@value", value);
+
+                    await dbConn.OpenAsync();
+                    await cmd.ExecuteNonQueryAsync();
+                }
+                catch (MySqlException ex)
+                {
+                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                }
+            }
         }
+
         public static async Task DeleteAsync(string username)
         {
             throw new NotImplementedException();
         }
+
         public static async Task<int> GetSqlIdAsync(string charName)
         {
-            throw new NotImplementedException();
+            const string query = "SELECT characterID FROM characters WHERE charname = @name LIMIT 1";
+
+            using (var dbConn = new DbConnection())
+            {
+                try
+                {
+                    var cmd = new MySqlCommand(query, dbConn.Connection);
+                    cmd.Parameters.AddWithValue("@name", charName);
+
+                    await dbConn.OpenAsync();
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        if (!await reader.ReadAsync())
+                            return -1;
+
+                        var sqlId = reader.GetInt32Extended("characterID");
+                        return sqlId;
+                    }
+                }
+                catch (MySqlException ex)
+                {
+                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                }
+
+                return -1;
+            }
         }
-
-
     }
-
-
-
-
 }
