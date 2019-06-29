@@ -26,7 +26,7 @@ namespace RPServer.Util
         public void MySqlError(string errorMsg, uint errorCode)
         {
             NAPI.Util.ConsoleOutput($"[MySQL Error]: {errorMsg} [Code={errorCode}]");
-            FileWriteAsync(LogsFolder + MySqlLogFn, $"[{DateTime.Now}][MySQL Error]: {errorMsg} [Code={errorCode}]");
+            FileWriteAsync(MySqlLogFn, $"[{DateTime.Now}][MySQL Error]: {errorMsg} [Code={errorCode}]");
         }
         public void MySqlInfo(string msg)
         {
