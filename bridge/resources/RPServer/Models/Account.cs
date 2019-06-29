@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq.Expressions;
 using System.Security.Cryptography;
@@ -257,6 +258,7 @@ namespace RPServer.Models
                 return -1;
             }
         }
+        public async Task<List<Character>> GetCharactersAsync(string username) => await Character.FetchAsync(this);
         #endregion
 
         public static async Task<bool> AuthenticateAsync(string username, string password)
