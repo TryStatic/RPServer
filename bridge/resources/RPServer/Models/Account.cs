@@ -229,6 +229,34 @@ namespace RPServer.Models
             // TODO: Or not do anything and enable cascade? mmm
             throw new NotImplementedException();
         }
+        public static async Task<int> GetSqlIdAsync(string username)
+        {
+            const string query = "SELECT accountID FROM accounts WHERE username = @username LIMIT 1";
+
+            using (var dbConn = new DbConnection())
+            {
+                try
+                {
+                    var cmd = new MySqlCommand(query, dbConn.Connection);
+                    cmd.Parameters.AddWithValue("@username", username);
+
+                    await dbConn.OpenAsync();
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        if (!await reader.ReadAsync())
+                            return -1;
+
+                        var sqlId = reader.GetInt32Extended("accountID");
+                        return sqlId;
+                    }
+                }
+                catch (MySqlException ex)
+                {
+                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                }
+                return -1;
+            }
+        }
         #endregion
 
         public static async Task<bool> AuthenticateAsync(string username, string password)
