@@ -57,6 +57,7 @@ namespace RPServer.Controllers
             if (!client.IsLoggedIn()) return;
             var acc = client.GetAccountData();
             acc.HasEnabledTwoStepByEmail = !acc.HasEnabledTwoStepByEmail;
+            acc.HasPassedTwoStepByEmail = acc.HasEnabledTwoStepByEmail;
             client.SendChatMessage($"2FA by Email has been {acc.HasEnabledTwoStepByEmail}");
         }
 
@@ -74,11 +75,13 @@ namespace RPServer.Controllers
                 client.TriggerEvent(ServerToClient.ShowQRCode, link);
                 if (acc.TempTwoFactorGASharedKey == null) acc.TempTwoFactorGASharedKey = new byte[50];
                 acc.TempTwoFactorGASharedKey = key;
+                acc.HasPassedTwoStepByGA = true;
             }
             else
             {
                 if (!client.CanRunTask()) return;
                 acc.TwoFactorGASharedKey = null;
+                acc.HasPassedTwoStepByGA = false;
 
                 client.SetCanRunTask(false);
                 Task.Run(async () => await acc.SaveSingleAsync(() => acc.TwoFactorGASharedKey)).ContinueWith(HandleTaskCompletion).ContinueWith(task => client.SetCanRunTask(true));
@@ -111,7 +114,7 @@ namespace RPServer.Controllers
         public void ClientEvent_OnSubmitRegisterAccount(Client client, string username, string emailAddress, string password)
         {
             if(!client.CanRunTask()) return;
-            if (client.IsLoggedIn())
+            if (client.IsLoggedIn(true))
             {
                 client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorPlayerAlreadyLoggedIn);
                 return;
@@ -165,7 +168,7 @@ namespace RPServer.Controllers
         public void ClientEvent_OnSubmitLoginAccount(Client client, string username, string password)
         {
             if (!client.CanRunTask()) return;
-            if (client.IsLoggedIn())
+            if (client.IsLoggedIn(true))
             {
                 client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorPlayerAlreadyLoggedIn);
                 return;
@@ -234,7 +237,7 @@ namespace RPServer.Controllers
         public void ClientEvent_OnSubmitEmailToken(Client client, string token)
         {
             if(!client.CanRunTask()) return;
-            if (!client.IsLoggedIn())
+            if (!client.IsLoggedIn(true))
             {
                 client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorPlayerNotLoggedIn);
                 return;
@@ -282,7 +285,7 @@ namespace RPServer.Controllers
         {
             var accountData = client.GetAccountData();
 
-            if (!client.IsLoggedIn())
+            if (!client.IsLoggedIn(true))
             {
                 client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorPlayerNotLoggedIn);
                 return;
@@ -322,7 +325,7 @@ namespace RPServer.Controllers
         {
             if (!client.CanRunTask()) return;
 
-            if (!client.IsLoggedIn())
+            if (!client.IsLoggedIn(true))
             {
                 client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorPlayerNotLoggedIn);
                 return;
@@ -365,7 +368,7 @@ namespace RPServer.Controllers
         public void ClientEvent_OnSubmitNewVerificationEmail(Client client, string newEmail)
         {
             if(!client.CanRunTask()) return;
-            if (!client.IsLoggedIn())
+            if (!client.IsLoggedIn(true))
             {
                 client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorPlayerNotLoggedIn);
                 return;
@@ -426,7 +429,7 @@ namespace RPServer.Controllers
         public void ClientEvent_OnSubmitResendEmail(Client client)
         {
             if(!client.CanRunTask()) return;
-            if (!client.IsLoggedIn())
+            if (!client.IsLoggedIn(true))
             {
                 client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorPlayerNotLoggedIn);
                 return;
@@ -452,7 +455,7 @@ namespace RPServer.Controllers
         [RemoteEvent(ClientToServer.SubmitBackToLogin)]
         public void ClientEvent_OnSubmitBackToLogin(Client player)
         {
-            if (player.IsLoggedIn()) player.Logout();
+            if (player.IsLoggedIn(true)) player.Logout();
             player.TriggerEvent(ServerToClient.ShowLoginPage);
         }
 
@@ -460,7 +463,7 @@ namespace RPServer.Controllers
         public void ClientEvent_OnSubmitEnableGoogleAuthCode(Client player, string code)
         {
             if(!player.CanRunTask()) return;
-            if (!player.IsLoggedIn()) return;
+            if (!player.IsLoggedIn(true)) return;
             var acc = player.GetAccountData();
             if (acc.TempTwoFactorGASharedKey == null) return;
 
@@ -515,7 +518,7 @@ namespace RPServer.Controllers
         {
             foreach (var p in NAPI.Pools.GetAllPlayers())
             {
-                if (!p.IsLoggedIn()) continue;
+                if (!p.IsLoggedIn(true)) continue;
                 if (p.GetAccountData() != account) continue;
                 return true;
             }

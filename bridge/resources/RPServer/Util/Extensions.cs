@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Data.Common;
 using System.Linq;
 using GTANetworkAPI;
+using GTANetworkMethods;
 using RPServer.Models;
 
 namespace RPServer.Util
@@ -52,31 +53,30 @@ namespace RPServer.Util
             var ordinal = reader.GetOrdinal(column);
             return reader.GetBoolean(ordinal);
         }
-
-
         #endregion
 
         #region ClientExtensions
-        internal static bool IsLoggedIn(this Client player)
+        internal static bool IsLoggedIn(this Client player, bool excludeTwoFactor = false)
         {
-            return player.HasData(Account.DataKey);
+            if (excludeTwoFactor) return player.HasData(Account.DataKey);
+            return player.HasData(Account.DataKey) && player.GetAccountData().IsTwoFactorAuthenticated();
         }
 
         internal static Account GetAccountData(this Client player)
         {
-            return player.IsLoggedIn() ? (Account)player.GetData(Account.DataKey) : null;
+            return player.IsLoggedIn(true) ? (Account)player.GetData(Account.DataKey) : null;
         }
 
         internal static bool Login(this Client player, Account account)
         {
-            if (player.IsLoggedIn()) return false;
+            if (player.IsLoggedIn(true)) return false;
             player.SetData(Account.DataKey, account);
             return true;
         }
 
         internal static bool Logout(this Client player)
         {
-            if (!player.IsLoggedIn()) return false;
+            if (!player.IsLoggedIn(true)) return false;
             player.ResetData(Account.DataKey);
             return true;
         }

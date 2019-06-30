@@ -335,6 +335,12 @@ namespace RPServer.Models
         }
         public bool Is2FAbyEmailEnabled() => HasEnabledTwoStepByEmail;
         public bool Is2FAbyGAEnabled() => TwoFactorGASharedKey != null;
+        public bool IsTwoFactorAuthenticated()
+        {
+            if (!Is2FAbyEmailEnabled()) return !Is2FAbyGAEnabled() || HasPassedTwoStepByGA;
+            if (!HasPassedTwoStepByEmail) return false;
+            return !Is2FAbyGAEnabled() || HasPassedTwoStepByGA;
+        }
 
         protected bool Equals(Account other)
         {
