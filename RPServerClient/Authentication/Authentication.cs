@@ -8,12 +8,13 @@ using Events = RAGE.Events;
 
 namespace RPServerClient.Authentication
 {
-    internal class Auth : Events.Script
+    internal class Authentication : Events.Script
     {
-        private readonly Vector3 _loginCamPos = new Vector3(148.88035583496094f, -1407.726318359375f, 156.79771423339844f);
-        private readonly Vector3 _loginCamPointAt = new Vector3(126.11740112304688f, -772.676025390625f, 155.15695190429688f);
+        private static readonly Vector3 LoginCamPos = new Vector3(148.88035583496094f, -1407.726318359375f, 156.79771423339844f);
+        private static readonly Vector3 LoginCamPointAt = new Vector3(126.11740112304688f, -772.676025390625f, 155.15695190429688f);
+        private static readonly CustomCamera LoginCam = new CustomCamera(LoginCamPos, LoginCamPointAt);
 
-        public Auth()
+        public Authentication()
         {
             #region SERVER_TO_CLIENT
             Events.Add(ServerToClient.SetLoginScreen, OnSetLoginScreen);
@@ -206,20 +207,17 @@ namespace RPServerClient.Authentication
 
         private void OnSetLoginScreen(object[] args)
         {
-            var state = (bool)args[0];
-
-            Player.LocalPlayer.FreezePosition(state);
-            var loginCam = new CustomCamera(_loginCamPos, _loginCamPointAt);
-            loginCam.SetActive(state);
-
-            Events.CallLocal("setChatState", !state);
-            RAGE.Game.Ui.DisplayHud(!state);
-            RAGE.Game.Ui.DisplayRadar(!state);
+            var state = (bool) args[0];
+            LoginCam.SetActive(state);
 
             if (state)
             {
                 CustomBrowser.CreateBrowser(new object[] { "package://CEF/auth/login.html" });
                 RAGE.Game.Graphics.TransitionToBlurred(200);
+                Player.LocalPlayer.FreezePosition(true);
+                //Events.CallLocal("setChatState", false); TODO: UNCOMMENT WHEN DONE TESTING
+                RAGE.Game.Ui.DisplayHud(false);
+                RAGE.Game.Ui.DisplayRadar(false);
             }
             else
             {
