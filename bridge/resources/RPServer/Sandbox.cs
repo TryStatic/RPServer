@@ -1,4 +1,6 @@
-﻿using GTANetworkAPI;
+﻿using System.Globalization;
+using System.Text.RegularExpressions;
+using GTANetworkAPI;
 using RPServer._init;
 using RPServer.Util;
 
@@ -17,6 +19,7 @@ namespace RPServer
             player.SendChatMessage("/logout /toggletwofactorga /toggletwofactoremail");
             player.SendChatMessage("/veh /ecc /heal /hmc /time /weather /getping /onlineppl /givegun");
             player.SendChatMessage("/setskin /setnick /togflymode /getcamcords /spawnme");
+            player.SendChatMessage("/loadipl /removeipl /resetipls /gotopos /getpos");
 
         }
 
@@ -26,6 +29,48 @@ namespace RPServer
             NAPI.Player.SpawnPlayer(player, Globals.DefaultSpawnPos);
 
         }
+
+        [Command("getpos")]
+        public void GetPos(Client player)
+        {
+            player.SendChatMessage(player.Position + "Heading: " + player.Heading);
+        }
+
+        [Command("loadipl")]
+        public void LoadIPL(Client player, string IPLName)
+        {
+            NAPI.World.RequestIpl(IPLName);
+        }
+
+        [Command("removeipl")]
+        public void RemoveIPL(Client player, string IPLName)
+        {
+            NAPI.World.RemoveIpl(IPLName);
+        }
+
+        [Command("resetipls")]
+        public void ResetIPLs(Client player)
+        {
+            NAPI.World.ResetIplList();
+        }
+
+        [Command("gotopos", GreedyArg = true)]
+        public void GotoPOS(Client player, string pos)
+        {
+            var matches = Regex.Matches(pos, @"([-]?[0-9]+\.[0-9]*)+");
+            if (matches.Count < 3) return;
+
+            var newPos = new Vector3();
+            
+
+            newPos.X = float.Parse(matches[0].Value, CultureInfo.InvariantCulture.NumberFormat);
+            newPos.Y = float.Parse(matches[1].Value, CultureInfo.InvariantCulture.NumberFormat);
+            newPos.Z = float.Parse(matches[2].Value, CultureInfo.InvariantCulture.NumberFormat);
+
+            player.Position = newPos;
+
+        }
+
 
         [Command("togflymode")]
         public void ToggleFlyMode(Client player)

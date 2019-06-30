@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Data.Common;
 using System.Linq;
 using GTANetworkAPI;
-using GTANetworkMethods;
 using RPServer.Models;
 
 namespace RPServer.Util

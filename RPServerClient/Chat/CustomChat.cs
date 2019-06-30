@@ -1,7 +1,6 @@
-﻿using RAGE;
-using RAGE.Ui;
+﻿using RAGE.Ui;
 
-namespace RPServerClient.Globals
+namespace RPServerClient.Chat
 {
     internal class CustomChat : RAGE.Events.Script
     {
@@ -11,7 +10,7 @@ namespace RPServerClient.Globals
         {
             RAGE.Events.Add("SendToChat", OnSendToChat);
             RAGE.Events.Add("setChatState", OnSetChatState);
-            Chat.Show(false);
+            RAGE.Chat.Show(false);
             ChatBrowser = new HtmlWindow("package://CEF/chat/index.html");
             ChatBrowser.MarkAsChat();
         }
@@ -25,7 +24,7 @@ namespace RPServerClient.Globals
 
         private void OnSendToChat(object[] args)
         {
-            Chat.Output(args[0].ToString());
+            RAGE.Chat.Output(args[0].ToString());
         }
     }
 }

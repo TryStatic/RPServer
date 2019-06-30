@@ -62,7 +62,7 @@ namespace RPServer._init
 
         [RemoteEvent(ClientToServer.SubmitPlayerCommand)]
         public void ClientEvent_OnPlayerCommand(Client client, string cmd)
-        {
+        { // This CANNOT block commands
             var username = "UNREGISTERED";
             if (client.IsLoggedIn())
             {

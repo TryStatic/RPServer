@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using RAGE;
 using RAGE.Ui;
 
 namespace RPServerClient.Globals
@@ -34,7 +33,7 @@ namespace RPServerClient.Globals
 
             if (string.IsNullOrWhiteSpace(funcName))
             {
-                Chat.Output("[ExecuteFunction(string fn)]: fn null or empty or whitespace");
+                RAGE.Chat.Output("[ExecuteFunction(string fn)]: fn null or empty or whitespace");
                 return;
             }
 
