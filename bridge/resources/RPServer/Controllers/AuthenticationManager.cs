@@ -13,8 +13,12 @@ using Task = System.Threading.Tasks.Task;
 
 namespace RPServer.Controllers
 {
+    public delegate void OnPlayerSuccessfulLoginDelegate(object source, EventArgs e);
+
     internal class AuthenticationManager : Script
     {
+        public static event OnPlayerSuccessfulLoginDelegate PlayerSuccessfulLogin;
+
         [ServerEvent(Event.PlayerConnected)]
         public void OnPlayerConnected(Client client)
         {
@@ -505,14 +509,16 @@ namespace RPServer.Controllers
                 client.Dimension = (uint)client.Value + 1500;
             }
             else
-            {
+            { // This part gets triggered only once per successful login
                 client.Transparency = 255;
-                client.Dimension = 0;
                 NAPI.Player.SpawnPlayer(client, Globals.DefaultSpawnPos);
                 client.SendChatMessage(AccountStrings.SuccessLogin);
                 client.SendChatMessage("SUM COMMANDS: /cmds");
             }
             client.TriggerEvent(ServerToClient.SetLoginScreen, state);
+
+            // Keep this at the end of the Method
+            if(!state) PlayerSuccessfulLogin?.Invoke(client, EventArgs.Empty);
         }
         private static bool IsAccountLoggedIn(Account account)
         {
