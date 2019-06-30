@@ -18,7 +18,7 @@ namespace RPServer
         {
             player.SendChatMessage("/logout /toggletwofactorga /toggletwofactoremail");
             player.SendChatMessage("/veh /ecc /heal /hmc /time /weather /getping /onlineppl /givegun");
-            player.SendChatMessage("/setskin /setnick /togflymode /getcamcords /spawnme");
+            player.SendChatMessage("/setskin /setnick /togflymode /getcamcords /spawnme /playanimation /stopani");
             player.SendChatMessage("/loadipl /removeipl /resetipls /gotopos /getpos");
 
         }
@@ -27,7 +27,18 @@ namespace RPServer
         public void SpawnMe(Client player)
         {
             NAPI.Player.SpawnPlayer(player, Globals.DefaultSpawnPos);
+        }
 
+        [Command("playanimation")]
+        public void PlayAnimation(Client player, string animDict, string animName, int flag)
+        {
+            player.PlayAnimation(animDict, animName, flag);
+        }
+
+        [Command("stopani")]
+        public void StopAni(Client player)
+        {
+            player.StopAnimation();
         }
 
         [Command("getpos")]
