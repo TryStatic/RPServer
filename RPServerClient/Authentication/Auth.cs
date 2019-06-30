@@ -10,8 +10,13 @@ namespace RPServerClient.Authentication
 {
     internal class Auth : Events.Script
     {
+        private static CustomCamera _loginCam;
+        private readonly Vector3 _loginCamPos = new Vector3(148.88035583496094f, -1407.726318359375f, 156.79771423339844f);
+        private readonly Vector3 _loginCamPointAt = new Vector3(126.11740112304688f, -772.676025390625f, 155.15695190429688f);
+
         public Auth()
         {
+            if(_loginCam == null) _loginCam = new CustomCamera(_loginCamPos, _loginCamPointAt);
 
             #region SERVER_TO_CLIENT
             Events.Add(ServerToClient.SetLoginScreen, OnSetLoginScreen);
@@ -50,8 +55,6 @@ namespace RPServerClient.Authentication
             Events.Add("onCloseWindow", OnCloseWindow);
             Events.Add("onSubmitEnableGoogleAuthCode", onSubmitEnableGoogleAuthCode);
             #endregion
-
-
         }
 
 
@@ -232,6 +235,7 @@ namespace RPServerClient.Authentication
 
             if (state)
             {
+                _loginCam.SetActive();
                 Chat.Output("FROM:SERVER|OnSetLoginScreen => Display:login.html");
                 Browser.CreateBrowser(new object[] { "package://CEF/auth/login.html" });
                 RAGE.Game.Graphics.TransitionToBlurred(200);
@@ -239,6 +243,7 @@ namespace RPServerClient.Authentication
             }
             else
             {
+                _loginCam.SetInactive();
                 Chat.Output("FROM:SERVER|OnSetLoginScreen => CLIENT:DestroyBrowser()");
                 Browser.DestroyBrowser(null);
                 RAGE.Game.Graphics.TransitionFromBlurred(200);
