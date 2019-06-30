@@ -61,60 +61,60 @@ namespace RPServerClient.Authentication
         private void OnShowQRCodeEnabled(object[] args)
         {
             Chat.Output("FROM:Server|OnShowInitialEmailVerification => Display:verifyemailfirst.html");
-            Browser.MainBrowser.Url = "package://CEF/auth/enabledgoogleauth.html";
+            CustomBrowser.MainBrowser.Url = "package://CEF/auth/enabledgoogleauth.html";
         }
 
 
         private void OnCloseWindow(object[] args)
         {
-            Browser.DestroyBrowser(null);
+            CustomBrowser.DestroyBrowser(null);
         }
 
         private void OnShowQRCode(object[] args)
         {
             if (args[0] == null) return;
             var link = args[0].ToString();
-            Browser.CreateBrowser(new []{ "package://CEF/auth/enablegoogleauth.html" });
-            Browser.ExecuteFunction(new object[] { "addImage", link });
+            CustomBrowser.CreateBrowser(new []{ "package://CEF/auth/enablegoogleauth.html" });
+            CustomBrowser.ExecuteFunction(new object[] { "addImage", link });
         }
 
         private void OnShowLoginPage(object[] args)
         {
             Chat.Output("FROM:Server|OnShowLoginPage => Display:login.html");
-            Browser.MainBrowser.Url = "package://CEF/auth/login.html";
+            CustomBrowser.MainBrowser.Url = "package://CEF/auth/login.html";
         }
 
         private void OnShowInitialEmailVerification(object[] args)
         {
             Chat.Output("FROM:Server|OnShowInitialEmailVerification => Display:verifyemailfirst.html");
-            Browser.MainBrowser.Url = "package://CEF/auth/verifyemailfirst.html";
+            CustomBrowser.MainBrowser.Url = "package://CEF/auth/verifyemailfirst.html";
         }
 
         private void OnShow2FAbyGoogleAuth(object[] args)
         {
             Chat.Output("FROM:Server|OnShow2FAbyGoogleAuth => Display:verifygoogleauth.html");
-            Browser.MainBrowser.Url = "package://CEF/auth/verifygoogleauth.html";
+            CustomBrowser.MainBrowser.Url = "package://CEF/auth/verifygoogleauth.html";
             if(args[0] != null) OnDisplayError(new[] { args[0] });
         }
 
         private void OnShow2FAbyEmailAddress(object[] args)
         {
             Chat.Output("FROM:Server|OnShow2FAbyEmailAddress => Display:verifyemail.html");
-            Browser.MainBrowser.Url = "package://CEF/auth/verifyemail.html";
+            CustomBrowser.MainBrowser.Url = "package://CEF/auth/verifyemail.html";
             if (args[0] != null) OnDisplayError(new[] { args[0] });
         }
 
         private void OnShowChangeEmailAddress(object[] args)
         {
             Chat.Output("FROM:Server|OnShow2FAbyEmailAddress => Display:verifyemail.html");
-            Browser.MainBrowser.Url = "package://CEF/auth/changemail.html";
+            CustomBrowser.MainBrowser.Url = "package://CEF/auth/changemail.html";
             if (args[0] != null) OnDisplayError(new[] { args[0] });
         }
 
         private void OnRegistrationSuccess(object[] args)
         {
             Chat.Output("FROM:Server|OnRegistrationSuccess => Display:login.html");
-            Browser.MainBrowser.Url = "package://CEF/auth/login.html";
+            CustomBrowser.MainBrowser.Url = "package://CEF/auth/login.html";
             if (args[0] != null) OnDisplaySuccess(new[] { args[0] });
         }
 
@@ -122,7 +122,7 @@ namespace RPServerClient.Authentication
         private void onSubmitEnableGoogleAuthCode(object[] args)
         {
             Chat.Output("FROM:CEF|onSubmitEnableGoogleAuthCode => SERVERCALL: SubmitEnableGoogleAuthCode");
-            Browser.ExecuteFunction("ShowLoading");
+            CustomBrowser.ExecuteFunction("ShowLoading");
             Events.CallRemote(ClientToServer.SubmitEnableGoogleAuthCode, args[0].ToString());
         }
 
@@ -130,7 +130,7 @@ namespace RPServerClient.Authentication
         private void OnSubmitNewEmail(object[] args)
         {
             Chat.Output("FROM:CEF|OnSubmitNewEmail => SERVERCALL: SubmitNewVerificationEmail");
-            Browser.ExecuteFunction("ShowLoading");
+            CustomBrowser.ExecuteFunction("ShowLoading");
             Events.CallRemote(ClientToServer.SubmitNewVerificationEmail, args[0].ToString());
         }
 
@@ -138,7 +138,7 @@ namespace RPServerClient.Authentication
         private void OnSubmitFirstEmailToken(object[] args)
         {
             Chat.Output("FROM:CEF|OnSubmitFirstEmailToken => SERVERCALL: SubmitFirstEmailToken");
-            Browser.ExecuteFunction("ShowLoading");
+            CustomBrowser.ExecuteFunction("ShowLoading");
             Events.CallRemote(ClientToServer.SubmitFirstEmailToken, args[0].ToString());
         }
 
@@ -146,7 +146,7 @@ namespace RPServerClient.Authentication
         private void OnSubmitGoogleAuthCode(object[] args)
         {
             Chat.Output("FROM:CEF|OnSubmitGoogleAuthCode => SERVERCALL: SubmitGoogleAuthCode");
-            Browser.ExecuteFunction("ShowLoading");
+            CustomBrowser.ExecuteFunction("ShowLoading");
             Events.CallRemote(ClientToServer.SubmitGoogleAuthCode, args[0].ToString());
         }
 
@@ -154,7 +154,7 @@ namespace RPServerClient.Authentication
         private void OnSubmitEmailToken(object[] args)
         {
             Chat.Output("FROM:CEF|OnSubmitEmailToken => SERVERCALL: SubmitEmailToken");
-            Browser.ExecuteFunction("ShowLoading");
+            CustomBrowser.ExecuteFunction("ShowLoading");
             Events.CallRemote(ClientToServer.SubmitEmailToken, args[0].ToString());
         }
 
@@ -169,7 +169,7 @@ namespace RPServerClient.Authentication
         private void OnBackToLogin(object[] args)
         {
             Chat.Output("FROM:CEF|OnBackToLogin => SERVERCALL: SubmitBackToLogin");
-            Browser.ExecuteFunction("ShowLoading");
+            CustomBrowser.ExecuteFunction("ShowLoading");
             Events.CallRemote(ClientToServer.SubmitBackToLogin);
         }
 
@@ -177,7 +177,7 @@ namespace RPServerClient.Authentication
         private void OnSubmitForgetPass(object[] args)
         {
             Chat.Output("FROM:CEF|OnSubmitForgetPass => SERVERCALL: SubmitForgetPass");
-            Browser.ExecuteFunction("ShowLoading");
+            CustomBrowser.ExecuteFunction("ShowLoading");
             Events.CallRemote("SubmitForgetPass", args[0].ToString(), args[1].ToString());
         }
 
@@ -185,7 +185,7 @@ namespace RPServerClient.Authentication
         private void OnSubmitNewPass(object[] args)
         {
             Chat.Output("FROM:CEF|OnSubmitNewPass => SERVERCALL: SubmitSubmitNewPass");
-            Browser.ExecuteFunction("ShowLoading");
+            CustomBrowser.ExecuteFunction("ShowLoading");
             Events.CallRemote("SubmitSubmitNewPass", args[0].ToString());
         }
 
@@ -193,7 +193,7 @@ namespace RPServerClient.Authentication
         private void OnSubmitLogin(object[] args)
         {
             Chat.Output("FROM:CEF|OnSubmitLogin => SERVERCALL: SubmitLoginAccount");
-            Browser.ExecuteFunction("ShowLoading");
+            CustomBrowser.ExecuteFunction("ShowLoading");
             Events.CallRemote(ClientToServer.SubmitLoginAccount, args[0].ToString(), args[1].ToString());
         }
 
@@ -201,7 +201,7 @@ namespace RPServerClient.Authentication
         private void OnSubmitRegister(object[] args)
         {
             Chat.Output("FROM:CEF|OnSubmitRegister => SERVERCALL: SubmitRegisterAccount");
-            Browser.ExecuteFunction("ShowLoading");
+            CustomBrowser.ExecuteFunction("ShowLoading");
             Events.CallRemote(ClientToServer.SubmitRegisterAccount, args[0].ToString(), args[1].ToString(), args[2].ToString());
         }
 
@@ -212,8 +212,8 @@ namespace RPServerClient.Authentication
 
             var msg = args[0] as string;
 
-            Browser.ExecuteFunction("HideLoading");
-            Browser.ExecuteFunction(new object[] { "showError", msg.Replace("'", @"\'") });
+            CustomBrowser.ExecuteFunction("HideLoading");
+            CustomBrowser.ExecuteFunction(new object[] { "showError", msg.Replace("'", @"\'") });
         }
 
         private void OnDisplaySuccess(object[] args)
@@ -223,8 +223,8 @@ namespace RPServerClient.Authentication
 
             var msg = args[0] as string;
 
-            Browser.ExecuteFunction("HideLoading");
-            Browser.ExecuteFunction(new object[] { "showSuccess", msg.Replace("'", @"\'") });
+            CustomBrowser.ExecuteFunction("HideLoading");
+            CustomBrowser.ExecuteFunction(new object[] { "showSuccess", msg.Replace("'", @"\'") });
         }
 
         private void OnSetLoginScreen(object[] args)
@@ -232,22 +232,23 @@ namespace RPServerClient.Authentication
             var state = (bool)args[0];
 
             Player.LocalPlayer.FreezePosition(state);
+            _loginCam.SetActive(state);
+
+            Events.CallLocal("setChatState", !state);
+            RAGE.Game.Ui.DisplayHud(!state);
+            RAGE.Game.Ui.DisplayRadar(!state);
 
             if (state)
             {
-                _loginCam.SetActive();
                 Chat.Output("FROM:SERVER|OnSetLoginScreen => Display:login.html");
-                Browser.CreateBrowser(new object[] { "package://CEF/auth/login.html" });
+                CustomBrowser.CreateBrowser(new object[] { "package://CEF/auth/login.html" });
                 RAGE.Game.Graphics.TransitionToBlurred(200);
-                Events.CallLocal("setEnabled", false);
             }
             else
             {
-                _loginCam.SetInactive();
                 Chat.Output("FROM:SERVER|OnSetLoginScreen => CLIENT:DestroyBrowser()");
-                Browser.DestroyBrowser(null);
+                CustomBrowser.DestroyBrowser(null);
                 RAGE.Game.Graphics.TransitionFromBlurred(200);
-                Events.CallLocal("setEnabled", true);
             }
         }
     }

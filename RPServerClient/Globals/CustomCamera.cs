@@ -14,15 +14,19 @@ namespace RPServerClient.Globals
             RAGE.Game.Cam.SetCamCoord(_cameraId, camCord.X, camCord.Y, camCord.Z);
             RAGE.Game.Cam.PointCamAtCoord(_cameraId, pointAt.X, pointAt.Y, pointAt.Z);
         }
-        public void SetActive()
+
+        public void SetActive(bool state)
         {
-            RAGE.Game.Cam.SetCamActive(_cameraId, true);
-            RAGE.Game.Cam.RenderScriptCams(true, false, 0, true, false, 0);
-        }
-        public void SetInactive()
-        {
-            RAGE.Game.Cam.DestroyCam(_cameraId, true);
-            RAGE.Game.Cam.RenderScriptCams(false, false, 0, true, false, 0);
+            if (state)
+            {
+                RAGE.Game.Cam.SetCamActive(_cameraId, true);
+                RAGE.Game.Cam.RenderScriptCams(true, false, 0, true, false, 0);
+            }
+            else
+            {
+                RAGE.Game.Cam.DestroyCam(_cameraId, true);
+                RAGE.Game.Cam.RenderScriptCams(false, false, 0, true, false, 0);
+            }
         }
     }
 }

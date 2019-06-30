@@ -10,13 +10,13 @@ namespace RPServerClient.Globals
         public CustomChat()
         {
             RAGE.Events.Add("SendToChat", OnSendToChat);
-            RAGE.Events.Add("setEnabled", OnSetEnabled);
+            RAGE.Events.Add("setChatState", OnSetChatState);
             Chat.Show(false);
             ChatBrowser = new HtmlWindow("package://CEF/chat/index.html");
             ChatBrowser.MarkAsChat();
         }
 
-        public void OnSetEnabled(object[] args)
+        public void OnSetChatState(object[] args)
         {
             if (args[0] == null) return;
             var state = (bool) args[0];

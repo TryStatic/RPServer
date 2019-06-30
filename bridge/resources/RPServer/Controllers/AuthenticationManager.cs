@@ -496,16 +496,6 @@ namespace RPServer.Controllers
             client.SendChatMessage(AccountStrings.SuccessLogin);
             client.SendChatMessage("SUM COMMANDS: /cmds");
         }
-        private static bool IsAccountLoggedIn(Account account)
-        {
-            foreach (var p in NAPI.Pools.GetAllPlayers())
-            {
-                if (!p.IsLoggedIn()) continue;
-                if (p.GetAccountData() != account) continue;
-                return true;
-            }
-            return false;
-        }
         private static void SetLoginState(Client client, bool state)
         {
             if (state)
@@ -519,6 +509,16 @@ namespace RPServer.Controllers
                 client.Dimension = 0;
             }
             client.TriggerEvent(ServerToClient.SetLoginScreen, state);
+        }
+        private static bool IsAccountLoggedIn(Account account)
+        {
+            foreach (var p in NAPI.Pools.GetAllPlayers())
+            {
+                if (!p.IsLoggedIn()) continue;
+                if (p.GetAccountData() != account) continue;
+                return true;
+            }
+            return false;
         }
         private static void HandleTaskCompletion(Task t)
         {
