@@ -15,8 +15,27 @@ namespace RPServer
         {
             player.SendChatMessage("/logout /toggletwofactorga /toggletwofactoremail");
             player.SendChatMessage("/veh /ecc /heal /hmc /time /weather /getping /onlineppl /givegun");
-            player.SendChatMessage("/setskin /setnick");
+            player.SendChatMessage("/setskin /setnick /togflymode /getcamcords");
 
+        }
+
+        [Command("togflymode")]
+        public void ToggleFlyMode(Client player)
+        {
+            player.TriggerEvent("flyModeStart");
+        }
+
+        [Command("getcamcords")]
+        public void GetCamCords(Client player)
+        {
+            player.TriggerEvent("getCamCoords", player.Name);
+        }
+
+        [RemoteEvent("saveCamCoords")]
+        public void ClientEvent_OnSaveCamCoords(Client client, string coords, string pointAt)
+        {
+            Logger.GetInstance().ChatLog(coords);
+            Logger.GetInstance().ChatLog(pointAt);
         }
 
         [Command("setnick")]

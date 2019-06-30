@@ -6,6 +6,8 @@ namespace RPServerClient
     {
         public Sandbox()
         {
+            Events.Add("ToggleFlyMode", OnToggleFlyMode);
+
             // Boost
             uint stamina = RAGE.Game.Misc.GetHashKey("SP0_STAMINA");
             RAGE.Game.Stats.StatSetInt(stamina, 100, true);
@@ -22,5 +24,7 @@ namespace RPServerClient
             uint lungCapacity = RAGE.Game.Misc.GetHashKey("SP0_LUNGCAPACITY");
             RAGE.Game.Stats.StatSetInt(lungCapacity, 100, true);
         }
+
+        private void OnToggleFlyMode(object[] args) => Events.CallLocal("flyModeStart");
     }
 }

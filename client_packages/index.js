@@ -1,0 +1,1 @@
+require('./FlyScript/index.js');
