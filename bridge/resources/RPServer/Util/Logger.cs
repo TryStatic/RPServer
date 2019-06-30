@@ -12,6 +12,7 @@ namespace RPServer.Util
         private const string MySqlLogFn = "mysql.log";
         private const string CommandLogFn = "command.log";
         private const string AuthLogFn = "auth.log";
+        private const string ChatLogFn = "chat.log";
 
         private Logger()
         {
@@ -21,6 +22,7 @@ namespace RPServer.Util
             FileWrite(MySqlLogFn, $"------------------------ [SERVER STARTED AT: {DateTime.Now}] ------------------------");
             FileWrite(CommandLogFn, $"------------------------ [SERVER STARTED AT: {DateTime.Now}] ------------------------");
             FileWrite(AuthLogFn, $"------------------------ [SERVER STARTED AT: {DateTime.Now}] ------------------------");
+            FileWrite(ChatLogFn, $"------------------------ [SERVER STARTED AT: {DateTime.Now}] ------------------------");
         }
 
         public void MySqlError(string errorMsg, uint errorCode)
@@ -41,6 +43,12 @@ namespace RPServer.Util
         {
             NAPI.Util.ConsoleOutput($"[Auth]: {logStr}");
             FileWriteAsync(AuthLogFn, $"[{DateTime.Now}]: {logStr}");
+        }
+
+        internal void ChatLog(string sendMsg)
+        {
+            NAPI.Util.ConsoleOutput($"[Chat]: {sendMsg}");
+            FileWriteAsync(ChatLogFn, $"[{DateTime.Now}]: {sendMsg}");
         }
 
         private static async void FileWriteAsync(string file, string message)
@@ -66,6 +74,7 @@ namespace RPServer.Util
             FileWrite(MySqlLogFn, $"------------------------ [SERVER STOPPED AT: {DateTime.Now}] ------------------------");
             FileWrite(CommandLogFn, $"------------------------ [SERVER STOPPED AT: {DateTime.Now}] ------------------------");
             FileWrite(AuthLogFn, $"------------------------ [SERVER STOPPED AT: {DateTime.Now}] ------------------------");
+            FileWrite(ChatLogFn, $"------------------------ [SERVER STOPPED AT: {DateTime.Now}] ------------------------");
         }
 
         public static Logger GetInstance() => _logger ?? (_logger = new Logger());

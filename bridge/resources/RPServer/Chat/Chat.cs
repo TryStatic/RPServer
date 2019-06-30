@@ -11,8 +11,9 @@ namespace RPServer.Chat
             if(!client.IsLoggedIn()) return;
             var acc = client.GetAccountData();
             var sendMsg = $"{acc.Username}: {message}";
-            NAPI.ClientEvent.TriggerClientEventForAll("SendToChat", sendMsg);
 
+            Logger.GetInstance().ChatLog(sendMsg);
+            NAPI.ClientEvent.TriggerClientEventForAll("SendToChat", sendMsg);
         }
     }
 }

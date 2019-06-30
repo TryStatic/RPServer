@@ -39,6 +39,9 @@ var chatAPI =
 {
 	push: (text) =>
 	{
+        if(chat.container == null) {
+            return;
+        }
 		chat.size++;
 		if (chat.size >= 50)
 		{
