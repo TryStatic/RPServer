@@ -1,4 +1,5 @@
 ﻿using GTANetworkAPI;
+using RPServer._init;
 using RPServer.Util;
 
 namespace RPServer
@@ -15,7 +16,14 @@ namespace RPServer
         {
             player.SendChatMessage("/logout /toggletwofactorga /toggletwofactoremail");
             player.SendChatMessage("/veh /ecc /heal /hmc /time /weather /getping /onlineppl /givegun");
-            player.SendChatMessage("/setskin /setnick /togflymode /getcamcords");
+            player.SendChatMessage("/setskin /setnick /togflymode /getcamcords /spawnme");
+
+        }
+
+        [Command("spawnme")]
+        public void SpawnMe(Client player)
+        {
+            NAPI.Player.SpawnPlayer(player, Globals.DefaultSpawnPos);
 
         }
 

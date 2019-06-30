@@ -507,6 +507,7 @@ namespace RPServer.Controllers
             {
                 client.Transparency = 255;
                 client.Dimension = 0;
+                NAPI.Player.SpawnPlayer(client, Globals.DefaultSpawnPos);
             }
             client.TriggerEvent(ServerToClient.SetLoginScreen, state);
         }

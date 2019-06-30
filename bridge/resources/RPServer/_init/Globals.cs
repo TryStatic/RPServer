@@ -16,6 +16,7 @@ namespace RPServer._init
         public const uint VERSION_PATCH = 0;
         public const string PRE_RELEASE = "";
 
+        public static readonly Vector3 DefaultSpawnPos = new Vector3(-782.1527709960938f, 19.77294921875f, 41.93227767944336f);
         private static Timer _expiredEmailTokensTimer;
 
         [ServerEvent(Event.ResourceStart)]
@@ -28,9 +29,9 @@ namespace RPServer._init
             Console.WriteLine();
 
             // Server Settings
-            //NAPI.Server.SetAutoSpawnOnConnect(false);
-            //NAPI.Server.SetAutoRespawnAfterDeath(false);
-            //NAPI.Server.SetDefaultSpawnLocation();
+            NAPI.Server.SetAutoSpawnOnConnect(false);
+            NAPI.Server.SetAutoRespawnAfterDeath(false);
+            NAPI.Server.SetDefaultSpawnLocation(DefaultSpawnPos);
             NAPI.Server.SetGlobalServerChat(false);
 
             // Sever World Settings
