@@ -30,5 +30,8 @@
         public const string ShowLoginPage = "ShowLoginPage";
         public const string ShowQRCode = "ShowQRCode";
         public const string ShowQRCodeEnabled = "ShowQRCodeEnabled";
+
+        // Character
+        public const string InitCharSelection = "InitCharSelection";
     }
 }
