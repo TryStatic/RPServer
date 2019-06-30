@@ -10,14 +10,11 @@ namespace RPServerClient.Authentication
 {
     internal class Auth : Events.Script
     {
-        private static CustomCamera _loginCam;
         private readonly Vector3 _loginCamPos = new Vector3(148.88035583496094f, -1407.726318359375f, 156.79771423339844f);
         private readonly Vector3 _loginCamPointAt = new Vector3(126.11740112304688f, -772.676025390625f, 155.15695190429688f);
 
         public Auth()
         {
-            if(_loginCam == null) _loginCam = new CustomCamera(_loginCamPos, _loginCamPointAt);
-
             #region SERVER_TO_CLIENT
             Events.Add(ServerToClient.SetLoginScreen, OnSetLoginScreen);
             Events.Add(ServerToClient.DisplayError, OnDisplayError);
@@ -212,7 +209,8 @@ namespace RPServerClient.Authentication
             var state = (bool)args[0];
 
             Player.LocalPlayer.FreezePosition(state);
-            _loginCam.SetActive(state);
+            var loginCam = new CustomCamera(_loginCamPos, _loginCamPointAt);
+            loginCam.SetActive(state);
 
             Events.CallLocal("setChatState", !state);
             RAGE.Game.Ui.DisplayHud(!state);

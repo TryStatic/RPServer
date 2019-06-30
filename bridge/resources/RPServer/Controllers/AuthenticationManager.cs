@@ -496,8 +496,6 @@ namespace RPServer.Controllers
             fetchedAcc.LastSocialClubName = client.SocialClubName;
             client.Login(fetchedAcc);
             await fetchedAcc.SaveAsync();
-            client.SendChatMessage(AccountStrings.SuccessLogin);
-            client.SendChatMessage("SUM COMMANDS: /cmds");
         }
         private static void SetLoginState(Client client, bool state)
         {
@@ -511,6 +509,8 @@ namespace RPServer.Controllers
                 client.Transparency = 255;
                 client.Dimension = 0;
                 NAPI.Player.SpawnPlayer(client, Globals.DefaultSpawnPos);
+                client.SendChatMessage(AccountStrings.SuccessLogin);
+                client.SendChatMessage("SUM COMMANDS: /cmds");
             }
             client.TriggerEvent(ServerToClient.SetLoginScreen, state);
         }
