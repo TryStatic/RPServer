@@ -23,7 +23,15 @@ namespace RPServer.Controllers
             var client = source as Client;
             if (client == null) return;
             if(!client.IsLoggedIn()) return;
+
             client.TriggerEvent(ServerToClient.InitCharSelection);
+
+            var accData = client.GetAccountData();
+            TaskManager.Run(client, async () =>
+            {
+                var chars = await accData.GetCharactersAsync();
+                // TODO: Send appropriate character data to client for "Rendering"
+            });
         }
 
         [RemoteEvent("ApplyCharSelectionAnimation")]

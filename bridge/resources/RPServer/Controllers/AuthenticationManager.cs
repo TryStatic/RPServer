@@ -36,7 +36,7 @@ namespace RPServer.Controllers
             if (client.IsLoggedIn())
             {
                 var acc = client.GetAccountData();
-                Task.Run(async () => await acc.SaveAsync()).ContinueWith(HandleTaskCompletion);
+                TaskManager.Run(client, async () => await acc.SaveAsync());
                 str = $"Registered (user: {acc.Username}";
                 client.Logout();
             }
@@ -87,8 +87,7 @@ namespace RPServer.Controllers
                 acc.TwoFactorGASharedKey = null;
                 acc.HasPassedTwoStepByGA = false;
 
-                client.SetCanRunTask(false);
-                Task.Run(async () => await acc.SaveSingleAsync(() => acc.TwoFactorGASharedKey)).ContinueWith(HandleTaskCompletion).ContinueWith(task => client.SetCanRunTask(true));
+                TaskManager.Run(client, async () => await acc.SaveSingleAsync(() => acc.TwoFactorGASharedKey));
             }
 
         }
@@ -105,8 +104,7 @@ namespace RPServer.Controllers
 
             var acc = player.GetAccountData();
 
-            player.SetCanRunTask(false);
-            Task.Run(async () => await acc.SaveAsync()).ContinueWith(HandleTaskCompletion).ContinueWith(task => player.SetCanRunTask(true));
+            TaskManager.Run(player, async () => await acc.SaveAsync());
 
             player.Logout();
             player.SendChatMessage("Bye!");
@@ -138,9 +136,7 @@ namespace RPServer.Controllers
                 client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorEmailInvalid);
                 return;
             }
-
-            client.SetCanRunTask(false);
-            Task.Run(async () => await OnRegisterNewAccountAsync(client, username, emailAddress, password)).ContinueWith(HandleTaskCompletion).ContinueWith(task => client.SetCanRunTask(true));
+            TaskManager.Run(client, async () => await OnRegisterNewAccountAsync(client, username, emailAddress, password));
         }
         public static async Task OnRegisterNewAccountAsync(Client client, string username, string emailAddress, string password)
         {
@@ -187,9 +183,7 @@ namespace RPServer.Controllers
                 client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorPasswordInvalid);
                 return;
             }
-
-            client.SetCanRunTask(false);
-            Task.Run(async () => await OnLoginAccountAsync(client, username, password)).ContinueWith(HandleTaskCompletion).ContinueWith(task => client.SetCanRunTask(true));
+            TaskManager.Run(client, async () => await OnLoginAccountAsync(client, username, password));
         }
         public static async Task OnLoginAccountAsync(Client client, string username, string password)
         {
@@ -252,9 +246,7 @@ namespace RPServer.Controllers
                 client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorInvalidVerificationCode);
                 return;
             }
-
-            client.SetCanRunTask(false);
-            Task.Run(async () => await OnVerifyTwoStepByEmailAsync(client, token)).ContinueWith(HandleTaskCompletion).ContinueWith(task => client.SetCanRunTask(true));
+            TaskManager.Run(client, async () => await OnVerifyTwoStepByEmailAsync(client, token));
         }
         public static async Task OnVerifyTwoStepByEmailAsync(Client client, string providedEmailToken)
         {
@@ -345,8 +337,7 @@ namespace RPServer.Controllers
                 return;
             }
 
-            client.SetCanRunTask(false);
-            Task.Run(async () => await OnVerifyEmailAsync(client, providedToken)).ContinueWith(HandleTaskCompletion).ContinueWith(task => client.SetCanRunTask(true));
+            TaskManager.Run(client, async () => await OnVerifyEmailAsync(client, providedToken));
         }
 
         public static async Task OnVerifyEmailAsync(Client client, string providedToken)
@@ -389,9 +380,7 @@ namespace RPServer.Controllers
                 client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorEmailAlreadyVerified);
                 return;
             }
-
-            client.SetCanRunTask(false);
-            Task.Run(async () => await OnChangeVerificationEmailAsync(client, newEmail)).ContinueWith(HandleTaskCompletion).ContinueWith(task => client.SetCanRunTask(true));
+            TaskManager.Run(client, async () => await OnChangeVerificationEmailAsync(client, newEmail));
         }
         public static async Task OnChangeVerificationEmailAsync(Client client, string newEmail)
         {
@@ -439,8 +428,7 @@ namespace RPServer.Controllers
                 return;
             }
 
-            client.SetCanRunTask(false);
-            Task.Run(async () => await OnResendEmailAsync(client)).ContinueWith(HandleTaskCompletion).ContinueWith(task => client.SetCanRunTask(true));
+            TaskManager.Run(client, async () => await OnResendEmailAsync(client));
         }
         public static async Task OnResendEmailAsync(Client client)
         {
@@ -485,9 +473,7 @@ namespace RPServer.Controllers
 
             acc.TwoFactorGASharedKey = acc.TempTwoFactorGASharedKey;
 
-            player.SetCanRunTask(false);
-            Task.Run(async () => await acc.SaveSingleAsync(() => acc.TwoFactorGASharedKey).ContinueWith(HandleTaskCompletion).ContinueWith(task => player.SetCanRunTask(true)));
-
+            TaskManager.Run(player, async () => await acc.SaveSingleAsync(() => acc.TwoFactorGASharedKey));
             player.TriggerEvent(ServerToClient.ShowQRCodeEnabled);
         }
 
