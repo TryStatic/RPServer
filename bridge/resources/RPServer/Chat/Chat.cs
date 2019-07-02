@@ -3,12 +3,13 @@ using RPServer.Util;
 
 namespace RPServer.Chat
 {
-    class Chat : Script
+    internal class Chat : Script
     {
         [ServerEvent(Event.ChatMessage)]
         public void OnChatMessage(Client client, string message)
         {
             if(!client.IsLoggedIn()) return;
+
             var acc = client.GetAccountData();
             var sendMsg = $"{acc.Username}: {message}";
 

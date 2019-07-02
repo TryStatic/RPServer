@@ -1,12 +1,12 @@
 using System;
 using System.Threading;
-using Shared;
 using GTANetworkAPI;
 using RPServer.Database;
 using RPServer.Models;
 using RPServer.Util;
+using Shared;
 
-namespace RPServer._init
+namespace RPServer.Game
 {
     internal class Globals : Script
     {
@@ -15,6 +15,11 @@ namespace RPServer._init
         public const uint VERSION_MINOR = 1;
         public const uint VERSION_PATCH = 0;
         public const string PRE_RELEASE = "";
+#if DEBUG
+        public const string BUILD_TYPE = "DEBUG-BUILD";
+#else
+        public const string BUILD_TYPE = "RELEASE-BUILD";
+#endif
 
         public static readonly Vector3 DefaultSpawnPos = new Vector3(-782.1527709960938f, 19.77294921875f, 41.93227767944336f);
         private static Timer _expiredEmailTokensTimer;
@@ -24,7 +29,7 @@ namespace RPServer._init
         {
             Console.ForegroundColor = ConsoleColor.White;
             Console.BackgroundColor = ConsoleColor.Blue;
-            Console.WriteLine($"\n\n---------------------------- STARTING {SERVER_NAME} ({VERSION_MAJOR}.{VERSION_MINOR}.{VERSION_PATCH}{PRE_RELEASE}) ----------------------------");
+            Console.WriteLine($"\n\n---------------------------- STARTING {SERVER_NAME} ({VERSION_MAJOR}.{VERSION_MINOR}.{VERSION_PATCH}{PRE_RELEASE}) [{BUILD_TYPE}] ----------------------------");
             Console.ResetColor();
             Console.WriteLine();
 
@@ -75,6 +80,7 @@ namespace RPServer._init
         private async void OnRemoveExpiredEmailTokens(object state)
         {
             await EmailToken.RemoveExpiredCodesAsync();
+            NAPI.Util.ConsoleOutput("[SERVER]: Removing expired email verification tokens from the database.");
             _expiredEmailTokensTimer.Change(1000 * 60 * 60, Timeout.Infinite);
 
         }

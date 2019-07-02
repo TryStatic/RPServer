@@ -38,17 +38,21 @@ namespace RPServer.Util
         public void CommandLog(string username, string cmd)
         {
             FileWriteAsync(CommandLogFn, $"[{DateTime.Now}][{username}]: /{cmd}");
+#if DEBUG
+            NAPI.Util.ConsoleOutput($"[DEBUG-CMD]: [{username}]: /{cmd}");
+#endif
         }
         public void AuthLog(string logStr)
         {
             NAPI.Util.ConsoleOutput($"[Auth]: {logStr}");
             FileWriteAsync(AuthLogFn, $"[{DateTime.Now}]: {logStr}");
         }
-
         internal void ChatLog(string sendMsg)
         {
-            NAPI.Util.ConsoleOutput($"[Chat]: {sendMsg}");
             FileWriteAsync(ChatLogFn, $"[{DateTime.Now}]: {sendMsg}");
+#if DEBUG
+            NAPI.Util.ConsoleOutput($"[Chat]: {sendMsg}");
+#endif
         }
 
         private static async void FileWriteAsync(string file, string message)

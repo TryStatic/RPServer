@@ -37,7 +37,7 @@ namespace RPServerClient.Character
             myPlayer.Position = new Vector3(-169.3321f, 482.2647f, 133.8789f);
             myPlayer.FreezePosition(true);
             myPlayer.SetHeading(282.6658f);
-            myPlayer.SetAlpha(0, false);
+            //myPlayer.SetAlpha(0, false);
             Events.CallRemote("ApplyCharSelectionAnimation");
 
             // Camera
@@ -46,7 +46,7 @@ namespace RPServerClient.Character
             _characterDisplayCamera.SetActive(true);
 
             // Display the Browser UI
-            CustomBrowser.CreateBrowser("package://CEF/char/index.html");
+            //CustomBrowser.CreateBrowser("package://CEF/char/index.html");
         }
 
         private static Vector3 GetCameraPosInFrontOfPlayer(Player myPlayer, float range)
