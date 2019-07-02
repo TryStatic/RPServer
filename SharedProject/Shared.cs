@@ -34,4 +34,10 @@
         // Character
         public const string InitCharSelection = "InitCharSelection";
     }
+
+
+    public static class SharedDataKey
+    {
+        public const string AccountLoggedIn = "ACC_LOGGED_IN";
+    }
 }

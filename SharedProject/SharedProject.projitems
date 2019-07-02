@@ -9,6 +9,6 @@
     <Import_RootNamespace>SharedProject</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)EventNames.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shared.cs" />
   </ItemGroup>
 </Project>
