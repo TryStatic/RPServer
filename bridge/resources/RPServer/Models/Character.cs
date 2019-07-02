@@ -126,6 +126,35 @@ namespace RPServer.Models
                 return null;
             }
         }
+        public static async Task<int> FetchCount(Account account)
+        {
+            if (account == null) return -1;
+
+            const string query = "SELECT COUNT(characterID) FROM characters WHERE charownerID = @charownerID";
+
+            using (var dbConn = new DbConnection())
+            {
+                try
+                {
+                    var cmd = new MySqlCommand(query, dbConn.Connection);
+                    cmd.Parameters.AddWithValue("@charownerID", account.SqlId);
+                    await dbConn.OpenAsync();
+                    using (var r = await cmd.ExecuteReaderAsync())
+                    {
+                        if (!r.Read()) return -1;
+                        var count = r.GetInt32(0);
+                        return count;
+                    }
+                }
+                catch (MySqlException ex)
+                {
+                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                }
+            }
+
+            throw new Exception("There was an error in [Character.ExistsAsync]");
+        }
+
         public static async Task<bool> ExistsAsync(int sqlId)
         {
 

@@ -271,7 +271,10 @@ namespace RPServer.Models
                 return -1;
             }
         }
-        public async Task<List<Character>> GetCharactersAsync(string username) => await Character.FetchAllAsync(this);
+
+        public async Task<List<Character>> GetCharactersAsync() => await Character.FetchAllAsync(this);
+        public async Task<int> GetCharacterCountAsync() => await Character.FetchCount(this);
+
         public static async Task<bool> AuthenticateAsync(string username, string password)
         {
             const string query = "SELECT username, hash FROM accounts WHERE username = @username LIMIT 1";
