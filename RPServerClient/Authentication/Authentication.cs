@@ -1,4 +1,4 @@
-using EventNames;
+﻿using EventNames;
 using RAGE;
 using RAGE.Elements;
 using RPServerClient.Globals;
@@ -215,7 +215,7 @@ namespace RPServerClient.Authentication
                 CustomBrowser.CreateBrowser("package://CEF/auth/login.html");
                 RAGE.Game.Graphics.TransitionToBlurred(200);
                 Player.LocalPlayer.FreezePosition(true);
-                //Events.CallLocal("setChatState", false); TODO: UNCOMMENT WHEN DONE TESTING
+                Events.CallLocal("setChatState", false);
                 RAGE.Game.Ui.DisplayHud(false);
                 RAGE.Game.Ui.DisplayRadar(false);
             }

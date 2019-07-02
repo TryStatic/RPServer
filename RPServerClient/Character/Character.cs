@@ -1,6 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using EventNames;
 using RAGE;
 using RAGE.Elements;
@@ -30,8 +27,9 @@ namespace RPServerClient.Character
 
         private void OnInitCharSelection(object[] args)
         {
+            Events.CallLocal("setChatState", true); // Enabled for testing TODO: needs to be removed
             var myPlayer = Player.LocalPlayer;
-            
+
             myPlayer.Position = new Vector3(-169.3321f, 482.2647f, 133.8789f);
             myPlayer.FreezePosition(true);
             myPlayer.SetHeading(282.6658f);
