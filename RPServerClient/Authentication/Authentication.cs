@@ -1,4 +1,4 @@
-﻿using EventNames;
+using EventNames;
 using RAGE;
 using RAGE.Elements;
 using RPServerClient.Globals;
@@ -71,7 +71,7 @@ namespace RPServerClient.Authentication
         {
             if (args[0] == null) return;
             var link = args[0].ToString();
-            CustomBrowser.CreateBrowser(new []{ "package://CEF/auth/enablegoogleauth.html" });
+            CustomBrowser.CreateBrowser("package://CEF/auth/enablegoogleauth.html");
             CustomBrowser.ExecuteFunction(new object[] { "addImage", link });
         }
 
@@ -212,7 +212,7 @@ namespace RPServerClient.Authentication
 
             if (state)
             {
-                CustomBrowser.CreateBrowser(new object[] { "package://CEF/auth/login.html" });
+                CustomBrowser.CreateBrowser("package://CEF/auth/login.html");
                 RAGE.Game.Graphics.TransitionToBlurred(200);
                 Player.LocalPlayer.FreezePosition(true);
                 //Events.CallLocal("setChatState", false); TODO: UNCOMMENT WHEN DONE TESTING

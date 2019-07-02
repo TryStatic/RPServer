@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using RAGE.Ui;
 
 namespace RPServerClient.Globals
@@ -19,13 +21,22 @@ namespace RPServerClient.Globals
         public static void CreateBrowser(object[] args)
         {
             if (MainBrowser != null) return;
-            
+
             // Get the URL from the parameters
             var url = args[0].ToString();
             // Save the rest of the parameters
             _parameters = args.Skip(1).ToArray();
             // Create the browser
             MainBrowser = new HtmlWindow(url);
+        }
+
+        public static void CreateBrowser(string link)
+        {
+            if (string.IsNullOrWhiteSpace(link))
+            {
+                throw new Exception("CustomBrowser.CreateBrowser(string link) => Link is null or empty");
+            }
+            CreateBrowser(new object[]{link});
         }
 
         public static void ExecuteFunction(string funcName)
