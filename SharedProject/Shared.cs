@@ -1,4 +1,4 @@
-﻿namespace EventNames
+﻿namespace Shared
 {
     public static class ClientToServer
     {

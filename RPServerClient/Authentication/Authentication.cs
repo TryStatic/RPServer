@@ -1,4 +1,4 @@
-﻿using EventNames;
+﻿using Shared;
 using RAGE;
 using RAGE.Elements;
 using RPServerClient.Globals;

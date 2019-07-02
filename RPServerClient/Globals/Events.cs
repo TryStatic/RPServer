@@ -1,4 +1,4 @@
-﻿using EventNames;
+﻿using Shared;
 
 namespace RPServerClient.Globals
 {

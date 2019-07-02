@@ -1,5 +1,5 @@
 ﻿using System;
-using EventNames;
+using Shared;
 using GTANetworkAPI;
 using RPServer.Util;
 

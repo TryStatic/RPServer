@@ -6,7 +6,7 @@ using GTANetworkAPI;
 using RPServer.Models;
 using RPServer.Strings;
 using RPServer.Util;
-using EventNames;
+using Shared;
 using RPServer._init;
 using static RPServer.Util.DataValidator;
 using Task = System.Threading.Tasks.Task;

@@ -1,6 +1,6 @@
 using System;
 using System.Threading;
-using EventNames;
+using Shared;
 using GTANetworkAPI;
 using RPServer.Database;
 using RPServer.Models;
