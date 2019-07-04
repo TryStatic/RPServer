@@ -2,11 +2,11 @@
 
 namespace RPServer.Models.Helpers
 {
-    internal class FaceFeatures
+    internal class FaceFeature
     {
         private readonly Feature[] _features;
 
-        public FaceFeatures()
+        public FaceFeature()
         {
             _features = new []
             {

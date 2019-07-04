@@ -3,7 +3,7 @@
     internal class SkinCustomization
     {
         public HeadBlend HeadBlend { get; set; }
-        public FaceFeature FaceFeatures { get; set; }
+        public FaceFeature FaceFeature { get; set; }
 
     }
 }
