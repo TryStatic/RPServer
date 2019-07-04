@@ -1,7 +1,7 @@
 using System;
 using System.Linq.Expressions;
 
-namespace RPServer.Models
+namespace RPServer.Models.Helpers
 {
     internal class SaveableData
     {
