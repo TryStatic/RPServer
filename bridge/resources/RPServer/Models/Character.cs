@@ -23,7 +23,7 @@ namespace RPServer.Models
         [SqlColumnName("skinmodel")]
         public int SkinModel { set; get; }
 
-        private SkinCustomization skinCustomization;
+        private SkinCustomization SkinCustomization { set; get; }
         #endregion
 
         public Account Owner { get; set; }
