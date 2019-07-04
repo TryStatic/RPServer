@@ -52,7 +52,7 @@ namespace RPServer.Models.Helpers
             public int Index { get; }
             public float Value { set; get; }
 
-            public Feature(FeatureIndex featureIndex, float value)
+            internal Feature(FeatureIndex featureIndex, float value)
             {
                 Index = (int)featureIndex;
                 Value = value;
