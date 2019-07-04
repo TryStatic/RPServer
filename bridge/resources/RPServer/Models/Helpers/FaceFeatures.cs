@@ -4,59 +4,63 @@ namespace RPServer.Models.Helpers
 {
     internal class FaceFeatures
     {
-        public float NoseWidth { get; set; }
-        public float NoseHeight { get; set; }
-        public float NoseLength { get; set; }
-        public float NoseBridge { get; set; }
-        public float NoseTip { get; set; }
-        public float NoseBridgeShift { get; set; }
+        private readonly Feature[] _features;
 
-        public float BrowHeight { get; set; }
-        public float BrowWidth { get; set; }
-
-        public float CheekboneHeight { get; set; }
-        public float CheekboneWidth { get; set; }
-        public float CheeksWidth { get; set; }
-
-        public float Eyes { get; set; }
-        public float Lips { get; set; }
-
-        public float JawWidth { get; set; }
-        public float JawHeight { get; set; }
-
-        public float ChinLength { get; set; }
-        public float ChinPosition { get; set; }
-        public float ChinWidth { get; set; }
-        public float ChinShape { get; set; }
-
-        public float NeckWidth { get; set; }
-
-        public void Apply(Client client)
+        public FaceFeatures()
         {
-            client.SetFaceFeature((int)Slots.NoseWidth, NoseWidth);
-            client.SetFaceFeature((int)Slots.NoseHeight, NoseHeight);
-            client.SetFaceFeature((int)Slots.NoseLength, NoseLength);
-            client.SetFaceFeature((int)Slots.NoseBridge, NoseBridge);
-            client.SetFaceFeature((int)Slots.NoseTip, NoseTip);
-            client.SetFaceFeature((int)Slots.NoseBridgeShift, NoseBridgeShift);
-            client.SetFaceFeature((int)Slots.BrowHeight, BrowHeight);
-            client.SetFaceFeature((int)Slots.BrowWidth, BrowWidth);
-            client.SetFaceFeature((int)Slots.CheekboneHeight, CheekboneHeight);
-            client.SetFaceFeature((int)Slots.CheekboneWidth, CheekboneWidth);
-            client.SetFaceFeature((int)Slots.CheeksWidth, CheeksWidth);
-            client.SetFaceFeature((int)Slots.Eyes, Eyes);
-            client.SetFaceFeature((int)Slots.Lips, Lips);
-            client.SetFaceFeature((int)Slots.JawWidth, JawWidth);
-            client.SetFaceFeature((int)Slots.JawHeight, JawHeight);
-            client.SetFaceFeature((int)Slots.ChinLength, ChinLength);
-            client.SetFaceFeature((int)Slots.ChinPosition, ChinPosition);
-            client.SetFaceFeature((int)Slots.ChinWidth, ChinWidth);
-            client.SetFaceFeature((int)Slots.ChinShape, ChinShape);
-            client.SetFaceFeature((int)Slots.NeckWidth, NeckWidth);
+            _features = new []
+            {
+                new Feature(FeatureIndex.NoseWidth, 0),
+                new Feature(FeatureIndex.NoseHeight, 0),
+                new Feature(FeatureIndex.NoseLength, 0),
+                new Feature(FeatureIndex.NoseBridge, 0),
+                new Feature(FeatureIndex.NoseTip, 0),
+                new Feature(FeatureIndex.NoseBridgeShift, 0),
+                new Feature(FeatureIndex.BrowHeight, 0),
+                new Feature(FeatureIndex.BrowWidth, 0),
+                new Feature(FeatureIndex.CheekboneHeight, 0),
+                new Feature(FeatureIndex.CheekboneWidth, 0),
+                new Feature(FeatureIndex.CheeksWidth, 0),
+                new Feature(FeatureIndex.Eyes, 0),
+                new Feature(FeatureIndex.Lips, 0),
+                new Feature(FeatureIndex.JawWidth, 0),
+                new Feature(FeatureIndex.JawHeight, 0),
+                new Feature(FeatureIndex.ChinLength, 0),
+                new Feature(FeatureIndex.ChinPosition, 0),
+                new Feature(FeatureIndex.ChinWidth, 0),
+                new Feature(FeatureIndex.ChinShape, 0),
+                new Feature(FeatureIndex.NeckWidth, 0),
+            };
+        }
+
+        public void SetFeature(Client client, FeatureIndex index, float value)
+        {
+            _features[(int)index].Value = value;
+            client.SetFaceFeature((int)index, value);
+        }
+
+        public void ApplyAll(Client client)
+        {
+            foreach (var feature in _features)
+            {
+                client.SetFaceFeature(feature.Index, feature.Value);
+            }
+        }
+
+        private struct Feature
+        {
+            public int Index { get; }
+            public float Value { set; get; }
+
+            public Feature(FeatureIndex featureIndex, float value)
+            {
+                Index = (int)featureIndex;
+                Value = value;
+            }
         }
     }
 
-    internal enum Slots
+    internal enum FeatureIndex
     {
         NoseWidth = 0,
         NoseHeight = 1,
