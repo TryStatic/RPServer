@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using RPServer.Database;
+using RPServer.Models.Helpers;
 using RPServer.Util;
 
 namespace RPServer.Models
@@ -15,18 +16,18 @@ namespace RPServer.Models
 
         #region SQL_SAVEABLE_DATA
 
-        [SqlColumnName("characterid")] public int SqlId { get; }
-        [SqlColumnName("charname")] public string Name { set; get; }
-        [SqlColumnName("skinmodel")] public int SkinModel { set; get; }
+        [SqlColumnName("characterid")]
+        public int SqlId { get; }
+        [SqlColumnName("charname")]
+        public string Name { set; get; }
+        [SqlColumnName("skinmodel")]
+        public int SkinModel { set; get; }
 
         #endregion
 
         public Account Owner { get; set; }
 
-        private Character(int sqlId)
-        {
-            SqlId = sqlId;
-        }
+        private Character(int sqlId) => SqlId = sqlId;
 
         #region DATABASE
         public static async Task CreateNewAsync(Account account, string charName)
