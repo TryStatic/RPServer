@@ -46,7 +46,7 @@ namespace RPServer.Game
             // Initialize the Logger 
             Logger.GetInstance();
 
-            // Geyt Database Settings (meta.xml)
+            // Get Database Settings (meta.xml)
             DbConnection.MySqlHost = NAPI.Resource.GetSetting<string>(this, "DB_HOST");
             DbConnection.MySqlPort = NAPI.Resource.GetSetting<uint>(this, "DB_PORT");
             DbConnection.MySqlDatabase = NAPI.Resource.GetSetting<string>(this, "DB_DATABASE");
@@ -55,6 +55,7 @@ namespace RPServer.Game
             // Test MySql Connection
             await DbConnection.TestConnection();
 
+            // Get SMTP Settings (meta.xml)
             EmailSender.SmtpHost = NAPI.Resource.GetSetting<string>(this, "SMTP_HOST");
             EmailSender.SmtpPort = NAPI.Resource.GetSetting<int>(this, "SMTP_PORT");
             EmailSender.SmtpUsername = NAPI.Resource.GetSetting<string>(this, "SMTP_USERNAME");
