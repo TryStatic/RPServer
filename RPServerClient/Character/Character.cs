@@ -31,7 +31,6 @@ namespace RPServerClient.Character
         {
             Events.CallLocal("setChatState", true); // Enabled for testing TODO: needs to be removed
             var player = Player.LocalPlayer;
-            var myPosition = player.Position;
 
             // Stage the model
             player.Position = new Vector3(-169.3321f, 482.2647f, 133.8789f);
@@ -43,7 +42,7 @@ namespace RPServerClient.Character
 
             // Camera
             var cameraPos = Helper.GetPosInFrontOfPlayer(player, 1.5f);
-            _characterDisplayCamera = new CustomCamera(cameraPos, myPosition);
+            _characterDisplayCamera = new CustomCamera(cameraPos, player.Position);
             _characterDisplayCamera.SetActive(true);
 
             // Display the Browser UI

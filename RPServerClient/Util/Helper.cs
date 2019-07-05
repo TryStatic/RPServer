@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Numerics;
 using RAGE.Elements;
 using Vector3 = RAGE.Vector3;
 
