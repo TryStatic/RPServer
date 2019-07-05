@@ -33,6 +33,16 @@ namespace RPServer.Models.CharacterHelpers
             };
         }
 
+        public float[] Get()
+        {
+            var arr = new float[_features.Length];
+            for (var i = 0; i < arr.Length; i++)
+            {
+                arr[i] = _features[i].Value;
+            }
+            return arr;
+        }
+
         public void SetFeature(Client client, FeatureIndex index, float value)
         {
             _features[(int)index].Value = value;

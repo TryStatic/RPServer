@@ -1,4 +1,5 @@
-﻿using GTANetworkAPI;
+﻿using System.Collections.Generic;
+using GTANetworkAPI;
 
 namespace RPServer.Models.CharacterHelpers
 {
@@ -20,7 +21,7 @@ namespace RPServer.Models.CharacterHelpers
      */
     internal class HeadOverlay
     {
-        private Overlay[] _overlays;
+        private readonly Overlay[] _overlays;
 
         public HeadOverlay()
         {
@@ -40,6 +41,23 @@ namespace RPServer.Models.CharacterHelpers
                 new Overlay(OverlayID.BodyBlemishes, 255, 0, 0, 0),
                 new Overlay(OverlayID.AdditionalBodyBlemishes, 255, 0, 0, 0)
             };
+        }
+
+        public Dictionary<int, GTANetworkAPI.HeadOverlay> Get()
+        {
+            var dict = new Dictionary<int, GTANetworkAPI.HeadOverlay>();
+            foreach (var t in _overlays)
+            {
+                dict.Add(t.OverlayID, new GTANetworkAPI.HeadOverlay()
+                {
+                    Index = t.Index,
+                    Opacity = t.Opacity,
+                    Color = t.Color,
+                    SecondaryColor = t.SecondaryColor
+                });
+            }
+
+            return dict;
         }
 
         public void SetOverlay(Client client, OverlayID oID, byte index, float opacity, byte color, byte secColor)

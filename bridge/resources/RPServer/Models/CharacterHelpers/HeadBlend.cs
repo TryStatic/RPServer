@@ -28,6 +28,23 @@ namespace RPServer.Models.CharacterHelpers
 
         }
 
+        public GTANetworkAPI.HeadBlend Get()
+        {
+            var blend = new GTANetworkAPI.HeadBlend()
+            {
+                ShapeFirst = ShapeFirstID,
+                ShapeMix = ShapeMix,
+                ShapeSecond = ShapeSecondID,
+                ShapeThird = ShapeThirdID,
+                SkinFirst = SkinFirstID,
+                SkinMix = SkinMix,
+                SkinSecond = SkinSecondID,
+                SkinThird = SkinThirdID,
+                ThirdMix = ThirdMix
+            };
+            return blend;
+        }
+
         public void Update(Client client, float newShapeMix, float newSkinMix)
         {
             ShapeMix = newShapeMix;
