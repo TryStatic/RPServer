@@ -1,6 +1,6 @@
 ﻿using GTANetworkAPI;
 
-namespace RPServer.Models.Helpers
+namespace RPServer.Models.CharacterHelpers
 {
     /*
             OID                     INDX
