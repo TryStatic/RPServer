@@ -57,8 +57,25 @@ namespace RPServer.Models.CharacterHelpers
         public void ApplyAll(Client client)
         {
             client.SetCustomization(IsMale, CustomHeadBlend.Get(), EyeColor, HairColor, HighlightColor, CustomFaceFeatures.Get(), CustomHeadOverlay.Get(), new Decoration[0]);
-            client.SetClothes(2, HairStyle, HairStyleTexture);
+            client.SetClothes((int)Components.Hair, HairStyle, HairStyleTexture);
         }
 
+    }
+
+    // TODO: This will need to be moved to a component class wrapping SetClothes eventually
+    internal enum Components
+    {
+        Face = 0,
+        Mask = 1,
+        Hair = 2,
+        Torso = 3,
+        Legs = 4,
+        BagsParachutes =5,
+        Shoes = 6,
+        Accessories = 7,
+        Undershirts = 8,
+        BodyArmor = 9,
+        Decals = 10,
+        Tops = 11
     }
 }
