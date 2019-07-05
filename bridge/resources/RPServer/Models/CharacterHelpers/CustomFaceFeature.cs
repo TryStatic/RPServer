@@ -2,11 +2,11 @@
 
 namespace RPServer.Models.CharacterHelpers
 {
-    internal class FaceFeature
+    internal class CustomFaceFeature
     {
         private readonly Feature[] _features;
 
-        public FaceFeature()
+        public CustomFaceFeature()
         {
             _features = new []
             {

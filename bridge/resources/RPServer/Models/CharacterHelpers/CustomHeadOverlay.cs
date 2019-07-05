@@ -19,11 +19,11 @@ namespace RPServer.Models.CharacterHelpers
             11  Body Blemishes      0 - 11,     255
             12  Add Body Blemishes  0 - 1,      255
      */
-    internal class HeadOverlay
+    internal class CustomHeadOverlay
     {
         private readonly Overlay[] _overlays;
 
-        public HeadOverlay()
+        public CustomHeadOverlay()
         {
             _overlays = new[]
             {

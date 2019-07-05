@@ -6,9 +6,9 @@ namespace RPServer.Models.CharacterHelpers
     {
         private bool _isMale;
 
-        public HeadBlend HeadBlend { get; set; }
-        public FaceFeature FaceFeatures { get; set; }
-        public HeadOverlay HeadOverlay { get; set; }
+        public CustomHeadBlend CustomHeadBlend { get; set; }
+        public CustomFaceFeature CustomFaceFeatures { get; set; }
+        public CustomHeadOverlay CustomHeadOverlay { get; set; }
         public PedHash SkinModel { set; get; }
         public bool IsMale
         {
@@ -34,7 +34,7 @@ namespace RPServer.Models.CharacterHelpers
 
         public void ApplyAll(Client client)
         {
-            client.SetCustomization(IsMale, HeadBlend.Get(), EyeColor, HairColor, HighlightColor, FaceFeatures.Get(), HeadOverlay.Get(), new Decoration[0]);
+            client.SetCustomization(IsMale, CustomHeadBlend.Get(), EyeColor, HairColor, HighlightColor, CustomFaceFeatures.Get(), CustomHeadOverlay.Get(), new Decoration[0]);
         }
 
     }

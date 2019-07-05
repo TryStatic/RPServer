@@ -2,7 +2,7 @@
 
 namespace RPServer.Models.CharacterHelpers
 {
-    internal class HeadBlend
+    internal class CustomHeadBlend
     {
         public byte ShapeFirstID { get; }
         public byte ShapeSecondID { get; }
@@ -18,13 +18,12 @@ namespace RPServer.Models.CharacterHelpers
         public float ThirdMix => 0.0f;
         public bool IsParent => false;
 
-        public HeadBlend(Client client, byte shapeFirst, byte shapeSecond, float shapeMix, float skinMix)
+        public CustomHeadBlend(byte shapeFirst, byte shapeSecond, float shapeMix, float skinMix)
         {
             ShapeFirstID = shapeFirst;
             ShapeSecondID = shapeSecond;
             ShapeMix = shapeMix;
             SkinMix = skinMix;
-            Apply(client);
 
         }
 
