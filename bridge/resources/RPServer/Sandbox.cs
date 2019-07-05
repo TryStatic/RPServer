@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using GTANetworkAPI;
 using RPServer.Game;
+using RPServer.Models.CharacterHelpers;
 using RPServer.Util;
 
 namespace RPServer
@@ -19,10 +20,27 @@ namespace RPServer
             player.SendChatMessage("/logout /toggletwofactorga /toggletwofactoremail");
             player.SendChatMessage("/veh /ecc /heal /hmc /time /weather /getping /onlineppl /givegun");
             player.SendChatMessage("/setskin /setnick /togflymode /getcamcords /spawnme /playanimation /stopani");
-            player.SendChatMessage("/loadipl /removeipl /resetipls /gotopos /getpos");
+            player.SendChatMessage("/loadipl /removeipl /resetipls /gotopos /getpos /seteyecolor");
             player.SendChatMessage("/setheadblend /setheadoverlay, /setfacefeature, /setcompvar");
         }
 
+        [Command("seteyecolor")]
+        public void SetEyeColor(Client client, byte color)
+        {
+            SkinCustomization sc = new SkinCustomization();
+            sc.SkinModel = PedHash.FreemodeFemale01;
+            sc.CustomHeadBlend = new CustomHeadBlend(2, 4, 0.5f, 0.5f);
+            sc.CustomHeadOverlay = new CustomHeadOverlay();
+            sc.CustomHeadOverlay.SetOverlay(OverlayID.Blemishes, 4, 255, 3, 4);
+            sc.CustomFaceFeatures = new CustomFaceFeature();
+            sc.CustomFaceFeatures.SetFeature(FeatureIndex.Eyes, 0.5f);
+            sc.EyeColor = 5;
+            sc.HairColor = 2;
+            sc.HighlightColor = 7;
+            sc.ApplyAll(client);
+            client.SetClothes(2, 2, 2);
+            
+        }
 
         [Command("setheadblend")]
         public void SetHeadBlend(Client player, int i1, int i2, int i3, int i4, int i5, int i6, float f1, float f2, float f3, int b = 0)
