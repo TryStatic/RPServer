@@ -1,8 +1,8 @@
 ﻿using System;
-using MySql.Data.MySqlClient;
 using RPServer.Database;
 using RPServer.Util;
 using System.Threading.Tasks;
+using System.Data.Common;
 
 namespace RPServer.Models
 {
@@ -43,22 +43,22 @@ namespace RPServer.Models
 
             var emailToken = new EmailToken(account, emailAddress);
 
-            using (var dbConn = new DbConnection())
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    var cmd = new MySqlCommand(query, dbConn.Connection);
-                    cmd.Parameters.AddWithValue("@accountid", emailToken.Account.SqlId);
-                    cmd.Parameters.AddWithValue("@token", emailToken.Token);
-                    cmd.Parameters.AddWithValue("@emailaddress", emailToken.EmailAddress);
-                    cmd.Parameters.AddWithValue("@expirydate", emailToken.ExpiryDate);
+                    var cmd = dbConn.CreateCommandWithText(query);
+                    cmd.AddParameterWithValue("@accountid", emailToken.Account.SqlId);
+                    cmd.AddParameterWithValue("@token", emailToken.Token);
+                    cmd.AddParameterWithValue("@emailaddress", emailToken.EmailAddress);
+                    cmd.AddParameterWithValue("@expirydate", emailToken.ExpiryDate);
                     await dbConn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
                     return true;
                 }
-                catch (MySqlException ex)
+                catch (DbException ex)
                 {
-                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                    DbConnectionProvider.HandleDbException(ex);
                 }
                 return false;
             }
@@ -67,12 +67,12 @@ namespace RPServer.Models
         {
             const string query = "SELECT accountID FROM emailtokens WHERE accountID = @accountid";
 
-            using (var dbConn = new DbConnection())
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    var cmd = new MySqlCommand(query, dbConn.Connection);
-                    cmd.Parameters.AddWithValue("@accountid", account.SqlId);
+                    var cmd = dbConn.CreateCommandWithText(query);
+                    cmd.AddParameterWithValue("@accountid", account.SqlId);
 
                     await dbConn.OpenAsync();
                     using (var r = await cmd.ExecuteReaderAsync())
@@ -81,9 +81,9 @@ namespace RPServer.Models
                         return r.HasRows;
                     }
                 }
-                catch (MySqlException ex)
+                catch (DbException ex)
                 {
-                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                    DbConnectionProvider.HandleDbException(ex);
                 }
             }
             throw new Exception("There was an error in [EmailToken.ExistsAsync]");
@@ -92,12 +92,12 @@ namespace RPServer.Models
         {
             const string query = "SELECT emailaddress FROM emailtokens WHERE emailaddress = @emailaddress";
 
-            using (var dbConn = new DbConnection())
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    var cmd = new MySqlCommand(query, dbConn.Connection);
-                    cmd.Parameters.AddWithValue("@emailaddress", emailAddress);
+                    var cmd = dbConn.CreateCommandWithText(query);
+                    cmd.AddParameterWithValue("@emailaddress", emailAddress);
 
                     await dbConn.OpenAsync();
                     using (var r = await cmd.ExecuteReaderAsync())
@@ -106,9 +106,9 @@ namespace RPServer.Models
                         return r.HasRows;
                     }
                 }
-                catch (MySqlException ex)
+                catch (DbException ex)
                 {
-                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                    DbConnectionProvider.HandleDbException(ex);
                 }
             }
             throw new Exception("There was an error in [EmailToken.IsEmailTakenAsync]");
@@ -120,12 +120,12 @@ namespace RPServer.Models
             if (!await ExistsAsync(account))
                 return null;
 
-            using (var dbConn = new DbConnection())
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    var cmd = new MySqlCommand(query, dbConn.Connection);
-                    cmd.Parameters.AddWithValue("@accountid", account.SqlId);
+                    var cmd = dbConn.CreateCommandWithText(query);
+                    cmd.AddParameterWithValue("@accountid", account.SqlId);
 
                     await dbConn.OpenAsync();
                     using (var r = await cmd.ExecuteReaderAsync())
@@ -134,9 +134,9 @@ namespace RPServer.Models
                         return new EmailToken(account, r.GetStringExtended("token"), r.GetDateTimeExtended("expirydate"), r.GetStringExtended("emailaddress"));
                     }
                 }
-                catch (MySqlException ex)
+                catch (DbException ex)
                 {
-                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                    DbConnectionProvider.HandleDbException(ex);
                 }
             }
             throw new Exception("Error in [EmailToken.FetchAsync]");
@@ -165,23 +165,23 @@ namespace RPServer.Models
                                  "SET token = @token, emailAddress = @emailaddress, expirydate = @expirydate " +
                                  "WHERE accountID = @sqlId";
 
-            using (var dbConn = new DbConnection())
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    var cmd = new MySqlCommand(query, dbConn.Connection);
-                    cmd.Parameters.AddWithValue("@sqlId", Account.SqlId);
+                    var cmd = dbConn.CreateCommandWithText(query);
+                    cmd.AddParameterWithValue("@sqlId", Account.SqlId);
 
-                    cmd.Parameters.AddWithValue("@token", Token);
-                    cmd.Parameters.AddWithValue("@emailaddress", EmailAddress);
-                    cmd.Parameters.AddWithValue("@expirydate", ExpiryDate);
+                    cmd.AddParameterWithValue("@token", Token);
+                    cmd.AddParameterWithValue("@emailaddress", EmailAddress);
+                    cmd.AddParameterWithValue("@expirydate", ExpiryDate);
 
                     await dbConn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
                 }
-                catch (MySqlException ex)
+                catch (DbException ex)
                 {
-                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                    DbConnectionProvider.HandleDbException(ex);
                 }
             }
         }
@@ -189,19 +189,19 @@ namespace RPServer.Models
         {
             const string query = "DELETE FROM emailtokens WHERE expirydate < @current";
 
-            using (var dbConn = new DbConnection())
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    var cmd = new MySqlCommand(query, dbConn.Connection);
-                    cmd.Parameters.AddWithValue("@current", DateTime.Now);
+                    var cmd = dbConn.CreateCommandWithText(query);
+                    cmd.AddParameterWithValue("@current", DateTime.Now);
 
                     await dbConn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
                 }
-                catch (MySqlException ex)
+                catch (DbException ex)
                 {
-                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                    DbConnectionProvider.HandleDbException(ex);
                 }
             }
         }
@@ -211,20 +211,20 @@ namespace RPServer.Models
 
             const string query = "DELETE FROM emailtokens WHERE accountID = @accountid";
 
-            using (var dbConn = new DbConnection())
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    var cmd = new MySqlCommand(query, dbConn.Connection);
-                    cmd.Parameters.AddWithValue("@accountid", account.SqlId);
+                    var cmd = dbConn.CreateCommandWithText(query);
+                    cmd.AddParameterWithValue("@accountid", account.SqlId);
 
                     await dbConn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
                     return;
                 }
-                catch (MySqlException ex)
+                catch (DbException ex)
                 {
-                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                    DbConnectionProvider.HandleDbException(ex);
                 }
             }
             throw new Exception("Error in [EmailTokens.RemoveAsync]");

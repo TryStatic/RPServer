@@ -30,10 +30,16 @@ namespace RPServer.Util
             NAPI.Util.ConsoleOutput($"[MySQL Error]: {errorMsg} [Code={errorCode}]");
             FileWriteAsync(MySqlLogFn, $"[{DateTime.Now}][MySQL Error]: {errorMsg} [Code={errorCode}]");
         }
-        public void MySqlInfo(string msg)
+        public void SqlInfo(string msg)
         {
-            NAPI.Util.ConsoleOutput($"[MySQL Info]: {msg}");
-            FileWriteAsync(MySqlLogFn, $"[{DateTime.Now}][MySQL Info]: {msg}");
+            NAPI.Util.ConsoleOutput($"[SQL Info]: {msg}");
+            FileWriteAsync(MySqlLogFn, $"[{DateTime.Now}][SQL Info]: {msg}");
+        }
+
+        public void SqlError(string errorMsq)
+        {
+            NAPI.Util.ConsoleOutput($"[SQL Error]: {errorMsq}");
+            FileWriteAsync(MySqlLogFn, $"[{DateTime.Now}][SQL Error]: {errorMsq}");
         }
         public void CommandLog(string username, string cmd)
         {

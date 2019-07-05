@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using MySql.Data.MySqlClient;
-using Newtonsoft.Json;
 using RPServer.Database;
 using RPServer.Models.CharacterHelpers;
 using RPServer.Models.Helpers;
@@ -48,19 +47,19 @@ namespace RPServer.Models
 
             const string query = "INSERT INTO characters(charownerID, charname) VALUES (@accownerID, @charname)";
 
-            using (var dbConn = new DbConnection())
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    var cmd = new MySqlCommand(query, dbConn.Connection);
-                    cmd.Parameters.AddWithValue("@accownerID", account.SqlId);
-                    cmd.Parameters.AddWithValue("@charname", charName);
+                    var cmd = dbConn.CreateCommandWithText(query);
+                    cmd.AddParameterWithValue("@accownerID", account.SqlId);
+                    cmd.AddParameterWithValue("@charname", charName);
                     await dbConn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
                 }
-                catch (MySqlException ex)
+                catch (DbException ex)
                 {
-                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                    DbConnectionProvider.HandleDbException(ex);
                 }
             }
         }
@@ -68,12 +67,12 @@ namespace RPServer.Models
         {
             const string query = "SELECT characterID, charname, customization FROM characters WHERE charownerID = @accountID";
 
-            using (var dbConn = new DbConnection())
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    var cmd = new MySqlCommand(query, dbConn.Connection);
-                    cmd.Parameters.AddWithValue("@accountID", account.SqlId);
+                    var cmd = dbConn.CreateCommandWithText(query);
+                    cmd.AddParameterWithValue("@accountID", account.SqlId);
                     await dbConn.OpenAsync();
                     using (var r = await cmd.ExecuteReaderAsync(CommandBehavior.SequentialAccess))
                     {
@@ -93,9 +92,9 @@ namespace RPServer.Models
 
                     }
                 }
-                catch (MySqlException ex)
+                catch (DbException ex)
                 {
-                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                    DbConnectionProvider.HandleDbException(ex);
                 }
 
                 return null;
@@ -109,12 +108,12 @@ namespace RPServer.Models
             if (!await ExistsAsync(charId))
                 return null;
 
-            using (var dbConn = new DbConnection())
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    var cmd = new MySqlCommand(query, dbConn.Connection);
-                    cmd.Parameters.AddWithValue("@characterid", charId);
+                    var cmd = dbConn.CreateCommandWithText(query);
+                    cmd.AddParameterWithValue("@characterid", charId);
                     await dbConn.OpenAsync();
                     using (var r = await cmd.ExecuteReaderAsync(CommandBehavior.SequentialAccess))
                     {
@@ -130,9 +129,9 @@ namespace RPServer.Models
 
                     }
                 }
-                catch (MySqlException ex)
+                catch (DbException ex)
                 {
-                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                    DbConnectionProvider.HandleDbException(ex);
                 }
 
                 return null;
@@ -144,12 +143,12 @@ namespace RPServer.Models
 
             const string query = "SELECT COUNT(characterID) FROM characters WHERE charownerID = @charownerID";
 
-            using (var dbConn = new DbConnection())
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    var cmd = new MySqlCommand(query, dbConn.Connection);
-                    cmd.Parameters.AddWithValue("@charownerID", account.SqlId);
+                    var cmd = dbConn.CreateCommandWithText(query);
+                    cmd.AddParameterWithValue("@charownerID", account.SqlId);
                     await dbConn.OpenAsync();
                     using (var r = await cmd.ExecuteReaderAsync())
                     {
@@ -158,9 +157,9 @@ namespace RPServer.Models
                         return count;
                     }
                 }
-                catch (MySqlException ex)
+                catch (DbException ex)
                 {
-                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                    DbConnectionProvider.HandleDbException(ex);
                 }
             }
 
@@ -174,21 +173,21 @@ namespace RPServer.Models
 
             const string query = "SELECT characterID FROM characters WHERE characterID = @sqlid";
 
-            using (var dbConn = new DbConnection())
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    var cmd = new MySqlCommand(query, dbConn.Connection);
-                    cmd.Parameters.AddWithValue("@sqlid", sqlId);
+                    var cmd = dbConn.CreateCommandWithText(query);
+                    cmd.AddParameterWithValue("@sqlid", sqlId);
                     await dbConn.OpenAsync();
                     using (var r = await cmd.ExecuteReaderAsync())
                     {
                         return await r.ReadAsync() && r.HasRows;
                     }
                 }
-                catch (MySqlException ex)
+                catch (DbException ex)
                 {
-                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                    DbConnectionProvider.HandleDbException(ex);
                 }
             }
 
@@ -201,22 +200,22 @@ namespace RPServer.Models
                                  "customization = @customization " +
                                  "WHERE characterID = @characterID";
 
-            using (var dbConn = new DbConnection())
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    var cmd = new MySqlCommand(query, dbConn.Connection);
-                    cmd.Parameters.AddWithValue("@characterID", SqlId);
+                    var cmd = dbConn.CreateCommandWithText(query);
+                    cmd.AddParameterWithValue("@characterID", SqlId);
 
-                    cmd.Parameters.AddWithValue("@charname", Name);
-                    cmd.Parameters.AddWithValue("@customization", JsonConvert.SerializeObject(SkinCustomization));
+                    cmd.AddParameterWithValue("@charname", Name);
+                    cmd.AddParameterWithValue("@customization", JsonConvert.SerializeObject(SkinCustomization));
 
                     await dbConn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
                 }
-                catch (MySqlException ex)
+                catch (DbException ex)
                 {
-                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                    DbConnectionProvider.HandleDbException(ex);
                 }
             }
         }
@@ -229,20 +228,20 @@ namespace RPServer.Models
             var query = $"UPDATE characters SET {column} = @value WHERE characterID = @sqlId";
 
 
-            using (var dbConn = new DbConnection())
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    var cmd = new MySqlCommand(query, dbConn.Connection);
-                    cmd.Parameters.AddWithValue("@sqlId", SqlId);
-                    cmd.Parameters.AddWithValue("@value", value);
+                    var cmd = dbConn.CreateCommandWithText(query);
+                    cmd.AddParameterWithValue("@sqlId", SqlId);
+                    cmd.AddParameterWithValue("@value", value);
 
                     await dbConn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
                 }
-                catch (MySqlException ex)
+                catch (DbException ex)
                 {
-                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                    DbConnectionProvider.HandleDbException(ex);
                 }
             }
         }
@@ -250,19 +249,19 @@ namespace RPServer.Models
         {
             const string query = "DELETE FROM characters WHERE characterID = @charId";
 
-            using (var dbConn = new DbConnection())
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    var cmd = new MySqlCommand(query, dbConn.Connection);
-                    cmd.Parameters.AddWithValue("@characterID", charId);
+                    var cmd = dbConn.CreateCommandWithText(query);
+                    cmd.AddParameterWithValue("@characterID", charId);
 
                     await dbConn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
                 }
-                catch (MySqlException ex)
+                catch (DbException ex)
                 {
-                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                    DbConnectionProvider.HandleDbException(ex);
                 }
             }
         }
@@ -270,12 +269,12 @@ namespace RPServer.Models
         {
             const string query = "SELECT characterID FROM characters WHERE charname = @name LIMIT 1";
 
-            using (var dbConn = new DbConnection())
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    var cmd = new MySqlCommand(query, dbConn.Connection);
-                    cmd.Parameters.AddWithValue("@name", charName);
+                    var cmd = dbConn.CreateCommandWithText(query);
+                    cmd.AddParameterWithValue("@name", charName);
 
                     await dbConn.OpenAsync();
                     using (var reader = await cmd.ExecuteReaderAsync())
@@ -287,9 +286,9 @@ namespace RPServer.Models
                         return sqlId;
                     }
                 }
-                catch (MySqlException ex)
+                catch (DbException ex)
                 {
-                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                    DbConnectionProvider.HandleDbException(ex);
                 }
 
                 return -1;

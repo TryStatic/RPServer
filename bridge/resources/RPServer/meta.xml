@@ -9,6 +9,7 @@
     <setting name="DB_DATABASE" value="rpserver"/>
     <setting name="DB_USERNAME" value="root"/>
     <setting name="DB_PASSWORD" value="root"/>
+    <setting name="DB_PROVIDER" value="MySql.Data.MySqlClient"/>
 
     <!-- SMTP Settings -->
     <setting name="SMTP_HOST" value=""/>

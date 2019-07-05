@@ -31,7 +31,7 @@ namespace RPServer.Util
 
         #endregion
 
-        #region MySQLExtensions
+        #region SQLExtensions
         public static int GetInt32Extended(this DbDataReader reader, string column)
         {
             var ordinal = reader.GetOrdinal(column);
@@ -51,6 +51,19 @@ namespace RPServer.Util
         {
             var ordinal = reader.GetOrdinal(column);
             return reader.GetBoolean(ordinal);
+        }
+        public static void AddParameterWithValue(this DbCommand command, string parameterName, object parameterValue)
+        {
+            var parameter = command.CreateParameter();
+            parameter.ParameterName = parameterName;
+            parameter.Value = parameterValue;
+            command.Parameters.Add(parameter);
+        }
+        public static DbCommand CreateCommandWithText(this DbConnection connection, string commandText)
+        {
+            DbCommand command = connection.CreateCommand();
+            command.CommandText = commandText;
+            return command;
         }
         #endregion
 

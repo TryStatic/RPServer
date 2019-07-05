@@ -47,13 +47,19 @@ namespace RPServer.Game
             Logger.GetInstance();
 
             // Get Database Settings (meta.xml)
-            DbConnection.MySqlHost = NAPI.Resource.GetSetting<string>(this, "DB_HOST");
-            DbConnection.MySqlPort = NAPI.Resource.GetSetting<uint>(this, "DB_PORT");
-            DbConnection.MySqlDatabase = NAPI.Resource.GetSetting<string>(this, "DB_DATABASE");
-            DbConnection.MySqlUsername = NAPI.Resource.GetSetting<string>(this, "DB_USERNAME");
-            DbConnection.MySqlPassword = NAPI.Resource.GetSetting<string>(this, "DB_PASSWORD");
-            // Test MySql Connection
-            await DbConnection.TestConnection();
+            DbConnectionProvider.ProviderName = NAPI.Resource.GetSetting<string>(this, "DB_PROVIDER");
+
+            var dbConnectionStringBuilder = DbConnectionProvider.CreateDbConnectionStringBuilder();
+            dbConnectionStringBuilder.Add("Server", NAPI.Resource.GetSetting<string>(this, "DB_HOST"));
+            dbConnectionStringBuilder.Add("Port", NAPI.Resource.GetSetting<uint>(this, "DB_PORT"));
+            dbConnectionStringBuilder.Add("Database", NAPI.Resource.GetSetting<string>(this, "DB_DATABASE"));
+            dbConnectionStringBuilder.Add("UserID", NAPI.Resource.GetSetting<string>(this, "DB_USERNAME"));
+            dbConnectionStringBuilder.Add("Password", NAPI.Resource.GetSetting<string>(this, "DB_PASSWORD"));
+            dbConnectionStringBuilder.Add("ConvertZeroDateTime", true);
+            DbConnectionProvider.ConnectionString = dbConnectionStringBuilder.ConnectionString;
+
+            // Test SQL Connection
+            await DbConnectionProvider.TestConnection();
 
             // Get SMTP Settings (meta.xml)
             EmailSender.SmtpHost = NAPI.Resource.GetSetting<string>(this, "SMTP_HOST");

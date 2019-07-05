@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using MySql.Data.MySqlClient;
 using RPServer.Database;
 using RPServer.Models.Helpers;
 using RPServer.Util;
@@ -65,21 +65,21 @@ namespace RPServer.Models
 
             const string query = "INSERT INTO accounts(username, hash, regsocialclubname, creationdate) VALUES (@username, @hash, @regsocialclubname, @creationdate)";
 
-            using (var dbConn = new DbConnection())
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    var cmd = new MySqlCommand(query, dbConn.Connection);
-                    cmd.Parameters.AddWithValue("@username", username);
-                    cmd.Parameters.AddWithValue("@hash", hash);
-                    cmd.Parameters.AddWithValue("@regsocialclubname", regSocialClubName);
-                    cmd.Parameters.AddWithValue("@creationdate", DateTime.Now);
+                    var cmd = dbConn.CreateCommandWithText(query);
+                    cmd.AddParameterWithValue("@username", username);
+                    cmd.AddParameterWithValue("@hash", hash);
+                    cmd.AddParameterWithValue("@regsocialclubname", regSocialClubName);
+                    cmd.AddParameterWithValue("@creationdate", DateTime.Now);
                     await dbConn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
                 }
-                catch (MySqlException ex)
+                catch (DbException ex)
                 {
-                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                    DbConnectionProvider.HandleDbException(ex);
                 }
             }
         }
@@ -94,12 +94,12 @@ namespace RPServer.Models
             if (!await ExistsAsync(username))
                 return null;
 
-            using (var dbConn = new DbConnection())
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    var cmd = new MySqlCommand(query, dbConn.Connection);
-                    cmd.Parameters.AddWithValue("@username", username);
+                    var cmd = dbConn.CreateCommandWithText(query);
+                    cmd.AddParameterWithValue("@username", username);
                     await dbConn.OpenAsync();
                     using (var r = await cmd.ExecuteReaderAsync(CommandBehavior.SequentialAccess))
                     {
@@ -128,9 +128,9 @@ namespace RPServer.Models
 
                     }
                 }
-                catch (MySqlException ex)
+                catch (DbException ex)
                 {
-                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                    DbConnectionProvider.HandleDbException(ex);
                 }
 
                 return null;
@@ -140,21 +140,21 @@ namespace RPServer.Models
         {
             const string query = "SELECT accountID FROM accounts WHERE username = @username";
 
-            using (var dbConn = new DbConnection())
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    var cmd = new MySqlCommand(query, dbConn.Connection);
-                    cmd.Parameters.AddWithValue("@username", username);
+                    var cmd = dbConn.CreateCommandWithText(query);
+                    cmd.AddParameterWithValue("@username", username);
                     await dbConn.OpenAsync();
                     using (var r = await cmd.ExecuteReaderAsync())
                     {
                         return await r.ReadAsync() && r.HasRows;
                     }
                 }
-                catch (MySqlException ex)
+                catch (DbException ex)
                 {
-                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                    DbConnectionProvider.HandleDbException(ex);
                 }
             }
             throw new Exception("There was an error in [Account.ExistsAsync]");
@@ -168,33 +168,33 @@ namespace RPServer.Models
                                  "creationdate = @creationdate, lastlogindate = @lastlogindate, enabled2FAbyemail = @enabled2FAbyemail, twofactorsharedkey = @twofactorsharedkey " +
                                  "WHERE accountID = @sqlId";
 
-            using (var dbConn = new DbConnection())
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    var cmd = new MySqlCommand(query, dbConn.Connection);
-                    cmd.Parameters.AddWithValue("@sqlId", SqlId);
+                    var cmd = dbConn.CreateCommandWithText(query);
+                    cmd.AddParameterWithValue("@sqlId", SqlId);
 
-                    cmd.Parameters.AddWithValue("@username", Username);
-                    cmd.Parameters.AddWithValue("@emailaddress", EmailAddress);
-                    cmd.Parameters.AddWithValue("@hash", Hash);
-                    cmd.Parameters.AddWithValue("@forumname", ForumName);
-                    cmd.Parameters.AddWithValue("@nickname", NickName);
-                    cmd.Parameters.AddWithValue("@LastIP", LastIP);
-                    cmd.Parameters.AddWithValue("@LastHWID", LastHWID);
-                    cmd.Parameters.AddWithValue("@regsocialclubname", RegSocialClubName);
-                    cmd.Parameters.AddWithValue("@lastsocialclubname", LastSocialClubName);
-                    cmd.Parameters.AddWithValue("@creationdate", CreationDate);
-                    cmd.Parameters.AddWithValue("@lastlogindate", LastLoginDate);
-                    cmd.Parameters.AddWithValue("@enabled2FAbyemail", HasEnabledTwoStepByEmail);
-                    cmd.Parameters.AddWithValue("@twofactorsharedkey", TwoFactorGASharedKey);
+                    cmd.AddParameterWithValue("@username", Username);
+                    cmd.AddParameterWithValue("@emailaddress", EmailAddress);
+                    cmd.AddParameterWithValue("@hash", Hash);
+                    cmd.AddParameterWithValue("@forumname", ForumName);
+                    cmd.AddParameterWithValue("@nickname", NickName);
+                    cmd.AddParameterWithValue("@LastIP", LastIP);
+                    cmd.AddParameterWithValue("@LastHWID", LastHWID);
+                    cmd.AddParameterWithValue("@regsocialclubname", RegSocialClubName);
+                    cmd.AddParameterWithValue("@lastsocialclubname", LastSocialClubName);
+                    cmd.AddParameterWithValue("@creationdate", CreationDate);
+                    cmd.AddParameterWithValue("@lastlogindate", LastLoginDate);
+                    cmd.AddParameterWithValue("@enabled2FAbyemail", HasEnabledTwoStepByEmail);
+                    cmd.AddParameterWithValue("@twofactorsharedkey", TwoFactorGASharedKey);
 
                     await dbConn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
                 }
-                catch (MySqlException ex)
+                catch (DbException ex)
                 {
-                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                    DbConnectionProvider.HandleDbException(ex);
                 }
             }
         }
@@ -206,20 +206,20 @@ namespace RPServer.Models
             var query = $"UPDATE accounts SET {column} = @value WHERE accountID = @sqlId";
 
 
-            using (var dbConn = new DbConnection())
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    var cmd = new MySqlCommand(query, dbConn.Connection);
-                    cmd.Parameters.AddWithValue("@sqlId", SqlId);
-                    cmd.Parameters.AddWithValue("@value", value);
+                    var cmd = dbConn.CreateCommandWithText(query);
+                    cmd.AddParameterWithValue("@sqlId", SqlId);
+                    cmd.AddParameterWithValue("@value", value);
 
                     await dbConn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
                 }
-                catch (MySqlException ex)
+                catch (DbException ex)
                 {
-                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                    DbConnectionProvider.HandleDbException(ex);
                 }
             }
         }
@@ -227,19 +227,19 @@ namespace RPServer.Models
         {
             const string query = "DELETE FROM accounts WHERE username = @username";
 
-            using (var dbConn = new DbConnection())
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    var cmd = new MySqlCommand(query, dbConn.Connection);
-                    cmd.Parameters.AddWithValue("@username", username);
+                    var cmd = dbConn.CreateCommandWithText(query);
+                    cmd.AddParameterWithValue("@username", username);
 
                     await dbConn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
                 }
-                catch (MySqlException ex)
+                catch (DbException ex)
                 {
-                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                    DbConnectionProvider.HandleDbException(ex);
                 }
             }
         }
@@ -247,12 +247,12 @@ namespace RPServer.Models
         {
             const string query = "SELECT accountID FROM accounts WHERE username = @username LIMIT 1";
 
-            using (var dbConn = new DbConnection())
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    var cmd = new MySqlCommand(query, dbConn.Connection);
-                    cmd.Parameters.AddWithValue("@username", username);
+                    var cmd = dbConn.CreateCommandWithText(query);
+                    cmd.AddParameterWithValue("@username", username);
 
                     await dbConn.OpenAsync();
                     using (var reader = await cmd.ExecuteReaderAsync())
@@ -264,9 +264,9 @@ namespace RPServer.Models
                         return sqlId;
                     }
                 }
-                catch (MySqlException ex)
+                catch (DbException ex)
                 {
-                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                    DbConnectionProvider.HandleDbException(ex);
                 }
                 return -1;
             }
@@ -279,12 +279,12 @@ namespace RPServer.Models
         {
             const string query = "SELECT username, hash FROM accounts WHERE username = @username LIMIT 1";
 
-            using (var dbConn = new DbConnection())
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    var cmd = new MySqlCommand(query, dbConn.Connection);
-                    cmd.Parameters.AddWithValue("@username", username);
+                    var cmd = dbConn.CreateCommandWithText(query);
+                    cmd.AddParameterWithValue("@username", username);
 
                     await dbConn.OpenAsync();
                     using (var reader = await cmd.ExecuteReaderAsync())
@@ -296,9 +296,9 @@ namespace RPServer.Models
                         return new PasswordHash(fetchedPass).Verify(password);
                     }
                 }
-                catch (MySqlException ex)
+                catch (DbException ex)
                 {
-                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                    DbConnectionProvider.HandleDbException(ex);
                 }
                 return false;
             }
@@ -307,12 +307,12 @@ namespace RPServer.Models
         {
             const string query = "SELECT accountID FROM accounts WHERE emailaddress = @emailaddress";
 
-            using (var dbConn = new DbConnection())
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    var cmd = new MySqlCommand(query, dbConn.Connection);
-                    cmd.Parameters.AddWithValue("@emailaddress", emailAddress);
+                    var cmd = dbConn.CreateCommandWithText(query);
+                    cmd.AddParameterWithValue("@emailaddress", emailAddress);
 
                     await dbConn.OpenAsync();
                     using (var r = await cmd.ExecuteReaderAsync())
@@ -320,9 +320,9 @@ namespace RPServer.Models
                         return await r.ReadAsync() && r.HasRows;
                     }
                 }
-                catch (MySqlException ex)
+                catch (DbException ex)
                 {
-                    Logger.GetInstance().MySqlError(ex.Message, ex.Code);
+                    DbConnectionProvider.HandleDbException(ex);
                 }
             }
             throw new Exception("There was an error in [Account.IsEmailTakenAsync]");

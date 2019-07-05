@@ -21,6 +21,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Database\DbConnection.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Bootstrapper">
       <HintPath>..\..\runtime\Bootstrapper.dll</HintPath>
     </Reference>
