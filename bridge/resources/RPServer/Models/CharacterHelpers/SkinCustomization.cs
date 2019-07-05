@@ -1,5 +1,4 @@
-﻿using System;
-using GTANetworkAPI;
+﻿using GTANetworkAPI;
 
 namespace RPServer.Models.CharacterHelpers
 {
