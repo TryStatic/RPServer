@@ -60,13 +60,18 @@ namespace RPServer.Models.CharacterHelpers
             return dict;
         }
 
-        public void SetOverlay(Client client, OverlayID oID, byte index, float opacity, byte color, byte secColor)
+        public void SetOverlay(OverlayID oID, byte index, float opacity, byte color, byte secColor)
         {
             _overlays[(int)oID].Index = index;
             _overlays[(int)oID].Opacity = opacity;
             _overlays[(int)oID].Color = color;
             _overlays[(int)oID].SecondaryColor = secColor;
 
+
+        }
+
+        public void ApplySingle(Client client, OverlayID oID)
+        {
             client.SetHeadOverlay((int)oID, new GTANetworkAPI.HeadOverlay
             {
                 Index = _overlays[(int)oID].Index,

@@ -4,8 +4,8 @@ namespace RPServer.Models.CharacterHelpers
 {
     internal class CustomHeadBlend
     {
-        public byte ShapeFirstID { get; }
-        public byte ShapeSecondID { get; }
+        public byte ShapeFirstID { get; set; }
+        public byte ShapeSecondID { get; set; }
 
         public byte SkinFirstID => ShapeFirstID;
         public byte SkinSecondID => ShapeSecondID;
@@ -13,10 +13,10 @@ namespace RPServer.Models.CharacterHelpers
         public float ShapeMix { get; private set; }
         public float SkinMix { get; private set; }
 
-        public byte ShapeThirdID => 0;
-        public byte SkinThirdID => 0;
-        public float ThirdMix => 0.0f;
-        public bool IsParent => false;
+        private static byte ShapeThirdID => 0;
+        private static byte SkinThirdID => 0;
+        private static float ThirdMix => 0.0f;
+        private static bool IsParent => false;
 
         public CustomHeadBlend(byte shapeFirst, byte shapeSecond, float shapeMix, float skinMix)
         {
@@ -42,13 +42,6 @@ namespace RPServer.Models.CharacterHelpers
                 ThirdMix = ThirdMix
             };
             return blend;
-        }
-
-        public void Update(Client client, float newShapeMix, float newSkinMix)
-        {
-            ShapeMix = newShapeMix;
-            SkinMix = newSkinMix;
-            client.UpdateHeadBlend(ShapeMix, SkinMix, ThirdMix);
         }
 
         public void Apply(Client client)

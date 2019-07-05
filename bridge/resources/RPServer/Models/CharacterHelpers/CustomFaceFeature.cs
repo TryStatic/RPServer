@@ -43,10 +43,14 @@ namespace RPServer.Models.CharacterHelpers
             return arr;
         }
 
-        public void SetFeature(Client client, FeatureIndex index, float value)
+        public void SetFeature(FeatureIndex index, float value)
         {
             _features[(int)index].Value = value;
-            client.SetFaceFeature((int)index, value);
+        }
+
+        public void ApplySingle(Client client, FeatureIndex index)
+        {
+            client.SetFaceFeature((int)index, _features[(int)index].Value);
         }
 
         public void ApplyAll(Client client)
