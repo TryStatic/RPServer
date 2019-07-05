@@ -7,16 +7,17 @@ namespace RPServer.Models.CharacterHelpers
         public byte ShapeFirstID { get; set; }
         public byte ShapeSecondID { get; set; }
 
-        public byte SkinFirstID => ShapeFirstID;
-        public byte SkinSecondID => ShapeSecondID;
-
         public float ShapeMix { get; private set; }
         public float SkinMix { get; private set; }
 
+        #region DEFAULT_BLEND_DATA_VALUES
+        public byte SkinFirstID => ShapeFirstID;
+        public byte SkinSecondID => ShapeSecondID;
         private static byte ShapeThirdID => 0;
         private static byte SkinThirdID => 0;
         private static float ThirdMix => 0.0f;
         private static bool IsParent => false;
+        #endregion
 
         public CustomHeadBlend(byte shapeFirst, byte shapeSecond, float shapeMix, float skinMix)
         {
@@ -27,9 +28,9 @@ namespace RPServer.Models.CharacterHelpers
 
         }
 
-        public GTANetworkAPI.HeadBlend Get()
+        public HeadBlend Get()
         {
-            var blend = new GTANetworkAPI.HeadBlend()
+            var blend = new HeadBlend()
             {
                 ShapeFirst = ShapeFirstID,
                 ShapeMix = ShapeMix,
@@ -46,7 +47,7 @@ namespace RPServer.Models.CharacterHelpers
 
         public void Apply(Client client)
         {
-            client.HeadBlend = new GTANetworkAPI.HeadBlend()
+            client.HeadBlend = new HeadBlend()
             {
                 ShapeFirst = ShapeFirstID,
                 ShapeMix = ShapeMix,
