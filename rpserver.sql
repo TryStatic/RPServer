@@ -11,7 +11,7 @@
  Target Server Version : 80016
  File Encoding         : 65001
 
- Date: 29/06/2019 19:02:24
+ Date: 05/07/2019 05:53:45
 */
 
 SET NAMES utf8mb4;
@@ -49,12 +49,11 @@ CREATE TABLE `characters`  (
   `characterID` int(11) NOT NULL AUTO_INCREMENT,
   `charownerID` int(11) NOT NULL,
   `charname` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `skinmodel` int(11) UNSIGNED NOT NULL DEFAULT 1885233650,
   PRIMARY KEY (`characterID`) USING BTREE,
   UNIQUE INDEX `name_UNIQUE`(`charname`) USING BTREE,
   INDEX `fkey_idx`(`charownerID`) USING BTREE,
   CONSTRAINT `fkey_acc_to_char` FOREIGN KEY (`charownerID`) REFERENCES `accounts` (`accountID`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for emailtokens

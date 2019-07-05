@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using RPServer.Database;
+using RPServer.Models.CharacterHelpers;
 using RPServer.Models.Helpers;
 using RPServer.Util;
 
@@ -20,10 +21,8 @@ namespace RPServer.Models
         public int SqlId { get; }
         [SqlColumnName("charname")]
         public string Name { set; get; }
-        [SqlColumnName("skinmodel")]
-        public int SkinModel { set; get; }
 
-        private SkinCustomization SkinCustomization { set; get; }
+        public SkinCustomization SkinCustomization { set; get; }
         #endregion
 
         public Account Owner { get; set; }
@@ -56,7 +55,7 @@ namespace RPServer.Models
         }
         public static async Task<List<Character>> FetchAllAsync(Account account)
         {
-            const string query = "SELECT characterID, charname, skinmodel FROM characters WHERE charownerID = @accountID";
+            const string query = "SELECT characterID, charname FROM characters WHERE charownerID = @accountID";
 
             using (var dbConn = new DbConnection())
             {
@@ -74,7 +73,6 @@ namespace RPServer.Models
                             {
                                 Owner = account,
                                 Name = r.GetStringExtended("charname"),
-                                SkinModel = r.GetInt32Extended("skinmodel")
                             };
                             chars.Add(fetchedChar);
                         }
@@ -94,7 +92,7 @@ namespace RPServer.Models
         public static async Task<Character> FetchAsync(int charId)
         {
             const string query =
-                "SELECT characterID, charownerID, charname, skinmodel FROM characters WHERE characterID = @characterid";
+                "SELECT characterID, charownerID, charname FROM characters WHERE characterID = @characterid";
 
             if (!await ExistsAsync(charId))
                 return null;
@@ -114,7 +112,6 @@ namespace RPServer.Models
                         var fetched = new Character(charId)
                         {
                             Name = r.GetStringExtended("charname"),
-                            SkinModel = r.GetInt32Extended("skinmodel")
                         };
                         return fetched;
 
@@ -187,7 +184,7 @@ namespace RPServer.Models
         public async Task SaveAsync()
         {
             const string query = "UPDATE characters " +
-                                 "SET charname = @charname, skinmodel = @skinmodel " +
+                                 "SET charname = @charname " +
                                  "WHERE characterID = @characterID";
 
             using (var dbConn = new DbConnection())
@@ -198,7 +195,6 @@ namespace RPServer.Models
                     cmd.Parameters.AddWithValue("@characterID", SqlId);
 
                     cmd.Parameters.AddWithValue("@charname", Name);
-                    cmd.Parameters.AddWithValue("@skinmodel", SkinModel);
 
                     await dbConn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
