@@ -7,8 +7,8 @@ namespace RPServer.Models.CharacterHelpers
         public byte ShapeFirstID { get; set; }
         public byte ShapeSecondID { get; set; }
 
-        public float ShapeMix { get; private set; }
-        public float SkinMix { get; private set; }
+        public float ShapeMix { get; set; }
+        public float SkinMix { get; set; }
 
         #region DEFAULT_BLEND_DATA_VALUES
         public byte SkinFirstID => ShapeFirstID;

@@ -5,11 +5,11 @@ namespace RPServer.Models.CharacterHelpers
 {
     internal class CustomHeadOverlay
     {
-        private readonly Overlay[] _overlays;
+        public Overlay[] Overlays { set; get; }
 
         public CustomHeadOverlay()
         {
-            _overlays = new[]
+            Overlays = new[]
             {
                 new Overlay(OverlayID.Blemishes, 255, 0, 0, 0),
                 new Overlay(OverlayID.FacialHair, 255, 0, 0, 0),
@@ -30,7 +30,7 @@ namespace RPServer.Models.CharacterHelpers
         public Dictionary<int, HeadOverlay> Get()
         {
             var dict = new Dictionary<int, HeadOverlay>();
-            foreach (var t in _overlays)
+            foreach (var t in Overlays)
             {
                 dict.Add(t.OverlayID, new HeadOverlay()
                 {
@@ -46,10 +46,10 @@ namespace RPServer.Models.CharacterHelpers
 
         public void SetOverlay(OverlayID oID, byte index, float opacity, byte color, byte secColor)
         {
-            _overlays[(int)oID].Index = index;
-            _overlays[(int)oID].Opacity = opacity;
-            _overlays[(int)oID].Color = color;
-            _overlays[(int)oID].SecondaryColor = secColor;
+            Overlays[(int)oID].Index = index;
+            Overlays[(int)oID].Opacity = opacity;
+            Overlays[(int)oID].Color = color;
+            Overlays[(int)oID].SecondaryColor = secColor;
 
 
         }
@@ -58,16 +58,16 @@ namespace RPServer.Models.CharacterHelpers
         {
             client.SetHeadOverlay((int)oID, new HeadOverlay
             {
-                Index = _overlays[(int)oID].Index,
-                Opacity = _overlays[(int)oID].Opacity,
-                Color = _overlays[(int)oID].Color,
-                SecondaryColor = _overlays[(int)oID].SecondaryColor
+                Index = Overlays[(int)oID].Index,
+                Opacity = Overlays[(int)oID].Opacity,
+                Color = Overlays[(int)oID].Color,
+                SecondaryColor = Overlays[(int)oID].SecondaryColor
             });
         }
 
         public void ApplyAll(Client client)
         {
-            foreach (var overlay in _overlays)
+            foreach (var overlay in Overlays)
             {
                 client.SetHeadOverlay(overlay.OverlayID, new HeadOverlay
                 {
@@ -79,9 +79,9 @@ namespace RPServer.Models.CharacterHelpers
             }
         }
 
-        private struct Overlay
+        internal struct Overlay
         {
-            public byte OverlayID { get; }
+            public byte OverlayID { set; get; }
             public byte Index { get; set;  }
             public float Opacity { get; set; }
             public byte Color { get; set; }

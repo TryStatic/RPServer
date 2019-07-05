@@ -1,4 +1,5 @@
-﻿using GTANetworkAPI;
+﻿using System;
+using GTANetworkAPI;
 
 namespace RPServer.Models.CharacterHelpers
 {
@@ -21,8 +22,8 @@ namespace RPServer.Models.CharacterHelpers
         {
             set
             {
-                if (NAPI.Util.PedNameToModel("mp_m_freemode_01") == SkinModel) _isMale = true;
-                else if (NAPI.Util.PedNameToModel("mp_f_freemode_01") == SkinModel) _isMale = false;
+                if (SkinModel == PedHash.FreemodeMale01) _isMale = true;
+                else if (SkinModel == PedHash.FreemodeFemale01) _isMale = false;
                 else _isMale = value;
             }
             get
@@ -35,24 +36,22 @@ namespace RPServer.Models.CharacterHelpers
             }
         }
         public CustomHeadBlend CustomHeadBlend { get; set; }
-        public CustomFaceFeature CustomFaceFeatures { get; set; }
         public CustomHeadOverlay CustomHeadOverlay { get; set; }
-        /// <summary>
-        /// Between 0 and 31
-        /// </summary>
-        public byte EyeColor { set; get; }
-        /// <summary>
-        /// Between 0 and 63
-        /// </summary>
-        public byte HairColor { set; get; }
-        /// <summary>
-        /// Between 0 and 63
-        /// </summary>
-        public byte HighlightColor { set; get; }
+        public CustomFaceFeature CustomFaceFeatures { get; set; }
+        public byte EyeColor { set; get; } // 0 .. 31
+        public byte HairColor { set; get; } // 0 .. 63
+        public byte HighlightColor { set; get; } // 0 .. 63
 
         public byte HairStyle { get; set; }
         public byte HairStyleTexture { get; set; }
 
+        public SkinCustomization()
+        {
+            SkinModel = PedHash.FreemodeMale01;
+            CustomHeadBlend = new CustomHeadBlend(0, 0, 0, 0);
+            CustomHeadOverlay = new CustomHeadOverlay();
+            CustomFaceFeatures = new CustomFaceFeature();
+        }
 
         public void ApplyAll(Client client)
         {

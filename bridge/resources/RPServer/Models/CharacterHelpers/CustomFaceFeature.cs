@@ -4,11 +4,11 @@ namespace RPServer.Models.CharacterHelpers
 {
     internal class CustomFaceFeature
     {
-        private readonly Feature[] _features;
+        public Feature[] Features { get; set; }
 
         public CustomFaceFeature()
         {
-            _features = new []
+            Features = new []
             {
                 new Feature(FeatureIndex.NoseWidth, 0),
                 new Feature(FeatureIndex.NoseHeight, 0),
@@ -35,35 +35,35 @@ namespace RPServer.Models.CharacterHelpers
 
         public float[] Get()
         {
-            var arr = new float[_features.Length];
+            var arr = new float[Features.Length];
             for (var i = 0; i < arr.Length; i++)
             {
-                arr[i] = _features[i].Value;
+                arr[i] = Features[i].Value;
             }
             return arr;
         }
 
         public void SetFeature(FeatureIndex index, float value)
         {
-            _features[(int)index].Value = value;
+            Features[(int)index].Value = value;
         }
 
         public void ApplySingle(Client client, FeatureIndex index)
         {
-            client.SetFaceFeature((int)index, _features[(int)index].Value);
+            client.SetFaceFeature((int)index, Features[(int)index].Value);
         }
 
         public void ApplyAll(Client client)
         {
-            foreach (var feature in _features)
+            foreach (var feature in Features)
             {
                 client.SetFaceFeature(feature.Index, feature.Value);
             }
         }
 
-        private struct Feature
+        internal struct Feature
         {
-            public int Index { get; }
+            public int Index { get; set;  }
             public float Value { set; get; }
 
             internal Feature(FeatureIndex featureIndex, float value)
