@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
 using RPServer.Database;
 using RPServer.Models.CharacterHelpers;
 using RPServer.Models.Helpers;
@@ -14,6 +15,7 @@ namespace RPServer.Models
     internal class Character : SaveableData
     {
         public static readonly string DataKey = "ACTIVE_CHARACTER_DATA";
+        private SkinCustomization _skinCustomization;
 
         #region SQL_SAVEABLE_DATA
 
@@ -22,12 +24,21 @@ namespace RPServer.Models
         [SqlColumnName("charname")]
         public string Name { set; get; }
 
-        public SkinCustomization SkinCustomization { set; get; }
+        [SqlColumnName("customization")]
+        public SkinCustomization SkinCustomization
+        {
+            set => _skinCustomization = value;
+            get => _skinCustomization ?? (_skinCustomization = new SkinCustomization());
+        }
+
         #endregion
 
         public Account Owner { get; set; }
 
-        private Character(int sqlId) => SqlId = sqlId;
+        private Character(int sqlId)
+        {
+            SqlId = sqlId;
+        }
 
         #region DATABASE
         public static async Task CreateNewAsync(Account account, string charName)
@@ -55,7 +66,7 @@ namespace RPServer.Models
         }
         public static async Task<List<Character>> FetchAllAsync(Account account)
         {
-            const string query = "SELECT characterID, charname FROM characters WHERE charownerID = @accountID";
+            const string query = "SELECT characterID, charname, customization FROM characters WHERE charownerID = @accountID";
 
             using (var dbConn = new DbConnection())
             {
@@ -73,6 +84,7 @@ namespace RPServer.Models
                             {
                                 Owner = account,
                                 Name = r.GetStringExtended("charname"),
+                                SkinCustomization = JsonConvert.DeserializeObject<SkinCustomization>(r.GetStringExtended("customization"))
                             };
                             chars.Add(fetchedChar);
                         }
@@ -92,7 +104,7 @@ namespace RPServer.Models
         public static async Task<Character> FetchAsync(int charId)
         {
             const string query =
-                "SELECT characterID, charownerID, charname FROM characters WHERE characterID = @characterid";
+                "SELECT charname, customization FROM characters WHERE characterID = @characterid";
 
             if (!await ExistsAsync(charId))
                 return null;
@@ -112,6 +124,7 @@ namespace RPServer.Models
                         var fetched = new Character(charId)
                         {
                             Name = r.GetStringExtended("charname"),
+                            SkinCustomization = JsonConvert.DeserializeObject<SkinCustomization>(r.GetStringExtended("customization"))
                         };
                         return fetched;
 
@@ -184,7 +197,8 @@ namespace RPServer.Models
         public async Task SaveAsync()
         {
             const string query = "UPDATE characters " +
-                                 "SET charname = @charname " +
+                                 "SET charname = @charname, " +
+                                 "customization = @customization " +
                                  "WHERE characterID = @characterID";
 
             using (var dbConn = new DbConnection())
@@ -195,6 +209,7 @@ namespace RPServer.Models
                     cmd.Parameters.AddWithValue("@characterID", SqlId);
 
                     cmd.Parameters.AddWithValue("@charname", Name);
+                    cmd.Parameters.AddWithValue("@customization", JsonConvert.SerializeObject(SkinCustomization));
 
                     await dbConn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
@@ -205,7 +220,7 @@ namespace RPServer.Models
                 }
             }
         }
-        public async Task SaveSingleAsync<T>(Expression<Func<T>> expression)
+        public async Task SaveSingleAsync<T>(Expression<Func<T>> expression) // Skin customization???
         {
             var column = GetColumnName(expression, out var value);
             if (string.IsNullOrWhiteSpace(column))

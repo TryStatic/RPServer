@@ -11,7 +11,7 @@
  Target Server Version : 80016
  File Encoding         : 65001
 
- Date: 05/07/2019 05:53:45
+ Date: 05/07/2019 21:12:35
 */
 
 SET NAMES utf8mb4;
@@ -49,6 +49,7 @@ CREATE TABLE `characters`  (
   `characterID` int(11) NOT NULL AUTO_INCREMENT,
   `charownerID` int(11) NOT NULL,
   `charname` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `customization` varchar(2500) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   PRIMARY KEY (`characterID`) USING BTREE,
   UNIQUE INDEX `name_UNIQUE`(`charname`) USING BTREE,
   INDEX `fkey_idx`(`charownerID`) USING BTREE,
