@@ -5,11 +5,18 @@ namespace RPServer.Models.CharacterHelpers
     internal class SkinCustomization
     {
         private bool _isMale;
+        private PedHash _skinModel;
 
-        public CustomHeadBlend CustomHeadBlend { get; set; }
-        public CustomFaceFeature CustomFaceFeatures { get; set; }
-        public CustomHeadOverlay CustomHeadOverlay { get; set; }
-        public PedHash SkinModel { set; get; }
+        public PedHash SkinModel
+        {
+            set
+            {
+                if (value == PedHash.FreemodeMale01) _isMale = true;
+                if (value == PedHash.FreemodeFemale01) _isMale = false;
+                _skinModel = value;
+            }
+            get => _skinModel;
+        }
         public bool IsMale
         {
             set
@@ -27,14 +34,30 @@ namespace RPServer.Models.CharacterHelpers
                 return _isMale;
             }
         }
-
+        public CustomHeadBlend CustomHeadBlend { get; set; }
+        public CustomFaceFeature CustomFaceFeatures { get; set; }
+        public CustomHeadOverlay CustomHeadOverlay { get; set; }
+        /// <summary>
+        /// Between 0 and 31
+        /// </summary>
         public byte EyeColor { set; get; }
+        /// <summary>
+        /// Between 0 and 63
+        /// </summary>
         public byte HairColor { set; get; }
+        /// <summary>
+        /// Between 0 and 63
+        /// </summary>
         public byte HighlightColor { set; get; }
+
+        public byte HairStyle { get; set; }
+        public byte HairStyleTexture { get; set; }
+
 
         public void ApplyAll(Client client)
         {
             client.SetCustomization(IsMale, CustomHeadBlend.Get(), EyeColor, HairColor, HighlightColor, CustomFaceFeatures.Get(), CustomHeadOverlay.Get(), new Decoration[0]);
+            client.SetClothes(2, HairStyle, HairStyleTexture);
         }
 
     }
