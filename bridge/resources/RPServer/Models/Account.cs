@@ -11,13 +11,13 @@ namespace RPServer.Models
     {
         public static readonly string DataKey = "ACCOUNT_DATA";
 
-        public DbAcc DbData;
+        public AccountDbData DbData;
 
         public bool HasPassedTwoStepByGA = false;
         public bool HasPassedTwoStepByEmail = false;
         public byte[] TempTwoFactorGASharedKey = null;
 
-        private Account(DbAcc dbData)
+        private Account(AccountDbData dbData)
         {
             DbData = dbData;
         }
@@ -29,16 +29,16 @@ namespace RPServer.Models
                 return;
 
             var hash = new PasswordHash(password).ToArray();
-            var newAcc = new DbAcc(username, hash, regSocialClubName);
+            var newAcc = new AccountDbData(username, hash, regSocialClubName);
             await newAcc.CreateAsync();
         }
 
         public static async Task<Account> FetchAsync(string username)
         {
-            var sqlID = await DbAcc.GetSqlIdAsync(username);
+            var sqlID = await AccountDbData.GetSqlIdAsync(username);
             if (sqlID < 0) return null;
 
-            var dbData = await DbAcc.ReadAsync(sqlID);
+            var dbData = await AccountDbData.ReadAsync(sqlID);
             var acc = new Account(dbData);
             return acc;
 
@@ -47,7 +47,7 @@ namespace RPServer.Models
 
         public static async Task<bool> ExistsAsync(string username)
         {
-            var sqlID = await DbAcc.GetSqlIdAsync(username);
+            var sqlID = await AccountDbData.GetSqlIdAsync(username);
             return sqlID >= 0;
         }
 
