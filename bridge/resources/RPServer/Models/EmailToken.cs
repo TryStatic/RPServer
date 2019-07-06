@@ -3,6 +3,8 @@ using RPServer.Database;
 using RPServer.Util;
 using System.Threading.Tasks;
 using System.Data.Common;
+using System.Linq;
+using Dapper;
 
 namespace RPServer.Models
 {
@@ -36,10 +38,7 @@ namespace RPServer.Models
         {
             const string query = "INSERT INTO emailtokens(accountID, token, expirydate, emailaddress) VALUES (@accountid, @token, @expirydate, @emailaddress)";
 
-            if (await ExistsAsync(account))
-            {
-                await RemoveAsync(account);
-            }
+            if (await ExistsAsync(account)) await RemoveAsync(account);
 
             var emailToken = new EmailToken(account, emailAddress);
 
@@ -47,13 +46,14 @@ namespace RPServer.Models
             {
                 try
                 {
-                    var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@accountid", emailToken.Account.DbData.AccountID);
-                    cmd.AddParameterWithValue("@token", emailToken.Token);
-                    cmd.AddParameterWithValue("@emailaddress", emailToken.EmailAddress);
-                    cmd.AddParameterWithValue("@expirydate", emailToken.ExpiryDate);
-                    await dbConn.OpenAsync();
-                    await cmd.ExecuteNonQueryAsync();
+                    await dbConn.ExecuteAsync(query, new
+                    {
+                        accountid = emailToken.Account.DbData.AccountID,
+                        token = emailToken.Token,
+                        emailaddress = emailToken.EmailAddress,
+                        expirydate = emailToken.ExpiryDate
+
+                    });
                     return true;
                 }
                 catch (DbException ex)
@@ -63,6 +63,7 @@ namespace RPServer.Models
                 return false;
             }
         }
+
         public static async Task<bool> ExistsAsync(Account account)
         {
             const string query = "SELECT accountID FROM emailtokens WHERE accountID = @accountid";
@@ -71,15 +72,8 @@ namespace RPServer.Models
             {
                 try
                 {
-                    var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@accountid", account.DbData.AccountID);
-
-                    await dbConn.OpenAsync();
-                    using (var r = await cmd.ExecuteReaderAsync())
-                    {
-                        if (!await r.ReadAsync()) return false;
-                        return r.HasRows;
-                    }
+                    var result = await dbConn.QueryAsync<int?>(query, new { accountid = account.DbData.AccountID });
+                    return result.Any();
                 }
                 catch (DbException ex)
                 {
@@ -88,23 +82,18 @@ namespace RPServer.Models
             }
             throw new Exception("There was an error in [EmailToken.ExistsAsync]");
         }
+
         public static async Task<bool> IsEmailTakenAsync(string emailAddress)
         {
             const string query = "SELECT emailaddress FROM emailtokens WHERE emailaddress = @emailaddress";
 
             using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
+
                 try
                 {
-                    var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@emailaddress", emailAddress);
-
-                    await dbConn.OpenAsync();
-                    using (var r = await cmd.ExecuteReaderAsync())
-                    {
-                        if (!await r.ReadAsync()) return false;
-                        return r.HasRows;
-                    }
+                    var result = await dbConn.QueryAsync(query, new { emailaddress = emailAddress });
+                    return result.Any();
                 }
                 catch (DbException ex)
                 {
@@ -124,15 +113,11 @@ namespace RPServer.Models
             {
                 try
                 {
-                    var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@accountid", account.DbData.AccountID);
+                    var result = await dbConn.QueryAsync(query, new { accountid = account.DbData.AccountID } );
+                    var unwrapped = result.SingleOrDefault();
 
-                    await dbConn.OpenAsync();
-                    using (var r = await cmd.ExecuteReaderAsync())
-                    {
-                        if (!await r.ReadAsync()) return null;
-                        return new EmailToken(account, r.GetStringExtended("token"), r.GetDateTimeExtended("expirydate"), r.GetStringExtended("emailaddress"));
-                    }
+                    if (unwrapped == null) return null;
+                    return new EmailToken(account, unwrapped.token, unwrapped.expirydate, unwrapped.emailaddress);
                 }
                 catch (DbException ex)
                 {
@@ -169,15 +154,13 @@ namespace RPServer.Models
             {
                 try
                 {
-                    var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@sqlId", Account.DbData.AccountID);
-
-                    cmd.AddParameterWithValue("@token", Token);
-                    cmd.AddParameterWithValue("@emailaddress", EmailAddress);
-                    cmd.AddParameterWithValue("@expirydate", ExpiryDate);
-
-                    await dbConn.OpenAsync();
-                    await cmd.ExecuteNonQueryAsync();
+                    await dbConn.ExecuteAsync(query, new
+                    {
+                        sqlId = Account.DbData.AccountID,
+                        token = Token,
+                        emailaddress = EmailAddress,
+                        expirydate = ExpiryDate
+                    });
                 }
                 catch (DbException ex)
                 {
@@ -193,11 +176,7 @@ namespace RPServer.Models
             {
                 try
                 {
-                    var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@current", DateTime.Now);
-
-                    await dbConn.OpenAsync();
-                    await cmd.ExecuteNonQueryAsync();
+                    await dbConn.ExecuteAsync(query, new { current = DateTime.Now });
                 }
                 catch (DbException ex)
                 {
@@ -215,19 +194,13 @@ namespace RPServer.Models
             {
                 try
                 {
-                    var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@accountid", account.DbData.AccountID);
-
-                    await dbConn.OpenAsync();
-                    await cmd.ExecuteNonQueryAsync();
-                    return;
+                    await dbConn.ExecuteAsync(query, new {accountid = account.DbData.AccountID});
                 }
                 catch (DbException ex)
                 {
                     DbConnectionProvider.HandleDbException(ex);
                 }
             }
-            throw new Exception("Error in [EmailTokens.RemoveAsync]");
         }
         public static async Task ChangeEmailAsync(Account account, string newEmailAddress)
         {
