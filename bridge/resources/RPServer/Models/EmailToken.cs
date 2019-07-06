@@ -48,7 +48,7 @@ namespace RPServer.Models
                 try
                 {
                     var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@accountid", emailToken.Account.SqlId);
+                    cmd.AddParameterWithValue("@accountid", emailToken.Account.DbData.AccountID);
                     cmd.AddParameterWithValue("@token", emailToken.Token);
                     cmd.AddParameterWithValue("@emailaddress", emailToken.EmailAddress);
                     cmd.AddParameterWithValue("@expirydate", emailToken.ExpiryDate);
@@ -72,7 +72,7 @@ namespace RPServer.Models
                 try
                 {
                     var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@accountid", account.SqlId);
+                    cmd.AddParameterWithValue("@accountid", account.DbData.AccountID);
 
                     await dbConn.OpenAsync();
                     using (var r = await cmd.ExecuteReaderAsync())
@@ -125,7 +125,7 @@ namespace RPServer.Models
                 try
                 {
                     var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@accountid", account.SqlId);
+                    cmd.AddParameterWithValue("@accountid", account.DbData.AccountID);
 
                     await dbConn.OpenAsync();
                     using (var r = await cmd.ExecuteReaderAsync())
@@ -170,7 +170,7 @@ namespace RPServer.Models
                 try
                 {
                     var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@sqlId", Account.SqlId);
+                    cmd.AddParameterWithValue("@sqlId", Account.DbData.AccountID);
 
                     cmd.AddParameterWithValue("@token", Token);
                     cmd.AddParameterWithValue("@emailaddress", EmailAddress);
@@ -216,7 +216,7 @@ namespace RPServer.Models
                 try
                 {
                     var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@accountid", account.SqlId);
+                    cmd.AddParameterWithValue("@accountid", account.DbData.AccountID);
 
                     await dbConn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();

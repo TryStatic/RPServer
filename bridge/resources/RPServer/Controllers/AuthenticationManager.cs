@@ -37,7 +37,7 @@ namespace RPServer.Controllers
             {
                 var acc = client.GetAccountData();
                 TaskManager.Run(client, async () => await acc.SaveAsync());
-                str = $"Registered (user: {acc.Username}";
+                str = $"Registered (user: {acc.DbData.Username}";
                 client.Logout();
             }
 
@@ -60,9 +60,9 @@ namespace RPServer.Controllers
         {
             if (!client.IsLoggedIn()) return;
             var acc = client.GetAccountData();
-            acc.HasEnabledTwoStepByEmail = !acc.HasEnabledTwoStepByEmail;
-            acc.HasPassedTwoStepByEmail = acc.HasEnabledTwoStepByEmail;
-            client.SendChatMessage($"2FA by Email has been {acc.HasEnabledTwoStepByEmail}");
+            acc.DbData.HasEnabledTwoStepByEmail = !acc.DbData.HasEnabledTwoStepByEmail;
+            acc.HasPassedTwoStepByEmail = acc.DbData.HasEnabledTwoStepByEmail;
+            client.SendChatMessage($"2FA by Email has been {acc.DbData.HasEnabledTwoStepByEmail}");
         }
 
         [Command(CmdStrings.CMD_ToggleTwoFactorGA)]
@@ -74,7 +74,7 @@ namespace RPServer.Controllers
             if (!acc.Is2FAbyGAEnabled())
             {
                 var key = GoogleAuthenticator.GenerateTwoFactorGASharedKey();
-                var link = GoogleAuthenticator.GetGQCodeImageLink(acc.Username, key, 150, 150);
+                var link = GoogleAuthenticator.GetGQCodeImageLink(acc.DbData.Username, key, 150, 150);
 
                 client.TriggerEvent(ServerToClient.ShowQRCode, link);
                 if (acc.TempTwoFactorGASharedKey == null) acc.TempTwoFactorGASharedKey = new byte[50];
@@ -84,7 +84,7 @@ namespace RPServer.Controllers
             else
             {
                 if (!client.CanRunTask()) return;
-                acc.TwoFactorGASharedKey = null;
+                acc.DbData.TwoFactorGASharedKey = null;
                 acc.HasPassedTwoStepByGA = false;
 
                 TaskManager.Run(client, async () => await acc.SaveAsync());
@@ -216,7 +216,7 @@ namespace RPServer.Controllers
             if (fetchedAcc.Is2FAbyEmailEnabled())
             {
                 fetchedAcc.HasPassedTwoStepByEmail = false;
-                await EmailToken.CreateAsync(fetchedAcc, fetchedAcc.EmailAddress);
+                await EmailToken.CreateAsync(fetchedAcc, fetchedAcc.DbData.EmailAddress);
                 await EmailToken.SendEmail(fetchedAcc);
                 client.TriggerEvent(ServerToClient.Show2FAbyEmailAddress);
                 return;
@@ -299,7 +299,7 @@ namespace RPServer.Controllers
                 client.TriggerEvent(ServerToClient.DisplayError, "Two Step auth by GA is not enabled for this account.");
                 return;
             }
-            if (GoogleAuthenticator.GeneratePin(accountData.TwoFactorGASharedKey) != token)
+            if (GoogleAuthenticator.GeneratePin(accountData.DbData.TwoFactorGASharedKey) != token)
             {
                 client.TriggerEvent(ServerToClient.DisplayError, "Wrong 2FA code, try again");
                 return;
@@ -352,7 +352,7 @@ namespace RPServer.Controllers
                 return;
             }
 
-            accData.EmailAddress = accEmail;
+            accData.DbData.EmailAddress = accEmail;
             await accData.SaveAsync();
             client.SendChatMessage(AccountStrings.SuccessEmailVerification);
 
@@ -471,7 +471,7 @@ namespace RPServer.Controllers
                 return;
             }
 
-            acc.TwoFactorGASharedKey = acc.TempTwoFactorGASharedKey;
+            acc.DbData.TwoFactorGASharedKey = acc.TempTwoFactorGASharedKey;
 
             TaskManager.Run(player, async () => await acc.SaveAsync());
             player.TriggerEvent(ServerToClient.ShowQRCodeEnabled);
@@ -480,10 +480,10 @@ namespace RPServer.Controllers
 
         private static async Task LoginAccount(Account fetchedAcc, Client client)
         {
-            fetchedAcc.LastHWID = client.Serial;
-            fetchedAcc.LastIP = client.Address;
-            fetchedAcc.LastLoginDate = DateTime.Now;
-            fetchedAcc.LastSocialClubName = client.SocialClubName;
+            fetchedAcc.DbData.LastHWID = client.Serial;
+            fetchedAcc.DbData.LastIP = client.Address;
+            fetchedAcc.DbData.LastLoginDate = DateTime.Now;
+            fetchedAcc.DbData.LastSocialClubName = client.SocialClubName;
             client.Login(fetchedAcc);
             await fetchedAcc.SaveAsync();
         }

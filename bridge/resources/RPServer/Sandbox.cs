@@ -155,7 +155,7 @@ namespace RPServer
                 player.SendChatMessage("Can't be empty");
                 return;
             }
-            player.GetAccountData().NickName = nick;
+            player.GetAccountData().DbData.NickName = nick;
             player.SendChatMessage("You set your nick to: " + nick);
         }
 
@@ -199,7 +199,7 @@ namespace RPServer
             foreach (var p in NAPI.Pools.GetAllPlayers())
             {
                 if (!p.IsLoggedIn()) player.SendChatMessage($"[UNAUTHED]: Social: {p.SocialClubName}, ClientName: {p.Name}, Ping: {p.Ping}");
-                else player.SendChatMessage($"[{p.GetAccountData().Username}]: Social: {p.SocialClubName}, ClientName: {p.Name}, Ping: {p.Ping}");
+                else player.SendChatMessage($"[{p.GetAccountData().DbData.Username}]: Social: {p.SocialClubName}, ClientName: {p.Name}, Ping: {p.Ping}");
             }
         }
 

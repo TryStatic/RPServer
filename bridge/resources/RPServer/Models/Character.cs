@@ -39,7 +39,7 @@ namespace RPServer.Models
                 try
                 {
                     var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@accownerID", account.SqlId);
+                    cmd.AddParameterWithValue("@accownerID", account.DbData.AccountID);
                     cmd.AddParameterWithValue("@charname", charName);
                     cmd.AddParameterWithValue("@customization", new SkinCustomization().Serialize());
                     await dbConn.OpenAsync();
@@ -60,7 +60,7 @@ namespace RPServer.Models
                 try
                 {
                     var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@accountID", account.SqlId);
+                    cmd.AddParameterWithValue("@accountID", account.DbData.AccountID);
                     await dbConn.OpenAsync();
                     using (var r = await cmd.ExecuteReaderAsync(CommandBehavior.SequentialAccess))
                     {
@@ -136,7 +136,7 @@ namespace RPServer.Models
                 try
                 {
                     var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@charownerID", account.SqlId);
+                    cmd.AddParameterWithValue("@charownerID", account.DbData.AccountID);
                     await dbConn.OpenAsync();
                     using (var r = await cmd.ExecuteReaderAsync())
                     {
