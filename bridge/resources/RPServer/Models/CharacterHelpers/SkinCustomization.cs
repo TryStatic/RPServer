@@ -1,4 +1,6 @@
 ﻿using GTANetworkAPI;
+using Newtonsoft.Json;
+using RPServer.Util;
 
 namespace RPServer.Models.CharacterHelpers
 {
@@ -58,6 +60,15 @@ namespace RPServer.Models.CharacterHelpers
             client.SetClothes((int)Components.Hair, HairStyle, HairStyleTexture);
         }
 
+        public string Serialize()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
+
+        public static SkinCustomization Deserialize(string str)
+        {
+            return JsonConvert.DeserializeObject<SkinCustomization>(str);
+        }
     }
 
     // TODO: This will need to be moved to a component class wrapping SetClothes eventually

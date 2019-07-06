@@ -4,7 +4,6 @@ using System.Data;
 using System.Data.Common;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using RPServer.Database;
 using RPServer.Models.CharacterHelpers;
 using RPServer.Models.Helpers;
@@ -15,22 +14,14 @@ namespace RPServer.Models
     internal class Character : SaveableData
     {
         public static readonly string DataKey = "ACTIVE_CHARACTER_DATA";
-        private SkinCustomization _skinCustomization;
 
         #region SQL_SAVEABLE_DATA
-
         [SqlColumnName("characterid")]
         public int SqlId { get; }
         [SqlColumnName("charname")]
         public string Name { set; get; }
-
         [SqlColumnName("customization")]
-        public SkinCustomization SkinCustomization
-        {
-            set => _skinCustomization = value;
-            get => _skinCustomization ?? (_skinCustomization = new SkinCustomization());
-        }
-
+        public SkinCustomization SkinCustomization { set; get; }
         #endregion
 
         public Account Owner { get; set; }
@@ -38,6 +29,7 @@ namespace RPServer.Models
         private Character(int sqlId)
         {
             SqlId = sqlId;
+            SkinCustomization = new SkinCustomization();
         }
 
         #region DATABASE
@@ -46,7 +38,7 @@ namespace RPServer.Models
             if (await ExistsAsync(await GetSqlIdAsync(charName)))
                 return;
 
-            const string query = "INSERT INTO characters(charownerID, charname) VALUES (@accownerID, @charname)";
+            const string query = "INSERT INTO characters(charownerID, charname, customization) VALUES (@accownerID, @charname, @customization)";
 
             using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
@@ -55,6 +47,7 @@ namespace RPServer.Models
                     var cmd = dbConn.CreateCommandWithText(query);
                     cmd.AddParameterWithValue("@accownerID", account.SqlId);
                     cmd.AddParameterWithValue("@charname", charName);
+                    cmd.AddParameterWithValue("@customization", new SkinCustomization().Serialize());
                     await dbConn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
                 }
@@ -84,7 +77,7 @@ namespace RPServer.Models
                             {
                                 Owner = account,
                                 Name = r.GetStringExtended("charname"),
-                                SkinCustomization = JsonConvert.DeserializeObject<SkinCustomization>(r.GetStringExtended("customization"))
+                                SkinCustomization = SkinCustomization.Deserialize(r.GetStringExtended("customization"))
                             };
                             chars.Add(fetchedChar);
                         }
@@ -124,7 +117,7 @@ namespace RPServer.Models
                         var fetched = new Character(charId)
                         {
                             Name = r.GetStringExtended("charname"),
-                            SkinCustomization = JsonConvert.DeserializeObject<SkinCustomization>(r.GetStringExtended("customization"))
+                            SkinCustomization = SkinCustomization.Deserialize(r.GetStringExtended("customization"))
                         };
                         return fetched;
 
@@ -166,7 +159,6 @@ namespace RPServer.Models
 
             throw new Exception("There was an error in [Character.ExistsAsync]");
         }
-
         public static async Task<bool> ExistsAsync(int sqlId)
         {
 
@@ -209,7 +201,7 @@ namespace RPServer.Models
                     cmd.AddParameterWithValue("@characterID", SqlId);
 
                     cmd.AddParameterWithValue("@charname", Name);
-                    cmd.AddParameterWithValue("@customization", JsonConvert.SerializeObject(SkinCustomization));
+                    cmd.AddParameterWithValue("@customization", SkinCustomization.Serialize());
 
                     await dbConn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();
