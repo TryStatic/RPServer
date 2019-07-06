@@ -11,7 +11,7 @@ namespace RPServer.Models
     {
         public static readonly string DataKey = "ACCOUNT_DATA";
 
-        public AccountDbData DbData;
+        public AccountDbData DbData { get; set; }
 
         public bool HasPassedTwoStepByGA = false;
         public bool HasPassedTwoStepByEmail = false;
@@ -25,9 +25,6 @@ namespace RPServer.Models
         #region DATABASE
         public static async Task CreateAsync(string username, string password, string regSocialClubName)
         {
-            if (await ExistsAsync(username))
-                return;
-
             var hash = new PasswordHash(password).ToArray();
             var newAcc = new AccountDbData(username, hash, regSocialClubName);
             await newAcc.CreateAsync();
@@ -38,12 +35,17 @@ namespace RPServer.Models
             var sqlID = await AccountDbData.GetSqlIdAsync(username);
             if (sqlID < 0) return null;
 
+            var acc = await FetchAsync(sqlID);
+            return acc;
+        }
+
+        public static async Task<Account> FetchAsync(int sqlID)
+        {
             var dbData = await AccountDbData.ReadAsync(sqlID);
             var acc = new Account(dbData);
             return acc;
 
         }
-
 
         public static async Task<bool> ExistsAsync(string username)
         {
@@ -54,6 +56,11 @@ namespace RPServer.Models
         public async Task SaveAsync()
         {
             await DbData.UpdateAsync();
+        }
+
+        public async Task DeleteAsync()
+        {
+            await DbData.DeleteAsync();
         }
 
         public static async Task<bool> AuthenticateAsync(string username, string password)

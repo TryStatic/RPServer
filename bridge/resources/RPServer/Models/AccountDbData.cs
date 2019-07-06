@@ -27,10 +27,12 @@ namespace RPServer.Models
         public bool HasEnabledTwoStepByEmail { get; set; }
         public byte[] TwoFactorGASharedKey { get; set; }
 
-        public AccountDbData()
+
+        private AccountDbData()
         {
 
         }
+
         public AccountDbData(string username, byte[] hash, string regSocialClubName)
         {
             Username = username;
