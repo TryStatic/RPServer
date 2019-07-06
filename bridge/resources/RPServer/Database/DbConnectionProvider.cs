@@ -56,7 +56,7 @@ namespace RPServer.Database
                 do
                 {
                     tries++;
-                    Logger.GetInstance().SqlInfo($"{DbStrings.InfoTryDBConnect}... ({tries})");
+                    Logger.GetInstance().SqlInfo($"Trying to establish a connection with the MySQL Database... ({tries})");
                     try
                     {
                         await dbConn.OpenAsync();
@@ -70,10 +70,10 @@ namespace RPServer.Database
 
                 if (tries >= 10)
                 {
-                    Logger.GetInstance().SqlInfo(DbStrings.InfoFailedDBConnect);
+                    Logger.GetInstance().SqlInfo("Failed to establish a connection with the MySQL Database");
                     return false;
                 }
-                Logger.GetInstance().SqlInfo(DbStrings.InfoSuccessDBConnect);
+                Logger.GetInstance().SqlInfo("Successfully established a connection with the MySQL Database");
             }
             return true;
         }
