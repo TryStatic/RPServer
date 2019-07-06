@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data.Common;
+﻿using System.Data.Common;
 using RPServer.Util;
 using System.Threading.Tasks;
 using RPServer.Strings;
@@ -14,25 +13,29 @@ namespace RPServer.Database
 
         public static DbConnection CreateDbConnection()
         {
-            DbConnection connection = null;
+            DbConnection connection;
 
-            if (ConnectionString != null)
+            if (ConnectionString == null)
             {
-                try
-                {
-                    DbProviderFactory factory = GenerateDbProviderFactory();
+                Logger.GetInstance().SqlError("Tried CreateDbConnection() with null ConnectionString.");
+                return null;
+            }
 
-                    connection = factory.CreateConnection();
-                    connection.ConnectionString = ConnectionString;
-                }
-                catch(DbException e)
+            try
+            {
+                var factory = GenerateDbProviderFactory();
+                connection = factory.CreateConnection();
+                if (connection == null)
                 {
-                    if (connection != null)
-                    {
-                        connection = null;
-                    }
-                    HandleDbException(e);
+                    Logger.GetInstance().SqlError("DbProviderFactory was unable to retrieve a connection.");
+                    return null;
                 }
+                connection.ConnectionString = ConnectionString;
+            }
+            catch(DbException e)
+            {
+                connection = null;
+                HandleDbException(e);
             }
 
             return connection;
@@ -40,7 +43,7 @@ namespace RPServer.Database
 
         public static DbConnectionStringBuilder CreateDbConnectionStringBuilder()
         {
-            DbProviderFactory factory = GenerateDbProviderFactory();
+            var factory = GenerateDbProviderFactory();
             return factory.CreateConnectionStringBuilder();
         }
 
@@ -77,7 +80,7 @@ namespace RPServer.Database
 
         private static DbProviderFactory GenerateDbProviderFactory()
         {
-            if (ProviderName == "MySql.Data.MySqlClient")
+            if (ProviderName == DbProvider.MySql)
             {
                 return MySqlClientFactory.Instance;
             }
@@ -87,15 +90,26 @@ namespace RPServer.Database
 
         public static void HandleDbException(DbException exception)
         {
-            if(exception is MySqlException)
+            if(exception is MySqlException mySqlException)
             {
-                MySqlException mySqlException = (MySqlException)exception;
                 Logger.GetInstance().MySqlError(mySqlException.Message, mySqlException.Code);
             }
             else
             {
                 Logger.GetInstance().SqlError(exception.ToString());
             }
+        }
+
+        private struct DbProvider
+        {
+            private DbProvider(string value) => ProviderString = value;
+            private string ProviderString { get; }
+            public override string ToString() => ProviderString;
+            public static implicit operator string(DbProvider provider) => provider.ToString();
+
+            // Providers list
+            public static DbProvider MySql => new DbProvider("MySql.Data.MySqlClient");
+
         }
     }
 }
