@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Common;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using RPServer.Database;
 using RPServer.Models.CharacterHelpers;
-using RPServer.Util;
 
 namespace RPServer.Models
 {
@@ -22,6 +17,7 @@ namespace RPServer.Models
             SkinCustomization = customSkin;
         }
 
+
         #region DATABASE
         public static async Task CreateNewAsync(Account account, string charName)
         {
@@ -31,10 +27,9 @@ namespace RPServer.Models
             };
             await newDbData.CreateAsync();
         }
-
         public static async Task<List<Character>> FetchAllAsync(Account account)
         {
-            List<Character> chars = new List<Character>();
+            var chars = new List<Character>();
 
             var dbDataList = await CharacterDbData.ReadByAccountAsync(account);
             foreach (var charDbData in dbDataList)
@@ -43,14 +38,12 @@ namespace RPServer.Models
             }
             return chars;
         }
-
         public static async Task<Character> FetchAsync(int charId)
         {
             var dbData = await CharacterDbData.ReadAsync(charId);
             var customSkin = SkinCustomization.Deserialize(dbData.Customization);
             return new Character(dbData, customSkin);
         }
-
         public static async Task<bool> ExistsAsync(int sqlId)
         {
             if (sqlId < 0) return false;
@@ -58,13 +51,11 @@ namespace RPServer.Models
             var character = await CharacterDbData.ReadAsync(sqlId);
             return character != null;
         }
-
         public async Task SaveAsync()
         {
             DbData.Customization = SkinCustomization.Serialize();
             await DbData.UpdateAsync();
         }
-
         public async Task DeleteAsync(int charId)
         {
             await DbData.DeleteAsync();

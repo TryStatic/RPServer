@@ -22,6 +22,7 @@ namespace RPServer.Models
             DbData = dbData;
         }
 
+
         #region DATABASE
         public static async Task CreateAsync(string username, string password, string regSocialClubName)
         {
@@ -29,7 +30,6 @@ namespace RPServer.Models
             var newAcc = new AccountDbData(username, hash, regSocialClubName);
             await newAcc.CreateAsync();
         }
-
         public static async Task<Account> FetchAsync(string username)
         {
             var sqlID = await AccountDbData.GetSqlIdAsync(username);
@@ -38,7 +38,6 @@ namespace RPServer.Models
             var acc = await FetchAsync(sqlID);
             return acc;
         }
-
         public static async Task<Account> FetchAsync(int sqlID)
         {
             var dbData = await AccountDbData.ReadAsync(sqlID);
@@ -46,23 +45,19 @@ namespace RPServer.Models
             return acc;
 
         }
-
         public static async Task<bool> ExistsAsync(string username)
         {
             var sqlID = await AccountDbData.GetSqlIdAsync(username);
             return sqlID >= 0;
         }
-
         public async Task SaveAsync()
         {
             await DbData.UpdateAsync();
         }
-
         public async Task DeleteAsync()
         {
             await DbData.DeleteAsync();
         }
-
         public static async Task<bool> AuthenticateAsync(string username, string password)
         {
             const string query = "SELECT username, hash FROM accounts WHERE username = @username LIMIT 1";

@@ -20,7 +20,6 @@ namespace RPServer.Models
         private CharacterDbData()
         {
         }
-
         public CharacterDbData(Account owner, string name)
         {
             CharOwnerID = owner.DbData.AccountID;
