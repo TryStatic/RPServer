@@ -11,13 +11,13 @@ namespace RPServer.Models
     {
         public static readonly string DataKey = "ACCOUNT_DATA";
 
-        public AccountDbData DbData { get; set; }
+        public AccountModel DbData { get; set; }
 
         public bool HasPassedTwoStepByGA = false;
         public bool HasPassedTwoStepByEmail = false;
         public byte[] TempTwoFactorGASharedKey = null;
 
-        private Account(AccountDbData dbData)
+        private Account(AccountModel dbData)
         {
             DbData = dbData;
         }
@@ -27,12 +27,12 @@ namespace RPServer.Models
         public static async Task CreateAsync(string username, string password, string regSocialClubName)
         {
             var hash = new PasswordHash(password).ToArray();
-            var newAcc = new AccountDbData(username, hash, regSocialClubName);
+            var newAcc = new AccountModel(username, hash, regSocialClubName);
             await newAcc.CreateAsync();
         }
         public static async Task<Account> FetchAsync(string username)
         {
-            var sqlID = await AccountDbData.GetSqlIdAsync(username);
+            var sqlID = await AccountModel.GetSqlIdAsync(username);
             if (sqlID < 0) return null;
 
             var acc = await FetchAsync(sqlID);
@@ -40,14 +40,14 @@ namespace RPServer.Models
         }
         public static async Task<Account> FetchAsync(int sqlID)
         {
-            var dbData = await AccountDbData.ReadAsync(sqlID);
+            var dbData = await AccountModel.ReadAsync(sqlID);
             var acc = new Account(dbData);
             return acc;
 
         }
         public static async Task<bool> ExistsAsync(string username)
         {
-            var sqlID = await AccountDbData.GetSqlIdAsync(username);
+            var sqlID = await AccountModel.GetSqlIdAsync(username);
             return sqlID >= 0;
         }
         public async Task SaveAsync()
@@ -59,7 +59,7 @@ namespace RPServer.Models
             await DbData.DeleteAsync();
         }
         public static async Task<bool> AuthenticateAsync(string username, string password)
-        {
+        { // TODO: Move to model
             const string query = "SELECT username, hash FROM accounts WHERE username = @username LIMIT 1";
 
             using (var dbConn = DbConnectionProvider.CreateDbConnection())
@@ -87,7 +87,7 @@ namespace RPServer.Models
             }
         }
         public static async Task<bool> IsEmailTakenAsync(string emailAddress)
-        {
+        { // TODO: Move to model
             const string query = "SELECT accountID FROM accounts WHERE emailaddress = @emailaddress";
 
             using (var dbConn = DbConnectionProvider.CreateDbConnection())

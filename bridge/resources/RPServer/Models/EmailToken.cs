@@ -63,7 +63,6 @@ namespace RPServer.Models
                 return false;
             }
         }
-
         public static async Task<bool> ExistsAsync(Account account)
         {
             const string query = "SELECT accountID FROM emailtokens WHERE accountID = @accountid";
@@ -82,7 +81,6 @@ namespace RPServer.Models
             }
             throw new Exception("There was an error in [EmailToken.ExistsAsync]");
         }
-
         public static async Task<bool> IsEmailTakenAsync(string emailAddress)
         {
             const string query = "SELECT emailaddress FROM emailtokens WHERE emailaddress = @emailaddress";

@@ -9,7 +9,7 @@ using RPServer.Database;
 namespace RPServer.Models
 {
     [Table("characters")]
-    internal class CharacterDbData
+    internal class CharacterModel
     {
         [Key]
         public int CharacterID { get; set; }
@@ -17,17 +17,17 @@ namespace RPServer.Models
         public string CharacterName { set; get; }
         public string Customization { set; get; }
 
-        private CharacterDbData()
+        private CharacterModel()
         {
         }
-        public CharacterDbData(Account owner, string name)
+        public CharacterModel(Account owner, string name)
         {
             CharOwnerID = owner.DbData.AccountID;
             CharacterName = name;
         }
 
 
-        public static async Task<int> CreateAsync(CharacterDbData newData)
+        public static async Task<int> CreateAsync(CharacterModel newData)
         {
             using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
@@ -45,13 +45,13 @@ namespace RPServer.Models
         }
         public async Task<int> CreateAsync() => await CreateAsync(this);
 
-        public static async Task<CharacterDbData> ReadAsync(int sqlID)
+        public static async Task<CharacterModel> ReadAsync(int sqlID)
         {
             using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    return await dbConn.GetAsync<CharacterDbData>(sqlID);
+                    return await dbConn.GetAsync<CharacterModel>(sqlID);
                 }
                 catch (DbException ex)
                 {
@@ -61,7 +61,7 @@ namespace RPServer.Models
                 return null;
             }
         }
-        public static async Task<List<CharacterDbData>> ReadByAccountAsync(Account account)
+        public static async Task<List<CharacterModel>> ReadByAccountAsync(Account account)
         {
             const string query = "SELECT * FROM characters WHERE CharOwnerID = @accountID";
 
@@ -70,7 +70,7 @@ namespace RPServer.Models
                 {
                     try
                     {
-                        var result = await dbConn.QueryAsync<CharacterDbData>(query, new { accountID = account.DbData.AccountID });
+                        var result = await dbConn.QueryAsync<CharacterModel>(query, new { accountID = account.DbData.AccountID });
                         return result.ToList();
                     }
                     catch (DbException ex)
@@ -83,7 +83,7 @@ namespace RPServer.Models
             return null;
         }
 
-        public static async Task<bool> UpdateAsync(CharacterDbData dbAcc)
+        public static async Task<bool> UpdateAsync(CharacterModel dbAcc)
         {
             using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
@@ -101,7 +101,7 @@ namespace RPServer.Models
         }
         public async Task<bool> UpdateAsync() => await UpdateAsync(this);
 
-        public static async Task<bool> DeleteAsync(CharacterDbData dbAcc)
+        public static async Task<bool> DeleteAsync(CharacterModel dbAcc)
         {
             using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {

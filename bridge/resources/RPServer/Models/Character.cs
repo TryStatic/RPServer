@@ -8,10 +8,10 @@ namespace RPServer.Models
     {
         public static readonly string DataKey = "ACTIVE_CHARACTER_DATA";
 
-        public CharacterDbData DbData { set; get; }
+        public CharacterModel DbData { set; get; }
         public SkinCustomization SkinCustomization { set; get; }
 
-        private Character(CharacterDbData dbData, SkinCustomization customSkin)
+        private Character(CharacterModel dbData, SkinCustomization customSkin)
         {
             DbData = dbData;
             SkinCustomization = customSkin;
@@ -21,7 +21,7 @@ namespace RPServer.Models
         #region DATABASE
         public static async Task CreateNewAsync(Account account, string charName)
         {
-            var newDbData = new CharacterDbData(account, charName)
+            var newDbData = new CharacterModel(account, charName)
             {
                 Customization = new SkinCustomization().Serialize()
             };
@@ -31,7 +31,7 @@ namespace RPServer.Models
         {
             var chars = new List<Character>();
 
-            var dbDataList = await CharacterDbData.ReadByAccountAsync(account);
+            var dbDataList = await CharacterModel.ReadByAccountAsync(account);
             foreach (var charDbData in dbDataList)
             {
                 chars.Add(new Character(charDbData, SkinCustomization.Deserialize(charDbData.Customization)));
@@ -40,7 +40,7 @@ namespace RPServer.Models
         }
         public static async Task<Character> FetchAsync(int charId)
         {
-            var dbData = await CharacterDbData.ReadAsync(charId);
+            var dbData = await CharacterModel.ReadAsync(charId);
             var customSkin = SkinCustomization.Deserialize(dbData.Customization);
             return new Character(dbData, customSkin);
         }
@@ -48,7 +48,7 @@ namespace RPServer.Models
         {
             if (sqlId < 0) return false;
 
-            var character = await CharacterDbData.ReadAsync(sqlId);
+            var character = await CharacterModel.ReadAsync(sqlId);
             return character != null;
         }
         public async Task SaveAsync()

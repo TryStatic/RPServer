@@ -9,7 +9,7 @@ using Dapper.Contrib.Extensions;
 namespace RPServer.Models
 {
     [Table("accounts")]
-    internal class AccountDbData
+    internal class AccountModel
     {
         [Key]
         public int AccountID { get; set; }
@@ -27,11 +27,11 @@ namespace RPServer.Models
         public bool HasEnabledTwoStepByEmail { get; set; }
         public byte[] TwoFactorGASharedKey { get; set; }
 
-        private AccountDbData()
+        private AccountModel()
         {
 
         }
-        public AccountDbData(string username, byte[] hash, string regSocialClubName)
+        public AccountModel(string username, byte[] hash, string regSocialClubName)
         {
             Username = username;
             Hash = hash;
@@ -40,7 +40,7 @@ namespace RPServer.Models
         }
 
 
-        public static async Task<int> CreateAsync(AccountDbData newAcc)
+        public static async Task<int> CreateAsync(AccountModel newAcc)
         {
             using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
@@ -58,13 +58,13 @@ namespace RPServer.Models
         }
         public async Task<int> CreateAsync() => await CreateAsync(this);
 
-        public static async Task<AccountDbData> ReadAsync(int sqlID)
+        public static async Task<AccountModel> ReadAsync(int sqlID)
         {
             using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    return await dbConn.GetAsync<AccountDbData>(sqlID);
+                    return await dbConn.GetAsync<AccountModel>(sqlID);
                 }
                 catch (DbException ex)
                 {
@@ -96,7 +96,7 @@ namespace RPServer.Models
             }
         }
 
-        public static async Task<bool> UpdateAsync(AccountDbData dbAcc)
+        public static async Task<bool> UpdateAsync(AccountModel dbAcc)
         {
             using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
@@ -114,7 +114,7 @@ namespace RPServer.Models
         }
         public async Task<bool> UpdateAsync() => await UpdateAsync(this);
 
-        public static async Task<bool> DeleteAsync(AccountDbData dbAcc)
+        public static async Task<bool> DeleteAsync(AccountModel dbAcc)
         {
             using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
