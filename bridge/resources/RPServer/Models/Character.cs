@@ -11,19 +11,13 @@ using RPServer.Util;
 
 namespace RPServer.Models
 {
-    internal class Character : SaveableData
+    internal class Character
     {
         public static readonly string DataKey = "ACTIVE_CHARACTER_DATA";
 
-        #region SQL_SAVEABLE_DATA
-        [SqlColumnName("characterid")]
         public int SqlId { get; }
-        [SqlColumnName("charname")]
         public string Name { set; get; }
-        [SqlColumnName("customization")]
         public SkinCustomization SkinCustomization { set; get; }
-        #endregion
-
         public Account Owner { get; set; }
 
         private Character(int sqlId)
@@ -202,32 +196,6 @@ namespace RPServer.Models
 
                     cmd.AddParameterWithValue("@charname", Name);
                     cmd.AddParameterWithValue("@customization", SkinCustomization.Serialize());
-
-                    await dbConn.OpenAsync();
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (DbException ex)
-                {
-                    DbConnectionProvider.HandleDbException(ex);
-                }
-            }
-        }
-        public async Task SaveSingleAsync<T>(Expression<Func<T>> expression) // Skin customization???
-        {
-            var column = GetColumnName(expression, out var value);
-            if (string.IsNullOrWhiteSpace(column))
-                throw new Exception("Invalid Column Name");
-
-            var query = $"UPDATE characters SET {column} = @value WHERE characterID = @sqlId";
-
-
-            using (var dbConn = DbConnectionProvider.CreateDbConnection())
-            {
-                try
-                {
-                    var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@sqlId", SqlId);
-                    cmd.AddParameterWithValue("@value", value);
 
                     await dbConn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();

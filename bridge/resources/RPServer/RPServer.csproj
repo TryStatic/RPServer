@@ -60,6 +60,10 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\Helpers\" />
+  </ItemGroup>
+
   <Import Project="..\..\..\SharedProject\SharedProject.projitems" Label="Shared" />
 
 </Project>

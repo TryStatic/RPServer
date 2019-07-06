@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using RPServer.Database;
 using RPServer.Models.Helpers;
@@ -10,37 +9,24 @@ using RPServer.Util;
 
 namespace RPServer.Models
 {
-    internal class Account : SaveableData
+    internal class Account
     {
         public static readonly string DataKey = "ACCOUNT_DATA";
 
         #region SQL_SAVEABLE_DATA
         public int SqlId { get; }
-        [SqlColumnName("username")]
         public string Username { get; set; }
-        [SqlColumnName("emailaddress")]
         public string EmailAddress { get; set; }
-        [SqlColumnName("hash")]
         public byte[] Hash { get; set; }
-        [SqlColumnName("forumname")]
         public string ForumName { get; set; }
-        [SqlColumnName("nickname")]
         public string NickName { get; set; }
-        [SqlColumnName("regsocialclubname")]
         public string RegSocialClubName { get; set; }
-        [SqlColumnName("lastsocialclubname")]
         public string LastSocialClubName { get; set; }
-        [SqlColumnName("LastIP")]
         public string LastIP { get; set; }
-        [SqlColumnName("LastHWID")]
         public string LastHWID { get; set; }
-        [SqlColumnName("creationdate")]
         public DateTime CreationDate { get; set; }
-        [SqlColumnName("lastlogindate")]
         public DateTime LastLoginDate { get; set; }
-        [SqlColumnName("enabled2FAbyemail")]
         public bool HasEnabledTwoStepByEmail { get; set; }
-        [SqlColumnName("twofactorsharedkey")]
         public byte[] TwoFactorGASharedKey { get; set; }
         #endregion
 
@@ -188,31 +174,6 @@ namespace RPServer.Models
                     cmd.AddParameterWithValue("@lastlogindate", LastLoginDate);
                     cmd.AddParameterWithValue("@enabled2FAbyemail", HasEnabledTwoStepByEmail);
                     cmd.AddParameterWithValue("@twofactorsharedkey", TwoFactorGASharedKey);
-
-                    await dbConn.OpenAsync();
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (DbException ex)
-                {
-                    DbConnectionProvider.HandleDbException(ex);
-                }
-            }
-        }
-        public async Task SaveSingleAsync<T>(Expression<Func<T>> expression)
-        {
-            var column = GetColumnName(expression, out var value);
-            if(string.IsNullOrWhiteSpace(column)) throw new Exception("Invalid Column Name");
-
-            var query = $"UPDATE accounts SET {column} = @value WHERE accountID = @sqlId";
-
-
-            using (var dbConn = DbConnectionProvider.CreateDbConnection())
-            {
-                try
-                {
-                    var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@sqlId", SqlId);
-                    cmd.AddParameterWithValue("@value", value);
 
                     await dbConn.OpenAsync();
                     await cmd.ExecuteNonQueryAsync();

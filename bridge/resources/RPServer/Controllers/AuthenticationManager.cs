@@ -87,7 +87,7 @@ namespace RPServer.Controllers
                 acc.TwoFactorGASharedKey = null;
                 acc.HasPassedTwoStepByGA = false;
 
-                TaskManager.Run(client, async () => await acc.SaveSingleAsync(() => acc.TwoFactorGASharedKey));
+                TaskManager.Run(client, async () => await acc.SaveAsync());
             }
 
         }
@@ -353,7 +353,7 @@ namespace RPServer.Controllers
             }
 
             accData.EmailAddress = accEmail;
-            await accData.SaveSingleAsync(() => accData.EmailAddress);
+            await accData.SaveAsync();
             client.SendChatMessage(AccountStrings.SuccessEmailVerification);
 
             SetLoginState(client, false);
@@ -473,7 +473,7 @@ namespace RPServer.Controllers
 
             acc.TwoFactorGASharedKey = acc.TempTwoFactorGASharedKey;
 
-            TaskManager.Run(player, async () => await acc.SaveSingleAsync(() => acc.TwoFactorGASharedKey));
+            TaskManager.Run(player, async () => await acc.SaveAsync());
             player.TriggerEvent(ServerToClient.ShowQRCodeEnabled);
         }
 
