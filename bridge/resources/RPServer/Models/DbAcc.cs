@@ -4,9 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using RPServer.Database;
-using RPServer.Models.Helpers;
 using Dapper.Contrib.Extensions;
-using RPServer.Util;
 
 namespace RPServer.Models
 {
