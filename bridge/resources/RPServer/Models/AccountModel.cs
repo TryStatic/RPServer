@@ -8,8 +8,82 @@ using Dapper.Contrib.Extensions;
 
 namespace RPServer.Models
 {
+    internal class Base<T> where T: class
+    {
+        public static async Task<int> CreateAsync(T newEntry)
+        {
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
+            {
+                try
+                {
+                    return await dbConn.InsertAsync(newEntry);
+                }
+                catch (DbException ex)
+                {
+                    DbConnectionProvider.HandleDbException(ex);
+                }
+
+                return -1;
+            }
+        }
+        public async Task<int> CreateAsync() => await CreateAsync(this as T);
+
+        public static async Task<T> ReadAsync(int sqlID)
+        {
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
+            {
+                try
+                {
+                    return await dbConn.GetAsync<T>(sqlID);
+                }
+                catch (DbException ex)
+                {
+                    DbConnectionProvider.HandleDbException(ex);
+                }
+
+                return null;
+            }
+        }
+
+        public static async Task<bool> UpdateAsync(T dbAcc)
+        {
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
+            {
+                try
+                {
+                    return await dbConn.UpdateAsync(dbAcc);
+                }
+                catch (DbException ex)
+                {
+                    DbConnectionProvider.HandleDbException(ex);
+                }
+
+                return false;
+            }
+        }
+        public async Task<bool> UpdateAsync() => await UpdateAsync(this as T);
+
+        public static async Task<bool> DeleteAsync(T dbAcc)
+        {
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
+            {
+                try
+                {
+                    return await dbConn.DeleteAsync(dbAcc);
+                }
+                catch (DbException ex)
+                {
+                    DbConnectionProvider.HandleDbException(ex);
+                }
+
+                return false;
+            }
+        }
+        public async Task<bool> DeleteAsync() => await DeleteAsync(this as T);
+    }
+
     [Table("accounts")]
-    internal class AccountModel
+    internal class AccountModel : Base<AccountModel>
     {
         [Key]
         public int AccountID { get; set; }
@@ -39,41 +113,6 @@ namespace RPServer.Models
             CreationDate = DateTime.Now;
         }
 
-
-        public static async Task<int> CreateAsync(AccountModel newAcc)
-        {
-            using (var dbConn = DbConnectionProvider.CreateDbConnection())
-            {
-                try
-                {
-                    return await dbConn.InsertAsync(newAcc);
-                }
-                catch (DbException ex)
-                {
-                    DbConnectionProvider.HandleDbException(ex);
-                }
-
-                return -1;
-            }
-        }
-        public async Task<int> CreateAsync() => await CreateAsync(this);
-
-        public static async Task<AccountModel> ReadAsync(int sqlID)
-        {
-            using (var dbConn = DbConnectionProvider.CreateDbConnection())
-            {
-                try
-                {
-                    return await dbConn.GetAsync<AccountModel>(sqlID);
-                }
-                catch (DbException ex)
-                {
-                    DbConnectionProvider.HandleDbException(ex);
-                }
-
-                return null;
-            }
-        }
         public static async Task<int> GetSqlIdAsync(string username)
         {
             const string query = "SELECT accountID FROM accounts WHERE username = @username;";
@@ -96,41 +135,6 @@ namespace RPServer.Models
             }
         }
 
-        public static async Task<bool> UpdateAsync(AccountModel dbAcc)
-        {
-            using (var dbConn = DbConnectionProvider.CreateDbConnection())
-            {
-                try
-                {
-                    return await dbConn.UpdateAsync(dbAcc);
-                }
-                catch (DbException ex)
-                {
-                    DbConnectionProvider.HandleDbException(ex);
-                }
-
-                return false;
-            }
-        }
-        public async Task<bool> UpdateAsync() => await UpdateAsync(this);
-
-        public static async Task<bool> DeleteAsync(AccountModel dbAcc)
-        {
-            using (var dbConn = DbConnectionProvider.CreateDbConnection())
-            {
-                try
-                {
-                    return await dbConn.DeleteAsync(dbAcc);
-                }
-                catch (DbException ex)
-                {
-                    DbConnectionProvider.HandleDbException(ex);
-                }
-
-                return false;
-            }
-        }
-        public async Task<bool> DeleteAsync() => await DeleteAsync(this);
 
 
     }
