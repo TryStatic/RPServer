@@ -5,7 +5,7 @@ using RPServer.Database;
 
 namespace RPServer.Models
 {
-    internal class Model<T> where T: class
+    internal abstract class Model<T> where T: Model<T>
     {
         public static async Task<int> CreateAsync(T newEntry)
         {
@@ -42,13 +42,13 @@ namespace RPServer.Models
             }
         }
 
-        public static async Task<bool> UpdateAsync(T dbAcc)
+        public static async Task<bool> UpdateAsync(T entry)
         {
             using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    return await dbConn.UpdateAsync(dbAcc);
+                    return await dbConn.UpdateAsync(entry);
                 }
                 catch (DbException ex)
                 {
@@ -60,13 +60,13 @@ namespace RPServer.Models
         }
         public async Task<bool> UpdateAsync() => await UpdateAsync(this as T);
 
-        public static async Task<bool> DeleteAsync(T dbAcc)
+        public static async Task<bool> DeleteAsync(T entry)
         {
             using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    return await dbConn.DeleteAsync(dbAcc);
+                    return await dbConn.DeleteAsync(entry);
                 }
                 catch (DbException ex)
                 {
