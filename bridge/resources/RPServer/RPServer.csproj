@@ -21,6 +21,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models\Helpers\**" />
+    <EmbeddedResource Remove="Models\Helpers\**" />
+    <None Remove="Models\Helpers\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Database\DbConnection.cs" />
   </ItemGroup>
 
@@ -60,10 +66,6 @@
       <LastGenOutput>DbStrings.Designer.cs</LastGenOutput>
       <Generator>ResXFileCodeGenerator</Generator>
     </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\Helpers\" />
   </ItemGroup>
 
   <Import Project="..\..\..\SharedProject\SharedProject.projitems" Label="Shared" />
