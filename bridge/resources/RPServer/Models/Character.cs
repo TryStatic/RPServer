@@ -26,7 +26,7 @@ namespace RPServer.Models
         {
             var newChar = new Character()
             {
-                CharOwnerID = charOwner.DbData.AccountID,
+                CharOwnerID = charOwner.AccountID,
                 CharacterName = newCharName,
                 CustomSkin = new SkinCustomization()
             };
@@ -35,7 +35,7 @@ namespace RPServer.Models
 
         public static async Task<List<Character>> FetchAllAsync(Account account)
         {
-            var result = await ReadByKeyAsync(() => new Character().CharOwnerID, account.DbData.AccountID);
+            var result = await ReadByKeyAsync(() => new Character().CharOwnerID, account.AccountID);
             var charsData = result.ToList();
             return charsData;
         }

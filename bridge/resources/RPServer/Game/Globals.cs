@@ -79,7 +79,7 @@ namespace RPServer.Game
             if (client.IsLoggedIn())
             {
                 var accData = client.GetAccountData();
-                username = accData.DbData.Username;
+                username = accData.Username;
             }
             Logger.GetInstance().CommandLog(username, cmd);
         }
