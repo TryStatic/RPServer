@@ -25,7 +25,7 @@ namespace RPServer.Game
         {
             Console.ForegroundColor = ConsoleColor.White;
             Console.BackgroundColor = ConsoleColor.Blue;
-            Console.WriteLine($"\n\n---------------------------- STARTING {SERVER_NAME} ({VERSION}) ----------------------------");
+            Console.WriteLine($"\n\n---------------------------- STARTING {SERVER_NAME} ({VERSION}) Branch: {ThisAssembly.Git.Branch} ----------------------------");
             Console.ResetColor();
             Console.WriteLine();
 
