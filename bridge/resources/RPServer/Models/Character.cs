@@ -1,68 +1,61 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper.Contrib.Extensions;
 using RPServer.Models.CharacterHelpers;
 
 namespace RPServer.Models
 {
-    internal class Character
+    [Table("characters")]
+    internal class Character : Model<Character>
     {
         public static readonly string DataKey = "ACTIVE_CHARACTER_DATA";
-
-        public CharacterModel DbData { set; get; }
-        public SkinCustomization SkinCustomization { set; get; }
-
-        private Character(CharacterModel dbData, SkinCustomization customSkin)
+        [Key]
+        public int CharacterID { get; set; }
+        public int CharOwnerID { set; get; }
+        public string CharacterName { set; get; }
+        public string Customization
         {
-            DbData = dbData;
-            SkinCustomization = customSkin;
+            get => CustomSkin.Serialize();
+            private set => CustomSkin = SkinCustomization.Deserialize(value);
         }
 
+        public SkinCustomization CustomSkin;
 
-        #region DATABASE
-        public static async Task CreateNewAsync(Account account, string charName)
+        public static async Task CreateNewAsync(Account charOwner, string newCharName)
         {
-            var newDbData = new CharacterModel(account, charName)
+            var newChar = new Character()
             {
-                Customization = new SkinCustomization().Serialize()
+                CharOwnerID = charOwner.DbData.AccountID,
+                CharacterName = newCharName,
+                CustomSkin = new SkinCustomization()
             };
-            await newDbData.CreateAsync();
+            await newChar.CreateAsync();
         }
+
         public static async Task<List<Character>> FetchAllAsync(Account account)
         {
-            var chars = new List<Character>();
-            var result = await CharacterModel.ReadByKeyAsync(() => new CharacterModel().CharOwnerID, account.DbData.AccountID);
+            var result = await ReadByKeyAsync(() => new Character().CharOwnerID, account.DbData.AccountID);
             var charsData = result.ToList();
-
-            foreach (var charDbData in charsData)
-            {
-                chars.Add(new Character(charDbData, SkinCustomization.Deserialize(charDbData.Customization)));
-            }
-            return chars;
+            return charsData;
         }
+
         public static async Task<Character> FetchAsync(int charId)
         {
-            var dbData = await CharacterModel.ReadAsync(charId);
-            var customSkin = SkinCustomization.Deserialize(dbData.Customization);
-            return new Character(dbData, customSkin);
+            return await ReadAsync(charId);
         }
+
+
         public static async Task<bool> ExistsAsync(int sqlId)
         {
             if (sqlId < 0) return false;
-
-            var character = await CharacterModel.ReadAsync(sqlId);
+            var character = await ReadAsync(sqlId);
             return character != null;
         }
+
         public async Task SaveAsync()
         {
-            DbData.Customization = SkinCustomization.Serialize();
-            await DbData.UpdateAsync();
+            await UpdateAsync();
         }
-        public async Task DeleteAsync(int charId)
-        {
-            await DbData.DeleteAsync();
-        }
-        #endregion
     }
 }
