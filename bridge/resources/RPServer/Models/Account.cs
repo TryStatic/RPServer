@@ -1,5 +1,6 @@
 using System;
 using System.Data.Common;
+using System.Linq;
 using System.Threading.Tasks;
 using RPServer.Database;
 using RPServer.Models.Helpers;
@@ -32,23 +33,16 @@ namespace RPServer.Models
         }
         public static async Task<Account> FetchAsync(string username)
         {
-            var sqlID = await AccountModel.GetSqlIdAsync(username);
-            if (sqlID < 0) return null;
-
-            var acc = await FetchAsync(sqlID);
-            return acc;
+            var result = await AccountModel.ReadByKeyAsync(() => new AccountModel().Username, username);
+            var accountModels = result.ToList();
+            return accountModels.Any() ? new Account(accountModels.First()) : null;
         }
-        public static async Task<Account> FetchAsync(int sqlID)
-        {
-            var dbData = await AccountModel.ReadAsync(sqlID);
-            var acc = new Account(dbData);
-            return acc;
 
-        }
         public static async Task<bool> ExistsAsync(string username)
         {
-            var sqlID = await AccountModel.GetSqlIdAsync(username);
-            return sqlID >= 0;
+            var result = await AccountModel.ReadByKeyAsync(() => new AccountModel().Username, username);
+            var accountModels = result.ToList();
+            return accountModels.Any();
         }
         public async Task SaveAsync()
         {

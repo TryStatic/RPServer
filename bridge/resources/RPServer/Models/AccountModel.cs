@@ -27,7 +27,7 @@ namespace RPServer.Models
         public bool HasEnabledTwoStepByEmail { get; set; }
         public byte[] TwoFactorGASharedKey { get; set; }
 
-        private AccountModel()
+        public AccountModel()
         {
 
         }
@@ -38,30 +38,5 @@ namespace RPServer.Models
             RegSocialClubName = regSocialClubName;
             CreationDate = DateTime.Now;
         }
-
-        public static async Task<int> GetSqlIdAsync(string username)
-        {
-            const string query = "SELECT accountID FROM accounts WHERE username = @username;";
-
-            using (var dbConn = DbConnectionProvider.CreateDbConnection())
-            {
-                try
-                {
-                    var result = await dbConn.QueryAsync<int?>(query, new { username = username });
-                    var sqlID = result.SingleOrDefault();
-                    if (sqlID == null) return -1;
-                    return sqlID.Value;
-
-                }
-                catch (DbException ex)
-                {
-                    DbConnectionProvider.HandleDbException(ex);
-                }
-                return -1;
-            }
-        }
-
-
-
     }
 }
