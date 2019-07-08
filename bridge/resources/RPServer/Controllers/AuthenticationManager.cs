@@ -36,7 +36,7 @@ namespace RPServer.Controllers
             if (client.IsLoggedIn())
             {
                 var acc = client.GetAccountData();
-                TaskManager.Run(client, async () => await acc.SaveAsync());
+                TaskManager.Run(client, async () => await acc.UpdateAsync());
                 str = $"Registered (user: {acc.Username}";
                 client.Logout();
             }
@@ -87,7 +87,7 @@ namespace RPServer.Controllers
                 acc.TwoFactorGASharedKey = null;
                 acc.HasPassedTwoStepByGA = false;
 
-                TaskManager.Run(client, async () => await acc.SaveAsync());
+                TaskManager.Run(client, async () => await acc.UpdateAsync());
             }
 
         }
@@ -104,7 +104,7 @@ namespace RPServer.Controllers
 
             var acc = player.GetAccountData();
 
-            TaskManager.Run(player, async () => await acc.SaveAsync());
+            TaskManager.Run(player, async () => await acc.UpdateAsync());
 
             player.Logout();
             player.SendChatMessage("Bye!");
@@ -353,7 +353,7 @@ namespace RPServer.Controllers
             }
 
             accData.EmailAddress = accEmail;
-            await accData.SaveAsync();
+            await accData.UpdateAsync();
             client.SendChatMessage(AccountStrings.SuccessEmailVerification);
 
             SetLoginState(client, false);
@@ -473,7 +473,7 @@ namespace RPServer.Controllers
 
             acc.TwoFactorGASharedKey = acc.TempTwoFactorGASharedKey;
 
-            TaskManager.Run(player, async () => await acc.SaveAsync());
+            TaskManager.Run(player, async () => await acc.UpdateAsync());
             player.TriggerEvent(ServerToClient.ShowQRCodeEnabled);
         }
 
@@ -485,7 +485,7 @@ namespace RPServer.Controllers
             fetchedAcc.LastLoginDate = DateTime.Now;
             fetchedAcc.LastSocialClubName = client.SocialClubName;
             client.Login(fetchedAcc);
-            await fetchedAcc.SaveAsync();
+            await fetchedAcc.UpdateAsync();
         }
         private static void SetLoginState(Client client, bool state)
         {

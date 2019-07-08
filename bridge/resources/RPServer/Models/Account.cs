@@ -65,10 +65,6 @@ namespace RPServer.Models
             var accountModels = result.ToList();
             return accountModels.Any();
         }
-        public async Task SaveAsync()
-        {
-            await UpdateAsync();
-        }
         public static async Task<bool> AuthenticateAsync(string username, string password)
         {
             var acc = await FetchAsync(username);
