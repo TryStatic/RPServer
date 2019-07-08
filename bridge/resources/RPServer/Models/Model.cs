@@ -1,5 +1,9 @@
-﻿using System.Data.Common;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.Common;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Dapper;
 using Dapper.Contrib.Extensions;
 using RPServer.Database;
 
@@ -40,6 +44,33 @@ namespace RPServer.Models
 
                 return null;
             }
+        }
+        public static async Task<IEnumerable<T>> ReadByKeyAsync<TC>(Expression<Func<TC>> expression, object searchKey)
+        {
+            var tAttribute = (TableAttribute)typeof(T).GetCustomAttributes(typeof(TableAttribute), true)[0];
+            var tableName = tAttribute.Name;
+            if (tableName == null) return null;
+
+
+            var expressionBody = expression.Body as MemberExpression;
+            var expressionMember = expressionBody?.Member;
+            var columnName = expressionMember?.Name;
+            if (columnName == null) return null;
+
+            var query = $"SELECT * FROM {tableName} WHERE {columnName} = @value;";
+
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
+            {
+                try
+                {
+                    return await dbConn.QueryAsync<T>(query, new { value = searchKey });
+                }
+                catch (DbException ex)
+                {
+                    DbConnectionProvider.HandleDbException(ex);
+                }
+            }
+            return null;
         }
 
         public static async Task<bool> UpdateAsync(T entry)
