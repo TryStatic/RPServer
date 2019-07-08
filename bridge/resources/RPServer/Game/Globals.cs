@@ -11,14 +11,10 @@ namespace RPServer.Game
     internal class Globals : Script
     {
         public const string SERVER_NAME = "AlphaRP";
-        public const uint VERSION_MAJOR = 0;
-        public const uint VERSION_MINOR = 1;
-        public const uint VERSION_PATCH = 0;
-        public const string PRE_RELEASE = "";
 #if DEBUG
-        public const string BUILD_TYPE = "DEBUG-BUILD";
+        public const string VERSION = ThisAssembly.Git.Tag;
 #else
-        public const string BUILD_TYPE = "RELEASE-BUILD";
+        public const string VERSION = ThisAssembly.Git.BaseTag;
 #endif
 
         public static readonly Vector3 DefaultSpawnPos = new Vector3(-782.1527709960938f, 19.77294921875f, 41.93227767944336f);
@@ -29,7 +25,7 @@ namespace RPServer.Game
         {
             Console.ForegroundColor = ConsoleColor.White;
             Console.BackgroundColor = ConsoleColor.Blue;
-            Console.WriteLine($"\n\n---------------------------- STARTING {SERVER_NAME} ({VERSION_MAJOR}.{VERSION_MINOR}.{VERSION_PATCH}{PRE_RELEASE}) [{BUILD_TYPE}] ----------------------------");
+            Console.WriteLine($"\n\n---------------------------- STARTING {SERVER_NAME} ({VERSION}) ----------------------------");
             Console.ResetColor();
             Console.WriteLine();
 
