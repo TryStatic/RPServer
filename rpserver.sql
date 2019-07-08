@@ -11,7 +11,7 @@
  Target Server Version : 80016
  File Encoding         : 65001
 
- Date: 06/07/2019 20:52:00
+ Date: 08/07/2019 07:22:29
 */
 
 SET NAMES utf8mb4;
@@ -39,22 +39,22 @@ CREATE TABLE `accounts`  (
   PRIMARY KEY (`AccountID`) USING BTREE,
   UNIQUE INDEX `username_UNIQUE`(`Username`) USING BTREE,
   UNIQUE INDEX `emailaddress_UNIQUE`(`EmailAddress`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 231 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 240 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for characters
 -- ----------------------------
 DROP TABLE IF EXISTS `characters`;
 CREATE TABLE `characters`  (
-  `characterID` int(11) NOT NULL AUTO_INCREMENT,
-  `charownerID` int(11) NOT NULL,
-  `charname` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `customization` varchar(2500) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  PRIMARY KEY (`characterID`) USING BTREE,
-  UNIQUE INDEX `name_UNIQUE`(`charname`) USING BTREE,
-  INDEX `fkey_idx`(`charownerID`) USING BTREE,
-  CONSTRAINT `fkey_acc_to_char` FOREIGN KEY (`charownerID`) REFERENCES `accounts` (`AccountID`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+  `CharacterID` int(11) NOT NULL AUTO_INCREMENT,
+  `CharOwnerID` int(11) NOT NULL,
+  `CharacterName` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `Customization` varchar(2500) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  PRIMARY KEY (`CharacterID`) USING BTREE,
+  UNIQUE INDEX `name_UNIQUE`(`CharacterName`) USING BTREE,
+  INDEX `fkey_idx`(`CharOwnerID`) USING BTREE,
+  CONSTRAINT `fkey_acc_to_char` FOREIGN KEY (`CharOwnerID`) REFERENCES `accounts` (`AccountID`) ON DELETE CASCADE ON UPDATE RESTRICT
+) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for emailtokens
