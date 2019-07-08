@@ -32,30 +32,17 @@ namespace RPServer.Models
             };
             await newChar.CreateAsync();
         }
-
         public static async Task<List<Character>> FetchAllAsync(Account account)
         {
             var result = await ReadByKeyAsync(() => new Character().CharOwnerID, account.AccountID);
             var charsData = result.ToList();
             return charsData;
         }
-
-        public static async Task<Character> FetchAsync(int charId)
-        {
-            return await ReadAsync(charId);
-        }
-
-
         public static async Task<bool> ExistsAsync(int sqlId)
         {
             if (sqlId < 0) return false;
             var character = await ReadAsync(sqlId);
             return character != null;
-        }
-
-        public async Task SaveAsync()
-        {
-            await UpdateAsync();
         }
     }
 }
