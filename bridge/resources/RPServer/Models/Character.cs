@@ -38,11 +38,5 @@ namespace RPServer.Models
             var charsData = result.ToList();
             return charsData;
         }
-        public static async Task<bool> ExistsAsync(int sqlId)
-        {
-            if (sqlId < 0) return false;
-            var character = await ReadAsync(sqlId);
-            return character != null;
-        }
     }
 }

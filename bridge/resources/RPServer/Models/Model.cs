@@ -72,6 +72,22 @@ namespace RPServer.Models
             }
             return null;
         }
+        public static async Task<bool> ExistsAsync(int sqlID)
+        {
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
+            {
+                try
+                {
+                    return (await dbConn.GetAsync<T>(sqlID)) != null;
+                }
+                catch (DbException ex)
+                {
+                    DbConnectionProvider.HandleDbException(ex);
+                }
+
+                return false;
+            }
+        }
 
         public static async Task<bool> UpdateAsync(T entry)
         {
