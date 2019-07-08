@@ -9,7 +9,7 @@ namespace RPServer.Controllers
     {
         public static void Run(Client client, Action action)
         {
-            if(!client.CanRunTask()) return;
+            if(!client.CanRunTask()) throw new Exception($"Mulitple tasks invoked for client ID: {client.Handle}");
             client.SetCanRunTask(false);
             Task.Run(action).ContinueWith(HandleTaskCompletion).ContinueWith(task => client.SetCanRunTask(true));
         }
