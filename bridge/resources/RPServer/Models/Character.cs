@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using RPServer.Models.CharacterHelpers;
 
@@ -30,9 +32,10 @@ namespace RPServer.Models
         public static async Task<List<Character>> FetchAllAsync(Account account)
         {
             var chars = new List<Character>();
+            var result = await CharacterModel.ReadByKeyAsync(() => new CharacterModel().CharOwnerID, account.DbData.AccountID);
+            var charsData = result.ToList();
 
-            var dbDataList = await CharacterModel.ReadByAccountAsync(account);
-            foreach (var charDbData in dbDataList)
+            foreach (var charDbData in charsData)
             {
                 chars.Add(new Character(charDbData, SkinCustomization.Deserialize(charDbData.Customization)));
             }

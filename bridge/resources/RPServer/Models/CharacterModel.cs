@@ -17,35 +17,13 @@ namespace RPServer.Models
         public string CharacterName { set; get; }
         public string Customization { set; get; }
 
-        private CharacterModel()
+        public CharacterModel()
         {
         }
         public CharacterModel(Account owner, string name)
         {
             CharOwnerID = owner.DbData.AccountID;
             CharacterName = name;
-        }
-
-        public static async Task<List<CharacterModel>> ReadByAccountAsync(Account account)
-        {
-            const string query = "SELECT * FROM characters WHERE CharOwnerID = @accountID";
-
-            {
-                using (var dbConn = DbConnectionProvider.CreateDbConnection())
-                {
-                    try
-                    {
-                        var result = await dbConn.QueryAsync<CharacterModel>(query, new { accountID = account.DbData.AccountID });
-                        return result.ToList();
-                    }
-                    catch (DbException ex)
-                    {
-                        DbConnectionProvider.HandleDbException(ex);
-                    }
-
-                }
-            }
-            return null;
         }
 
     }
