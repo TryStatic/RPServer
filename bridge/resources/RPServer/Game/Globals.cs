@@ -81,7 +81,7 @@ namespace RPServer.Game
         private async void OnRemoveExpiredEmailTokens(object state)
         {
             await EmailToken.RemoveExpiredCodesAsync();
-            NAPI.Util.ConsoleOutput("[SERVER]: Removing expired email verification tokens from the database.");
+            Logger.GetInstance().ServerInfo("Removing expired email verification tokens from the database.");
             _expiredEmailTokensTimer.Change(1000 * 60 * 60, Timeout.Infinite);
 
         }

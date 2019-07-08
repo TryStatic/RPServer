@@ -24,18 +24,20 @@ namespace RPServer.Util
             FileWrite(AuthLogFn, $"------------------------ [SERVER STARTED AT: {DateTime.Now}] ------------------------");
             FileWrite(ChatLogFn, $"------------------------ [SERVER STARTED AT: {DateTime.Now}] ------------------------");
         }
-
-        public void MySqlError(string errorMsg, uint errorCode)
+        internal void ServerInfo(string sendMsg)
         {
-            NAPI.Util.ConsoleOutput($"[MySQL Error]: {errorMsg} [Code={errorCode}]");
-            FileWriteAsync(MySqlLogFn, $"[{DateTime.Now}][MySQL Error]: {errorMsg} [Code={errorCode}]");
+            NAPI.Util.ConsoleOutput($"[SERVER]: {sendMsg}");
         }
         public void SqlInfo(string msg)
         {
             NAPI.Util.ConsoleOutput($"[SQL Info]: {msg}");
             FileWriteAsync(MySqlLogFn, $"[{DateTime.Now}][SQL Info]: {msg}");
         }
-
+        public void MySqlError(string errorMsg, uint errorCode)
+        {
+            NAPI.Util.ConsoleOutput($"[MySQL Error]: {errorMsg} [Code={errorCode}]");
+            FileWriteAsync(MySqlLogFn, $"[{DateTime.Now}][MySQL Error]: {errorMsg} [Code={errorCode}]");
+        }
         public void SqlError(string errorMsq)
         {
             NAPI.Util.ConsoleOutput($"[SQL Error]: {errorMsq}");
