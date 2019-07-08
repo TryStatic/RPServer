@@ -1,6 +1,7 @@
 using System;
 using System.Data.Common;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Dapper.Contrib.Extensions;
 using RPServer.Database;
@@ -72,56 +73,14 @@ namespace RPServer.Models
 
 
         public static async Task<bool> AuthenticateAsync(string username, string password)
-        { // TODO: Move to model
-            const string query = "SELECT username, hash FROM accounts WHERE username = @username LIMIT 1";
-
-            using (var dbConn = DbConnectionProvider.CreateDbConnection())
-            {
-                try
-                {
-                    var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@username", username);
-
-                    await dbConn.OpenAsync();
-                    using (var reader = await cmd.ExecuteReaderAsync())
-                    {
-                        if (!await reader.ReadAsync())
-                            return false;
-
-                        var fetchedPass = reader["hash"] as byte[];
-                        return new PasswordHash(fetchedPass).Verify(password);
-                    }
-                }
-                catch (DbException ex)
-                {
-                    DbConnectionProvider.HandleDbException(ex);
-                }
-                return false;
-            }
+        {
+            var acc = await FetchAsync(username);
+            return acc != null && new PasswordHash(acc.Hash).Verify(password);
         }
         public static async Task<bool> IsEmailTakenAsync(string emailAddress)
-        { // TODO: Move to model
-            const string query = "SELECT accountID FROM accounts WHERE emailaddress = @emailaddress";
-
-            using (var dbConn = DbConnectionProvider.CreateDbConnection())
-            {
-                try
-                {
-                    var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@emailaddress", emailAddress);
-
-                    await dbConn.OpenAsync();
-                    using (var r = await cmd.ExecuteReaderAsync())
-                    {
-                        return await r.ReadAsync() && r.HasRows;
-                    }
-                }
-                catch (DbException ex)
-                {
-                    DbConnectionProvider.HandleDbException(ex);
-                }
-            }
-            throw new Exception("There was an error in [Account.IsEmailTakenAsync]");
+        {
+            var acc = await ReadByKeyAsync(() => new Account().EmailAddress, emailAddress);
+            return acc != null;
         }
         #endregion
 
