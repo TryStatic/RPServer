@@ -20,8 +20,8 @@ namespace RPServer
             player.SendChatMessage("/logout /toggletwofactorga /toggletwofactoremail");
             player.SendChatMessage("/veh /ecc /heal /hmc /time /weather /getping /onlineppl /givegun");
             player.SendChatMessage("/setskin /setnick /togflymode /getcamcords /spawnme /playanimation /stopani");
-            player.SendChatMessage("/loadipl /removeipl /resetipls /gotopos /getpos /seteyecolor");
-            player.SendChatMessage("/setheadblend /setheadoverlay, /setfacefeature, /setcompvar");
+            player.SendChatMessage("/loadipl /removeipl /resetipls /gotopos /getpos /fd");
+            player.SendChatMessage("/setheadblend /setheadoverlay, /setfacefeature, /setcompvar /seteyecolor");
         }
 
         [Command("seteyecolor")]
@@ -40,6 +40,12 @@ namespace RPServer
             sc.ApplyAll(client);
             client.SetClothes(2, 2, 2);
             
+        }
+
+        [Command("fd")]
+        public void CmdFD(Client player)
+        {
+            player.TriggerEvent("tpinfront");
         }
 
         [Command("setheadblend")]

@@ -1,5 +1,6 @@
 ﻿using RAGE;
 using RAGE.Elements;
+using RPServerClient.Util;
 
 namespace RPServerClient
 {
@@ -16,6 +17,7 @@ namespace RPServerClient
             Events.Add("headdata", SetHeadData);
             Events.Add("facefeautre", SetFaceFeature);
             Events.Add("compvar", SetCompVar);
+            Events.Add("tpinfront", TeleportInFront);
 
             // Boost
             uint stamina = RAGE.Game.Misc.GetHashKey("SP0_STAMINA");
@@ -32,6 +34,12 @@ namespace RPServerClient
             RAGE.Game.Stats.StatSetInt(stealth, 100, true);
             uint lungCapacity = RAGE.Game.Misc.GetHashKey("SP0_LUNGCAPACITY");
             RAGE.Game.Stats.StatSetInt(lungCapacity, 100, true);
+        }
+
+        private void TeleportInFront(object[] args)
+        {
+            var pos = Helper.GetPosInFrontOfPlayer(Player.LocalPlayer, 2.0f);
+            Player.LocalPlayer.Position = pos;
         }
 
         private void OnToggleFlyMode(object[] args) => Events.CallLocal("flyModeStart");
