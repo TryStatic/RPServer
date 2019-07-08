@@ -62,10 +62,8 @@ namespace RPServer.Game
             EmailSender.SmtpPort = NAPI.Resource.GetSetting<int>(this, "SMTP_PORT");
             EmailSender.SmtpUsername = NAPI.Resource.GetSetting<string>(this, "SMTP_USERNAME");
             EmailSender.SmtpPassword = NAPI.Resource.GetSetting<string>(this, "SMTP_PASSWORD");
-            // Remove expired tokens from the Database
-            await EmailToken.RemoveExpiredCodesAsync();
             // Have expired tokens get removed once per hour
-            _expiredEmailTokensTimer = new Timer(OnRemoveExpiredEmailTokens, null, 1000 * 60 * 60, Timeout.Infinite);
+            _expiredEmailTokensTimer = new Timer(OnRemoveExpiredEmailTokens, null, 1, Timeout.Infinite);
         }
 
         [RemoteEvent(ClientToServer.SubmitPlayerCommand)]
