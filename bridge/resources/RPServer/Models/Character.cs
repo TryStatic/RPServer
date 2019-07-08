@@ -1,292 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Common;
-using System.Linq.Expressions;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using RPServer.Database;
+using Dapper.Contrib.Extensions;
 using RPServer.Models.CharacterHelpers;
-using RPServer.Models.Helpers;
-using RPServer.Util;
 
 namespace RPServer.Models
 {
-    internal class Character : SaveableData
+    [Table("characters")]
+    internal class Character : Model<Character>
     {
         public static readonly string DataKey = "ACTIVE_CHARACTER_DATA";
-
-        #region SQL_SAVEABLE_DATA
-        [SqlColumnName("characterid")]
-        public int SqlId { get; }
-        [SqlColumnName("charname")]
-        public string Name { set; get; }
-        [SqlColumnName("customization")]
-        public SkinCustomization SkinCustomization { set; get; }
-        #endregion
-
-        public Account Owner { get; set; }
-
-        private Character(int sqlId)
+        [Key]
+        public int CharacterID { get; set; }
+        public int CharOwnerID { set; get; }
+        public string CharacterName { set; get; }
+        public string Customization
         {
-            SqlId = sqlId;
-            SkinCustomization = new SkinCustomization();
+            get => CustomSkin.Serialize();
+            private set => CustomSkin = SkinCustomization.Deserialize(value);
         }
 
-        #region DATABASE
-        public static async Task CreateNewAsync(Account account, string charName)
+        public SkinCustomization CustomSkin;
+
+        public static async Task CreateNewAsync(Account charOwner, string newCharName)
         {
-            if (await ExistsAsync(await GetSqlIdAsync(charName)))
-                return;
-
-            const string query = "INSERT INTO characters(charownerID, charname, customization) VALUES (@accownerID, @charname, @customization)";
-
-            using (var dbConn = DbConnectionProvider.CreateDbConnection())
+            var newChar = new Character()
             {
-                try
-                {
-                    var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@accownerID", account.SqlId);
-                    cmd.AddParameterWithValue("@charname", charName);
-                    cmd.AddParameterWithValue("@customization", new SkinCustomization().Serialize());
-                    await dbConn.OpenAsync();
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (DbException ex)
-                {
-                    DbConnectionProvider.HandleDbException(ex);
-                }
-            }
+                CharOwnerID = charOwner.AccountID,
+                CharacterName = newCharName,
+                CustomSkin = new SkinCustomization()
+            };
+            await newChar.CreateAsync();
         }
         public static async Task<List<Character>> FetchAllAsync(Account account)
         {
-            const string query = "SELECT characterID, charname, customization FROM characters WHERE charownerID = @accountID";
-
-            using (var dbConn = DbConnectionProvider.CreateDbConnection())
-            {
-                try
-                {
-                    var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@accountID", account.SqlId);
-                    await dbConn.OpenAsync();
-                    using (var r = await cmd.ExecuteReaderAsync(CommandBehavior.SequentialAccess))
-                    {
-                        var chars = new List<Character>();
-                        while (await r.ReadAsync())
-                        {
-                            var fetchedChar = new Character(r.GetInt32Extended("characterID"))
-                            {
-                                Owner = account,
-                                Name = r.GetStringExtended("charname"),
-                                SkinCustomization = SkinCustomization.Deserialize(r.GetStringExtended("customization"))
-                            };
-                            chars.Add(fetchedChar);
-                        }
-
-                        return chars;
-
-                    }
-                }
-                catch (DbException ex)
-                {
-                    DbConnectionProvider.HandleDbException(ex);
-                }
-
-                return null;
-            }
+            var result = await ReadByKeyAsync(() => new Character().CharOwnerID, account.AccountID);
+            var charsData = result.ToList();
+            return charsData;
         }
-        public static async Task<Character> FetchAsync(int charId)
-        {
-            const string query =
-                "SELECT charname, customization FROM characters WHERE characterID = @characterid";
-
-            if (!await ExistsAsync(charId))
-                return null;
-
-            using (var dbConn = DbConnectionProvider.CreateDbConnection())
-            {
-                try
-                {
-                    var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@characterid", charId);
-                    await dbConn.OpenAsync();
-                    using (var r = await cmd.ExecuteReaderAsync(CommandBehavior.SequentialAccess))
-                    {
-                        if (!await r.ReadAsync())
-                            return null;
-
-                        var fetched = new Character(charId)
-                        {
-                            Name = r.GetStringExtended("charname"),
-                            SkinCustomization = SkinCustomization.Deserialize(r.GetStringExtended("customization"))
-                        };
-                        return fetched;
-
-                    }
-                }
-                catch (DbException ex)
-                {
-                    DbConnectionProvider.HandleDbException(ex);
-                }
-
-                return null;
-            }
-        }
-        public static async Task<int> FetchCount(Account account)
-        {
-            if (account == null) return -1;
-
-            const string query = "SELECT COUNT(characterID) FROM characters WHERE charownerID = @charownerID";
-
-            using (var dbConn = DbConnectionProvider.CreateDbConnection())
-            {
-                try
-                {
-                    var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@charownerID", account.SqlId);
-                    await dbConn.OpenAsync();
-                    using (var r = await cmd.ExecuteReaderAsync())
-                    {
-                        if (!r.Read()) return -1;
-                        var count = r.GetInt32(0);
-                        return count;
-                    }
-                }
-                catch (DbException ex)
-                {
-                    DbConnectionProvider.HandleDbException(ex);
-                }
-            }
-
-            throw new Exception("There was an error in [Character.ExistsAsync]");
-        }
-        public static async Task<bool> ExistsAsync(int sqlId)
-        {
-
-            if (sqlId < 0) return false;
-
-            const string query = "SELECT characterID FROM characters WHERE characterID = @sqlid";
-
-            using (var dbConn = DbConnectionProvider.CreateDbConnection())
-            {
-                try
-                {
-                    var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@sqlid", sqlId);
-                    await dbConn.OpenAsync();
-                    using (var r = await cmd.ExecuteReaderAsync())
-                    {
-                        return await r.ReadAsync() && r.HasRows;
-                    }
-                }
-                catch (DbException ex)
-                {
-                    DbConnectionProvider.HandleDbException(ex);
-                }
-            }
-
-            throw new Exception("There was an error in [Character.ExistsAsync]");
-        }
-        public async Task SaveAsync()
-        {
-            const string query = "UPDATE characters " +
-                                 "SET charname = @charname, " +
-                                 "customization = @customization " +
-                                 "WHERE characterID = @characterID";
-
-            using (var dbConn = DbConnectionProvider.CreateDbConnection())
-            {
-                try
-                {
-                    var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@characterID", SqlId);
-
-                    cmd.AddParameterWithValue("@charname", Name);
-                    cmd.AddParameterWithValue("@customization", SkinCustomization.Serialize());
-
-                    await dbConn.OpenAsync();
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (DbException ex)
-                {
-                    DbConnectionProvider.HandleDbException(ex);
-                }
-            }
-        }
-        public async Task SaveSingleAsync<T>(Expression<Func<T>> expression) // Skin customization???
-        {
-            var column = GetColumnName(expression, out var value);
-            if (string.IsNullOrWhiteSpace(column))
-                throw new Exception("Invalid Column Name");
-
-            var query = $"UPDATE characters SET {column} = @value WHERE characterID = @sqlId";
-
-
-            using (var dbConn = DbConnectionProvider.CreateDbConnection())
-            {
-                try
-                {
-                    var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@sqlId", SqlId);
-                    cmd.AddParameterWithValue("@value", value);
-
-                    await dbConn.OpenAsync();
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (DbException ex)
-                {
-                    DbConnectionProvider.HandleDbException(ex);
-                }
-            }
-        }
-        public static async Task DeleteAsync(int charId)
-        {
-            const string query = "DELETE FROM characters WHERE characterID = @charId";
-
-            using (var dbConn = DbConnectionProvider.CreateDbConnection())
-            {
-                try
-                {
-                    var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@characterID", charId);
-
-                    await dbConn.OpenAsync();
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (DbException ex)
-                {
-                    DbConnectionProvider.HandleDbException(ex);
-                }
-            }
-        }
-        public static async Task<int> GetSqlIdAsync(string charName)
-        {
-            const string query = "SELECT characterID FROM characters WHERE charname = @name LIMIT 1";
-
-            using (var dbConn = DbConnectionProvider.CreateDbConnection())
-            {
-                try
-                {
-                    var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@name", charName);
-
-                    await dbConn.OpenAsync();
-                    using (var reader = await cmd.ExecuteReaderAsync())
-                    {
-                        if (!await reader.ReadAsync())
-                            return -1;
-
-                        var sqlId = reader.GetInt32Extended("characterID");
-                        return sqlId;
-                    }
-                }
-                catch (DbException ex)
-                {
-                    DbConnectionProvider.HandleDbException(ex);
-                }
-
-                return -1;
-            }
-        }
-        #endregion
     }
 }

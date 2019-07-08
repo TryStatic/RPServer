@@ -21,6 +21,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models\Helpers\**" />
+    <EmbeddedResource Remove="Models\Helpers\**" />
+    <None Remove="Models\Helpers\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Database\DbConnection.cs" />
   </ItemGroup>
 
@@ -35,6 +41,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Dapper" Version="1.60.6" />
+    <PackageReference Include="Dapper.Contrib" Version="1.60.1" />
     <PackageReference Include="MySql.Data" Version="8.0.16" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
   </ItemGroup>

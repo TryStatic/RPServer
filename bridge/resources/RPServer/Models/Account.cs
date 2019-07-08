@@ -1,331 +1,75 @@
 using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Common;
-using System.Linq.Expressions;
+using System.Linq;
 using System.Threading.Tasks;
-using RPServer.Database;
+using Dapper.Contrib.Extensions;
 using RPServer.Models.Helpers;
-using RPServer.Util;
 
 namespace RPServer.Models
 {
-    internal class Account : SaveableData
+    [Table("accounts")]
+    internal class Account : Model<Account>
     {
         public static readonly string DataKey = "ACCOUNT_DATA";
 
-        #region SQL_SAVEABLE_DATA
-        public int SqlId { get; }
-        [SqlColumnName("username")]
+        [Key]
+        public int AccountID { get; set; }
         public string Username { get; set; }
-        [SqlColumnName("emailaddress")]
         public string EmailAddress { get; set; }
-        [SqlColumnName("hash")]
         public byte[] Hash { get; set; }
-        [SqlColumnName("forumname")]
         public string ForumName { get; set; }
-        [SqlColumnName("nickname")]
         public string NickName { get; set; }
-        [SqlColumnName("regsocialclubname")]
         public string RegSocialClubName { get; set; }
-        [SqlColumnName("lastsocialclubname")]
         public string LastSocialClubName { get; set; }
-        [SqlColumnName("LastIP")]
         public string LastIP { get; set; }
-        [SqlColumnName("LastHWID")]
         public string LastHWID { get; set; }
-        [SqlColumnName("creationdate")]
         public DateTime CreationDate { get; set; }
-        [SqlColumnName("lastlogindate")]
         public DateTime LastLoginDate { get; set; }
-        [SqlColumnName("enabled2FAbyemail")]
         public bool HasEnabledTwoStepByEmail { get; set; }
-        [SqlColumnName("twofactorsharedkey")]
         public byte[] TwoFactorGASharedKey { get; set; }
-        #endregion
 
-        #region Per_Client_Session_Variables
+
         public bool HasPassedTwoStepByGA = false;
         public bool HasPassedTwoStepByEmail = false;
         public byte[] TempTwoFactorGASharedKey = null;
-        #endregion
 
-        private Account(int sqlId)
+        public Account() { }
+
+        public Account(string username, byte[] hash, string regSocialClubName)
         {
-            SqlId = sqlId;
+            Username = username;
+            Hash = hash;
+            RegSocialClubName = regSocialClubName;
+            CreationDate = DateTime.Now;
         }
 
         #region DATABASE
         public static async Task CreateAsync(string username, string password, string regSocialClubName)
         {
-            if (await ExistsAsync(username))
-                return;
-
             var hash = new PasswordHash(password).ToArray();
-
-            const string query = "INSERT INTO accounts(username, hash, regsocialclubname, creationdate) VALUES (@username, @hash, @regsocialclubname, @creationdate)";
-
-            using (var dbConn = DbConnectionProvider.CreateDbConnection())
-            {
-                try
-                {
-                    var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@username", username);
-                    cmd.AddParameterWithValue("@hash", hash);
-                    cmd.AddParameterWithValue("@regsocialclubname", regSocialClubName);
-                    cmd.AddParameterWithValue("@creationdate", DateTime.Now);
-                    await dbConn.OpenAsync();
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (DbException ex)
-                {
-                    DbConnectionProvider.HandleDbException(ex);
-                }
-            }
+            var newAcc = new Account(username, hash, regSocialClubName);
+            await newAcc.CreateAsync();
         }
         public static async Task<Account> FetchAsync(string username)
         {
-            const string query = "SELECT accountID, username, emailaddress, hash, forumname, nickname, LastIP, " +
-                                 "LastHWID, regsocialclubname, lastsocialclubname, creationdate, lastlogindate, " +
-                                 "enabled2FAbyemail, twofactorsharedkey" +
-                                 " FROM accounts " +
-                                 "WHERE username = @username LIMIT 1";
-
-            if (!await ExistsAsync(username))
-                return null;
-
-            using (var dbConn = DbConnectionProvider.CreateDbConnection())
-            {
-                try
-                {
-                    var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@username", username);
-                    await dbConn.OpenAsync();
-                    using (var r = await cmd.ExecuteReaderAsync(CommandBehavior.SequentialAccess))
-                    {
-                        if (!await r.ReadAsync())
-                            return null;
-
-                        var sqlId = r.GetInt32Extended("accountID");
-                        if(sqlId < 0) throw new Exception("Error fetching AccountID (SqlID) from the database");
-                        var fetchedAcc = new Account(sqlId)
-                        {
-                            Username = r.GetStringExtended("username"),
-                            EmailAddress = r.GetStringExtended("emailaddress"),
-                            Hash = r["hash"] as byte[],
-                            ForumName = r.GetStringExtended("forumname"),
-                            NickName = r.GetStringExtended("nickname"),
-                            LastIP = r.GetStringExtended("LastIP"),
-                            LastHWID = r.GetStringExtended("LastHWID"),
-                            RegSocialClubName = r.GetStringExtended("regsocialclubname"),
-                            LastSocialClubName = r.GetStringExtended("lastsocialclubname"),
-                            CreationDate = r.GetDateTimeExtended("creationdate"),
-                            LastLoginDate = r.GetDateTimeExtended("lastlogindate"),
-                            HasEnabledTwoStepByEmail = r.GetBooleanExtended("enabled2FAbyemail"),
-                            TwoFactorGASharedKey = r["twofactorsharedkey"] as byte[]
-                        };
-                        return fetchedAcc;
-
-                    }
-                }
-                catch (DbException ex)
-                {
-                    DbConnectionProvider.HandleDbException(ex);
-                }
-
-                return null;
-            }
+            var result = await ReadByKeyAsync(() => new Account().Username, username);
+            var accountModels = result.ToList();
+            return accountModels.Any() ? accountModels.First() : null;
         }
         public static async Task<bool> ExistsAsync(string username)
         {
-            const string query = "SELECT accountID FROM accounts WHERE username = @username";
-
-            using (var dbConn = DbConnectionProvider.CreateDbConnection())
-            {
-                try
-                {
-                    var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@username", username);
-                    await dbConn.OpenAsync();
-                    using (var r = await cmd.ExecuteReaderAsync())
-                    {
-                        return await r.ReadAsync() && r.HasRows;
-                    }
-                }
-                catch (DbException ex)
-                {
-                    DbConnectionProvider.HandleDbException(ex);
-                }
-            }
-            throw new Exception("There was an error in [Account.ExistsAsync]");
+            var result = await ReadByKeyAsync(() => new Account().Username, username);
+            var accountModels = result.ToList();
+            return accountModels.Any();
         }
-        public async Task SaveAsync()
-        {
-            const string query = "UPDATE accounts " +
-                                 "SET username = @username, emailaddress = @emailaddress, hash = @hash," +
-                                 "forumname = @forumname, nickname = @nickname, LastIP = @LastIP, LastHWID = @LastHWID," +
-                                 "regsocialclubname = @regsocialclubname, lastsocialclubname = @lastsocialclubname," +
-                                 "creationdate = @creationdate, lastlogindate = @lastlogindate, enabled2FAbyemail = @enabled2FAbyemail, twofactorsharedkey = @twofactorsharedkey " +
-                                 "WHERE accountID = @sqlId";
-
-            using (var dbConn = DbConnectionProvider.CreateDbConnection())
-            {
-                try
-                {
-                    var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@sqlId", SqlId);
-
-                    cmd.AddParameterWithValue("@username", Username);
-                    cmd.AddParameterWithValue("@emailaddress", EmailAddress);
-                    cmd.AddParameterWithValue("@hash", Hash);
-                    cmd.AddParameterWithValue("@forumname", ForumName);
-                    cmd.AddParameterWithValue("@nickname", NickName);
-                    cmd.AddParameterWithValue("@LastIP", LastIP);
-                    cmd.AddParameterWithValue("@LastHWID", LastHWID);
-                    cmd.AddParameterWithValue("@regsocialclubname", RegSocialClubName);
-                    cmd.AddParameterWithValue("@lastsocialclubname", LastSocialClubName);
-                    cmd.AddParameterWithValue("@creationdate", CreationDate);
-                    cmd.AddParameterWithValue("@lastlogindate", LastLoginDate);
-                    cmd.AddParameterWithValue("@enabled2FAbyemail", HasEnabledTwoStepByEmail);
-                    cmd.AddParameterWithValue("@twofactorsharedkey", TwoFactorGASharedKey);
-
-                    await dbConn.OpenAsync();
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (DbException ex)
-                {
-                    DbConnectionProvider.HandleDbException(ex);
-                }
-            }
-        }
-        public async Task SaveSingleAsync<T>(Expression<Func<T>> expression)
-        {
-            var column = GetColumnName(expression, out var value);
-            if(string.IsNullOrWhiteSpace(column)) throw new Exception("Invalid Column Name");
-
-            var query = $"UPDATE accounts SET {column} = @value WHERE accountID = @sqlId";
-
-
-            using (var dbConn = DbConnectionProvider.CreateDbConnection())
-            {
-                try
-                {
-                    var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@sqlId", SqlId);
-                    cmd.AddParameterWithValue("@value", value);
-
-                    await dbConn.OpenAsync();
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (DbException ex)
-                {
-                    DbConnectionProvider.HandleDbException(ex);
-                }
-            }
-        }
-        public static async Task DeleteAsync(string username)
-        {
-            const string query = "DELETE FROM accounts WHERE username = @username";
-
-            using (var dbConn = DbConnectionProvider.CreateDbConnection())
-            {
-                try
-                {
-                    var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@username", username);
-
-                    await dbConn.OpenAsync();
-                    await cmd.ExecuteNonQueryAsync();
-                }
-                catch (DbException ex)
-                {
-                    DbConnectionProvider.HandleDbException(ex);
-                }
-            }
-        }
-        public static async Task<int> GetSqlIdAsync(string username)
-        {
-            const string query = "SELECT accountID FROM accounts WHERE username = @username LIMIT 1";
-
-            using (var dbConn = DbConnectionProvider.CreateDbConnection())
-            {
-                try
-                {
-                    var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@username", username);
-
-                    await dbConn.OpenAsync();
-                    using (var reader = await cmd.ExecuteReaderAsync())
-                    {
-                        if (!await reader.ReadAsync())
-                            return -1;
-
-                        var sqlId = reader.GetInt32Extended("accountID");
-                        return sqlId;
-                    }
-                }
-                catch (DbException ex)
-                {
-                    DbConnectionProvider.HandleDbException(ex);
-                }
-                return -1;
-            }
-        }
-
-        public async Task<List<Character>> GetCharactersAsync() => await Character.FetchAllAsync(this);
-        public async Task<int> GetCharacterCountAsync() => await Character.FetchCount(this);
-
         public static async Task<bool> AuthenticateAsync(string username, string password)
         {
-            const string query = "SELECT username, hash FROM accounts WHERE username = @username LIMIT 1";
-
-            using (var dbConn = DbConnectionProvider.CreateDbConnection())
-            {
-                try
-                {
-                    var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@username", username);
-
-                    await dbConn.OpenAsync();
-                    using (var reader = await cmd.ExecuteReaderAsync())
-                    {
-                        if (!await reader.ReadAsync())
-                            return false;
-
-                        var fetchedPass = reader["hash"] as byte[];
-                        return new PasswordHash(fetchedPass).Verify(password);
-                    }
-                }
-                catch (DbException ex)
-                {
-                    DbConnectionProvider.HandleDbException(ex);
-                }
-                return false;
-            }
+            var acc = await FetchAsync(username);
+            return acc != null && new PasswordHash(acc.Hash).Verify(password);
         }
         public static async Task<bool> IsEmailTakenAsync(string emailAddress)
         {
-            const string query = "SELECT accountID FROM accounts WHERE emailaddress = @emailaddress";
-
-            using (var dbConn = DbConnectionProvider.CreateDbConnection())
-            {
-                try
-                {
-                    var cmd = dbConn.CreateCommandWithText(query);
-                    cmd.AddParameterWithValue("@emailaddress", emailAddress);
-
-                    await dbConn.OpenAsync();
-                    using (var r = await cmd.ExecuteReaderAsync())
-                    {
-                        return await r.ReadAsync() && r.HasRows;
-                    }
-                }
-                catch (DbException ex)
-                {
-                    DbConnectionProvider.HandleDbException(ex);
-                }
-            }
-            throw new Exception("There was an error in [Account.IsEmailTakenAsync]");
+            var acc = await ReadByKeyAsync(() => new Account().EmailAddress, emailAddress);
+            return acc != null;
         }
         #endregion
 
@@ -347,7 +91,7 @@ namespace RPServer.Models
 
         protected bool Equals(Account other)
         {
-            return SqlId == other.SqlId;
+            return AccountID == other.AccountID;
         }
         public override bool Equals(object obj)
         {
@@ -358,7 +102,7 @@ namespace RPServer.Models
         }
         public override int GetHashCode()
         {
-            return SqlId;
+            return AccountID;
         }
         public static bool operator ==(Account left, Account right)
         {
