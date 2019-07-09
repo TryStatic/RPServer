@@ -7,9 +7,15 @@ namespace RPServer.Controllers
 {
     internal static class TaskManager
     {
-        public static void Run(Client client, Action action)
+        public static void Run(Client client, Action action, bool force = false)
         {
-            if(!client.CanRunTask()) throw new Exception($"Mulitple tasks invoked for client ID: {client.Handle}");
+            if (force)
+            {
+                Task.Run(action).ContinueWith(HandleTaskCompletion);
+                return;
+            }
+
+            if (!client.CanRunTask()) throw new Exception($"Mulitple tasks invoked for client ID: {client.Handle}");
             client.SetCanRunTask(false);
             Task.Run(action).ContinueWith(HandleTaskCompletion).ContinueWith(task => client.SetCanRunTask(true));
         }
