@@ -18,42 +18,6 @@ namespace RPServer.Controllers
     internal class AuthenticationHandler : Script
     {
         public static event OnPlayerSuccessfulLoginDelegate PlayerSuccessfulLogin;
-
-        [ServerEvent(Event.PlayerConnected)]
-        public void OnPlayerConnected(Client client)
-        {
-            client.SendChatMessage(AccountStrings.InfoWelcome);
-            client.SetCanRunTask(true);
-            SetLoginState(client, true);
-            Logger.GetInstance().AuthLog($"Player (name: {client.Name}, social: {client.SocialClubName}, IP: {client.Address}) has connected to the server.");
-
-        }
-
-        [ServerEvent(Event.PlayerDisconnected)]
-        public void OnPlayerDisconnected(Client client, DisconnectionType type, string reason)
-        {
-            string str = $"Player (name: {client.Name}";
-            if (client.IsLoggedIn())
-            {
-                var acc = client.GetAccountData();
-                TaskManager.Run(client, async () => await acc.UpdateAsync());
-                str = $"Registered (user: {acc.Username}";
-                client.Logout();
-            }
-
-            switch (type)
-            {
-                case DisconnectionType.Left:
-                    Logger.GetInstance().AuthLog($"{str}, social: {client.SocialClubName}, IP: {client.Address}) has left the server."); break;
-                case DisconnectionType.Timeout:
-                    Logger.GetInstance().AuthLog($"{str}, social: {client.SocialClubName}, IP: {client.Address}) has left the server. (timed out)"); break;
-                case DisconnectionType.Kicked:
-                    Logger.GetInstance().AuthLog($"{str}, social: {client.SocialClubName}, IP: {client.Address}) has been kicked off the server. Reason: {reason}"); break;
-                default:
-                    Logger.GetInstance().AuthLog($"{str}, social: {client.SocialClubName}, IP: {client.Address}) has left the server. (default case)"); break;
-
-            }
-        }
         
         [Command(CmdStrings.CMD_ToggleTwoFactorEmail)]
         public void CMD_ToggleTwoFactorEmail(Client client)
@@ -487,7 +451,7 @@ namespace RPServer.Controllers
             client.Login(fetchedAcc);
             await fetchedAcc.UpdateAsync();
         }
-        private static void SetLoginState(Client client, bool state)
+        public static void SetLoginState(Client client, bool state)
         {
             if (state)
             {
