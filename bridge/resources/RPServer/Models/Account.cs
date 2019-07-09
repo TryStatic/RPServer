@@ -52,14 +52,12 @@ namespace RPServer.Models
         public static async Task<Account> FetchAsync(string username)
         {
             var result = await ReadByKeyAsync(() => new Account().Username, username);
-            var accountModels = result.ToList();
-            return accountModels.Any() ? accountModels.First() : null;
+            return result.FirstOrDefault();
         }
         public static async Task<bool> ExistsAsync(string username)
         {
             var result = await ReadByKeyAsync(() => new Account().Username, username);
-            var accountModels = result.ToList();
-            return accountModels.Any();
+            return result.FirstOrDefault() != null;
         }
         public static async Task<bool> AuthenticateAsync(string username, string password)
         {
@@ -69,9 +67,7 @@ namespace RPServer.Models
         public static async Task<bool> IsEmailTakenAsync(string emailAddress)
         {
             var accList = await ReadByKeyAsync(() => new Account().EmailAddress, emailAddress);
-            var enumerable = accList.ToList();
-            var acc = enumerable.Any() ? enumerable.First() : null;
-            return acc != null;
+            return accList.FirstOrDefault() != null;
         }
         #endregion
 
