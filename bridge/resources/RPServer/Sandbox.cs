@@ -99,7 +99,7 @@ namespace RPServer
         [Command("spawnme")]
         public void SpawnMe(Client player)
         {
-            NAPI.Player.SpawnPlayer(player, Globals.DefaultSpawnPos);
+            NAPI.Player.SpawnPlayer(player, Initialization.DefaultSpawnPos);
         }
 
         [Command("playanimation")]

@@ -1,8 +1,8 @@
-﻿using Shared;
-using RAGE;
+﻿using RAGE;
 using RAGE.Elements;
 using RPServerClient.Globals;
 using Events = RAGE.Events;
+using Shared;
 
 // ReSharper disable CommentTypo
 

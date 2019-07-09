@@ -8,11 +8,11 @@ using Shared;
 
 namespace RPServer.Game
 {
-    internal class Globals : Script
+    internal class Initialization : Script
     {
         public const string SERVER_NAME = "AlphaRP";
 #if DEBUG
-        public const string VERSION = ThisAssembly.Git.Tag;
+        public const string VERSION = ThisAssembly.Git.Tag + " on " + ThisAssembly.Git.Branch;
 #else
         public const string VERSION = ThisAssembly.Git.BaseTag;
 #endif
@@ -25,7 +25,7 @@ namespace RPServer.Game
         {
             Console.ForegroundColor = ConsoleColor.White;
             Console.BackgroundColor = ConsoleColor.Blue;
-            Console.WriteLine($"\n\n---------------------------- STARTING {SERVER_NAME} ({VERSION}) Branch: {ThisAssembly.Git.Branch} ----------------------------");
+            Console.WriteLine($"\n\n---------------------------- STARTING {SERVER_NAME} ({VERSION}) ----------------------------");
             Console.ResetColor();
             Console.WriteLine();
 

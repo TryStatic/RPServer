@@ -1,11 +1,11 @@
 ﻿using System;
-using Shared;
 using GTANetworkAPI;
 using RPServer.Util;
+using Shared;
 
 namespace RPServer.Controllers
 {
-    internal class CharacterManager : Script
+    internal class CharacterHandler : Script
     {
         [Command("removecam")]
         public void cmd_removecam(Client client)
@@ -13,9 +13,9 @@ namespace RPServer.Controllers
             client.TriggerEvent("debugdestroycam");
         }
 
-        public CharacterManager()
+        public CharacterHandler()
         {
-            AuthenticationManager.PlayerSuccessfulLogin += PlayerSuccessfulLogin;
+            AuthenticationHandler.PlayerSuccessfulLogin += PlayerSuccessfulLogin;
         }
 
         private void PlayerSuccessfulLogin(object source, EventArgs e)

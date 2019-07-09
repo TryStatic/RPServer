@@ -15,7 +15,7 @@ namespace RPServer.Controllers
 {
     public delegate void OnPlayerSuccessfulLoginDelegate(object source, EventArgs e);
 
-    internal class AuthenticationManager : Script
+    internal class AuthenticationHandler : Script
     {
         public static event OnPlayerSuccessfulLoginDelegate PlayerSuccessfulLogin;
 
@@ -497,7 +497,7 @@ namespace RPServer.Controllers
             else
             { // This part gets triggered only once per successful login
                 client.Transparency = 255;
-                NAPI.Player.SpawnPlayer(client, Globals.DefaultSpawnPos);
+                NAPI.Player.SpawnPlayer(client, Initialization.DefaultSpawnPos);
                 client.SendChatMessage(AccountStrings.SuccessLogin);
                 client.SendChatMessage("SUM COMMANDS: /cmds");
             }
@@ -548,7 +548,7 @@ namespace RPServer.Controllers
         public static string GetGQCodeImageLink(string username, byte[] key, int width, int height)
         {
             var keyString = Encoder.Base32Encode(key);
-            var provisionUrl = Encoder.UrlEncode($"otpauth://totp/{username}?secret={keyString}&issuer={Globals.SERVER_NAME}");
+            var provisionUrl = Encoder.UrlEncode($"otpauth://totp/{username}?secret={keyString}&issuer={Initialization.SERVER_NAME}");
 
             var chartUrl = $"https://chart.apis.google.com/chart?cht=qr&chs={width}x{height}&chl={provisionUrl}";
             return chartUrl;

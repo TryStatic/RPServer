@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper.Contrib.Extensions;
-using RPServer.Models.Helpers;
+using RPServer.Models.AccountHelpers;
 
 namespace RPServer.Models
 {
