@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace RPServer.Models.CharacterHelpers
 {
-    internal class SkinCustomization
+    internal class Appearance
     {
         private bool _isMale;
         private PedHash _skinModel;
@@ -45,7 +45,7 @@ namespace RPServer.Models.CharacterHelpers
         public byte HairStyle { get; set; }
         public byte HairStyleTexture { get; set; }
 
-        public SkinCustomization()
+        public Appearance()
         {
             SkinModel = PedHash.FreemodeMale01;
             CustomHeadBlend = new CustomHeadBlend(0, 0, 0, 0);
@@ -64,9 +64,9 @@ namespace RPServer.Models.CharacterHelpers
             return JsonConvert.SerializeObject(this);
         }
 
-        public static SkinCustomization Deserialize(string str)
+        public static Appearance Deserialize(string str)
         {
-            return JsonConvert.DeserializeObject<SkinCustomization>(str);
+            return JsonConvert.DeserializeObject<Appearance>(str);
         }
     }
 

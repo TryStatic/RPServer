@@ -27,7 +27,7 @@ namespace RPServer
         [Command("seteyecolor")]
         public void SetEyeColor(Client client, byte color)
         {
-            SkinCustomization sc = new SkinCustomization();
+            Appearance sc = new Appearance();
             sc.SkinModel = PedHash.FreemodeFemale01;
             sc.CustomHeadBlend = new CustomHeadBlend(2, 4, 0.5f, 0.5f);
             sc.CustomHeadOverlay = new CustomHeadOverlay();

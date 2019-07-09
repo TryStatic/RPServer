@@ -17,10 +17,10 @@ namespace RPServer.Models
         public string Customization
         {
             get => CustomSkin.Serialize();
-            private set => CustomSkin = SkinCustomization.Deserialize(value);
+            private set => CustomSkin = Appearance.Deserialize(value);
         }
 
-        public SkinCustomization CustomSkin;
+        public Appearance CustomSkin;
 
         public static async Task CreateNewAsync(Account charOwner, string newCharName)
         {
@@ -28,7 +28,7 @@ namespace RPServer.Models
             {
                 CharOwnerID = charOwner.AccountID,
                 CharacterName = newCharName,
-                CustomSkin = new SkinCustomization()
+                CustomSkin = new Appearance()
             };
             await newChar.CreateAsync();
         }
