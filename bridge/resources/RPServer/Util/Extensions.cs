@@ -95,7 +95,9 @@ namespace RPServer.Util
 
         internal static bool CanRunTask(this Client player)
         {
-            return player != null && (bool) player.GetData("CAN_RUN_TASK");
+            if (player == null) return false;
+            if(!player.HasData("CAN_RUN_TASK")) player.SetCanRunTask(true);
+            return (bool) player.GetData("CAN_RUN_TASK");
         }
 
         internal static void SetCanRunTask(this Client player, bool state)
