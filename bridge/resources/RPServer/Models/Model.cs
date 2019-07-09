@@ -11,6 +11,9 @@ namespace RPServer.Models
 {
     internal abstract class Model<T> where T: Model<T>
     {
+        [Key]
+        public int ID { get; set; }
+
         public static async Task<int> CreateAsync(T newEntry)
         {
             using (var dbConn = DbConnectionProvider.CreateDbConnection())
@@ -124,5 +127,12 @@ namespace RPServer.Models
             }
         }
         public async Task<bool> DeleteAsync() => await DeleteAsync(this as T);
+
+
+        public override bool Equals(object obj) => !ReferenceEquals(null, obj) && (ReferenceEquals(this, obj) || obj.GetType() == this.GetType() && Equals((Model<T>) obj));
+        protected bool Equals(Model<T> other) => ID == other.ID;
+        public override int GetHashCode() => ID;
+        public static bool operator ==(Model<T> left, Model<T> right) => Equals(left, right);
+        public static bool operator !=(Model<T> left, Model<T> right) => !Equals(left, right);
     }
 }

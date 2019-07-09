@@ -10,8 +10,7 @@ namespace RPServer.Models
     internal class Character : Model<Character>
     {
         public static readonly string DataKey = "ACTIVE_CHARACTER_DATA";
-        [Key]
-        public int CharacterID { get; set; }
+
         public int CharOwnerID { set; get; }
         public string CharacterName { set; get; }
         public string Customization
@@ -26,7 +25,7 @@ namespace RPServer.Models
         {
             var newChar = new Character()
             {
-                CharOwnerID = charOwner.AccountID,
+                CharOwnerID = charOwner.ID,
                 CharacterName = newCharName,
                 CustomSkin = new Appearance()
             };
@@ -34,7 +33,7 @@ namespace RPServer.Models
         }
         public static async Task<List<Character>> FetchAllAsync(Account account)
         {
-            var result = await ReadByKeyAsync(() => new Character().CharOwnerID, account.AccountID);
+            var result = await ReadByKeyAsync(() => new Character().CharOwnerID, account.ID);
             var charsData = result.ToList();
             return charsData;
         }

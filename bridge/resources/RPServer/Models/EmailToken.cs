@@ -48,7 +48,7 @@ namespace RPServer.Models
                 {
                     await dbConn.ExecuteAsync(query, new
                     {
-                        accountid = emailToken.Account.AccountID,
+                        accountid = emailToken.Account.ID,
                         token = emailToken.Token,
                         emailaddress = emailToken.EmailAddress,
                         expirydate = emailToken.ExpiryDate
@@ -71,7 +71,7 @@ namespace RPServer.Models
             {
                 try
                 {
-                    var result = await dbConn.QueryAsync<int?>(query, new { accountid = account.AccountID });
+                    var result = await dbConn.QueryAsync<int?>(query, new { accountid = account.ID });
                     return result.Any();
                 }
                 catch (DbException ex)
@@ -111,7 +111,7 @@ namespace RPServer.Models
             {
                 try
                 {
-                    var result = await dbConn.QueryAsync(query, new { accountid = account.AccountID } );
+                    var result = await dbConn.QueryAsync(query, new { accountid = account.ID } );
                     var unwrapped = result.SingleOrDefault();
 
                     if (unwrapped == null) return null;
@@ -154,7 +154,7 @@ namespace RPServer.Models
                 {
                     await dbConn.ExecuteAsync(query, new
                     {
-                        sqlId = Account.AccountID,
+                        sqlId = Account.ID,
                         token = Token,
                         emailaddress = EmailAddress,
                         expirydate = ExpiryDate
@@ -192,7 +192,7 @@ namespace RPServer.Models
             {
                 try
                 {
-                    await dbConn.ExecuteAsync(query, new {accountid = account.AccountID});
+                    await dbConn.ExecuteAsync(query, new {accountid = account.ID });
                 }
                 catch (DbException ex)
                 {

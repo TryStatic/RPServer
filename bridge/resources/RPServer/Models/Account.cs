@@ -11,8 +11,6 @@ namespace RPServer.Models
     {
         public static readonly string DataKey = "ACCOUNT_DATA";
 
-        [Key]
-        public int AccountID { get; set; }
         public string Username { get; set; }
         public string EmailAddress { get; set; }
         public byte[] Hash { get; set; }
@@ -85,30 +83,6 @@ namespace RPServer.Models
             if (!Is2FAbyEmailEnabled()) return !Is2FAbyGAEnabled() || HasPassedTwoStepByGA;
             if (!HasPassedTwoStepByEmail) return false;
             return !Is2FAbyGAEnabled() || HasPassedTwoStepByGA;
-        }
-
-        protected bool Equals(Account other)
-        {
-            return AccountID == other.AccountID;
-        }
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((Account)obj);
-        }
-        public override int GetHashCode()
-        {
-            return AccountID;
-        }
-        public static bool operator ==(Account left, Account right)
-        {
-            return Equals(left, right);
-        }
-        public static bool operator !=(Account left, Account right)
-        {
-            return !Equals(left, right);
         }
     }
 }
