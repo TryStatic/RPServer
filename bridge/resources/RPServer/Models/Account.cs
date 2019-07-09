@@ -68,7 +68,9 @@ namespace RPServer.Models
         }
         public static async Task<bool> IsEmailTakenAsync(string emailAddress)
         {
-            var acc = await ReadByKeyAsync(() => new Account().EmailAddress, emailAddress);
+            var accList = await ReadByKeyAsync(() => new Account().EmailAddress, emailAddress);
+            var enumerable = accList.ToList();
+            var acc = enumerable.Any() ? enumerable.First() : null;
             return acc != null;
         }
         #endregion
