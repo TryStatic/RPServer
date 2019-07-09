@@ -1,4 +1,7 @@
-﻿using RAGE;
+﻿using System.Collections.Generic;
+using System.Drawing;
+using System.Net.NetworkInformation;
+using RAGE;
 using RAGE.Elements;
 using RPServerClient.Util;
 
@@ -6,8 +9,27 @@ namespace RPServerClient
 {
     internal class Sandbox : Events.Script
     {
+        public static int ScreenX = 0;
+        public static int ScreenY = 0;
+
+        public static int ScreenResX = 0;
+        public static int ScreenResY = 0;
+
+        private static string VERSION = null;
+
         public Sandbox()
         {
+            RAGE.Game.Graphics.GetScreenResolution(ref ScreenResX, ref ScreenResY);
+            RAGE.Game.Graphics.GetActiveScreenResolution(ref ScreenX, ref ScreenY);
+
+
+            Events.Tick += Tick;
+
+
+
+            Events.Add("GetVersion", OnGetVersion);
+
+
             // FlyScript
             Events.Add("ToggleFlyMode", OnToggleFlyMode);
 
@@ -34,6 +56,23 @@ namespace RPServerClient
             RAGE.Game.Stats.StatSetInt(stealth, 100, true);
             uint lungCapacity = RAGE.Game.Misc.GetHashKey("SP0_LUNGCAPACITY");
             RAGE.Game.Stats.StatSetInt(lungCapacity, 100, true);
+        }
+
+        private void OnGetVersion(object[] args)
+        {
+            if (args == null || args.Length < 1) return;
+            VERSION = args[0].ToString();
+        }
+
+
+        private void Tick(List<Events.TickNametagData> nametags)
+        {
+            if (VERSION != null)
+            {
+                RAGE.Game.Ui.SetTextOutline();
+                RAGE.Game.UIText.Draw(VERSION, new Point(ScreenResX / 2, ScreenResY - (int)(ScreenResY * 0.03)), 0.35f, Color.White, RAGE.Game.Font.ChaletLondon, true);
+            }
+
         }
 
         private void TeleportInFront(object[] args)
