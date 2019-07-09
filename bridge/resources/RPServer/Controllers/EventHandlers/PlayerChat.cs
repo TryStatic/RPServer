@@ -1,9 +1,9 @@
 ﻿using GTANetworkAPI;
 using RPServer.Util;
 
-namespace RPServer.Controllers
+namespace RPServer.Controllers.EventHandlers
 {
-    internal class ChatHandler : Script
+    internal class PlayerChat : Script
     {
         [ServerEvent(Event.ChatMessage)]
         public void OnChatMessage(Client client, string message)
