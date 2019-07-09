@@ -26,40 +26,40 @@ namespace RPServer.Util
         }
         internal void ServerInfo(string sendMsg)
         {
-            NAPI.Util.ConsoleOutput($"[SERVER]: {sendMsg}");
+            NAPI.Util.ConsoleOutput($"[{DateTime.Now:MM/dd/yyyy HH:mm:ss}][SRV INFO]: {sendMsg}");
         }
         public void SqlInfo(string msg)
         {
-            NAPI.Util.ConsoleOutput($"[SQL Info]: {msg}");
-            FileWriteAsync(MySqlLogFn, $"[{DateTime.Now}][SQL Info]: {msg}");
+            NAPI.Util.ConsoleOutput($"[{DateTime.Now:MM/dd/yyyy HH:mm:ss}][SQL INFO]: {msg}");
+            FileWriteAsync(MySqlLogFn, $"[{DateTime.Now:MM/dd/yyyy HH:mm:ss}][SQL INFO]: {msg}");
         }
         public void MySqlError(string errorMsg, uint errorCode)
         {
-            NAPI.Util.ConsoleOutput($"[MySQL Error]: {errorMsg} [Code={errorCode}]");
-            FileWriteAsync(MySqlLogFn, $"[{DateTime.Now}][MySQL Error]: {errorMsg} [Code={errorCode}]");
+            NAPI.Util.ConsoleOutput($"[{DateTime.Now:MM/dd/yyyy HH:mm:ss}][MySQL ERROR]: {errorMsg} [Code={errorCode}]");
+            FileWriteAsync(MySqlLogFn, $"[{DateTime.Now:MM/dd/yyyy HH:mm:ss}][MySQL ERROR]: {errorMsg} [Code={errorCode}]");
         }
         public void SqlError(string errorMsq)
         {
-            NAPI.Util.ConsoleOutput($"[SQL Error]: {errorMsq}");
-            FileWriteAsync(MySqlLogFn, $"[{DateTime.Now}][SQL Error]: {errorMsq}");
+            NAPI.Util.ConsoleOutput($"[{DateTime.Now:MM/dd/yyyy HH:mm:ss}][SQL ERROR]: {errorMsq}");
+            FileWriteAsync(MySqlLogFn, $"[{DateTime.Now:MM/dd/yyyy HH:mm:ss}][SQL ERROR]: {errorMsq}");
         }
         public void CommandLog(string username, string cmd)
         {
-            FileWriteAsync(CommandLogFn, $"[{DateTime.Now}][{username}]: /{cmd}");
+            FileWriteAsync(CommandLogFn, $"[{DateTime.Now:MM/dd/yyyy HH:mm:ss}][{username}]: /{cmd}");
 #if DEBUG
-            NAPI.Util.ConsoleOutput($"[DEBUG-CMD]: [{username}]: /{cmd}");
+            NAPI.Util.ConsoleOutput($"[{DateTime.Now:MM/dd/yyyy HH:mm:ss}][DEBUG-CMD]: [{username}]: /{cmd}");
 #endif
         }
         public void AuthLog(string logStr)
         {
-            NAPI.Util.ConsoleOutput($"[Auth]: {logStr}");
-            FileWriteAsync(AuthLogFn, $"[{DateTime.Now}]: {logStr}");
+            NAPI.Util.ConsoleOutput($"[{DateTime.Now:MM/dd/yyyy HH:mm:ss}][AUTH]: {logStr}");
+            FileWriteAsync(AuthLogFn, $"[{DateTime.Now:MM/dd/yyyy HH:mm:ss}]: {logStr}");
         }
         internal void ChatLog(string sendMsg)
         {
-            FileWriteAsync(ChatLogFn, $"[{DateTime.Now}]: {sendMsg}");
+            FileWriteAsync(ChatLogFn, $"[{DateTime.Now:MM/dd/yyyy HH:mm:ss}]: {sendMsg}");
 #if DEBUG
-            NAPI.Util.ConsoleOutput($"[Chat]: {sendMsg}");
+            NAPI.Util.ConsoleOutput($"[{DateTime.Now:MM/dd/yyyy HH:mm:ss}][DEBUG-CHAT]: {sendMsg}");
 #endif
         }
 
