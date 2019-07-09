@@ -42,6 +42,29 @@ namespace RPServer
             
         }
 
+        [Command("gethere")]
+        public void CmdGetHere(Client client, string trg)
+        {
+            var target = NAPI.Player.GetPlayerFromName(trg);
+
+            if (target == null)
+                return;
+
+            target.Position = client.Position.Around(5);
+        }
+
+
+        [Command("goto")]
+        public void CmdGoto(Client client, string trg)
+        {
+            var target = NAPI.Player.GetPlayerFromName(trg);
+
+            if (target == null)
+                return;
+
+            client.Position = target.Position.Around(5);
+        }
+
         [Command("fd")]
         public void CmdFD(Client player)
         {
