@@ -6,11 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="main.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <style>
-        body {
-            rgba(0, 0, 0, 0);
-        }
-    </style>
 </head>
 
 <body>
@@ -20,43 +15,44 @@
         </div>
         <br>
         <div class="forgot-password">Success</div>
-		<div id="displayerror-box" style="margin-top: 5px; overflow-wrap: break-word; display:none;">
-			<span id="displayerror-text" style="color: red">{errormsg}</span>
-		</div>
+        <div id="displayerror-box" style="margin-top: 5px; overflow-wrap: break-word; display:none;">
+            <span id="displayerror-text" style="color: red">{errormsg}</span>
+        </div>
         <div>
             <p>Google 2FA has been enabled.</p>
             <button id="register-link" onclick="CloseWindow()">OK</button>
         </div>
-        <br/>
+        <br />
         ---
         <br /><img src="agglika.png"></img>
-        </div>
-        <br />
+    </div>
+    <br />
     </div>
     <div id="container-register" class="loading" style="display: none">
 
-            <div id="title">
-                    <i class="material-icons lock">lock</i> Loading
-            </div>
+        <div id="title">
+            <i class="material-icons lock">lock</i> Loading
+        </div>
 
-            <div id="circle">
+        <div id="circle">
+            <div class="loader">
                 <div class="loader">
-                  <div class="loader">
-                      <div class="loader">
-                         <div class="loader">
-              
-                         </div>
-                      </div>
-                  </div>
+                    <div class="loader">
+                        <div class="loader">
+
+                        </div>
+                    </div>
                 </div>
-              </div>     </div>
-	<script src="jquery.js"></script>
+            </div>
+        </div>
+    </div>
+    <script src="jquery.js"></script>
     <script src="main.js"></script>
     <script>
 
-	function CloseWindow() {
-		mp.trigger("onCloseWindow");
-    }
+        function CloseWindow() {
+            mp.trigger("onCloseWindow");
+        }
     </script>
 </body>
 

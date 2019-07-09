@@ -6,11 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="main.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <style>
-        body {
-            rgba(0, 0, 0, 0);
-        }
-    </style>
 </head>
 
 <body>
@@ -24,16 +19,18 @@
         </div>
         ---
         <br>
-        <div class="forgot-password">Open the two-factor authentication app on your device to view your authentication code and verify your identity.</div>
-		<div id="displayerror-box" style="margin-top: 5px; overflow-wrap: break-word; display:none;">
-			<span id="displayerror-text" style="color: red">{errormsg}</span>
-		</div>
+        <div class="forgot-password">Open the two-factor authentication app on your device to view your authentication
+            code and verify your identity.</div>
+        <div id="displayerror-box" style="margin-top: 5px; overflow-wrap: break-word; display:none;">
+            <span id="displayerror-text" style="color: red">{errormsg}</span>
+        </div>
         <form>
             <div class="input">
                 <div class="input-addon">
                     <i class="material-icons">code</i>
                 </div>
-                <input id="auth_code" placeholder="Authentication Code" type="text" required class="validate" autocomplete="off" minlength="6">
+                <input id="auth_code" placeholder="Authentication Code" type="text" required class="validate"
+                    autocomplete="off" minlength="6">
             </div>
 
             <div class="clearfix"></div>
@@ -44,41 +41,41 @@
         </form>
         ---
         <br /><img src="agglika.png"></img>
-        </div>
-        <br />
+    </div>
+    <br />
     </div>
     <div id="container-register" class="loading" style="display: none">
 
-            <div id="title">
-                    <i class="material-icons lock">lock</i> Loading
-            </div>
+        <div id="title">
+            <i class="material-icons lock">lock</i> Loading
+        </div>
 
-            <div id="circle">
+        <div id="circle">
+            <div class="loader">
                 <div class="loader">
-                  <div class="loader">
-                      <div class="loader">
-                         <div class="loader">
-              
-                         </div>
-                      </div>
-                  </div>
+                    <div class="loader">
+                        <div class="loader">
+
+                        </div>
+                    </div>
                 </div>
-              </div> 
+            </div>
+        </div>
     </div>
-	<script src="jquery.js"></script>
+    <script src="jquery.js"></script>
     <script src="main.js"></script>
     <script>
-	jQuery(function ($) {
-		$("form").on('submit', function (e) {
-			e.preventDefault();
-			var code = $("#auth_code").val();
-			mp.trigger("onSubmitGoogleAuthCode", code);
-		});
-	})
+        jQuery(function ($) {
+            $("form").on('submit', function (e) {
+                e.preventDefault();
+                var code = $("#auth_code").val();
+                mp.trigger("onSubmitGoogleAuthCode", code);
+            });
+        })
 
-	function BackToLogin() {
-		mp.trigger("onBackToLogin");
-    }
+        function BackToLogin() {
+            mp.trigger("onBackToLogin");
+        }
     </script>
 </body>
 

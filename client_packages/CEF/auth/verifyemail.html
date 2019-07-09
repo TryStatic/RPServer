@@ -6,11 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="main.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <style>
-        body {
-            rgba(0, 0, 0, 0);
-        }
-    </style>
 </head>
 
 <body>
@@ -22,10 +17,11 @@
             <a href="#" onclick="BackToLogin()"><i class="material-icons lock">replay</i><br>Back to Login Screen</a>
         </div>
         ---
-      <div class="forgot-password">We've sent an email with your verification code. Please check your email inbox and enter that code below.</div>
-	  <div id="displayerror-box" style="margin-top: 5px; overflow-wrap: break-word; display:none;">
-			<span id="displayerror-text" style="color: red">{errormsg}</span>
-		</div>
+        <div class="forgot-password">We've sent an email with your verification code. Please check your email inbox and
+            enter that code below.</div>
+        <div id="displayerror-box" style="margin-top: 5px; overflow-wrap: break-word; display:none;">
+            <span id="displayerror-text" style="color: red">{errormsg}</span>
+        </div>
         <form>
             <div class="input">
                 <div class="input-addon2">
@@ -42,10 +38,11 @@
         </form>
         ---
         <div class="forgot-password3">
-            <a href="#" onclick="resendMail()"><i class="material-icons lock">report_problem</i><br>I didn't recieve the email</a>
+            <a href="#" onclick="resendMail()"><i class="material-icons lock">report_problem</i><br>I didn't recieve the
+                email</a>
         </div>
         ---
-      <br /><img src="agglika.png"></img>
+        <br /><img src="agglika.png"></img>
         <br />
         <div class="forgot-password">
             <a href="#" onclick="resendMail()">I didn't recieve the email</a>
@@ -54,48 +51,49 @@
 
     <div id="container-register" class="loading" style="display: none">
 
-            <div id="title">
-                    <i class="material-icons lock">lock</i> Loading
-            </div>
+        <div id="title">
+            <i class="material-icons lock">lock</i> Loading
+        </div>
 
-            <div id="circle">
+        <div id="circle">
+            <div class="loader">
                 <div class="loader">
-                  <div class="loader">
-                      <div class="loader">
-                         <div class="loader">
-              
-                         </div>
-                      </div>
-                  </div>
+                    <div class="loader">
+                        <div class="loader">
+
+                        </div>
+                    </div>
                 </div>
-              </div>     </div>
-	<script src="sweetalert.js"></script>
-	<script src="jquery.js"></script>
+            </div>
+        </div>
+    </div>
+    <script src="sweetalert.js"></script>
+    <script src="jquery.js"></script>
     <script src="main.js"></script>
-	<script>
-            function resendMail() {
-                Swal.fire({
-                    title: 'Send again', 
-                    text: 'Do you want us to try and resend the email?', 
-                    showCancelButton: true
-                }).then((result) => {
-                    if (result.value) {
-                        mp.trigger("onResendMail");
-                    }
-                })
-            }
-        
-            jQuery(function ($) {
-                $("form").on('submit', function (e) {
-                    e.preventDefault();
-                    var token = $("#email_token").val();
-                    mp.trigger("onSubmitEmailToken", token);
-                });
+    <script>
+        function resendMail() {
+            Swal.fire({
+                title: 'Send again',
+                text: 'Do you want us to try and resend the email?',
+                showCancelButton: true
+            }).then((result) => {
+                if (result.value) {
+                    mp.trigger("onResendMail");
+                }
             })
-            
-            function BackToLogin() {
-                mp.trigger("onBackToLogin");
-            }
+        }
+
+        jQuery(function ($) {
+            $("form").on('submit', function (e) {
+                e.preventDefault();
+                var token = $("#email_token").val();
+                mp.trigger("onSubmitEmailToken", token);
+            });
+        })
+
+        function BackToLogin() {
+            mp.trigger("onBackToLogin");
+        }
     </script>
 </body>
 

@@ -6,11 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="main.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <style>
-        body {
-            rgba(0, 0, 0, 0);
-        }
-    </style>
 </head>
 
 <body>
@@ -20,70 +15,73 @@
         </div>
         <br>
         <div class="forgot-password2">
-            <a href="#" onclick="CloseWindow()"><i class="material-icons lock">replay</i><br>Nevermind... take me back</a>
+            <a href="#" onclick="CloseWindow()"><i class="material-icons lock">replay</i><br>Nevermind... take me
+                back</a>
         </div>
         ---
         <br>
         <div class="forgot-password">Read QR with phone and enter code below then press submit k?</div>
-		<div id="displayerror-box" style="margin-top: 5px; overflow-wrap: break-word; display:none;">
-			<span id="displayerror-text" style="color: red">{errormsg}</span>
-		</div>
+        <div id="displayerror-box" style="margin-top: 5px; overflow-wrap: break-word; display:none;">
+            <span id="displayerror-text" style="color: red">{errormsg}</span>
+        </div>
         <div id="addimagehere">
         </div>
         <form>
-                <div class="input">
-                    <div class="input-addon2">
-                        <i class="material-icons">face</i>
-                    </div>
-                    <input id="auth_code" placeholder="Auth Code" type="text" required class="validate" autocomplete="off" minlength="5">
+            <div class="input">
+                <div class="input-addon2">
+                    <i class="material-icons">face</i>
                 </div>
-    
-    
-                <div class="remember-me">
-                </div>
-                <input type="submit" value="Submit" />
-            </form>
+                <input id="auth_code" placeholder="Auth Code" type="text" required class="validate" autocomplete="off"
+                    minlength="5">
+            </div>
+
+
+            <div class="remember-me">
+            </div>
+            <input type="submit" value="Submit" />
+        </form>
         ---
         <br /><img src="agglika.png"></img>
-        </div>
-        <br />
+    </div>
+    <br />
     </div>
     <div id="container-register" class="loading" style="display: none">
 
-            <div id="title">
-                    <i class="material-icons lock">lock</i> Loading
-            </div>
+        <div id="title">
+            <i class="material-icons lock">lock</i> Loading
+        </div>
 
-            <div id="circle">
+        <div id="circle">
+            <div class="loader">
                 <div class="loader">
-                  <div class="loader">
-                      <div class="loader">
-                         <div class="loader">
-              
-                         </div>
-                      </div>
-                  </div>
+                    <div class="loader">
+                        <div class="loader">
+
+                        </div>
+                    </div>
                 </div>
-              </div>     </div>
-	<script src="jquery.js"></script>
+            </div>
+        </div>
+    </div>
+    <script src="jquery.js"></script>
     <script src="main.js"></script>
     <script>
-	jQuery(function ($) {
-		$("form").on('submit', function (e) {
-			e.preventDefault();
-            var code = $("#auth_code").val();
-			mp.trigger("onSubmitEnableGoogleAuthCode", code);
-		});
-	})
+        jQuery(function ($) {
+            $("form").on('submit', function (e) {
+                e.preventDefault();
+                var code = $("#auth_code").val();
+                mp.trigger("onSubmitEnableGoogleAuthCode", code);
+            });
+        })
 
-	function CloseWindow() {
-		mp.trigger("onCloseWindow");
-    }
+        function CloseWindow() {
+            mp.trigger("onCloseWindow");
+        }
 
-    function addImage(link) {
-        $('#addimagehere').prepend('<img src="' + link + '" />')
+        function addImage(link) {
+            $('#addimagehere').prepend('<img src="' + link + '" />')
 
-    }
+        }
     </script>
 </body>
 
