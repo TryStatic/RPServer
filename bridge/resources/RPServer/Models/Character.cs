@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper.Contrib.Extensions;
+using GTANetworkAPI;
 using RPServer.Models.CharacterHelpers;
 
 namespace RPServer.Models
@@ -11,23 +12,22 @@ namespace RPServer.Models
     {
         public int CharOwnerID { set; get; }
         public string CharacterName { set; get; }
-        public string Customization
-        {
-            get => CustomSkin.Serialize();
-            private set => CustomSkin = Appearance.Deserialize(value);
-        }
 
-        public Appearance CustomSkin;
+        public Appearance Appearance;
 
+        /// <summary>
+        /// Use to create new character
+        /// </summary>
         public static async Task CreateNewAsync(Account charOwner, string newCharName)
         {
             var newChar = new Character()
             {
                 CharOwnerID = charOwner.ID,
-                CharacterName = newCharName,
-                CustomSkin = new Appearance()
+                CharacterName = newCharName
             };
             await newChar.CreateAsync();
+            var ch = await ReadByKeyAsync(()=> newChar.CharacterName, newCharName);
+            await new Appearance(PedHash.FreemodeFemale01, ch.First().ID).CreateAsync();
         }
         public static async Task<List<Character>> FetchAllAsync(Account account)
         {

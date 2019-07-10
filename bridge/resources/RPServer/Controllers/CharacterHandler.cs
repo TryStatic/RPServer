@@ -79,7 +79,7 @@ namespace RPServer.Controllers
             TaskManager.Run(client, async () =>
             {
                 var fetchedChar = await Character.ReadAsync(selectedCharId);
-                var cus = fetchedChar.CustomSkin;
+                //var cus = fetchedChar.CustomSkin;
                 var accData = client.GetAccountData();
 
                 if (accData.ID != fetchedChar.CharOwnerID)
@@ -87,7 +87,7 @@ namespace RPServer.Controllers
                     client.SendChatMessage("That is not your character. Ban/Kick?");
                     return;
                 }
-                fetchedChar.CustomSkin.ApplyAll(client);
+                //fetchedChar.CustomSkin.ApplyAll(client);
                 client.Transparency = 255;
             });
         }

@@ -2,7 +2,6 @@
 using System.Text.RegularExpressions;
 using GTANetworkAPI;
 using RPServer.Game;
-using RPServer.Models.CharacterHelpers;
 using RPServer.Util;
 
 namespace RPServer
@@ -27,19 +26,6 @@ namespace RPServer
         [Command("seteyecolor")]
         public void SetEyeColor(Client client, byte color)
         {
-            Appearance sc = new Appearance();
-            sc.SkinModel = PedHash.FreemodeFemale01;
-            sc.CustomHeadBlend = new CustomHeadBlend(2, 4, 0.5f, 0.5f);
-            sc.CustomHeadOverlay = new CustomHeadOverlay();
-            sc.CustomHeadOverlay.SetOverlay(OverlayID.Blemishes, 4, 255, 3, 4);
-            sc.CustomFaceFeatures = new CustomFaceFeature();
-            sc.CustomFaceFeatures.SetFeature(FeatureIndex.Eyes, 0.5f);
-            sc.EyeColor = 5;
-            sc.HairColor = 2;
-            sc.HighlightColor = 7;
-            sc.ApplyAll(client);
-            client.SetClothes(2, 2, 2);
-            
         }
 
         [Command("gethere")]
