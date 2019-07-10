@@ -2,7 +2,7 @@
 using Dapper.Contrib.Extensions;
 using GTANetworkAPI;
 
-namespace RPServer.Models.CharacterHelpers
+namespace RPServer.Models
 {
     [Table("appearances")]
     internal class Appearance : Model<Appearance>
