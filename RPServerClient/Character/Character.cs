@@ -23,6 +23,13 @@ namespace RPServerClient.Character
             // Temp testing events
             Events.Add("debugdestroycam", EndCharSelection);
             Events.Add("selectchar", SelectChar);
+            Events.Add("playchar", PlayChar);
+        }
+
+        private void PlayChar(object[] args)
+        {
+            if(_selectedCharId < 0) return;
+            Events.CallRemote(ClientToServer.SubmitSpawnCharacter, _selectedCharId);
         }
 
         private void SelectChar(object[] args)

@@ -15,6 +15,7 @@
 
         // Character
         public const string SubmitCharacterSelection = "SubmitCharacterSelection";
+        public const string SubmitSpawnCharacter = "SubmitSpawnCharacter";
 
         // Other
         public const string SubmitPlayerCommand = "SubmitPlayerCommand";

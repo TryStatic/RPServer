@@ -29,6 +29,12 @@ namespace RPServer.Controllers
             client.TriggerEvent("selectchar", id);
         }
 
+        [Command("playchar")]
+        public void cmd_selectchar(Client client)
+        {
+            client.TriggerEvent("playchar");
+        }
+
         [Command("ranomizeappearance")]
         public void cmd_randomapp(Client client, int id)
         {
@@ -71,7 +77,7 @@ namespace RPServer.Controllers
         public void ClientEvent_ApplyCharSelectionAnimation(Client client) => client.PlayAnimation("missbigscore2aleadinout@ig_7_p2@bankman@", "leadout_waiting_loop", 1);
 
         [RemoteEvent(ClientToServer.SubmitCharacterSelection)]
-        public void ClientEventSubmitCharacterSelection(Client client, int selectedCharId)
+        public void ClientEvent_SubmitCharacterSelection(Client client, int selectedCharId)
         {
             if(!client.IsLoggedIn()) return;
             if(selectedCharId < 0) return;
@@ -94,6 +100,12 @@ namespace RPServer.Controllers
                 app.Apply(client);
                 client.Transparency = 255;
             });
+        }
+
+        [RemoteEvent(ClientToServer.SubmitSpawnCharacter)]
+        public void ClientEvent_SubmitSpawnCharacter(Client client, int selectedCharId)
+        {
+
         }
     }
 }
