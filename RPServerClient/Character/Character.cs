@@ -21,7 +21,7 @@ namespace RPServerClient.Character
             Events.Add(ServerToClient.RenderCharacterList, OnRenderCharacterList);
 
             // Temp testing events
-            Events.Add("debugdestroycam", EndCharSelection);
+            Events.Add(ServerToClient.EndCharSelection, EndCharSelection);
             Events.Add("selectchar", SelectChar);
             Events.Add("playchar", PlayChar);
         }

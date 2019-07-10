@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using GTANetworkAPI;
 using Newtonsoft.Json;
 using RPServer.Models;
@@ -14,7 +13,7 @@ namespace RPServer.Controllers
         [Command("removecam")]
         public void cmd_removecam(Client client)
         {
-            client.TriggerEvent("debugdestroycam");
+            client.TriggerEvent(ServerToClient.EndCharSelection);
         }
 
         [Command("createchar")]
@@ -105,7 +104,20 @@ namespace RPServer.Controllers
         [RemoteEvent(ClientToServer.SubmitSpawnCharacter)]
         public void ClientEvent_SubmitSpawnCharacter(Client client, int selectedCharId)
         {
+            if(selectedCharId < 0) return;
 
+            TaskManager.Run(client, async () =>
+            {
+                var ch = await Character.ReadAsync(selectedCharId);
+                if (ch.CharOwnerID != selectedCharId)
+                {
+                    client.SendChatMessage("That is not your character. Ban/Kick?");
+                    return;
+                }
+
+
+                client.TriggerEvent(ServerToClient.EndCharSelection);
+            });
         }
     }
 }

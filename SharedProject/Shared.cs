@@ -38,6 +38,7 @@
         // Character
         public const string InitCharSelection = "InitCharSelection";
         public const string RenderCharacterList = "RenderCharacterList";
+        public const string EndCharSelection = "EndCharSelection";
     }
 
 
