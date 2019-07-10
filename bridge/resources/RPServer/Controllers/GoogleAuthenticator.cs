@@ -32,7 +32,7 @@ namespace RPServer.Controllers
         public static string GetGQCodeImageLink(string username, byte[] key, int width, int height)
         {
             var keyString = Encoder.Base32Encode(key);
-            var provisionUrl = Encoder.UrlEncode($"otpauth://totp/{username}?secret={keyString}&issuer={Initialization.SERVER_NAME}");
+            var provisionUrl = Encoder.UrlEncode($"otpauth://totp/{username}?secret={keyString}&issuer={Globals.SERVER_NAME}");
 
             var chartUrl = $"https://chart.apis.google.com/chart?cht=qr&chs={width}x{height}&chl={provisionUrl}";
             return chartUrl;

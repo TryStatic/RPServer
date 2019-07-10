@@ -9,13 +9,6 @@ namespace RPServer.Game
 {
     internal class Initialization : Script
     {
-        public const string SERVER_NAME = "AlphaRP";
-#if DEBUG
-        public const string VERSION = ThisAssembly.Git.Tag + " on " + ThisAssembly.Git.Branch;
-#else
-        public const string VERSION = ThisAssembly.Git.BaseTag;
-#endif
-
         public static readonly Vector3 DefaultSpawnPos = new Vector3(-782.1527709960938f, 19.77294921875f, 41.93227767944336f);
         private static Timer _expiredEmailTokensTimer;
 
@@ -24,7 +17,7 @@ namespace RPServer.Game
         {
             Console.ForegroundColor = ConsoleColor.White;
             Console.BackgroundColor = ConsoleColor.Blue;
-            Console.WriteLine($"\n\n---------------------------- STARTING {SERVER_NAME} ({VERSION}) ----------------------------");
+            Console.WriteLine($"\n\n---------------------------- STARTING {Globals.SERVER_NAME} ({Globals.VERSION}) ----------------------------");
             Console.ResetColor();
             Console.WriteLine();
 
