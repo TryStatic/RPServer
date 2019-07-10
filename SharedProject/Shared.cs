@@ -45,6 +45,7 @@
     public static class SharedDataKey
     {
         public const string AccountLoggedIn = "ACC_LOGGED_IN";
+        public const string ActiveCharID = "ACC_LOGGED_IN";
     }
 
     public struct CharDisplay
