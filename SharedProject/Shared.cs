@@ -13,6 +13,9 @@
         public const string SubmitBackToLogin = "SubmitBackToLogin";
         public const string SubmitEnableGoogleAuthCode = "SubmitEnableGoogleAuthCode";
 
+        // Character
+        public const string SubmitCharacterSelection = "SubmitCharacterSelection";
+
         // Other
         public const string SubmitPlayerCommand = "SubmitPlayerCommand";
     }
@@ -33,11 +36,24 @@
 
         // Character
         public const string InitCharSelection = "InitCharSelection";
+        public const string RenderCharacterList = "RenderCharacterList";
     }
 
 
     public static class SharedDataKey
     {
         public const string AccountLoggedIn = "ACC_LOGGED_IN";
+    }
+
+    public struct CharDisplay
+    {
+        public int CharID;
+        public string CharName;
+
+        public CharDisplay(int charID, string charName)
+        {
+            CharID = charID;
+            CharName = charName;
+        }
     }
 }
