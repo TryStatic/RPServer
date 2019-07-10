@@ -22,6 +22,7 @@ namespace RPServer.Models
         public DateTime LastLoginDate { get; set; }
         public bool HasEnabledTwoStepByEmail { get; set; }
         public byte[] TwoFactorGASharedKey { get; set; }
+        public int LastSpawnedCharId { get; set; } = -1;
 
 
         public bool HasPassedTwoStepByGA = false;

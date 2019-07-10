@@ -11,7 +11,7 @@
  Target Server Version : 80016
  File Encoding         : 65001
 
- Date: 10/07/2019 11:58:57
+ Date: 11/07/2019 01:01:31
 */
 
 SET NAMES utf8mb4;
@@ -36,6 +36,7 @@ CREATE TABLE `accounts`  (
   `LastLoginDate` datetime(0) NULL DEFAULT NULL,
   `HasEnabledTwoStepByEmail` tinyint(4) NOT NULL DEFAULT 0,
   `TwoFactorGASharedKey` varbinary(64) NULL DEFAULT NULL,
+  `LastSpawnedCharId` int(11) NOT NULL DEFAULT -1,
   PRIMARY KEY (`ID`) USING BTREE,
   UNIQUE INDEX `username_UNIQUE`(`Username`) USING BTREE,
   UNIQUE INDEX `emailaddress_UNIQUE`(`EmailAddress`) USING BTREE
