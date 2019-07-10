@@ -68,7 +68,7 @@ namespace RPServer.Controllers
                     charClientList.Add(new CharDisplay(c.ID, c.CharacterName));
                 }
                 client.SendChatMessage("[SERVER]: Sending charlist to Client");
-                client.TriggerEvent(ServerToClient.RenderCharacterList, JsonConvert.SerializeObject(charClientList));
+                client.TriggerEvent(ServerToClient.RenderCharacterList, JsonConvert.SerializeObject(charClientList), accData.LastSpawnedCharId);
             });
 
         }

@@ -37,6 +37,8 @@ namespace RPServerClient.Character
             if(args == null || args.Length < 1) return;
             
             var selectedID = (int)args[0];
+            if(selectedID < 0) return;
+
             _selectedCharId = selectedID;
             Events.CallRemote(ClientToServer.SubmitCharacterSelection, _selectedCharId);
         }
@@ -64,9 +66,10 @@ namespace RPServerClient.Character
             //CustomBrowser.CreateBrowser("package://CEF/char/index.html");
             //Events.CallRemote("ApplyCharSelectionAnimation");
 
-            _charList = JsonConvert.DeserializeObject<List<CharDisplay>>(args[0] as string);
+            if(args.Length < 2) return;
 
-            // TODO: Add autoselect if there's at least 1 char
+            _charList = JsonConvert.DeserializeObject<List<CharDisplay>>(args[0] as string);
+            _selectedCharId = (int) args[1];
 
             RAGE.Chat.Output("[CLIENT]: Your chars: ");
             foreach (var c in _charList)
@@ -74,6 +77,8 @@ namespace RPServerClient.Character
                 RAGE.Chat.Output($"[CLIENT]: {c.CharID}, {c.CharName}");
             }
             RAGE.Chat.Output("[CLIENT]: -------------");
+
+            if(_selectedCharId >= 0) SelectChar(new object[]{ _selectedCharId });
         }
 
 
