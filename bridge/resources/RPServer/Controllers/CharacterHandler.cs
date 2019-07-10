@@ -20,7 +20,8 @@ namespace RPServer.Controllers
         [Command("changechar")]
         public void cmd_changechar(Client client, int id)
         {
-            
+            client.SetSharedData(SharedDataKey.ActiveCharID, -1);
+            InitCharacterSelection(client);
         }
 
         [Command("selectchar")]
@@ -52,6 +53,11 @@ namespace RPServer.Controllers
             if (client == null) return;
             if(!client.IsLoggedIn()) return;
 
+            InitCharacterSelection(client);
+        }
+
+        private void InitCharacterSelection(Client client)
+        {
             client.SendChatMessage("[SERVER]: INIT CHAR SELECTION");
             client.Transparency = 0;
             client.TriggerEvent(ServerToClient.InitCharSelection);
@@ -70,7 +76,6 @@ namespace RPServer.Controllers
                 client.SendChatMessage("[SERVER]: Sending charlist to Client");
                 client.TriggerEvent(ServerToClient.RenderCharacterList, JsonConvert.SerializeObject(charClientList), accData.LastSpawnedCharId);
             });
-
         }
 
         [RemoteEvent("ApplyCharSelectionAnimation")]
@@ -119,6 +124,7 @@ namespace RPServer.Controllers
                 accData.LastSpawnedCharId = selectedCharId;
                 client.SendChatMessage("Teleport to last known position here");
                 client.Position = new Vector3(-173.1077, 434.9248, 111.0801);
+                client.SetSharedData(SharedDataKey.ActiveCharID, chData.ID);
                 client.TriggerEvent(ServerToClient.EndCharSelection);
             });
         }
