@@ -89,6 +89,8 @@ namespace RPServer.Controllers
                 }
 
                 var app = await fetchedChar.GetAppearance();
+                if(app == null) throw new Exception($"Character {fetchedChar.CharacterName} ({fetchedChar.ID}) has no appearance data to fetch.");
+
                 app.Apply(client);
                 client.Transparency = 255;
             });

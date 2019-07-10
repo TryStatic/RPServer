@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Newtonsoft.Json;
 using Shared;
 using RAGE;
@@ -36,35 +34,6 @@ namespace RPServerClient.Character
             Events.CallRemote(ClientToServer.SubmitCharacterSelection, _selectedCharId);
         }
 
-        private void OnRenderCharacterList(object[] args)
-        {
-            // Display the Browser UI
-            //CustomBrowser.CreateBrowser("package://CEF/char/index.html");
-            //Events.CallRemote("ApplyCharSelectionAnimation");
-
-            _charList = JsonConvert.DeserializeObject<List<CharDisplay>>(args[0] as string);
-            
-            // TODO: Add autoselect if there's at least 1 char
-
-            RAGE.Chat.Output("[CLIENT]: Your chars: ");
-            foreach (var c in _charList)
-            {
-                RAGE.Chat.Output($"[CLIENT]: {c.CharID}, {c.CharName}");
-            }
-            RAGE.Chat.Output("[CLIENT]: -------------");
-        }
-
-        private void EndCharSelection(object[] args)
-        {
-            _characterDisplayCamera?.SetActive(false);
-            _charList = null;
-            Player.LocalPlayer.FreezePosition(false);
-            Events.CallLocal("setChatState", true);
-            RAGE.Game.Ui.DisplayHud(true);
-            RAGE.Game.Ui.DisplayRadar(true);
-            // TODO: Teleport player into the world
-        }
-
         private void OnInitCharSelection(object[] args)
         {
             Events.CallLocal("setChatState", true); // Enabled for testing TODO: needs to be removed
@@ -80,6 +49,36 @@ namespace RPServerClient.Character
             _characterDisplayCamera = new CustomCamera(cameraPos, player.Position);
             _characterDisplayCamera.SetActive(true);
 
+        }
+
+        private void OnRenderCharacterList(object[] args)
+        {
+            // Display the Browser UI
+            //CustomBrowser.CreateBrowser("package://CEF/char/index.html");
+            //Events.CallRemote("ApplyCharSelectionAnimation");
+
+            _charList = JsonConvert.DeserializeObject<List<CharDisplay>>(args[0] as string);
+
+            // TODO: Add autoselect if there's at least 1 char
+
+            RAGE.Chat.Output("[CLIENT]: Your chars: ");
+            foreach (var c in _charList)
+            {
+                RAGE.Chat.Output($"[CLIENT]: {c.CharID}, {c.CharName}");
+            }
+            RAGE.Chat.Output("[CLIENT]: -------------");
+        }
+
+
+        private void EndCharSelection(object[] args)
+        {
+            _characterDisplayCamera?.SetActive(false);
+            _charList = null;
+            Player.LocalPlayer.FreezePosition(false);
+            Events.CallLocal("setChatState", true);
+            RAGE.Game.Ui.DisplayHud(true);
+            RAGE.Game.Ui.DisplayRadar(true);
+            // TODO: Teleport player into the world
         }
     }
 }
