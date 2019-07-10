@@ -2,7 +2,7 @@ using System;
 using GTANetworkAPI;
 using RPServer.Game;
 using RPServer.Models;
-using RPServer.Strings;
+using RPServer.Resource;
 using RPServer.Util;
 using Shared;
 using static RPServer.Util.DataValidator;

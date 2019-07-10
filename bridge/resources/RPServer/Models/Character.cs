@@ -9,8 +9,6 @@ namespace RPServer.Models
     [Table("characters")]
     internal class Character : Model<Character>
     {
-        public static readonly string DataKey = "ACTIVE_CHARACTER_DATA";
-
         public int CharOwnerID { set; get; }
         public string CharacterName { set; get; }
         public string Customization

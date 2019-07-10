@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace RPServer.Strings {
+namespace RPServer.Resource {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace RPServer.Strings {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("RPServer.Strings.AccountStrings", typeof(AccountStrings).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("RPServer.Resource.AccountStrings", typeof(AccountStrings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

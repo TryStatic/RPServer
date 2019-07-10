@@ -4,7 +4,6 @@ using GTANetworkAPI;
 using RPServer.Database;
 using RPServer.Models;
 using RPServer.Util;
-using Shared;
 
 namespace RPServer.Game
 {
@@ -44,7 +43,6 @@ namespace RPServer.Game
 
             // Get Database Settings (meta.xml)
             DbConnectionProvider.ProviderName = NAPI.Resource.GetSetting<string>(this, "DB_PROVIDER");
-
             var dbConnectionStringBuilder = DbConnectionProvider.CreateDbConnectionStringBuilder();
             dbConnectionStringBuilder.Add("Server", NAPI.Resource.GetSetting<string>(this, "DB_HOST"));
             dbConnectionStringBuilder.Add("Port", NAPI.Resource.GetSetting<uint>(this, "DB_PORT"));

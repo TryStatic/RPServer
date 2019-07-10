@@ -1,5 +1,5 @@
-﻿using GTANetworkAPI;
-using RPServer.Strings;
+using GTANetworkAPI;
+using RPServer.Resource;
 using RPServer.Util;
 
 namespace RPServer.Controllers.EventHandlers

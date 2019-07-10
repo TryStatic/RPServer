@@ -9,8 +9,6 @@ namespace RPServer.Models
     [Table("accounts")]
     internal class Account : Model<Account>
     {
-        public static readonly string DataKey = "ACCOUNT_DATA";
-
         public string Username { get; set; }
         public string EmailAddress { get; set; }
         public byte[] Hash { get; set; }
