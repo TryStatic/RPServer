@@ -1,0 +1,44 @@
+body {
+    background-color: black;
+    background: rgba(0, 0, 0, 0);
+  }
+
+  .charscontainer {
+    background-color: green;
+    text-align: center;
+    width: 300px;
+    min-height: 300px;
+    max-height: 300px;
+    overflow-y: auto;
+
+    position: absolute;
+    top: 40%;
+    left: 75%;
+  }
+
+  .char {
+    background-color: greenyellow;
+    border: 2px solid;
+  }
+
+  .char:hover {
+    background-color: #FF0000;
+  }
+
+  .flex {
+    display: flex;
+  }
+
+  .footer {
+
+    width: 100%;
+    height: 40px;
+
+    position:absolute; 
+    bottom:0;
+    background: #6cf;
+  }
+
+  .footer:hover {
+    background-color: #FF0000;
+  }
