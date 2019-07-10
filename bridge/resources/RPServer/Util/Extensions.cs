@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
 using System.Data.Common;
@@ -108,6 +108,29 @@ namespace RPServer.Util
         {
             if (player != null) player.SetData(DataKey.CanRunTask, state);
         }
+
+        internal static void InitActionQueue(this Client player)
+        {
+            if (player == null) return;
+
+            player.SetData(DataKey.ActionQueue, new ConcurrentQueue<Action>());
+            player.SetData(DataKey.ActionQueueTimer, new Timer(TaskManager.OnHandleDequeue, player, 1, Timeout.Infinite));
+        }
+
+        internal static ConcurrentQueue<Action> GetActionQueue(this Client player)
+        {
+            if (player == null) return null;
+            if (!player.HasData(DataKey.ActionQueue)) throw new Exception("Tried to access ActionQueue before initiliaztion.");
+            return player.GetData(DataKey.ActionQueue);
+        }
+
+        internal static Timer GetActionQueueTimer(this Client player)
+        {
+            if (player == null) return null;
+            if (!player.HasData(DataKey.ActionQueueTimer)) throw new Exception("Tried to access ActionQueueTimer before initiliaztion.");
+            return player.GetData(DataKey.ActionQueueTimer);
+        }
+
 
         #endregion
     }
