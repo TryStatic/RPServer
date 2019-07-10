@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using GTANetworkAPI;
 using Newtonsoft.Json;
 using RPServer.Models;
+using RPServer.Resource;
 using RPServer.Util;
 using Shared;
 
@@ -16,8 +17,8 @@ namespace RPServer.Controllers
             client.TriggerEvent(ServerToClient.EndCharSelection);
         }
 
-        [Command("createchar")]
-        public void cmd_createchar(Client client, int id)
+        [Command("changechar")]
+        public void cmd_changechar(Client client, int id)
         {
             
         }
@@ -108,14 +109,16 @@ namespace RPServer.Controllers
 
             TaskManager.Run(client, async () =>
             {
-                var ch = await Character.ReadAsync(selectedCharId);
-                if (ch.CharOwnerID != selectedCharId)
+                var chData = await Character.ReadAsync(selectedCharId);
+                var accData = client.GetAccountData();
+                if (chData.CharOwnerID != accData.ID)
                 {
                     client.SendChatMessage("That is not your character. Ban/Kick?");
                     return;
                 }
-
-
+                accData.LastSpawnedCharId = selectedCharId;
+                client.SendChatMessage("Teleport to last known position here");
+                client.Position = new Vector3(-173.1077, 434.9248, 111.0801);
                 client.TriggerEvent(ServerToClient.EndCharSelection);
             });
         }

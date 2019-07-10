@@ -29,6 +29,7 @@ namespace RPServerClient.Character
         private void PlayChar(object[] args)
         {
             if(_selectedCharId < 0) return;
+            RAGE.Chat.Output(_selectedCharId.ToString());
             Events.CallRemote(ClientToServer.SubmitSpawnCharacter, _selectedCharId);
         }
 
@@ -90,7 +91,6 @@ namespace RPServerClient.Character
             Events.CallLocal("setChatState", true);
             RAGE.Game.Ui.DisplayHud(true);
             RAGE.Game.Ui.DisplayRadar(true);
-            // TODO: Teleport player into the world
         }
     }
 }
