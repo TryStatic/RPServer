@@ -13,8 +13,6 @@ namespace RPServer.Models
         public int CharOwnerID { set; get; }
         public string CharacterName { set; get; }
 
-        public Appearance Appearance;
-
         /// <summary>
         /// Use to create new character
         /// </summary>
@@ -34,6 +32,12 @@ namespace RPServer.Models
             var result = await ReadByKeyAsync(() => new Character().CharOwnerID, account.ID);
             var charsData = result.ToList();
             return charsData;
+        }
+
+        public async Task<Appearance> GetAppearance()
+        {
+            var app =  await Appearance.ReadByKeyAsync(() => new Appearance().CharacterID, this.ID);
+            return app.FirstOrDefault();
         }
     }
 }

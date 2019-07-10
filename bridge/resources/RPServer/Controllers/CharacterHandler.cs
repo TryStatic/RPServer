@@ -87,7 +87,9 @@ namespace RPServer.Controllers
                     client.SendChatMessage("That is not your character. Ban/Kick?");
                     return;
                 }
-                //fetchedChar.CustomSkin.ApplyAll(client);
+
+                var app = await fetchedChar.GetAppearance();
+                app.Apply(client);
                 client.Transparency = 255;
             });
         }
