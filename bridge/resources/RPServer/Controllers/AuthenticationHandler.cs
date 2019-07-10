@@ -478,9 +478,5 @@ namespace RPServer.Controllers
             }
             return false;
         }
-        private static void HandleTaskCompletion(Task t)
-        {
-            if (t.IsFaulted && t.Exception != null) throw t.Exception;
-        }
     }
 }
