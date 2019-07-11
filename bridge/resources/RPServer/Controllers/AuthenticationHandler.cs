@@ -102,32 +102,31 @@ namespace RPServer.Controllers
                 client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorEmailInvalid);
                 return;
             }
-            TaskManager.Run(client, async () => await OnRegisterNewAccountAsync(client, username, emailAddress, password));
-        }
-        public static async Task OnRegisterNewAccountAsync(Client client, string username, string emailAddress, string password)
-        {
-            if (await Account.ExistsAsync(username))
+            TaskManager.Run(client, async () =>
             {
-                client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorUsernameTaken);
-                return;
-            }
-            if (await Account.IsEmailTakenAsync(emailAddress))
-            { // Another account with the that email address
-                client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorEmailTaken);
-                return;
-            }
-            if (await EmailToken.IsEmailTakenAsync(emailAddress))
-            { // Another account in the list of email tokens with that address
-                client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorEmailTokenAddressTaken);
-                return;
-            }
+                if (await Account.ExistsAsync(username))
+                {
+                    client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorUsernameTaken);
+                    return;
+                }
+                if (await Account.IsEmailTakenAsync(emailAddress))
+                { // Another account with the that email address
+                    client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorEmailTaken);
+                    return;
+                }
+                if (await EmailToken.IsEmailTakenAsync(emailAddress))
+                { // Another account in the list of email tokens with that address
+                    client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorEmailTokenAddressTaken);
+                    return;
+                }
 
-            await Account.CreateAsync(username, password, client.SocialClubName);
-            var newAcc = await Account.FetchAsync(username);
-            await EmailToken.CreateAsync(newAcc, emailAddress);
-            await EmailToken.SendEmail(newAcc);
+                await Account.CreateAsync(username, password, client.SocialClubName);
+                var newAcc = await Account.FetchAsync(username);
+                await EmailToken.CreateAsync(newAcc, emailAddress);
+                await EmailToken.SendEmail(newAcc);
 
-            client.TriggerEvent(ServerToClient.RegistrationSuccess, AccountStrings.SuccessRegistration);
+                client.TriggerEvent(ServerToClient.RegistrationSuccess, AccountStrings.SuccessRegistration);
+            });
         }
 
         [RemoteEvent(ClientToServer.SubmitLoginAccount)]
@@ -149,52 +148,51 @@ namespace RPServer.Controllers
                 client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorPasswordInvalid);
                 return;
             }
-            TaskManager.Run(client, async () => await OnLoginAccountAsync(client, username, password));
-        }
-        public static async Task OnLoginAccountAsync(Client client, string username, string password)
-        {
-            if (!await Account.ExistsAsync(username))
+            TaskManager.Run(client, async () =>
             {
-                client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorUsernameNotExist);
-                return;
-            }
-            if (!await Account.AuthenticateAsync(username, password))
-            {
-                client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorInvalidCredentials);
-                return;
-            }
+                if (!await Account.ExistsAsync(username))
+                {
+                    client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorUsernameNotExist);
+                    return;
+                }
+                if (!await Account.AuthenticateAsync(username, password))
+                {
+                    client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorInvalidCredentials);
+                    return;
+                }
 
-            var fetchedAcc = await Account.FetchAsync(username);
+                var fetchedAcc = await Account.FetchAsync(username);
 
-            if (IsAccountLoggedIn(fetchedAcc))
-            {
-                client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorAccountAlreadyLoggedIn);
-                return;
-            }
+                if (IsAccountLoggedIn(fetchedAcc))
+                {
+                    client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorAccountAlreadyLoggedIn);
+                    return;
+                }
 
-            await LoginAccount(fetchedAcc, client);
+                await LoginAccount(fetchedAcc, client);
 
-            if (!fetchedAcc.HasVerifiedEmail())
-            {
-                client.TriggerEvent(ServerToClient.ShowInitialEmailVerification);
-                return;
-            }
-            if (fetchedAcc.Is2FAbyEmailEnabled())
-            {
-                fetchedAcc.HasPassedTwoStepByEmail = false;
-                await EmailToken.CreateAsync(fetchedAcc, fetchedAcc.EmailAddress);
-                await EmailToken.SendEmail(fetchedAcc);
-                client.TriggerEvent(ServerToClient.Show2FAbyEmailAddress);
-                return;
-            }
-            if (fetchedAcc.Is2FAbyGAEnabled())
-            {
-                fetchedAcc.HasPassedTwoStepByGA = false;
-                client.TriggerEvent(ServerToClient.Show2FAbyGoogleAuth);
-                return;
-            }
+                if (!fetchedAcc.HasVerifiedEmail())
+                {
+                    client.TriggerEvent(ServerToClient.ShowInitialEmailVerification);
+                    return;
+                }
+                if (fetchedAcc.Is2FAbyEmailEnabled())
+                {
+                    fetchedAcc.HasPassedTwoStepByEmail = false;
+                    await EmailToken.CreateAsync(fetchedAcc, fetchedAcc.EmailAddress);
+                    await EmailToken.SendEmail(fetchedAcc);
+                    client.TriggerEvent(ServerToClient.Show2FAbyEmailAddress);
+                    return;
+                }
+                if (fetchedAcc.Is2FAbyGAEnabled())
+                {
+                    fetchedAcc.HasPassedTwoStepByGA = false;
+                    client.TriggerEvent(ServerToClient.Show2FAbyGoogleAuth);
+                    return;
+                }
 
-            SetLoginState(client, false);
+                SetLoginState(client, false);
+            });
         }
 
         [RemoteEvent(ClientToServer.SubmitEmailToken)]
@@ -212,34 +210,33 @@ namespace RPServer.Controllers
                 client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorInvalidVerificationCode);
                 return;
             }
-            TaskManager.Run(client, async () => await OnVerifyTwoStepByEmailAsync(client, token));
-        }
-        public static async Task OnVerifyTwoStepByEmailAsync(Client client, string providedEmailToken)
-        {
-            var accData = client.GetAccountData();
-
-            if (!accData.HasVerifiedEmail()) throw new Exception("Tried to verify Two-Step by Email when user has no email set"); // Dummy check
-
-            if (!accData.Is2FAbyEmailEnabled())
+            TaskManager.Run(client, async () =>
             {
-                client.TriggerEvent(ServerToClient.DisplayError, "2FA by EMAIL is not enabled for this account.");
-                return;
-            }
+                var accData = client.GetAccountData();
 
-            if (!await EmailToken.ValidateAsync(accData, providedEmailToken))
-            {
-                client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorInvalidVerificationCode);
-                return;
-            }
+                if (!accData.HasVerifiedEmail()) throw new Exception("Tried to verify Two-Step by Email when user has no email set"); // Dummy check
 
-            accData.HasPassedTwoStepByEmail = true;
+                if (!accData.Is2FAbyEmailEnabled())
+                {
+                    client.TriggerEvent(ServerToClient.DisplayError, "2FA by EMAIL is not enabled for this account.");
+                    return;
+                }
 
-            if (accData.Is2FAbyGAEnabled() && !accData.HasPassedTwoStepByGA)
-            {
-                client.TriggerEvent(ServerToClient.Show2FAbyGoogleAuth, "Need to Verify 2FA by GA");
-                return;
-            }
-            SetLoginState(client, false);
+                if (!await EmailToken.ValidateAsync(accData, token))
+                {
+                    client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorInvalidVerificationCode);
+                    return;
+                }
+
+                accData.HasPassedTwoStepByEmail = true;
+
+                if (accData.Is2FAbyGAEnabled() && !accData.HasPassedTwoStepByGA)
+                {
+                    client.TriggerEvent(ServerToClient.Show2FAbyGoogleAuth, "Need to Verify 2FA by GA");
+                    return;
+                }
+                SetLoginState(client, false);
+            });
         }
 
         [RemoteEvent(ClientToServer.SubmitGoogleAuthCode)]
@@ -303,26 +300,24 @@ namespace RPServer.Controllers
                 return;
             }
 
-            TaskManager.Run(client, async () => await OnVerifyEmailAsync(client, providedToken));
-        }
-
-        public static async Task OnVerifyEmailAsync(Client client, string providedToken)
-        {
-            var accData = client.GetAccountData();
-            var accToken = await EmailToken.FetchAsync(accData);
-            var accEmail = accToken.EmailAddress;
-
-            if (!await EmailToken.ValidateAsync(accData, providedToken))
+            TaskManager.Run(client, async () =>
             {
-                client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorInvalidVerificationCode);
-                return;
-            }
+                var accData = client.GetAccountData();
+                var accToken = await EmailToken.FetchAsync(accData);
+                var accEmail = accToken.EmailAddress;
 
-            accData.EmailAddress = accEmail;
-            await accData.UpdateAsync();
-            client.SendChatMessage(AccountStrings.SuccessEmailVerification);
+                if (!await EmailToken.ValidateAsync(accData, providedToken))
+                {
+                    client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorInvalidVerificationCode);
+                    return;
+                }
 
-            SetLoginState(client, false);
+                accData.EmailAddress = accEmail;
+                await accData.UpdateAsync();
+                client.SendChatMessage(AccountStrings.SuccessEmailVerification);
+
+                SetLoginState(client, false);
+            });
         }
 
         [RemoteEvent(ClientToServer.SubmitNewVerificationEmail)]
@@ -346,42 +341,41 @@ namespace RPServer.Controllers
                 client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorEmailAlreadyVerified);
                 return;
             }
-            TaskManager.Run(client, async () => await OnChangeVerificationEmailAsync(client, newEmail));
-        }
-        public static async Task OnChangeVerificationEmailAsync(Client client, string newEmail)
-        {
-            if (await Account.IsEmailTakenAsync(newEmail))
+            TaskManager.Run(client, async () =>
             {
-                client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorEmailTaken);
-                return;
-            }
-            if (await EmailToken.IsEmailTakenAsync(newEmail))
-            {
-                client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorEmailTokenAddressTaken);
-                return;
-            }
-
-            var accData = client.GetAccountData();
-            var accTok = await EmailToken.FetchAsync(accData);
-
-            if (accTok != null)
-            {
-                if (accTok.EmailAddress == newEmail)
+                if (await Account.IsEmailTakenAsync(newEmail))
                 {
-                    client.TriggerEvent(ServerToClient.ShowChangeEmailAddress);
-                    client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorChangeVerificationEmailDuplicate);
+                    client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorEmailTaken);
                     return;
                 }
-                await EmailToken.ChangeEmailAsync(client.GetAccountData(), newEmail);
-                await EmailToken.SendEmail(client.GetAccountData());
-            }
-            else
-            { // Handles the case where there's no token entry in the database
-                await EmailToken.CreateAsync(accData, newEmail);
-                await EmailToken.SendEmail(accData);
-            }
-            client.TriggerEvent(ServerToClient.ShowInitialEmailVerification);
-            client.SendChatMessage(AccountStrings.SuccessChangeVerificationEmailAddress);
+                if (await EmailToken.IsEmailTakenAsync(newEmail))
+                {
+                    client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorEmailTokenAddressTaken);
+                    return;
+                }
+
+                var accData = client.GetAccountData();
+                var accTok = await EmailToken.FetchAsync(accData);
+
+                if (accTok != null)
+                {
+                    if (accTok.EmailAddress == newEmail)
+                    {
+                        client.TriggerEvent(ServerToClient.ShowChangeEmailAddress);
+                        client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorChangeVerificationEmailDuplicate);
+                        return;
+                    }
+                    await EmailToken.ChangeEmailAsync(client.GetAccountData(), newEmail);
+                    await EmailToken.SendEmail(client.GetAccountData());
+                }
+                else
+                { // Handles the case where there's no token entry in the database
+                    await EmailToken.CreateAsync(accData, newEmail);
+                    await EmailToken.SendEmail(accData);
+                }
+                client.TriggerEvent(ServerToClient.ShowInitialEmailVerification);
+                client.SendChatMessage(AccountStrings.SuccessChangeVerificationEmailAddress);
+            });
         }
 
         [RemoteEvent(ClientToServer.SubmitResendEmail)]
@@ -394,20 +388,16 @@ namespace RPServer.Controllers
                 return;
             }
 
-            TaskManager.Run(client, async () => await OnResendEmailAsync(client));
-        }
-        public static async Task OnResendEmailAsync(Client client)
-        {
-            if (!await EmailToken.ExistsAsync(client.GetAccountData()))
+            TaskManager.Run(client, async () =>
             {
-                client.TriggerEvent(ServerToClient.DisplayError, "Error No Token for that Account");
-                return;
-            }
-
-            await EmailToken.SendEmail(client.GetAccountData());
-
-            client.SendChatMessage(AccountStrings.SuccessResendVerificationEmail);
-
+                if (!await EmailToken.ExistsAsync(client.GetAccountData()))
+                {
+                    client.TriggerEvent(ServerToClient.DisplayError, "Error No Token for that Account");
+                    return;
+                }
+                await EmailToken.SendEmail(client.GetAccountData());
+                client.SendChatMessage(AccountStrings.SuccessResendVerificationEmail);
+            });
         }
 
         [RemoteEvent(ClientToServer.SubmitBackToLogin)]
