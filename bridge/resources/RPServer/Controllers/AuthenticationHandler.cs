@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices;
 using GTANetworkAPI;
 using RPServer.Game;
 using RPServer.Models;
@@ -65,7 +66,12 @@ namespace RPServer.Controllers
 
             var acc = player.GetAccountData();
 
-            TaskManager.Run(player, async () => await acc.UpdateAsync());
+            TaskManager.Run(player, async () =>
+            {
+                await acc.UpdateAsync();
+                var activeChData = (Character) player.GetData(DataKey.ActiveCharacterData);
+                if (activeChData != null) await activeChData.UpdateAsync();
+            });
 
             player.Logout();
             player.SendChatMessage("Bye!");
@@ -450,18 +456,14 @@ namespace RPServer.Controllers
         }
         public static void SetLoginState(Client client, bool state)
         {
-            if (state)
+            if (!state)
             {
-                client.Transparency = 0;
-                client.Dimension = (uint)client.Value + 1500;
-            }
-            else
-            { // This part gets triggered only once per successful login
-                client.Transparency = 255;
+                // This part gets triggered only once per successful login
                 NAPI.Player.SpawnPlayer(client, Initialization.DefaultSpawnPos);
                 client.SendChatMessage(AccountStrings.SuccessLogin);
                 client.SendChatMessage("SUM COMMANDS: /cmds");
             }
+
             client.SetSharedData(SharedDataKey.AccountLoggedIn, state);
             client.TriggerEvent(ServerToClient.SetLoginScreen, state);
 

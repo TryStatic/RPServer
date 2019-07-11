@@ -51,7 +51,7 @@ namespace RPServerClient.Character
 
             // Stage the model
             player.Position = new Vector3(-169.3321f, 482.2647f, 133.8789f);
-            player.FreezePosition(false);
+            player.FreezePosition(true);
             player.SetHeading(282.6658f);
 
             // Camera

@@ -18,8 +18,17 @@ namespace RPServer.Controllers
         }
 
         [Command("changechar")]
-        public void cmd_changechar(Client client, int id)
+        public void cmd_changechar(Client client)
         {
+            var activeCharID = (int) client.GetSharedData(SharedDataKey.ActiveCharID);
+            if (activeCharID < 0)
+            {
+                client.SendChatMessage("You are not spawned yet.");
+                return;
+            }
+
+            var chData = (Character)client.GetData(DataKey.ActiveCharacterData);
+            chData?.UpdateAsync();
             client.SetSharedData(SharedDataKey.ActiveCharID, -1);
             InitCharacterSelection(client);
         }
@@ -58,8 +67,11 @@ namespace RPServer.Controllers
 
         private void InitCharacterSelection(Client client)
         {
+            client.SetSharedData(SharedDataKey.ActiveCharID, -1);
+            client.SetData(DataKey.ActiveCharacterData, null);
             client.SendChatMessage("[SERVER]: INIT CHAR SELECTION");
             client.Transparency = 0;
+            client.Dimension = (uint)client.Value + 1500;
             client.TriggerEvent(ServerToClient.InitCharSelection);
 
             var accData = client.GetAccountData();
@@ -121,9 +133,13 @@ namespace RPServer.Controllers
                     client.SendChatMessage("That is not your character. Ban/Kick?");
                     return;
                 }
+
+                client.Dimension = 0;
+                client.Transparency = 255;
                 accData.LastSpawnedCharId = selectedCharId;
                 client.SendChatMessage("Teleport to last known position here");
                 client.Position = new Vector3(-173.1077, 434.9248, 111.0801);
+                client.SetData(DataKey.ActiveCharacterData, chData);
                 client.SetSharedData(SharedDataKey.ActiveCharID, chData.ID);
                 client.TriggerEvent(ServerToClient.EndCharSelection);
             });
