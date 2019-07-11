@@ -10,7 +10,7 @@ namespace RPServer.Controllers.EventHandlers
         {
             if(!client.IsLoggedIn()) return;
 
-            var acc = client.GetAccountData();
+            var acc = client.GetAccount();
             var sendMsg = $"{acc.Username}: {message}";
 
             Logger.GetInstance().ChatLog(sendMsg);

@@ -73,7 +73,7 @@ namespace RPServer.Controllers
             client.Dimension = (uint)client.Value + 1500;
             client.TriggerEvent(ServerToClient.InitCharSelection);
 
-            var accData = client.GetAccountData();
+            var accData = client.GetAccount();
             client.SendChatMessage($"[SERVER]: FETCHING CHARS FOR PLAYER {accData.Username}");
             TaskManager.Run(client, async () =>
             {
@@ -102,7 +102,7 @@ namespace RPServer.Controllers
             {
                 var fetchedChar = await Character.ReadAsync(selectedCharId);
                 //var cus = fetchedChar.CustomSkin;
-                var accData = client.GetAccountData();
+                var accData = client.GetAccount();
 
                 if (accData.ID != fetchedChar.CharOwnerID)
                 {
@@ -126,7 +126,7 @@ namespace RPServer.Controllers
             TaskManager.Run(client, async () =>
             {
                 var chData = await Character.ReadAsync(selectedCharId);
-                var accData = client.GetAccountData();
+                var accData = client.GetAccount();
                 if (chData.CharOwnerID != accData.ID)
                 {
                     client.SendChatMessage("That is not your character. Ban/Kick?");

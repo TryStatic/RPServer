@@ -20,7 +20,7 @@ namespace RPServer.Controllers
         public void CMD_ToggleTwoFactorEmail(Client client)
         {
             if (!client.IsLoggedIn()) return;
-            var acc = client.GetAccountData();
+            var acc = client.GetAccount();
             acc.HasEnabledTwoStepByEmail = !acc.HasEnabledTwoStepByEmail;
             acc.HasPassedTwoStepByEmail = acc.HasEnabledTwoStepByEmail;
             client.SendChatMessage($"2FA by Email has been {acc.HasEnabledTwoStepByEmail}");
@@ -31,7 +31,7 @@ namespace RPServer.Controllers
         {
             if (!client.IsLoggedIn()) return;
 
-            var acc = client.GetAccountData();
+            var acc = client.GetAccount();
             if (!acc.Is2FAbyGAEnabled())
             {
                 var key = GoogleAuthenticator.GenerateTwoFactorGASharedKey();
@@ -61,7 +61,7 @@ namespace RPServer.Controllers
                 return;
             }
 
-            var acc = player.GetAccountData();
+            var acc = player.GetAccount();
 
             TaskManager.Run(player, async () =>
             {
@@ -207,7 +207,7 @@ namespace RPServer.Controllers
             }
             TaskManager.Run(client, async () =>
             {
-                var accData = client.GetAccountData();
+                var accData = client.GetAccount();
 
                 if (!accData.HasVerifiedEmail()) throw new Exception("Tried to verify Two-Step by Email when user has no email set"); // Dummy check
 
@@ -237,7 +237,7 @@ namespace RPServer.Controllers
         [RemoteEvent(ClientToServer.SubmitGoogleAuthCode)]
         public void ClientEvent_OnSubmitGoogleAuthCode(Client client, string token)
         {
-            var accountData = client.GetAccountData();
+            var accountData = client.GetAccount();
 
             if (!client.IsLoggedIn(true))
             {
@@ -287,7 +287,7 @@ namespace RPServer.Controllers
                 client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorInvalidVerificationCode);
                 return;
             }
-            if (client.GetAccountData().HasVerifiedEmail())
+            if (client.GetAccount().HasVerifiedEmail())
             {
                 client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorEmailAlreadyVerified);
                 return;
@@ -295,7 +295,7 @@ namespace RPServer.Controllers
 
             TaskManager.Run(client, async () =>
             {
-                var accData = client.GetAccountData();
+                var accData = client.GetAccount();
                 var accToken = await EmailToken.FetchAsync(accData);
                 var accEmail = accToken.EmailAddress;
 
@@ -328,7 +328,7 @@ namespace RPServer.Controllers
                 return;
             }
 
-            if (client.GetAccountData().HasVerifiedEmail())
+            if (client.GetAccount().HasVerifiedEmail())
             {
                 client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorEmailAlreadyVerified);
                 return;
@@ -346,7 +346,7 @@ namespace RPServer.Controllers
                     return;
                 }
 
-                var accData = client.GetAccountData();
+                var accData = client.GetAccount();
                 var accTok = await EmailToken.FetchAsync(accData);
 
                 if (accTok != null)
@@ -357,8 +357,8 @@ namespace RPServer.Controllers
                         client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorChangeVerificationEmailDuplicate);
                         return;
                     }
-                    await EmailToken.ChangeEmailAsync(client.GetAccountData(), newEmail);
-                    await EmailToken.SendEmail(client.GetAccountData());
+                    await EmailToken.ChangeEmailAsync(client.GetAccount(), newEmail);
+                    await EmailToken.SendEmail(client.GetAccount());
                 }
                 else
                 { // Handles the case where there's no token entry in the database
@@ -381,12 +381,12 @@ namespace RPServer.Controllers
 
             TaskManager.Run(client, async () =>
             {
-                if (!await EmailToken.ExistsAsync(client.GetAccountData()))
+                if (!await EmailToken.ExistsAsync(client.GetAccount()))
                 {
                     client.TriggerEvent(ServerToClient.DisplayError, "Error No Token for that Account");
                     return;
                 }
-                await EmailToken.SendEmail(client.GetAccountData());
+                await EmailToken.SendEmail(client.GetAccount());
                 client.SendChatMessage(AccountStrings.SuccessResendVerificationEmail);
             });
         }
@@ -402,7 +402,7 @@ namespace RPServer.Controllers
         public void ClientEvent_OnSubmitEnableGoogleAuthCode(Client player, string code)
         {
             if (!player.IsLoggedIn(true)) return;
-            var acc = player.GetAccountData();
+            var acc = player.GetAccount();
             if (acc.TempTwoFactorGASharedKey == null) return;
 
             if (!ValidateString(ValidationStrings.GoogleAuthenticatorCode, code))
@@ -453,7 +453,7 @@ namespace RPServer.Controllers
             foreach (var p in NAPI.Pools.GetAllPlayers())
             {
                 if (!p.IsLoggedIn(true)) continue;
-                if (p.GetAccountData() != account) continue;
+                if (p.GetAccount() != account) continue;
                 return true;
             }
             return false;

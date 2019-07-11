@@ -11,7 +11,7 @@ namespace RPServer.Controllers.EventHandlers
             var str = $"Player (name: {client.Name}";
             if (client.IsLoggedIn())
             {
-                var acc = client.GetAccountData();
+                var acc = client.GetAccount();
                 TaskManager.Run(client, async () => await acc.UpdateAsync(), force: true);
                 str = $"Registered (user: {acc.Username}";
                 client.Logout();
