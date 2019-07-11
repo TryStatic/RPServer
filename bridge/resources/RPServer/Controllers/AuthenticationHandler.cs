@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.InteropServices;
 using GTANetworkAPI;
 using RPServer.Game;
 using RPServer.Models;
@@ -463,8 +462,7 @@ namespace RPServer.Controllers
                 client.SendChatMessage(AccountStrings.SuccessLogin);
                 client.SendChatMessage("SUM COMMANDS: /cmds");
             }
-
-            client.SetSharedData(SharedDataKey.AccountLoggedIn, state);
+            client.SetSharedData(SharedDataKey.AccountLoggedIn, !state);
             client.TriggerEvent(ServerToClient.SetLoginScreen, state);
 
             // Keep this at the end of the Method

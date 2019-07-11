@@ -211,7 +211,7 @@ namespace RPServerClient.Authentication
             LoginCam.SetActive(state);
 
             if (state)
-            {
+            { // Enable
                 CustomBrowser.CreateBrowser("package://CEF/auth/login.html");
                 RAGE.Game.Graphics.TransitionToBlurred(200);
                 Player.LocalPlayer.FreezePosition(true);

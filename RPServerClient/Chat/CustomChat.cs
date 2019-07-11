@@ -25,7 +25,8 @@ namespace RPServerClient.Chat
         private void OnSendToChat(object[] args)
         {
             if (!Globals.Globals.IsAccountLoggedIn) return;
-            // TODO: To send the chatmsg they need to have selected a character too
+            if (!Globals.Globals.HasActiveChar) return;
+
             RAGE.Chat.Output(args[0].ToString());
         }
     }
