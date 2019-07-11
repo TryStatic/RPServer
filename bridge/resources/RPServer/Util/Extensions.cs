@@ -7,6 +7,7 @@ using GTANetworkAPI;
 using RPServer.Controllers;
 using RPServer.Models;
 using RPServer.Resource;
+using Shared;
 
 namespace RPServer.Util
 {
@@ -70,6 +71,7 @@ namespace RPServer.Util
                 return;
             }
             client.SetData(DataKey.ActiveCharData, character);
+            client.SetSharedData(SharedDataKey.ActiveCharID, character.ID);
         }
         internal static Character GetActiveChar(this Client client)
         {
@@ -79,6 +81,7 @@ namespace RPServer.Util
         internal static void ResetActiveChar(this Client client)
         {
             client.ResetData(DataKey.ActiveCharData);
+            client.SetSharedData(SharedDataKey.ActiveCharID, -1);
         }
 
         // TaskManager

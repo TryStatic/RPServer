@@ -12,7 +12,7 @@ namespace RPServer.Controllers.EventHandlers
         {
             // Init Shared Data
             client.SetSharedData(SharedDataKey.AccountLoggedIn, false);
-            client.SetSharedData(SharedDataKey.ActiveCharID, -1);
+            client.ResetActiveChar();
 
             client.SendChatMessage(AccountStrings.InfoWelcome);
             AuthenticationHandler.SetLoginState(client, true);

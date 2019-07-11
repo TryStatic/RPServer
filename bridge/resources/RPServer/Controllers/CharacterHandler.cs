@@ -20,16 +20,16 @@ namespace RPServer.Controllers
         [Command("changechar")]
         public void cmd_changechar(Client client)
         {
-            var activeCharID = (int) client.GetSharedData(SharedDataKey.ActiveCharID);
-            if (activeCharID < 0)
+            if (!client.HasActiveChar())
             {
                 client.SendChatMessage("You are not spawned yet.");
                 return;
             }
 
-            var chData = client.GetActiveChar();
-            chData?.UpdateAsync();
-            client.SetSharedData(SharedDataKey.ActiveCharID, -1);
+            var ch = client.GetActiveChar();
+            ch?.UpdateAsync();
+            client.ResetActiveChar();
+
             InitCharacterSelection(client);
         }
 
@@ -67,7 +67,6 @@ namespace RPServer.Controllers
 
         private void InitCharacterSelection(Client client)
         {
-            client.SetSharedData(SharedDataKey.ActiveCharID, -1);
             client.ResetActiveChar();
             client.SendChatMessage("[SERVER]: INIT CHAR SELECTION");
             client.Transparency = 0;
@@ -140,7 +139,6 @@ namespace RPServer.Controllers
                 client.SendChatMessage("Teleport to last known position here");
                 client.Position = new Vector3(-173.1077, 434.9248, 111.0801);
                 client.SetActiveChar(chData);
-                client.SetSharedData(SharedDataKey.ActiveCharID, chData.ID);
                 client.TriggerEvent(ServerToClient.EndCharSelection);
             });
         }
