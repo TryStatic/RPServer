@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
-using System.Data.Common;
 using System.Linq;
 using System.Threading;
 using GTANetworkAPI;
@@ -35,41 +34,6 @@ namespace RPServer.Util
 
         #endregion
 
-        #region SQLExtensions
-        public static int GetInt32Extended(this DbDataReader reader, string column)
-        {
-            var ordinal = reader.GetOrdinal(column);
-            return !reader.IsDBNull(ordinal) ? reader.GetInt32(ordinal) : -1;
-        }
-        public static string GetStringExtended(this DbDataReader reader, string column)
-        {
-            var ordinal = reader.GetOrdinal(column);
-            return !reader.IsDBNull(ordinal) ? reader.GetString(ordinal) : null;
-        }
-        public static DateTime GetDateTimeExtended(this DbDataReader reader, string column)
-        {
-            var ordinal = reader.GetOrdinal(column);
-            return !reader.IsDBNull(ordinal) ? reader.GetDateTime(ordinal) : DateTime.MinValue;
-        }
-        public static bool GetBooleanExtended(this DbDataReader reader, string column)
-        {
-            var ordinal = reader.GetOrdinal(column);
-            return reader.GetBoolean(ordinal);
-        }
-        public static void AddParameterWithValue(this DbCommand command, string parameterName, object parameterValue)
-        {
-            var parameter = command.CreateParameter();
-            parameter.ParameterName = parameterName;
-            parameter.Value = parameterValue;
-            command.Parameters.Add(parameter);
-        }
-        public static DbCommand CreateCommandWithText(this DbConnection connection, string commandText)
-        {
-            DbCommand command = connection.CreateCommand();
-            command.CommandText = commandText;
-            return command;
-        }
-        #endregion
 
         #region ClientExtensions
         internal static bool IsLoggedIn(this Client player, bool excludeTwoFactor = false)
