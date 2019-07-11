@@ -1,7 +1,7 @@
 using System;
 using System.Security.Cryptography;
 
-namespace RPServer.Models.AccountHelpers
+namespace RPServer.Models.Util
 {
     internal sealed class PasswordHash
     {

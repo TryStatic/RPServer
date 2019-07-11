@@ -1,7 +1,8 @@
 ﻿using System;
-using RPServer.Models;
+using RPServer.Models.Util;
+using RPServer.Util;
 
-namespace RPServer.Util
+namespace RPServer.Controllers.Util
 {
     internal static class DataValidator
     {

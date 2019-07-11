@@ -1,12 +1,12 @@
 ﻿using System;
-using RPServer.Database;
-using RPServer.Util;
-using System.Threading.Tasks;
 using System.Data.Common;
 using System.Linq;
+using System.Threading.Tasks;
 using Dapper;
+using RPServer.Database;
+using RPServer.Util;
 
-namespace RPServer.Models
+namespace RPServer.Models.Util
 {
     internal class EmailToken
     {

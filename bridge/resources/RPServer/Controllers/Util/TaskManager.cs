@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using GTANetworkAPI;
 using RPServer.Util;
 
-namespace RPServer.Controllers
+namespace RPServer.Controllers.Util
 {
     internal static class TaskManager
     {

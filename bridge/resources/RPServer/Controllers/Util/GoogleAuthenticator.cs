@@ -5,7 +5,7 @@ using System.Text;
 using RPServer.Game;
 using RPServer.Util;
 
-namespace RPServer.Controllers
+namespace RPServer.Controllers.Util
 {
     public static class GoogleAuthenticator
     {
