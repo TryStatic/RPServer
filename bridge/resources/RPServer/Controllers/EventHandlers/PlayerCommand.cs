@@ -6,16 +6,15 @@ namespace RPServer.Controllers.EventHandlers
 {
     internal class PlayerCommand : Script
     {
+        /// <summary>
+        /// Event Handler that receives executed commands by relying on the Client.
+        /// This cannot block command execution it merely records them.
+        /// </summary>
         [RemoteEvent(ClientToServer.SubmitPlayerCommand)]
         public void ClientEvent_OnPlayerCommand(Client client, string cmd)
-        { // This CANNOT block commands
-            var username = "UNREGISTERED";
-            if (client.IsLoggedIn())
-            {
-                var accData = client.GetAccountData();
-                username = accData.Username;
-            }
-            Logger.GetInstance().CommandLog(username, cmd);
+        {
+            // Log the command
+            Logger.GetInstance().CommandLog(client.IsLoggedIn() ? client.GetAccountData().Username : "UNREGISTERED", cmd);
         }
     }
 }
