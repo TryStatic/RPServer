@@ -22,12 +22,9 @@ namespace RPServerClient.Chat
             ChatBrowser.ExecuteJs(state ? "setEnabled(true);" : "setEnabled(false);");
         }
 
-        private void OnSendToChat(object[] args)
-        {
-            if (!Globals.Globals.IsAccountLoggedIn) return;
-            if (!Globals.Globals.HasActiveChar) return;
-
-            RAGE.Chat.Output(args[0].ToString());
-        }
+        /// <summary>
+        /// Used from the server to push messages to the ChatBox
+        /// </summary>
+        private void OnSendToChat(object[] args) => RAGE.Chat.Output(args[0].ToString());
     }
 }
