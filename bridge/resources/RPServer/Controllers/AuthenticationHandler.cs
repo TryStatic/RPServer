@@ -44,7 +44,6 @@ namespace RPServer.Controllers
             }
             else
             {
-                if (!client.CanRunTask()) return;
                 acc.TwoFactorGASharedKey = null;
                 acc.HasPassedTwoStepByGA = false;
 
@@ -56,7 +55,6 @@ namespace RPServer.Controllers
         [Command(CmdStrings.CMD_Logout)]
         public void Cmd_Logout(Client player)
         {
-            if (!player.CanRunTask()) return;
             if (!player.IsLoggedIn())
             {
                 player.SendChatMessage("You are not logged in.");
@@ -81,7 +79,6 @@ namespace RPServer.Controllers
         [RemoteEvent(ClientToServer.SubmitRegisterAccount)]
         public void ClientEvent_OnSubmitRegisterAccount(Client client, string username, string emailAddress, string password)
         {
-            if(!client.CanRunTask()) return;
             if (client.IsLoggedIn(true))
             {
                 client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorPlayerAlreadyLoggedIn);
@@ -132,7 +129,6 @@ namespace RPServer.Controllers
         [RemoteEvent(ClientToServer.SubmitLoginAccount)]
         public void ClientEvent_OnSubmitLoginAccount(Client client, string username, string password)
         {
-            if (!client.CanRunTask()) return;
             if (client.IsLoggedIn(true))
             {
                 client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorPlayerAlreadyLoggedIn);
@@ -198,7 +194,6 @@ namespace RPServer.Controllers
         [RemoteEvent(ClientToServer.SubmitEmailToken)]
         public void ClientEvent_OnSubmitEmailToken(Client client, string token)
         {
-            if(!client.CanRunTask()) return;
             if (!client.IsLoggedIn(true))
             {
                 client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorPlayerNotLoggedIn);
@@ -282,8 +277,6 @@ namespace RPServer.Controllers
         [RemoteEvent(ClientToServer.SubmitFirstEmailToken)]
         public void ClientEvent_OnSubmitFirstEmailToken(Client client, string providedToken)
         {
-            if (!client.CanRunTask()) return;
-
             if (!client.IsLoggedIn(true))
             {
                 client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorPlayerNotLoggedIn);
@@ -323,7 +316,6 @@ namespace RPServer.Controllers
         [RemoteEvent(ClientToServer.SubmitNewVerificationEmail)]
         public void ClientEvent_OnSubmitNewVerificationEmail(Client client, string newEmail)
         {
-            if(!client.CanRunTask()) return;
             if (!client.IsLoggedIn(true))
             {
                 client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorPlayerNotLoggedIn);
@@ -381,7 +373,6 @@ namespace RPServer.Controllers
         [RemoteEvent(ClientToServer.SubmitResendEmail)]
         public void ClientEvent_OnSubmitResendEmail(Client client)
         {
-            if(!client.CanRunTask()) return;
             if (!client.IsLoggedIn(true))
             {
                 client.TriggerEvent(ServerToClient.DisplayError, AccountStrings.ErrorPlayerNotLoggedIn);
@@ -410,7 +401,6 @@ namespace RPServer.Controllers
         [RemoteEvent(ClientToServer.SubmitEnableGoogleAuthCode)]
         public void ClientEvent_OnSubmitEnableGoogleAuthCode(Client player, string code)
         {
-            if(!player.CanRunTask()) return;
             if (!player.IsLoggedIn(true)) return;
             var acc = player.GetAccountData();
             if (acc.TempTwoFactorGASharedKey == null) return;

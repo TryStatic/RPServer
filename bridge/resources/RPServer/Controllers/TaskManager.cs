@@ -47,11 +47,11 @@ namespace RPServer.Controllers
                 return;
 
             // If they are currently running another task
-            if (!client.CanRunTask())
+            if (!client.IsRunningTask())
                 return;
 
-            client.SetCanRunTask(false);
-            Task.Run(action).ContinueWith(HandleTaskCompletion).ContinueWith(task => client.SetCanRunTask(true));
+            client.SetRunningTaskState(false);
+            Task.Run(action).ContinueWith(HandleTaskCompletion).ContinueWith(task => client.SetRunningTaskState(true));
         }
     }
 }
