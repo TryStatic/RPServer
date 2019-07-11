@@ -13,13 +13,12 @@ namespace RPServer.Controllers
     {
         [Command("removecam")]
         public void cmd_removecam(Client client)
-        {
+        { // Temporary (for testing)
             client.TriggerEvent(ServerToClient.EndCharSelection);
         }
-
         [Command("changechar")]
-        public void cmd_changechar(Client client)
-        {
+        public void cmd_ChangeChar(Client client)
+        { // Temporary (?)
             if (!client.HasActiveChar())
             {
                 client.SendChatMessage("You are not spawned yet.");
@@ -32,65 +31,26 @@ namespace RPServer.Controllers
 
             InitCharacterSelection(client);
         }
-
         [Command("selectchar")]
         public void cmd_selectchar(Client client, int id)
-        {
+        { // Temporary
             client.TriggerEvent("selectchar", id);
         }
-
-        [Command("playchar")]
+        [Command("play")]
         public void cmd_selectchar(Client client)
-        {
+        { // Temporary
             client.TriggerEvent("playchar");
         }
-
         [Command("ranomizeappearance")]
         public void cmd_randomapp(Client client, int id)
-        {
-            
+        { // Temporary
+            // Todo: Invoke Client Event to randomize appearance
         }
 
-        public CharacterHandler()
-        {
-            AuthenticationHandler.PlayerSuccessfulLogin += PlayerSuccessfulLogin;
-        }
+        public CharacterHandler() => AuthenticationHandler.PlayerSuccessfulLogin += PlayerSuccessfulLogin;
 
-        private void PlayerSuccessfulLogin(object source, EventArgs e)
-        {
-            var client = source as Client;
-            if (client == null) return;
-            if(!client.IsLoggedIn()) return;
-
-            InitCharacterSelection(client);
-        }
-
-        private void InitCharacterSelection(Client client)
-        {
-            client.ResetActiveChar();
-            client.SendChatMessage("[SERVER]: INIT CHAR SELECTION");
-            client.Transparency = 0;
-            client.Dimension = (uint)client.Value + 1500;
-            client.TriggerEvent(ServerToClient.InitCharSelection);
-
-            var accData = client.GetAccount();
-            client.SendChatMessage($"[SERVER]: FETCHING CHARS FOR PLAYER {accData.Username}");
-            TaskManager.Run(client, async () =>
-            {
-                var chars = await Character.FetchAllAsync(accData);
-                var charClientList = new List<CharDisplay>();
-
-                foreach (var c in chars)
-                {
-                    charClientList.Add(new CharDisplay(c.ID, c.CharacterName));
-                }
-                client.SendChatMessage("[SERVER]: Sending charlist to Client");
-                client.TriggerEvent(ServerToClient.RenderCharacterList, JsonConvert.SerializeObject(charClientList), accData.LastSpawnedCharId);
-            });
-        }
-
-        [RemoteEvent("ApplyCharSelectionAnimation")]
-        public void ClientEvent_ApplyCharSelectionAnimation(Client client) => client.PlayAnimation("missbigscore2aleadinout@ig_7_p2@bankman@", "leadout_waiting_loop", 1);
+        [RemoteEvent(ClientToServer.ApplyCharacterEditAnimation)]
+        public void ClientEvent_ApplyCharacterEditAnimation(Client client) => client.PlayAnimation("missbigscore2aleadinout@ig_7_p2@bankman@", "leadout_waiting_loop", 1);
 
         [RemoteEvent(ClientToServer.SubmitCharacterSelection)]
         public void ClientEvent_SubmitCharacterSelection(Client client, int selectedCharId)
@@ -101,7 +61,6 @@ namespace RPServer.Controllers
             TaskManager.Run(client, async () =>
             {
                 var fetchedChar = await Character.ReadAsync(selectedCharId);
-                //var cus = fetchedChar.CustomSkin;
                 var accData = client.GetAccount();
 
                 if (accData.ID != fetchedChar.CharOwnerID)
@@ -111,9 +70,7 @@ namespace RPServer.Controllers
                 }
 
                 var app = await fetchedChar.GetAppearance();
-                if(app == null) throw new Exception($"Character {fetchedChar.CharacterName} ({fetchedChar.ID}) has no appearance data to fetch.");
-
-                app.Apply(client);
+                if(app != null) app.Apply(client);
                 client.Transparency = 255;
             });
         }
@@ -127,19 +84,49 @@ namespace RPServer.Controllers
             {
                 var chData = await Character.ReadAsync(selectedCharId);
                 var accData = client.GetAccount();
+
                 if (chData.CharOwnerID != accData.ID)
                 {
                     client.SendChatMessage("That is not your character. Ban/Kick?");
                     return;
                 }
 
+                accData.LastSpawnedCharId = selectedCharId;
                 client.Dimension = 0;
                 client.Transparency = 255;
-                accData.LastSpawnedCharId = selectedCharId;
-                client.SendChatMessage("Teleport to last known position here");
-                client.Position = new Vector3(-173.1077, 434.9248, 111.0801);
+                client.SendChatMessage("TODO: Teleport to last known position here");
+                client.Position = new Vector3(-173.1077, 434.9248, 111.0801); // dummy
                 client.SetActiveChar(chData);
                 client.TriggerEvent(ServerToClient.EndCharSelection);
+            });
+        }
+
+
+        private static void PlayerSuccessfulLogin(object source, EventArgs e)
+        {
+            var client = source as Client;
+            if (client == null) return;
+            if (!client.IsLoggedIn()) return;
+
+            InitCharacterSelection(client);
+        }
+        private static void InitCharacterSelection(Client client)
+        {
+            client.TriggerEvent(ServerToClient.InitCharSelection);
+            client.ResetActiveChar();
+            client.Transparency = 0;
+            client.Dimension = (uint)client.Value + 1500;
+
+            TaskManager.Run(client, async () =>
+            {
+                var acc = client.GetAccount();
+                var charList = await Character.FetchAllAsync(acc);
+                var charDisplayList = new List<CharDisplay>();
+                foreach (var c in charList)
+                {
+                    charDisplayList.Add(new CharDisplay(c.ID, c.CharacterName));
+                }
+                client.TriggerEvent(ServerToClient.RenderCharacterList, JsonConvert.SerializeObject(charDisplayList), acc.LastSpawnedCharId);
             });
         }
     }

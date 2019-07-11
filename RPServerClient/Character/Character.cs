@@ -65,7 +65,7 @@ namespace RPServerClient.Character
         {
             // Display the Browser UI
             //CustomBrowser.CreateBrowser("package://CEF/char/index.html");
-            //Events.CallRemote("ApplyCharSelectionAnimation");
+            //Events.CallRemote(ClientToServer.ApplyCharacterEditAnimation);
 
             if(args.Length < 2) return;
 

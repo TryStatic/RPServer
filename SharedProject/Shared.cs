@@ -16,6 +16,7 @@
         // Character
         public const string SubmitCharacterSelection = "SubmitCharacterSelection";
         public const string SubmitSpawnCharacter = "SubmitSpawnCharacter";
+        public const string ApplyCharacterEditAnimation = "ApplyCharacterEditAnimation";
 
         // Other
         public const string SubmitPlayerCommand = "SubmitPlayerCommand";
