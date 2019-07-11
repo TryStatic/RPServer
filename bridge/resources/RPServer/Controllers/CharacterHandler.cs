@@ -27,7 +27,7 @@ namespace RPServer.Controllers
                 return;
             }
 
-            var chData = (Character)client.GetData(DataKey.ActiveCharacterData);
+            var chData = client.GetActiveChar();
             chData?.UpdateAsync();
             client.SetSharedData(SharedDataKey.ActiveCharID, -1);
             InitCharacterSelection(client);
@@ -68,7 +68,7 @@ namespace RPServer.Controllers
         private void InitCharacterSelection(Client client)
         {
             client.SetSharedData(SharedDataKey.ActiveCharID, -1);
-            client.SetData(DataKey.ActiveCharacterData, null);
+            client.ResetActiveChar();
             client.SendChatMessage("[SERVER]: INIT CHAR SELECTION");
             client.Transparency = 0;
             client.Dimension = (uint)client.Value + 1500;
@@ -139,7 +139,7 @@ namespace RPServer.Controllers
                 accData.LastSpawnedCharId = selectedCharId;
                 client.SendChatMessage("Teleport to last known position here");
                 client.Position = new Vector3(-173.1077, 434.9248, 111.0801);
-                client.SetData(DataKey.ActiveCharacterData, chData);
+                client.SetActiveChar(chData);
                 client.SetSharedData(SharedDataKey.ActiveCharID, chData.ID);
                 client.TriggerEvent(ServerToClient.EndCharSelection);
             });

@@ -66,9 +66,9 @@ namespace RPServer.Controllers
             TaskManager.Run(player, async () =>
             {
                 await acc.UpdateAsync();
-                var activeChData = (Character) player.GetData(DataKey.ActiveCharacterData);
-                if (activeChData != null) await activeChData.UpdateAsync();
-            });
+                var ch = player.GetActiveChar();
+                if (ch != null) await ch.UpdateAsync();
+            }); 
 
             player.Logout();
             player.SendChatMessage("Bye!");

@@ -56,6 +56,31 @@ namespace RPServer.Util
             return true;
         }
 
+        // Character
+        internal static bool HasActiveChar(this Client client)
+        {
+            if (!client.HasData(DataKey.ActiveCharData)) return false;
+            return (Character)client.GetData(DataKey.ActiveCharData) != null;
+        }
+        internal static void SetActiveChar(this Client client, Character character)
+        {
+            if (character == null)
+            {
+                ResetActiveChar(client);
+                return;
+            }
+            client.SetData(DataKey.ActiveCharData, character);
+        }
+        internal static Character GetActiveChar(this Client client)
+        {
+            if (!client.HasActiveChar()) return null;
+            return (Character)client.GetData(DataKey.ActiveCharData);
+        }
+        internal static void ResetActiveChar(this Client client)
+        {
+            client.ResetData(DataKey.ActiveCharData);
+        }
+
         // TaskManager
         internal static bool IsRunningTask(this Client player)
         {
