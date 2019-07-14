@@ -8,7 +8,7 @@ let chat =
     timer: null,
     history: [],
     history_position: -1,
-    hide_chat: 15*1000 // 15 - seconds
+    hide_chat: 45*1000 // 45 - seconds
 };
 function enableChatInput(enable)
 {
@@ -125,7 +125,7 @@ $(document).ready(function()
                         mp.invoke("command", value);
                 }
                 else {
-                    if (value.length <= 100)
+                    if (value.length <= 185)
                         mp.invoke("chatMessage", value);
                 }
             }
