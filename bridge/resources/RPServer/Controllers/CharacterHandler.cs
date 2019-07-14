@@ -42,10 +42,11 @@ namespace RPServer.Controllers
         { // Temporary
             client.TriggerEvent("playchar");
         }
-        [Command("ranomizeappearance")]
-        public void cmd_randomapp(Client client, int id)
+        [Command("createchar")]
+        public void cmd_createchar(Client client, string firstname, string lastname)
         { // Temporary
-            // Todo: Invoke Client Event to randomize appearance
+            client.SendChatMessage("Taking you to char creator.");
+            client.TriggerEvent("createchar", firstname, lastname);
         }
 
         public CharacterHandler() => AuthenticationHandler.PlayerSuccessfulLogin += PlayerSuccessfulLogin;
@@ -62,6 +63,11 @@ namespace RPServer.Controllers
             TaskManager.Run(client, async () =>
             {
                 var fetchedChar = await Character.ReadAsync(selectedCharId);
+                if (fetchedChar == null)
+                {
+                    client.SendChatMessage("Error retriving char. Bad char id?");
+                    return;
+                }
                 var accData = client.GetAccount();
 
                 if (accData.ID != fetchedChar.CharOwnerID)
@@ -84,6 +90,12 @@ namespace RPServer.Controllers
             TaskManager.Run(client, async () =>
             {
                 var chData = await Character.ReadAsync(selectedCharId);
+                if (chData == null)
+                {
+                    client.SendChatMessage("Error retriving char. Bad char id?");
+                    return;
+                }
+
                 var accData = client.GetAccount();
 
                 if (chData.CharOwnerID != accData.ID)

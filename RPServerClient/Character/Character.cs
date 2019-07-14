@@ -1,8 +1,11 @@
+using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 using Shared;
 using RAGE;
 using RAGE.Elements;
+using RAGE.NUI;
 using RPServerClient.Globals;
 using RPServerClient.Util;
 using Events = RAGE.Events;
@@ -24,12 +27,49 @@ namespace RPServerClient.Character
             Events.Add(ServerToClient.EndCharSelection, EndCharSelection);
             Events.Add("selectchar", SelectChar);
             Events.Add("playchar", PlayChar);
+            Events.Add("createchar", CreateChar);
         }
+
+        private void CreateChar(object[] args)
+        {
+            RAGE.Chat.Output("!{#6E6E6E}Char: creation not implemented yet. Appearance will be randomized.");
+            if(args == null || args.Length < 2) return;
+            string firstName = args[0].ToString();
+            string lastName = args[1].ToString();
+
+            if (firstName.Length < 3 || lastName.Length < 3)
+            {
+                RAGE.Chat.Output("Firstname and/or lastname too short.");
+                return;
+            }
+
+            var r = new Random();
+            var player = Player.LocalPlayer;
+
+            player.SetHeadBlendData(0, 0, 0, 0, 0, 0, 0, 0, 0, false);
+            for (var i = 0; i <= 12; i++) player.SetHeadOverlay(i, 0, 0);
+            for (var i = 0; i <= 19; i++) player.SetFaceFeature(i, 0);
+            player.SetComponentVariation(2, 0, 0, 0);
+            player.SetHairColor(0, 0);
+
+            player.SetHeadBlendData(r.Next(0, 10), r.Next(0, 10), 0, r.Next(0, 10), r.Next(0, 10), 0, 0.5f, 0.5f, 0, false);
+            for (var i = 0; i <= 12; i++)
+            {
+                player.SetHeadOverlay(i, r.Next(0, 1), r.Next(150, 255));
+                for(var j=1;j<=2;j++) player.SetHeadOverlayColor(i, j, r.Next(0,60), r.Next(0,60));
+            }
+            for (var i = 0; i <= 19; i++) player.SetFaceFeature(i, (float)r.NextDouble() * 2 - 1);
+            player.SetComponentVariation(2, r.Next(0, 30), 0, 0);
+            player.SetHairColor(r.Next(0, 60), r.Next(0, 10));
+            player.ResetAlpha();
+
+        }
+
+
 
         private void PlayChar(object[] args)
         {
             if(_selectedCharId < 0) return;
-            RAGE.Chat.Output(_selectedCharId.ToString());
             Events.CallRemote(ClientToServer.SubmitSpawnCharacter, _selectedCharId);
         }
 

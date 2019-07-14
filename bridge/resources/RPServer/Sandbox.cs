@@ -23,6 +23,7 @@ namespace RPServer
             player.SendChatMessage("/setskin /setnick /togflymode /getcamcords /spawnme /playanimation /stopani");
             player.SendChatMessage("/loadipl /removeipl /resetipls /gotopos /getpos /fd");
             player.SendChatMessage("/setheadblend /setheadoverlay, /setfacefeature, /setcompvar /seteyecolor");
+            player.SendChatMessage("/removecam /changechar, /selectchar, /play /createchar");
         }
 
         [Command("seteyecolor")]
@@ -239,7 +240,6 @@ namespace RPServer
             v.NumberPlateStyle = 2;
             player.SetData("PERSONAL_VEHICLE", v);
             NAPI.Chat.SendChatMessageToPlayer(player, "Spawned a " + vehicleName + ".");
-
         }
         [Command("ecc")]
         public void ecc(Client player)
