@@ -115,6 +115,11 @@ namespace RPServer.Util
             if (!player.HasData(DataKey.ActionQueueTimer)) throw new Exception("Tried to access ActionQueueTimer before initiliaztion.");
             return player.GetData(DataKey.ActionQueueTimer);
         }
+        internal static void ResetActionQueueTimer(this Client player)
+        {
+            var timer = player.GetActionQueueTimer();
+            timer.Dispose();
+        }
         #endregion
     }
 }

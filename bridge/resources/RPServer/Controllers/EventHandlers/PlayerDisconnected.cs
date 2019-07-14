@@ -18,6 +18,9 @@ namespace RPServer.Controllers.EventHandlers
                 client.Logout();
             }
 
+            // Reset the action queue for that client
+            client.ResetActionQueueTimer();
+
             switch (type)
             {
                 case DisconnectionType.Left:
