@@ -1,11 +1,8 @@
-using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 using Shared;
 using RAGE;
 using RAGE.Elements;
-using RAGE.NUI;
 using RPServerClient.Globals;
 using RPServerClient.Util;
 using Events = RAGE.Events;
@@ -32,8 +29,8 @@ namespace RPServerClient.Character
 
         private void CreateChar(object[] args)
         {
-            RAGE.Chat.Output("!{#6E6E6E}Char: creation not implemented yet. Appearance will be randomized.");
             if(args == null || args.Length < 2) return;
+
             string firstName = args[0].ToString();
             string lastName = args[1].ToString();
 
@@ -43,29 +40,53 @@ namespace RPServerClient.Character
                 return;
             }
 
-            var r = new Random();
             var player = Player.LocalPlayer;
 
+            ResetAppearance(player);
+
+            CustomBrowser.CreateBrowser("package://CEF/char/charcreator.html");
+            Events.CallRemote(ClientToServer.ApplyCharacterEditAnimation);
+
+
+
+            /*
+            var r = new Random();
+
+            player.SetHeadBlendData(r.Next(0, 10), r.Next(0, 10), 0, r.Next(0, 10), r.Next(0, 10), 0, (float)r.NextDouble(), (float)r.NextDouble(), 0, false);
+
+            player.SetHeadOverlay(1, r.Next(0, 1), r.Next(150, 255));
+            player.SetHeadOverlayColor(1, 1, 0, 0);
+            player.SetHeadOverlay(2, r.Next(0, 1), r.Next(150, 255));
+            player.SetHeadOverlayColor(2, 1, 0, 0);
+            player.SetHeadOverlay(3, r.Next(0, 1), r.Next(150, 255));
+            player.SetHeadOverlayColor(3, 1, 0, 0);
+            player.SetHeadOverlay(6, r.Next(0, 1), r.Next(150, 255));
+            player.SetHeadOverlayColor(6, 1, 0, 0);
+            player.SetHeadOverlay(7, r.Next(0, 1), r.Next(150, 255));
+            player.SetHeadOverlayColor(7, 1, 0, 0);
+            player.SetHeadOverlay(10, r.Next(0, 1), r.Next(150, 255));
+            player.SetHeadOverlayColor(10, 1, 0, 0);
+
+
+            for (var i = 0; i <= 19; i++) player.SetFaceFeature(i, (float)r.NextDouble() * 2 - 1);
+
+
+            // Hair
+            player.SetComponentVariation(2, r.Next(0, 30), r.Next(10), 0);
+            player.SetHairColor(r.Next(0, 18), 0);
+            */
+            player.ResetAlpha();
+
+        }
+
+        private void ResetAppearance(Player player)
+        {
             player.SetHeadBlendData(0, 0, 0, 0, 0, 0, 0, 0, 0, false);
             for (var i = 0; i <= 12; i++) player.SetHeadOverlay(i, 0, 0);
             for (var i = 0; i <= 19; i++) player.SetFaceFeature(i, 0);
             player.SetComponentVariation(2, 0, 0, 0);
             player.SetHairColor(0, 0);
-
-            player.SetHeadBlendData(r.Next(0, 10), r.Next(0, 10), 0, r.Next(0, 10), r.Next(0, 10), 0, 0.5f, 0.5f, 0, false);
-            for (var i = 0; i <= 12; i++)
-            {
-                player.SetHeadOverlay(i, r.Next(0, 1), r.Next(150, 255));
-                for(var j=1;j<=2;j++) player.SetHeadOverlayColor(i, j, r.Next(0,60), r.Next(0,60));
-            }
-            for (var i = 0; i <= 19; i++) player.SetFaceFeature(i, (float)r.NextDouble() * 2 - 1);
-            player.SetComponentVariation(2, r.Next(0, 30), 0, 0);
-            player.SetHairColor(r.Next(0, 60), r.Next(0, 10));
-            player.ResetAlpha();
-
         }
-
-
 
         private void PlayChar(object[] args)
         {
@@ -107,7 +128,7 @@ namespace RPServerClient.Character
             //CustomBrowser.CreateBrowser("package://CEF/char/index.html");
             //Events.CallRemote(ClientToServer.ApplyCharacterEditAnimation);
 
-            if(args.Length < 2) return;
+            if (args.Length < 2) return;
 
             _charList = JsonConvert.DeserializeObject<List<CharDisplay>>(args[0] as string);
             _selectedCharId = (int) args[1];

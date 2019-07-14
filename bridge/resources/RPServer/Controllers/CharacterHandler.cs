@@ -85,6 +85,7 @@ namespace RPServer.Controllers
         [RemoteEvent(ClientToServer.SubmitSpawnCharacter)]
         public void ClientEvent_SubmitSpawnCharacter(Client client, int selectedCharId)
         {
+            if(!client.IsLoggedIn()) return;
             if(selectedCharId < 0) return;
 
             TaskManager.Run(client, async () =>
