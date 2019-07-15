@@ -78,7 +78,7 @@ jQuery(function ($) {
     for (i = 0; i < 13; i++) {
         Overlays.push([255, 1.0, 1, 0]);
 
-        if(i==1 || i == 2 || i == 5 || i == 8 || i == 10) {
+        if(i==1 || i == 2 || i == 5 || i == 10) {
             var overlayHTML = `
             <div class="overlay">
             <p>${OverlayNames[i]}</p>
@@ -94,7 +94,23 @@ jQuery(function ($) {
             </div>
             `;
         }
-        else {
+        else if(i==8)
+        {
+            var overlayHTML = `
+            <div class="overlay">
+            <p>${OverlayNames[i]}</p>
+            Variation:
+            <input id="overlay${i}" type="range">
+            Opacity:
+            <input id="overlayOpacity${i}" type="range">
+            Color:
+            <input id="overlayColor${i}" type="range">
+            <br />
+            </div>
+            `;
+        }
+        else 
+        {
 
             var overlayHTML = `
             <div class="overlay">
@@ -162,17 +178,6 @@ $(function () {
         hide_min_max: true,
         onFinish: function (data) {
             ShapeSecond = data["from"];
-            UpdateHeadBlend();
-        }
-    });
-
-    $("#SkinFirst").ionRangeSlider({
-        min: 0,
-        max: 45,
-        from: 0,
-        hide_min_max: true,
-        onFinish: function (data) {
-            SkinFirst = data["from"];
             UpdateHeadBlend();
         }
     });
@@ -265,21 +270,39 @@ $(function () {
                 UpdateHeadOverlay(id);
             }
         });
-        $("#overlayColor" + i).ionRangeSlider({
-            min: 0,
-            max: 50,
-            from: 1,
-            step: 1,
-            hide_min_max: true,
-            onFinish: function (data) {
-                var id = $(data.input[0]).attr('id').match(/\d+/)[0];
-                Overlays[id][2] = data["from"];
-                UpdateHeadOverlay(id);
-            }
-        });
+        if(i == 5 || i == 8)
+        {
+            $("#overlayColor" + i).ionRangeSlider({
+                min: 0,
+                max: 63,
+                from: 1,
+                step: 1,
+                hide_min_max: true,
+                onFinish: function (data) {
+                    var id = $(data.input[0]).attr('id').match(/\d+/)[0];
+                    Overlays[id][2] = data["from"];
+                    UpdateHeadOverlay(id);
+                }
+            });
+        }
+        else 
+        {
+            $("#overlayColor" + i).ionRangeSlider({
+                min: 0,
+                max: 29,
+                from: 1,
+                step: 1,
+                hide_min_max: true,
+                onFinish: function (data) {
+                    var id = $(data.input[0]).attr('id').match(/\d+/)[0];
+                    Overlays[id][2] = data["from"];
+                    UpdateHeadOverlay(id);
+                }
+            });
+        }
         $("#overlaySecColor" + i).ionRangeSlider({
             min: 0,
-            max: 50,
+            max: 62,
             from: 0,
             step: 0,
             hide_min_max: true,
@@ -296,7 +319,7 @@ $(function () {
 $(function () {
     $("#Hairstyle").ionRangeSlider({
         min: 0,
-        max: 45,
+        max: 22,
         from: 0,
         hide_min_max: true,
         onFinish: function (data) {
@@ -307,7 +330,7 @@ $(function () {
 
     $("#HairColor").ionRangeSlider({
         min: 0,
-        max: 100,
+        max: 60,
         from: 0,
         hide_min_max: true,
         onFinish: function (data) {
@@ -318,7 +341,7 @@ $(function () {
 
     $("#HairHighlightColor").ionRangeSlider({
         min: 0,
-        max: 100,
+        max: 60,
         from: 0,
         hide_min_max: true,
         onFinish: function (data) {
@@ -329,7 +352,7 @@ $(function () {
 
     $("#HairStyleTexture").ionRangeSlider({
         min: 0,
-        max: 100,
+        max: 5,
         from: 0,
         hide_min_max: true,
         onFinish: function (data) {
@@ -340,7 +363,7 @@ $(function () {
 
     $("#EyeColor").ionRangeSlider({
         min: 0,
-        max: 100,
+        max: 7,
         from: 0,
         hide_min_max: true,
         onFinish: function (data) {
