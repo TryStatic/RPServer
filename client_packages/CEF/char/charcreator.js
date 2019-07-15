@@ -6,6 +6,8 @@ var isMale = false;
 // HeadBlend
 var ShapeFirst = 0;
 var ShapeSecond = 0;
+var SkinFirst = 0;
+var SkinSecond = 0;
 var ShapeMix = 0.5;
 var SkinMix = 0.5;
 
@@ -64,7 +66,6 @@ jQuery(function ($) {
         FaceFeatures.push(0.0);
         var faceFeatureHTML = `${FaceFeaturesNames[i]}<input id="facefeature${i}" type="range">`;
         $(".allfacefeatures").append(faceFeatureHTML);
-
     }
 
     for(i=0;i<13;i++) {
@@ -134,6 +135,28 @@ $(function() {
         hide_min_max: true,
         onFinish: function (data) {
             ShapeSecond = data["from"];
+            UpdateHeadBlend();
+        }
+    });
+
+    $("#SkinFirst").ionRangeSlider({
+        min: 0,
+        max: 45,
+        from: 0,
+        hide_min_max: true,
+        onFinish: function (data) {
+            SkinFirst = data["from"];
+            UpdateHeadBlend();
+        }
+    });
+
+    $("#SkinSecond").ionRangeSlider({
+        min: 0,
+        max: 45,
+        from: 0,
+        hide_min_max: true,
+        onFinish: function (data) {
+            SkinSecond = data["from"];
             UpdateHeadBlend();
         }
     });
