@@ -38,6 +38,9 @@ namespace RPServerClient.Globals
             CreateBrowser(new object[]{link});
         }
 
+        /// <summary>
+        /// Example: DisplayHi calls DisplayHi();
+        /// </summary>
         public static void ExecuteFunction(string funcName)
         {
 
