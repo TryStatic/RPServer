@@ -35,6 +35,7 @@ namespace RPServerClient
             // Chars
             Events.Add("headdata", SetHeadData);
             Events.Add("headoverlay", SetHeadOverlay);
+            Events.Add("headoverlaycolor", SetHeadOverlayColor);
             Events.Add("headdata", SetHeadData);
             Events.Add("facefeautre", SetFaceFeature);
             Events.Add("compvar", SetCompVar);
@@ -103,6 +104,12 @@ namespace RPServerClient
         private void SetHeadOverlay(object[] args)
         {
             Player.LocalPlayer.SetHeadOverlay((int)args[0], (int)args[1], (float)args[2]);
+        }
+
+        private void SetHeadOverlayColor(object[] args)
+        {
+            RAGE.Chat.Output("Triggert/crted");
+            Player.LocalPlayer.SetHeadOverlayColor((int)args[0], (int)args[1], (int)args[2], (int)args[3]);
         }
 
         private void SetHeadData(object[] args)

@@ -22,7 +22,7 @@ namespace RPServer
             player.SendChatMessage("/veh /ecc /heal /hmc /time /weather /getping /onlineppl /givegun");
             player.SendChatMessage("/setskin /setnick /togflymode /getcamcords /spawnme /playanimation /stopani");
             player.SendChatMessage("/loadipl /removeipl /resetipls /gotopos /getpos /fd");
-            player.SendChatMessage("/setheadblend /setheadoverlay, /setfacefeature, /setcompvar /seteyecolor");
+            player.SendChatMessage("/setheadblend /setheadoverlay, /setheadoverlaycolor, /setfacefeature, /setcompvar /seteyecolor");
             player.SendChatMessage("/removecam /changechar, /selectchar, /play /createchar");
         }
 
@@ -94,6 +94,12 @@ namespace RPServer
         public void SetHeadOverlay(Client player, int i1, int i2, float f1)
         {
             player.TriggerEvent("headoverlay", i1, i2, f1);
+        }
+
+        [Command("setheadoverlaycolor")]
+        public void SetHeadOverlayColor(Client player, int i1, int i2, int i3, int i4)
+        {
+            player.TriggerEvent("headoverlaycolor", i1, i2, i3, i4);
         }
 
         [Command("setfacefeature")]
