@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using RAGE.Elements;
 using Vector3 = RAGE.Vector3;
 
@@ -16,9 +17,11 @@ namespace RPServerClient.Util
 
         public static Vector3 GetPosInFrontOfVector3(Vector3 pos, float heading, float range)
         {
-            pos.X += range * (float)Math.Sin(-heading * Math.PI / 180.0);
-            pos.Y += range * (float)Math.Cos(-heading * Math.PI / 180.0);
-            return pos;
+            var newPos = new Vector3(pos.X, pos.Y, pos.Z);
+            newPos.X += range * (float)Math.Sin(-heading * Math.PI / 180.0);
+            newPos.Y += range * (float)Math.Cos(-heading * Math.PI / 180.0);
+            return newPos;
         }
+
     }
 }
