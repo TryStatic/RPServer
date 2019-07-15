@@ -45,10 +45,10 @@ namespace RPServer.Controllers
             client.TriggerEvent("playchar");
         }
         [Command("createchar")]
-        public void cmd_createchar(Client client, string firstname, string lastname)
+        public void cmd_createchar(Client client)
         { // Temporary
             client.SendChatMessage("Taking you to char creator.");
-            client.TriggerEvent("createchar", firstname, lastname);
+            client.TriggerEvent("createchar");
         }
 
         public CharacterHandler() => AuthenticationHandler.PlayerSuccessfulLogin += PlayerSuccessfulLogin;
@@ -144,8 +144,6 @@ namespace RPServer.Controllers
                         return;
                     }
                     client.TriggerEvent(ServerToClient.MoveCharCreationToNextStep);
-                    client.SendChatMessage("Passed tasek");
-
                 });
 
         }
@@ -162,7 +160,6 @@ namespace RPServer.Controllers
         {
             client.TriggerEvent(ServerToClient.InitCharSelection);
             client.ResetActiveChar();
-            client.Transparency = 0;
             client.Dimension = (uint)client.Value + 1500;
 
             TaskManager.Run(client, async () =>

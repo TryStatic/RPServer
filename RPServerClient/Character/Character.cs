@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO.Pipes;
 using Newtonsoft.Json;
 using RAGE;
 using RAGE.Elements;
@@ -14,6 +15,10 @@ namespace RPServerClient.Character
         private int _selectedCharId = -1;
         private List<CharDisplay> _charList = new List<CharDisplay>();
         private CustomCamera _characterDisplayCamera;
+        private readonly Vector3 _displayPosition = new Vector3(-169.3321f, 482.2647f, 133.8789f);
+        private readonly float _displayHeading = 282.6658f;
+        private readonly Vector3 _hiddenPosition = new Vector3(-163.4660f, 483.5910f, 134.5571f);
+
 
         public Character()
         {
@@ -27,19 +32,27 @@ namespace RPServerClient.Character
             Events.Add(ServerToClient.EndCharSelection, EndCharSelection);
             Events.Add("selectchar", SelectChar);
             Events.Add("playchar", PlayChar);
-            Events.Add("createchar", CreateChar);
+            Events.Add("createchar", OnInitCharCreator);
 
             // CEF Events
             Events.Add("SubmitCharData", SubmitCharData);
             Events.Add("UpdateHeadBlend", OnUpdateHeadBlend);
             Events.Add("UpdateFaceFeature", OnUpdateFaceFeature);
             Events.Add("UpdateHeadOverlay", OnUpdateHeadOverlay);
+            Events.Add("SubmitCancel", OnCancel);
 
+            
             Events.Add("ZoomToFace", OnZoomToFace);
+        }
+
+        private void OnCancel(object[] args)
+        {
+            throw new System.NotImplementedException();
         }
 
         private void ShowNextPage(object[] args)
         {
+            StageModel(Player.LocalPlayer);
             CustomBrowser.ExecuteFunction("ShowNextStep");
         }
 
@@ -108,7 +121,17 @@ namespace RPServerClient.Character
 
         private void OnUpdateHeadOverlay(object[] args)
         {
-            throw new System.NotImplementedException();
+            RAGE.Chat.Output("client");
+
+            var indx = int.Parse(args[0].ToString());
+            var variation = int.Parse(args[1].ToString());
+            var opacity = float.Parse(args[2].ToString());
+
+            RAGE.Chat.Output("updated");
+            Player.LocalPlayer.SetHeadOverlay(indx, variation, opacity);
+            Player.LocalPlayer.SetHeadOverlayColor(indx, 0, 0, 0);
+            Player.LocalPlayer.SetHeadOverlayColor(indx, 1, 0, 0);
+            Player.LocalPlayer.SetHeadOverlayColor(indx, 2, 0, 0);
         }
 
         private void OnZoomToFace(object[] args)
@@ -116,13 +139,13 @@ namespace RPServerClient.Character
             RAGE.Chat.Output("TODO: POINT CAMERA TO FACE");
         }
 
-        private void CreateChar(object[] args)
+        private void OnInitCharCreator(object[] args)
         {
             var player = Player.LocalPlayer;
 
             ResetAppearance(player);
-            CustomBrowser.CreateBrowser("package://CEF/char/charcreator.html");
 
+            CustomBrowser.CreateBrowser("package://CEF/char/charcreator.html");
             Events.CallRemote(ClientToServer.ApplyCharacterEditAnimation);
             player.ResetAlpha();
         }
@@ -134,6 +157,17 @@ namespace RPServerClient.Character
             for (var i = 0; i <= 19; i++) player.SetFaceFeature(i, 0);
             player.SetComponentVariation(2, 0, 0, 0);
             player.SetHairColor(0, 0);
+            player.SetComponentVariation(1, 0, 0, 0);
+            player.SetComponentVariation(3, 0, 0, 0);
+            player.SetComponentVariation(4, 0, 0, 0);
+            player.SetComponentVariation(4, 0, 0, 0);
+            player.SetComponentVariation(5, 0, 0, 0);
+            player.SetComponentVariation(6, 0, 0, 0);
+            player.SetComponentVariation(7, 0, 0, 0);
+            player.SetComponentVariation(8, 0, 0, 0);
+            player.SetComponentVariation(9, 0, 0, 0);
+            player.SetComponentVariation(10, 0, 0, 0);
+            player.SetComponentVariation(11, 0, 0, 0);
         }
 
         private void PlayChar(object[] args)
@@ -149,6 +183,8 @@ namespace RPServerClient.Character
             var selectedID = (int)args[0];
             if(selectedID < 0) return;
 
+            StageModel(Player.LocalPlayer);
+
             _selectedCharId = selectedID;
             Events.CallRemote(ClientToServer.SubmitCharacterSelection, _selectedCharId);
         }
@@ -159,13 +195,15 @@ namespace RPServerClient.Character
             var player = Player.LocalPlayer;
 
             // Stage the model
-            player.Position = new Vector3(-169.3321f, 482.2647f, 133.8789f);
             player.FreezePosition(true);
-            player.SetHeading(282.6658f);
+            UnStageModel(player);
 
             // Camera
-            var cameraPos = Helper.GetPosInFrontOfPlayer(player, 1.5f);
-            _characterDisplayCamera = new CustomCamera(cameraPos, player.Position);
+            //var cameraPos = Helper.GetPosInFrontOfPlayer(player, 1.5f);
+            var cameraPos = Helper.GetPosInFrontOfVector3(_displayPosition, _displayHeading, 1.5f);
+            RAGE.Chat.Output(cameraPos.ToString());
+            RAGE.Chat.Output(_displayPosition.ToString());
+            _characterDisplayCamera = new CustomCamera(cameraPos, _displayPosition);
             _characterDisplayCamera.SetActive(true);
 
         }
@@ -200,6 +238,17 @@ namespace RPServerClient.Character
             Events.CallLocal("setChatState", true);
             RAGE.Game.Ui.DisplayHud(true);
             RAGE.Game.Ui.DisplayRadar(true);
+        }
+
+        private void StageModel(Player p)
+        {
+            p.Position = _displayPosition;
+            p.SetHeading(_displayHeading);
+        }
+
+        private void UnStageModel(Player p)
+        {
+            p.Position = _hiddenPosition;
         }
     }
 }

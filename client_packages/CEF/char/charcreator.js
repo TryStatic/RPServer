@@ -69,7 +69,7 @@ jQuery(function ($) {
     }
 
     for (i = 0; i < 13; i++) {
-        Overlays.push([255, 0, 0, 0]);
+        Overlays.push([255, 1.0]);
 
         var overlayHTML = `
         <div class="overlay">
@@ -78,10 +78,6 @@ jQuery(function ($) {
         <input id="overlay${i}" type="range">
         Opacity:
         <input id="overlayOpacity${i}" type="range">
-        Color:
-        <input id="overlayColor${i}" type="range">
-        Secondary Color:
-        <input id="overlaySecColor${i}" type="range">
         <br />
         </div>
         `;
@@ -97,6 +93,11 @@ jQuery(function ($) {
         $('.creatorcontainer').animate({
             scrollTop: $(".scrollhere").offset().top - 1000
         }, 50);
+    });
+
+    $(".cancelbtn").click(function () {
+        mp.trigger("SubmitCancel");
+
     });
 });
 
@@ -228,7 +229,7 @@ $(function () {
         $("#overlayOpacity" + i).ionRangeSlider({
             min: 0.0,
             max: 1.0,
-            from: 0.0,
+            from: 1.0,
             step: 0.01,
             hide_min_max: true,
             onFinish: function (data) {
@@ -237,29 +238,6 @@ $(function () {
                 UpdateHeadOverlay(id);
             }
         });
-        $("#overlayColor" + i).ionRangeSlider({
-            min: 0,
-            max: 100,
-            from: 0,
-            hide_min_max: true,
-            onFinish: function (data) {
-                var id = $(data.input[0]).attr('id').match(/\d+/)[0];
-                Overlays[id][2] = data["from"];
-                UpdateHeadOverlay(id);
-            }
-        });
-        $("#overlaySecColor" + i).ionRangeSlider({
-            min: 0,
-            max: 100,
-            from: 0,
-            hide_min_max: true,
-            onFinish: function (data) {
-                var id = $(data.input[0]).attr('id').match(/\d+/)[0];
-                Overlays[id][3] = data["from"];
-                UpdateHeadOverlay(id);
-            }
-        });
-
     }
 });
 
@@ -272,13 +250,12 @@ function UpdateHeadBlend(index) {
 }
 
 function UpdateFaceFeature(index) {
-    console.log(index);
-    console.log(FaceFeatures[index]);
     mp.trigger("UpdateFaceFeature", index, FaceFeatures[index]);
 }
 
 function UpdateHeadOverlay(index) {
-    mp.trigger("UpdateHeadOverlay", index, UpdateHeadOverlay[index][0], UpdateHeadOverlay[index][1], UpdateHeadOverlay[index][2], UpdateHeadOverlay[index][3]);
+    console.log(index);
+    mp.trigger("UpdateHeadOverlay", index, Overlays[index][0], Overlays[index][1], Overlays[index][2], Overlays[index][3]);
 }
 
 
