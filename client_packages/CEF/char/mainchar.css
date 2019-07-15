@@ -25,6 +25,18 @@ body {
 
   }
 
+  .overlay {
+    background-color: rgba(47, 168, 224, 0.1);
+    margin-bottom: 10px;
+    padding: 10px 10px;
+  }
+
+  .overlay p {
+    text-align: center; 
+    margin: 0px; 
+    font-weight: bold;
+  }
+
   .char {
     background-color: greenyellow;
     border: 2px solid;

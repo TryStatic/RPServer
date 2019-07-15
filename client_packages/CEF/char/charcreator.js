@@ -10,23 +10,91 @@ var ShapeMix = 0.5;
 var SkinMix = 0.5;
 
 // FaceFeatures
-var FaceFeatures = new Float32Array(20);
+var FaceFeatures = [];
+var FaceFeaturesNames = [
+    "Nose Width",
+    "Nose Height",
+    "Nose Length",
+    "Nose Bridge",
+    "Nose Tip",
+    "NoseBridge Shift",
+    "Brow Height",
+    "Brow Width",
+    "Cheekbone Height",
+    "Cheekbone Width",
+    "Cheeks Width",
+    "Eyes",
+    "Lips",
+    "Jaw Width",
+    "Jaw Height",
+    "Chin Length",
+    "Chin Position",
+    "Chin Width",
+    "Chin Shape",
+    "Neck Width"
+];
 
-
-var Blemishes = 0;
-var BlemishesOpacity = 255;
-var BlemishesColor = 0;
-var BlemishesSecColor = 0;
+// Overlays
+var Overlays = [];
+var OverlayNames = [
+    "Blemishes",
+    "FacialHair",
+    "Eyebrows",
+    "Ageing",
+    "Makeup",
+    "Blush",
+    "Complexion",
+    "SunDamage",
+    "Lipstick",
+    "Freckles",
+    "ChestHair",
+    "BodyBlemishes",
+    "Additional BodyBlemishes"
+];
 
 var currentStep;
 
 
 
 jQuery(function ($) {
-    ShowStep(4);
+    ShowStep(3);
+
+    var i;
+    for(i=0;i<20;i++) {
+        FaceFeatures.push(0.0);
+        var faceFeatureHTML = `${FaceFeaturesNames[i]}<input id="facefeature${i}" type="range">`;
+        $(".allfacefeatures").append(faceFeatureHTML);
+
+    }
+
+    for(i=0;i<13;i++) {
+        Overlays.push([255, 0, 0, 0]);
+        
+        var overlayHTML = `
+        <div class="overlay">
+        <p>${OverlayNames[i]}</p>
+        Variation:
+        <input id="overlay${i}" type="range">
+        Opacity:
+        <input id="overlayOpacity${i}" type="range">
+        Color:
+        <input id="overlayColor${i}" type="range">
+        Secondary Color:
+        <input id="overlaySecColor${i}" type="range">
+        <br />
+        </div>
+        `;
+
+        $(".alloverlays").append(overlayHTML);
+
+    }
 
     $(".nextStep").click(function() {
-        console.log("called");
+
+        $('.customscroll').animate({
+            scrollTop: $(".innercontainer").offset().top
+        }, 1000);
+
         ShowNextStep();
       });
 });
@@ -114,57 +182,66 @@ $(function() {
             }
         });
     }
-
 });
 
 
 
-// HeadOverlay - Blemishes
+// HeadOverlay
 $(function() {
-    $("#Blemishes").ionRangeSlider({
-        min: 0,
-        max: 24,
-        from: 0,
-        hide_min_max: true,
-        onFinish: function (data) {
-            ShapeFirst = data["from"];
-            UpdateOverlay();
-        }
-    });
-    $("#BlemishesOpacity").ionRangeSlider({
-        min: 0.0,
-        max: 1.0,
-        from: 1.0,
-        step: 0.01,
-        hide_min_max: true,
-        onFinish: function (data) {
-            ShapeMix = data["from"];
-            UpdateOverlay();
-        }
-    });
-    $("#BlemishesColor").ionRangeSlider({
-        min: 0,
-        max: 24,
-        from: 0,
-        hide_min_max: true,
-        onFinish: function (data) {
-            ShapeFirst = data["from"];
-            UpdateOverlay();
-        }
-    });
-    $("#BlemishesSecColor").ionRangeSlider({
-        min: 0,
-        max: 24,
-        from: 0,
-        hide_min_max: true,
-        onFinish: function (data) {
-            ShapeFirst = data["from"];
-            UpdateOverlay();
-        }
-    });
+    var i;
+    for(i=0;i<=12;i++) {
+        $("#overlay" + i).ionRangeSlider({
+            min: 0,
+            max: 75,
+            from: 0,
+            hide_min_max: true,
+            onFinish: function (data) {
+                var id = $(data.input[0]).attr('id').match(/\d+/)[0];
+                value = data["from"];
+                if(value == 0) value = 255;
+                Overlays[id][0] = value;
+                console.log(Overlays[id]);
+            }
+        });
+        $("#overlayOpacity" + i).ionRangeSlider({
+            min: 0.0,
+            max: 1.0,
+            from: 0.0,
+            step: 0.01,
+            hide_min_max: true,
+            onFinish: function (data) {
+                var id = $(data.input[0]).attr('id').match(/\d+/)[0];
+                Overlays[id][1] = data["from"];
+                console.log(Overlays[id]);
+            }
+        });
+        $("#overlayColor" + i).ionRangeSlider({
+            min: 0,
+            max: 100,
+            from: 0,
+            hide_min_max: true,
+            onFinish: function (data) {
+                var id = $(data.input[0]).attr('id').match(/\d+/)[0];
+                Overlays[id][2] = data["from"];
+                console.log(Overlays[id]);
+            }
+        });
+        $("#overlaySecColor" + i).ionRangeSlider({
+            min: 0,
+            max: 100,
+            from: 0,
+            hide_min_max: true,
+            onFinish: function (data) {
+                var id = $(data.input[0]).attr('id').match(/\d+/)[0];
+                Overlays[id][3] = data["from"];
+                console.log(Overlays[id]);
+            }
+        });
+
+    }
 });
 
-function UpdateHeadBlend() {
+function UpdateHeadBlend(index) {
     //mp.trigger("onUpdateHeadBlend", ShapeFirst, ShapeSecond, SkinMix, ShapeMix, SkinMix);
 }
 
