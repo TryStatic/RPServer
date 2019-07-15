@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using RPServer.Models.Util;
 using RPServer.Util;
 
@@ -12,7 +13,9 @@ namespace RPServer.Controllers.Util
             Password,
             EmailAddress,
             EmailVerificationCode,
-            GoogleAuthenticatorCode
+            GoogleAuthenticatorCode,
+            CharFirstName,
+            CharLastName
         }
 
         public static bool ValidateString(ValidationStrings strings, string data)
@@ -33,6 +36,12 @@ namespace RPServer.Controllers.Util
                     break;
                 case ValidationStrings.GoogleAuthenticatorCode:
                     if (string.IsNullOrWhiteSpace(data) || data.Length < 6 || !IsDigitsOnly(data)) return false;
+                    break;
+                case ValidationStrings.CharFirstName:
+                    if (string.IsNullOrWhiteSpace(data) || data.Length < 2 || data.Length > 15 || !Regex.Match(data, @"[a-zA-Z]{1,15}").Success) return false;
+                    break;
+                case ValidationStrings.CharLastName:
+                    if (string.IsNullOrWhiteSpace(data) || data.Length < 2 || data.Length > 15 || !Regex.Match(data, @"[a-zA-Z]{1,15}").Success) return false;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(strings), strings, null);
