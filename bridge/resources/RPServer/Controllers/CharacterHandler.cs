@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using GTANetworkAPI;
 using Newtonsoft.Json;
 using RPServer.Controllers.Util;
@@ -7,6 +8,7 @@ using RPServer.Models;
 using RPServer.Resource;
 using RPServer.Util;
 using Shared;
+using static RPServer.Controllers.Util.DataValidator;
 
 namespace RPServer.Controllers
 {
@@ -115,6 +117,38 @@ namespace RPServer.Controllers
             });
         }
 
+        [RemoteEvent(ClientToServer.SubmitInitialCharData)]
+        public void ClientEvent_SubmitInitialCharData(Client client, string firstName, string lastName, bool isMale)
+        {
+            client.SendChatMessage("OnSubmitInitialCharData on server");
+            if (!ValidateString(ValidationStrings.CharFirstName, firstName))
+            {
+                client.TriggerEvent(ServerToClient.DisplayCharError, "There is something wrong with that first name.");
+                return;
+            }
+
+            if (!ValidateString(ValidationStrings.CharFirstName, lastName))
+            {
+                client.TriggerEvent(ServerToClient.DisplayCharError, "There is something wrong with that last name.");
+                return;
+            }
+            client.SendChatMessage("Passed validation");
+
+
+            TaskManager.Run(client, async () =>
+                {
+                    var ch = await Character.ReadByKeyAsync(() => new Character().CharacterName, $"{firstName}_{lastName}");
+                    if (ch.Any())
+                    {
+                        client.TriggerEvent(ServerToClient.DisplayCharError, "That character name already exists.");
+                        return;
+                    }
+                    client.TriggerEvent(ServerToClient.MoveCharCreationToNextStep);
+                    client.SendChatMessage("Passed tasek");
+
+                });
+
+        }
 
         private static void PlayerSuccessfulLogin(object source, EventArgs e)
         {

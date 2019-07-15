@@ -56,21 +56,21 @@ var OverlayNames = [
 
 var currentStep;
 
-
-
 jQuery(function ($) {
-    ShowStep(3);
+
+    ShowStep(1);
+    $("#errorchardata").hide();
 
     var i;
-    for(i=0;i<20;i++) {
+    for (i = 0; i < 20; i++) {
         FaceFeatures.push(0.0);
         var faceFeatureHTML = `${FaceFeaturesNames[i]}<input id="facefeature${i}" type="range">`;
         $(".allfacefeatures").append(faceFeatureHTML);
     }
 
-    for(i=0;i<13;i++) {
+    for (i = 0; i < 13; i++) {
         Overlays.push([255, 0, 0, 0]);
-        
+
         var overlayHTML = `
         <div class="overlay">
         <p>${OverlayNames[i]}</p>
@@ -90,14 +90,14 @@ jQuery(function ($) {
 
     }
 
-    $(".nextStep").click(function() {
-
-        $('.customscroll').animate({
-            scrollTop: $(".innercontainer").offset().top
-        }, 1000);
+    $(".nextStep").click(function () {
 
         ShowNextStep();
-      });
+
+        $('.creatorcontainer').animate({
+            scrollTop: $(".scrollhere").offset().top - 1000
+        }, 50);
+    });
 });
 
 // Gender/Name
@@ -108,15 +108,14 @@ jQuery(function ($) {
         lastname = $("#lastname").val();
 
         var radioValue = $("input[name='gender']:checked").val();
-        if(radioValue == "male") isMale = true;
-        else if(radioValue == "female") isMale = false;
-
-        ShowNextStep();
+        if (radioValue == "male") isMale = true;
+        else if (radioValue == "female") isMale = false;
+        SubmitInitialCharData();
     });
 });
 
 // Headblend
-$(function() {
+$(function () {
     $("#ShapeFirst").ionRangeSlider({
         min: 0,
         max: 45,
@@ -187,9 +186,9 @@ $(function() {
 });
 
 // FaceFeatures
-$(function() {
+$(function () {
     var i;
-    for(i=0;i<=19;i++) {
+    for (i = 0; i <= 19; i++) {
         $("#facefeature" + i).ionRangeSlider({
             min: -1.0,
             max: 1.0,
@@ -200,7 +199,6 @@ $(function() {
                 //FaceFeatures[i] = data["from"];
                 var id = $(data.input[0]).attr('id').match(/\d+/)[0];
                 FaceFeatures[id] = data["from"];
-                console.log(FaceFeatures[id]);
                 UpdateFaceFeature(id);
             }
         });
@@ -210,9 +208,9 @@ $(function() {
 
 
 // HeadOverlay
-$(function() {
+$(function () {
     var i;
-    for(i=0;i<=12;i++) {
+    for (i = 0; i <= 12; i++) {
         $("#overlay" + i).ionRangeSlider({
             min: 0,
             max: 75,
@@ -221,9 +219,10 @@ $(function() {
             onFinish: function (data) {
                 var id = $(data.input[0]).attr('id').match(/\d+/)[0];
                 value = data["from"];
-                if(value == 0) value = 255;
+                if (value == 0) value = 255;
                 Overlays[id][0] = value;
-                console.log(Overlays[id]);
+                UpdateHeadOverlay(id);
+
             }
         });
         $("#overlayOpacity" + i).ionRangeSlider({
@@ -235,7 +234,7 @@ $(function() {
             onFinish: function (data) {
                 var id = $(data.input[0]).attr('id').match(/\d+/)[0];
                 Overlays[id][1] = data["from"];
-                console.log(Overlays[id]);
+                UpdateHeadOverlay(id);
             }
         });
         $("#overlayColor" + i).ionRangeSlider({
@@ -246,7 +245,7 @@ $(function() {
             onFinish: function (data) {
                 var id = $(data.input[0]).attr('id').match(/\d+/)[0];
                 Overlays[id][2] = data["from"];
-                console.log(Overlays[id]);
+                UpdateHeadOverlay(id);
             }
         });
         $("#overlaySecColor" + i).ionRangeSlider({
@@ -257,19 +256,29 @@ $(function() {
             onFinish: function (data) {
                 var id = $(data.input[0]).attr('id').match(/\d+/)[0];
                 Overlays[id][3] = data["from"];
-                console.log(Overlays[id]);
+                UpdateHeadOverlay(id);
             }
         });
 
     }
 });
 
+function SubmitInitialCharData() {
+    mp.trigger("SubmitCharData", firstname, lastname, isMale);
+}
+
 function UpdateHeadBlend(index) {
-    //mp.trigger("onUpdateHeadBlend", ShapeFirst, ShapeSecond, SkinMix, ShapeMix, SkinMix);
+    mp.trigger("UpdateHeadBlend", ShapeFirst, ShapeSecond, SkinFirst, SkinSecond, ShapeMix, SkinMix);
 }
 
 function UpdateFaceFeature(index) {
-    //mp.trigger("onUpdateFaceFeature", index, FaceFeatures[index]);
+    console.log(index);
+    console.log(FaceFeatures[index]);
+    mp.trigger("UpdateFaceFeature", index, FaceFeatures[index]);
+}
+
+function UpdateHeadOverlay(index) {
+    mp.trigger("UpdateHeadOverlay", index, UpdateHeadOverlay[index][0], UpdateHeadOverlay[index][1], UpdateHeadOverlay[index][2], UpdateHeadOverlay[index][3]);
 }
 
 
@@ -280,13 +289,24 @@ function ShowNextStep() {
 }
 
 function ShowStep(numba) {
+    $('#errorchardata').hide();
     currentStep = numba;
     $("#step" + numba).show();
-    console.log("showed"+currentStep);
     var i;
     for (i = 0; i < 100; i++) {
-      if(i != numba) {
-        $("#step" + i).hide();
-      }
+        if (i != numba) {
+            $("#step" + i).hide();
+        }
     }
+}
+
+function showError(message) {
+    $("#firstname").val('');
+    $("#lastname").val('');
+    $('#errorchardatatext').text(message);
+    $('#errorchardata').show();
+
+    setTimeout(function () {
+        $('#errorchardata').hide();
+    }, 15000);
 }

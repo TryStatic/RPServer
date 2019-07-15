@@ -20,6 +20,7 @@
 
         // Other
         public const string SubmitPlayerCommand = "SubmitPlayerCommand";
+        public const string SubmitInitialCharData = "SubmitInitialCharData";
     }
 
     public static class ServerToClient
@@ -40,8 +41,9 @@
         public const string InitCharSelection = "InitCharSelection";
         public const string RenderCharacterList = "RenderCharacterList";
         public const string EndCharSelection = "EndCharSelection";
+        public const string DisplayCharError = "DisplayCharError";
+        public const string MoveCharCreationToNextStep = "MoveCharCreationToNextStep";
     }
-
 
     public static class SharedDataKey
     {

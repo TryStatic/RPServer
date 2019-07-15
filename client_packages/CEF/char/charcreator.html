@@ -12,18 +12,22 @@
 <body>
   <div class="container-fuid creatorcontainer customscroll scrollbarstyle">
     <div class="innercontainer">
-      <h4>Character Creation</h4>
+      <h4 class="scrollhere title">Character Creation</h4>
       <br />
-
+      <div id="errorchardata" class="alert alert-danger" role="alert">
+        <span id="errorchardatatext"></span>
+      </div>
       <div id="step1">
         <form id="creation_part1">
           <div class="form-group">
             <p style="text-align: left;">Select your character's name: </p>
             <div class="input-group mb-3">
               <input id="firstname" type="text" class="form-control" placeholder="Firstname" aria-label="Firstname"
-                aria-describedby="basic-addon1" required minlength="2" maxlength="15" pattern="[A-Za-z]+" title="Invalid Format">
+                aria-describedby="basic-addon1" required minlength="2" maxlength="15" pattern="[A-Za-z]+"
+                title="Invalid Format">
               <input id="lastname" type="text" class="form-control" placeholder="Lastname" aria-label="Lastname"
-                aria-describedby="basic-addon1" required minlength="2" maxlength="15" pattern="[A-Za-z]+" title="Invalid Format">
+                aria-describedby="basic-addon1" required minlength="2" maxlength="15" pattern="[A-Za-z]+"
+                title="Invalid Format">
             </div>
           </div>
 
@@ -73,25 +77,25 @@
       </div>
 
       <div id="step4" style="text-align: left;">
-          <span class="alloverlays"></span>
-          <div style="text-align:center; margin-bottom: 30px;">
-              <button type="submit" class="nextStep btn btn-secondary">Next</button>
-            </div>
+        <span class="alloverlays"></span>
+        <div style="text-align:center; margin-bottom: 30px;">
+          <button type="submit" class="nextStep btn btn-secondary">Next</button>
+        </div>
       </div>
 
       <div id="step5" style="text-align: center;">
         <br />
         <p>Please wait while we are creating your character...</p>
         <div id="circle">
+          <div class="loader">
             <div class="loader">
+              <div class="loader">
                 <div class="loader">
-                    <div class="loader">
-                        <div class="loader">
 
-                        </div>
-                    </div>
                 </div>
+              </div>
             </div>
+          </div>
         </div>
       </div>
     </div>
