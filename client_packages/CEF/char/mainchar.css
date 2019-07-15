@@ -17,7 +17,6 @@ body {
     left: 75%;
   }
 
-
   .scrollbarstyle::-webkit-scrollbar-track
   {
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
@@ -97,3 +96,26 @@ body {
   .hidden {
     display: none;
   }
+
+  
+#circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  width: 150px;
+  height: 150px;	
+}
+
+.loader {
+  width: calc(100% - 0px);
+height: calc(100% - 0px);
+border: 8px solid #162534;
+border-top: 8px solid rgb(0, 168, 36);
+border-radius: 50%;
+animation: rotate 5s linear infinite;
+}
+
+@keyframes rotate {
+100% {transform: rotate(360deg);}
+} 
