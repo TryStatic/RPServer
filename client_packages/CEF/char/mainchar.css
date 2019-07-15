@@ -1,10 +1,11 @@
 body {
     background-color: black;
     background: rgba(0, 0, 0, 0);
+    user-select: none;
   }
 
-  .charscontainer {
-    background-color: green;
+  .creatorcontainer {
+    background-color: rgb(53, 53, 53);
     text-align: center;
     width: 350px;
     min-height: 500px;
@@ -14,6 +15,14 @@ body {
     position: absolute;
     top: 30%;
     left: 75%;
+  }
+
+  .innercontainer {
+    margin: 10px 15px; 
+    text-align: center; 
+    color: rgb(255, 250, 203);
+    min-height: 440px;
+
   }
 
   .char {
@@ -28,17 +37,30 @@ body {
   .flex {
     display: flex;
   }
-
+  
   .footer {
 
     width: 100%;
     height: 40px;
 
     position:absolute; 
+    position: sticky;
     bottom:0;
-    background: #6cf;
+    background: rgb(146, 146, 146);
   }
 
   .footer:hover {
-    background-color: #FF0000;
+    background-color: rgb(95, 87, 134);
+    cursor: pointer;
+  }
+
+  .center {
+    margin: auto;
+    width: 50%;
+    border: 3px solid green;
+    padding: 10px;
+  }
+
+  .hidden {
+    display: none;
   }
