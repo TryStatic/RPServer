@@ -12,7 +12,6 @@ namespace RPServer.Models
 
         public int CharacterID { set; get; }
 
-
         #region HEADBLEND_DATA
         public PedHash SkinModel
         {
@@ -134,12 +133,13 @@ namespace RPServer.Models
         #endregion
 
         #region EXTRA
-        public byte EyeColor { set; get; } // 0 .. 31
-        public byte HairColor { set; get; } // 0 .. 63
-        public byte HighlightColor { set; get; } // 0 .. 63
 
         public byte HairStyle { get; set; }
         public byte HairStyleTexture { get; set; }
+
+        public byte EyeColor { set; get; } // 0 .. 31
+        public byte HairColor { set; get; } // 0 .. 63
+        public byte HighlightColor { set; get; } // 0 .. 63
         #endregion
 
         public Appearance()
