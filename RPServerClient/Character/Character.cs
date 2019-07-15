@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using Shared;
 using RAGE;
 using RAGE.Elements;
 using RPServerClient.Globals;
 using RPServerClient.Util;
+using Shared;
 using Events = RAGE.Events;
 
 namespace RPServerClient.Character
@@ -13,6 +13,7 @@ namespace RPServerClient.Character
     {
         private int _selectedCharId = -1;
         private List<CharDisplay> _charList = new List<CharDisplay>();
+        private SharedAppearance _sharedAppearance = new SharedAppearance();
         private CustomCamera _characterDisplayCamera;
 
         public Character()
@@ -29,54 +30,13 @@ namespace RPServerClient.Character
 
         private void CreateChar(object[] args)
         {
-            if(args == null || args.Length < 2) return;
-
-            string firstName = args[0].ToString();
-            string lastName = args[1].ToString();
-
-            if (firstName.Length < 3 || lastName.Length < 3)
-            {
-                RAGE.Chat.Output("Firstname and/or lastname too short.");
-                return;
-            }
-
             var player = Player.LocalPlayer;
 
             ResetAppearance(player);
-
             CustomBrowser.CreateBrowser("package://CEF/char/charcreator.html");
+
             Events.CallRemote(ClientToServer.ApplyCharacterEditAnimation);
-
-
-
-            /*
-            var r = new Random();
-
-            player.SetHeadBlendData(r.Next(0, 10), r.Next(0, 10), 0, r.Next(0, 10), r.Next(0, 10), 0, (float)r.NextDouble(), (float)r.NextDouble(), 0, false);
-
-            player.SetHeadOverlay(1, r.Next(0, 1), r.Next(150, 255));
-            player.SetHeadOverlayColor(1, 1, 0, 0);
-            player.SetHeadOverlay(2, r.Next(0, 1), r.Next(150, 255));
-            player.SetHeadOverlayColor(2, 1, 0, 0);
-            player.SetHeadOverlay(3, r.Next(0, 1), r.Next(150, 255));
-            player.SetHeadOverlayColor(3, 1, 0, 0);
-            player.SetHeadOverlay(6, r.Next(0, 1), r.Next(150, 255));
-            player.SetHeadOverlayColor(6, 1, 0, 0);
-            player.SetHeadOverlay(7, r.Next(0, 1), r.Next(150, 255));
-            player.SetHeadOverlayColor(7, 1, 0, 0);
-            player.SetHeadOverlay(10, r.Next(0, 1), r.Next(150, 255));
-            player.SetHeadOverlayColor(10, 1, 0, 0);
-
-
-            for (var i = 0; i <= 19; i++) player.SetFaceFeature(i, (float)r.NextDouble() * 2 - 1);
-
-
-            // Hair
-            player.SetComponentVariation(2, r.Next(0, 30), r.Next(10), 0);
-            player.SetHairColor(r.Next(0, 18), 0);
-            */
             player.ResetAlpha();
-
         }
 
         private void ResetAppearance(Player player)
@@ -86,6 +46,7 @@ namespace RPServerClient.Character
             for (var i = 0; i <= 19; i++) player.SetFaceFeature(i, 0);
             player.SetComponentVariation(2, 0, 0, 0);
             player.SetHairColor(0, 0);
+            _sharedAppearance = new SharedAppearance();
         }
 
         private void PlayChar(object[] args)
