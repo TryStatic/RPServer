@@ -39,6 +39,7 @@ namespace RPServerClient
             Events.Add("facefeautre", SetFaceFeature);
             Events.Add("compvar", SetCompVar);
             Events.Add("tpinfront", TeleportInFront);
+            Events.Add("testpos", TestPos);
 
             // Boost
             uint stamina = RAGE.Game.Misc.GetHashKey("SP0_STAMINA");
@@ -55,6 +56,12 @@ namespace RPServerClient
             RAGE.Game.Stats.StatSetInt(stealth, 100, true);
             uint lungCapacity = RAGE.Game.Misc.GetHashKey("SP0_LUNGCAPACITY");
             RAGE.Game.Stats.StatSetInt(lungCapacity, 100, true);
+        }
+
+        private void TestPos(object[] args)
+        {
+            var vect = Helper.GetPosInFrontOfVector3(new Vector3((float)args[0], (float)args[1], (float)args[2]), (float)args[3], 1);
+            RAGE.Chat.Output(vect.ToString());
         }
 
         private void OnGetVersion(object[] args)

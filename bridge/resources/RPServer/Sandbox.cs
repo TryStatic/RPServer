@@ -26,9 +26,32 @@ namespace RPServer
             player.SendChatMessage("/removecam /changechar, /selectchar, /play /createchar");
         }
 
-        [Command("seteyecolor")]
-        public void SetEyeColor(Client client, byte color)
+        [Command("addx")]
+        public void addx(Client client)
         {
+            Vector3 pos = client.Position;
+            pos.X += 2;
+            client.Position = pos;
+        }
+        [Command("addy")]
+        public void addy(Client client)
+        {
+            Vector3 pos = client.Position;
+            pos.Y += 2;
+            client.Position = pos;
+        }
+        [Command("addz")]
+        public void addz(Client client)
+        {
+            Vector3 pos = client.Position;
+            pos.Z += 2;
+            client.Position = pos;
+        }
+
+        [Command("getforwardpos")]
+        public void getforwardpos(Client client, float x, float y, float z, float heading)
+        {
+            client.TriggerEvent("testpos", x, y, z, heading);
         }
 
         [Command("gethere")]
