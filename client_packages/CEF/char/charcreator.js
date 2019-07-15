@@ -54,6 +54,13 @@ var OverlayNames = [
     "Additional BodyBlemishes"
 ];
 
+// Extra
+var Hairstyle = 0;
+var HairColor = 0;
+var HairHighlightColor = 0;
+var HairStyleTexture = 0;
+var EyeColor;
+
 var currentStep;
 
 jQuery(function ($) {
@@ -69,18 +76,38 @@ jQuery(function ($) {
     }
 
     for (i = 0; i < 13; i++) {
-        Overlays.push([255, 1.0]);
+        Overlays.push([255, 1.0, 1, 0]);
 
-        var overlayHTML = `
-        <div class="overlay">
-        <p>${OverlayNames[i]}</p>
-        Variation:
-        <input id="overlay${i}" type="range">
-        Opacity:
-        <input id="overlayOpacity${i}" type="range">
-        <br />
-        </div>
-        `;
+        if(i==1 || i == 2 || i == 5 || i == 8 || i == 10) {
+            var overlayHTML = `
+            <div class="overlay">
+            <p>${OverlayNames[i]}</p>
+            Variation:
+            <input id="overlay${i}" type="range">
+            Opacity:
+            <input id="overlayOpacity${i}" type="range">
+            Color:
+            <input id="overlayColor${i}" type="range">
+            SecColor:
+            <input id="overlaySecColor${i}" type="range">
+            <br />
+            </div>
+            `;
+        }
+        else {
+
+            var overlayHTML = `
+            <div class="overlay">
+            <p>${OverlayNames[i]}</p>
+            Variation:
+            <input id="overlay${i}" type="range">
+            Opacity:
+            <input id="overlayOpacity${i}" type="range">
+            <br />
+            </div>
+            `;
+        }
+
 
         $(".alloverlays").append(overlayHTML);
 
@@ -238,7 +265,89 @@ $(function () {
                 UpdateHeadOverlay(id);
             }
         });
+        $("#overlayColor" + i).ionRangeSlider({
+            min: 0,
+            max: 50,
+            from: 1,
+            step: 1,
+            hide_min_max: true,
+            onFinish: function (data) {
+                var id = $(data.input[0]).attr('id').match(/\d+/)[0];
+                Overlays[id][2] = data["from"];
+                UpdateHeadOverlay(id);
+            }
+        });
+        $("#overlaySecColor" + i).ionRangeSlider({
+            min: 0,
+            max: 50,
+            from: 0,
+            step: 0,
+            hide_min_max: true,
+            onFinish: function (data) {
+                var id = $(data.input[0]).attr('id').match(/\d+/)[0];
+                Overlays[id][3] = data["from"];
+                UpdateHeadOverlay(id);
+            }
+        });
     }
+});
+
+// Extras
+$(function () {
+    $("#Hairstyle").ionRangeSlider({
+        min: 0,
+        max: 45,
+        from: 0,
+        hide_min_max: true,
+        onFinish: function (data) {
+            Hairstyle = data["from"];
+            UpdateExtras();
+        }
+    });
+
+    $("#HairColor").ionRangeSlider({
+        min: 0,
+        max: 100,
+        from: 0,
+        hide_min_max: true,
+        onFinish: function (data) {
+            HairColor = data["from"];
+            UpdateExtras();
+        }
+    });
+
+    $("#HairHighlightColor").ionRangeSlider({
+        min: 0,
+        max: 100,
+        from: 0,
+        hide_min_max: true,
+        onFinish: function (data) {
+            HairHighlightColor = data["from"];
+            UpdateExtras();
+        }
+    });
+
+    $("#HairStyleTexture").ionRangeSlider({
+        min: 0,
+        max: 100,
+        from: 0,
+        hide_min_max: true,
+        onFinish: function (data) {
+            HairStyleTexture = data["from"];
+            UpdateExtras();
+        }
+    });
+
+    $("#EyeColor").ionRangeSlider({
+        min: 0,
+        max: 100,
+        from: 0,
+        hide_min_max: true,
+        onFinish: function (data) {
+            EyeColor = data["from"];
+            UpdateExtras();
+        }
+    });
 });
 
 function SubmitInitialCharData() {
@@ -254,8 +363,12 @@ function UpdateFaceFeature(index) {
 }
 
 function UpdateHeadOverlay(index) {
-    console.log(index);
     mp.trigger("UpdateHeadOverlay", index, Overlays[index][0], Overlays[index][1], Overlays[index][2], Overlays[index][3]);
+}
+
+function UpdateExtras() {
+    mp.trigger("UpdateExtras", Hairstyle, HairColor, HairHighlightColor, HairStyleTexture, EyeColor);
+
 }
 
 

@@ -135,11 +135,11 @@ namespace RPServer.Models
         #region EXTRA
 
         public byte HairStyle { get; set; }
-        public byte HairStyleTexture { get; set; }
-
-        public byte EyeColor { set; get; } // 0 .. 31
         public byte HairColor { set; get; } // 0 .. 63
         public byte HighlightColor { set; get; } // 0 .. 63
+        public byte HairStyleTexture { get; set; }
+        public byte EyeColor { set; get; } // 0 .. 31
+
         #endregion
 
         public Appearance()

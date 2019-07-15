@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO.Pipes;
 using Newtonsoft.Json;
@@ -31,7 +32,7 @@ namespace RPServerClient.Character
             // Temp testing events
             Events.Add(ServerToClient.EndCharSelection, EndCharSelection);
             Events.Add("selectchar", SelectChar);
-            Events.Add("playchar", PlayChar);
+            Events.Add("playchar", SpawnChar);
             Events.Add("createchar", OnInitCharCreator);
 
             // CEF Events
@@ -39,12 +40,10 @@ namespace RPServerClient.Character
             Events.Add("UpdateHeadBlend", OnUpdateHeadBlend);
             Events.Add("UpdateFaceFeature", OnUpdateFaceFeature);
             Events.Add("UpdateHeadOverlay", OnUpdateHeadOverlay);
+            Events.Add("UpdateExtras", OnUpdateExtras);
             Events.Add("SubmitCancel", OnCancel);
 
-            
-            Events.Add("ZoomToFace", OnZoomToFace);
         }
-
         private void OnCancel(object[] args)
         {
             throw new System.NotImplementedException();
@@ -53,6 +52,8 @@ namespace RPServerClient.Character
         private void ShowNextPage(object[] args)
         {
             StageModel(Player.LocalPlayer);
+            Events.CallRemote(ClientToServer.ApplyCharacterEditAnimation);
+            ZoomToFace();
             CustomBrowser.ExecuteFunction("ShowNextStep");
         }
 
@@ -67,7 +68,6 @@ namespace RPServerClient.Character
 
         private void SubmitCharData(object[] args)
         {
-            RAGE.Chat.Output("SubmitCharData on client");
             if (args == null || args.Length < 3)
                 return;
 
@@ -75,11 +75,8 @@ namespace RPServerClient.Character
             var lastname = args[1].ToString();
             var isMale = (bool) args[2];
 
-
+            Player.LocalPlayer.Model = isMale ? (uint) 1885233650 : 2627665880;
             Events.CallRemote(ClientToServer.SubmitInitialCharData, firstname, lastname, isMale);
-            RAGE.Chat.Output("ok");
-
-
         }
 
         private void OnUpdateHeadBlend(object[] args)
@@ -104,6 +101,18 @@ namespace RPServerClient.Character
             Player.LocalPlayer.SetHeadBlendData(shapeFirst, shapeSecond, skinFirst, skinSecond, 0, 0, ShapeMix, skinMix, 0, false);
         }
 
+        private void OnUpdateExtras(object[] args)
+        {
+            var Hairstyle = (int) args[0];
+            var HairColor = (int) args[1];
+            var HairHighlightColor = (int) args[2];
+            var HairStyleTexture = (int) args[3];
+            var EyeColor = (int) args[4];
+            Player.LocalPlayer.SetComponentVariation(2, Hairstyle, HairStyleTexture, 0);
+            Player.LocalPlayer.SetHairColor(HairColor, HairHighlightColor);
+            Player.LocalPlayer.SetEyeColor(EyeColor);
+        }
+
 
         private void OnUpdateFaceFeature(object[] args)
         {
@@ -111,32 +120,28 @@ namespace RPServerClient.Character
             var indx = int.Parse(args[0].ToString());
             var value = float.Parse(args[1].ToString());
 
-            RAGE.Chat.Output("Index:" + indx);
-            RAGE.Chat.Output("Value:" + value);
-            RAGE.Chat.Output("-------------------------");
-
-
             Player.LocalPlayer.SetFaceFeature(indx, value);
         }
 
         private void OnUpdateHeadOverlay(object[] args)
         {
-            RAGE.Chat.Output("client");
-
             var indx = int.Parse(args[0].ToString());
             var variation = int.Parse(args[1].ToString());
             var opacity = float.Parse(args[2].ToString());
+            var color = int.Parse(args[3].ToString());
+            var secColor = int.Parse(args[4].ToString());
 
-            RAGE.Chat.Output("updated");
             Player.LocalPlayer.SetHeadOverlay(indx, variation, opacity);
-            Player.LocalPlayer.SetHeadOverlayColor(indx, 0, 0, 0);
-            Player.LocalPlayer.SetHeadOverlayColor(indx, 1, 0, 0);
-            Player.LocalPlayer.SetHeadOverlayColor(indx, 2, 0, 0);
+            if(indx == 1 || indx == 2 || indx == 10) Player.LocalPlayer.SetHeadOverlayColor(indx, 1, color, secColor);
+            else if (indx == 5 || indx == 8) Player.LocalPlayer.SetHeadOverlayColor(indx, 2, color, secColor);
         }
 
-        private void OnZoomToFace(object[] args)
+        private void ZoomToFace()
         {
-            RAGE.Chat.Output("TODO: POINT CAMERA TO FACE");
+            var headCoords = Player.LocalPlayer.GetBoneCoords(12844, 0, 0, 0);
+            var campos = Helper.GetPosInFrontOfVector3(headCoords, Player.LocalPlayer.GetHeading(), 0.35f);
+            _characterDisplayCamera = new CustomCamera(campos, headCoords);
+            _characterDisplayCamera.SetActive(true);
         }
 
         private void OnInitCharCreator(object[] args)
@@ -146,8 +151,6 @@ namespace RPServerClient.Character
             ResetAppearance(player);
 
             CustomBrowser.CreateBrowser("package://CEF/char/charcreator.html");
-            Events.CallRemote(ClientToServer.ApplyCharacterEditAnimation);
-            player.ResetAlpha();
         }
 
         private void ResetAppearance(Player player)
@@ -157,6 +160,7 @@ namespace RPServerClient.Character
             for (var i = 0; i <= 19; i++) player.SetFaceFeature(i, 0);
             player.SetComponentVariation(2, 0, 0, 0);
             player.SetHairColor(0, 0);
+
             player.SetComponentVariation(1, 0, 0, 0);
             player.SetComponentVariation(3, 0, 0, 0);
             player.SetComponentVariation(4, 0, 0, 0);
@@ -170,7 +174,7 @@ namespace RPServerClient.Character
             player.SetComponentVariation(11, 0, 0, 0);
         }
 
-        private void PlayChar(object[] args)
+        private void SpawnChar(object[] args)
         {
             if(_selectedCharId < 0) return;
             Events.CallRemote(ClientToServer.SubmitSpawnCharacter, _selectedCharId);
