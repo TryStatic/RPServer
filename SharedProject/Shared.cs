@@ -42,7 +42,7 @@
         public const string RenderCharacterList = "RenderCharacterList";
         public const string EndCharSelection = "EndCharSelection";
         public const string DisplayCharError = "DisplayCharError";
-        public const string MoveCharCreationToNextStep = "MoveCharCreationToNextStep";
+        public const string StartCustomization = "StartCustomization";
     }
 
     public static class SharedDataKey

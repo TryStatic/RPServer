@@ -118,7 +118,7 @@ namespace RPServer.Controllers
         }
 
         [RemoteEvent(ClientToServer.SubmitInitialCharData)]
-        public void ClientEvent_SubmitInitialCharData(Client client, string firstName, string lastName, bool isMale)
+        public void ClientEvent_SubmitInitialCharData(Client client, string firstName, string lastName)
         {
             client.SendChatMessage("OnSubmitInitialCharData on server");
             if (!ValidateString(ValidationStrings.CharFirstName, firstName))
@@ -132,8 +132,6 @@ namespace RPServer.Controllers
                 client.TriggerEvent(ServerToClient.DisplayCharError, "There is something wrong with that last name.");
                 return;
             }
-            client.SendChatMessage("Passed validation");
-
 
             TaskManager.Run(client, async () =>
                 {
@@ -143,7 +141,7 @@ namespace RPServer.Controllers
                         client.TriggerEvent(ServerToClient.DisplayCharError, "That character name already exists.");
                         return;
                     }
-                    client.TriggerEvent(ServerToClient.MoveCharCreationToNextStep);
+                    client.TriggerEvent(ServerToClient.StartCustomization);
                 });
 
         }

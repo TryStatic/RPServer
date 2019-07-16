@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using Newtonsoft.Json.Serialization;
 using RAGE;
-using RAGE.Game;
 using RPServerClient.Util;
 using Player = RAGE.Elements.Player;
 
@@ -65,13 +62,9 @@ namespace RPServerClient
 
         private void Test(object[] args)
         {
-            string str = "";
-            for (int i = 0; i <= 12; i++)
-            {
-                var result = Invoker.Invoke<int>(Natives.GetNumHeadOverlayValues, i);
-                str = str.Insert(str.Length - 1 < 0 ? 0 : str.Length - 1, $"[{i}]: {result}, ");
-            }
-            RAGE.Chat.Output(str);
+
+            RAGE.Chat.Output("Reseting");
+            Player.LocalPlayer.SetDefaultComponentVariation();
         }
 
         private void TestPos(object[] args)

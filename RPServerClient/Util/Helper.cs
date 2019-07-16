@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Numerics;
+using Multiplayer;
 using RAGE.Elements;
 using Vector3 = RAGE.Vector3;
 
 namespace RPServerClient.Util
 {
-    internal class Helper
+    internal static class Helper
     {
         public static Vector3 GetPosInFrontOfPlayer(Player myPlayer, float range)
         {
@@ -21,6 +21,11 @@ namespace RPServerClient.Util
             newPos.X += range * (float)Math.Sin(-heading * Math.PI / 180.0);
             newPos.Y += range * (float)Math.Cos(-heading * Math.PI / 180.0);
             return newPos;
+        }
+
+        internal static Vector3 GetVector3Part(this Quaternion q)
+        {
+            return new Vector3(q.X, q.Y, q.Z);
         }
 
     }
