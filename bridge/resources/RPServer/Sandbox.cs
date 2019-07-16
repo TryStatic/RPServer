@@ -23,7 +23,14 @@ namespace RPServer
             player.SendChatMessage("/setskin /setnick /togflymode /getcamcords /spawnme /playanimation /stopani");
             player.SendChatMessage("/loadipl /removeipl /resetipls /gotopos /getpos /fd");
             player.SendChatMessage("/setheadblend /setheadoverlay, /setheadoverlaycolor, /setfacefeature, /setcompvar /seteyecolor");
-            player.SendChatMessage("/removecam /changechar, /selectchar, /play /createchar");
+            player.SendChatMessage("/removecam /changechar, /selectchar, /play /createchar /addx /addy /addz /getfowardpos");
+        }
+
+        [Command("test")]
+        public void test(Client client)
+        {
+            client.TriggerEvent("test");
+
         }
 
         [Command("addx")]

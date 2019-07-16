@@ -53,13 +53,14 @@ var OverlayNames = [
     "BodyBlemishes",
     "Additional BodyBlemishes"
 ];
+var OverlayRanges = [ 23, 24, 29, 14, 15, 32, 11, 10, 10, 10, 18, 17, 12 ];
 
 // Extra
 var Hairstyle = 0;
 var HairColor = 0;
 var HairHighlightColor = 0;
 var HairStyleTexture = 0;
-var EyeColor;
+var EyeColor = 0;
 
 var currentStep;
 
@@ -78,7 +79,8 @@ jQuery(function ($) {
     for (i = 0; i < 13; i++) {
         Overlays.push([255, 1.0, 1, 0]);
 
-        if(i==1 || i == 2 || i == 5 || i == 10) {
+        if(i==1 || i == 2 || i == 5 || i == 10) 
+        { // FacialHair, Eyebrows, Blush, Chest Hair
             var overlayHTML = `
             <div class="overlay">
             <p>${OverlayNames[i]}</p>
@@ -95,7 +97,7 @@ jQuery(function ($) {
             `;
         }
         else if(i==8)
-        {
+        { // Lipstick, no secColor
             var overlayHTML = `
             <div class="overlay">
             <p>${OverlayNames[i]}</p>
@@ -229,7 +231,6 @@ $(function () {
             step: 0.01,
             hide_min_max: true,
             onFinish: function (data) {
-                //FaceFeatures[i] = data["from"];
                 var id = $(data.input[0]).attr('id').match(/\d+/)[0];
                 FaceFeatures[id] = data["from"];
                 UpdateFaceFeature(id);
@@ -246,7 +247,7 @@ $(function () {
     for (i = 0; i <= 12; i++) {
         $("#overlay" + i).ionRangeSlider({
             min: 0,
-            max: 75,
+            max: OverlayRanges[i],
             from: 0,
             hide_min_max: true,
             onFinish: function (data) {
@@ -270,6 +271,7 @@ $(function () {
                 UpdateHeadOverlay(id);
             }
         });
+
         if(i == 5 || i == 8)
         {
             $("#overlayColor" + i).ionRangeSlider({
