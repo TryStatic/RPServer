@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Net.Mail;
 using System.Threading;
 using GTANetworkAPI;
-using RPServer.Controllers;
 using RPServer.Controllers.Util;
 using RPServer.Models;
 using RPServer.Resource;
@@ -29,7 +28,15 @@ namespace RPServer.Util
             if (string.IsNullOrWhiteSpace(emailString))
                 return false;
 
-            return new EmailAddressAttribute().IsValid(emailString);
+            try
+            {
+                var m = new MailAddress(emailString);
+                return true;
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
         }
         #endregion
 
