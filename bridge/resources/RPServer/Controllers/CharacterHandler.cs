@@ -177,13 +177,13 @@ namespace RPServer.Controllers
 
 
                 await Character.CreateNewAsync(client.GetAccount(), charName);
-                var newCh = Character.ReadByKeyAsync(() => new Character().CharacterName, charName);
+                var newChIEnumerable = await Character.ReadByKeyAsync(() => new Character().CharacterName, charName);
+                var newCh = newChIEnumerable.First();
 
                 var pedhash = newCharData.isMale ? PedHash.FreemodeMale01 : PedHash.FreemodeFemale01;
-                var newChApp = new Appearance(pedhash, newCh.Id);
+                var newChApp = new Appearance(pedhash, newCh);
                 newChApp.Populate(newCharData);
                 await Appearance.CreateAsync(newChApp);
-
             });
         }
 

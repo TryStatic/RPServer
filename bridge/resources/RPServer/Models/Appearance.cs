@@ -153,11 +153,11 @@ namespace RPServer.Models
         /// Use to create new appearance for a character
         /// </summary>
         /// <param name="ped"></param>
-        /// <param name="charID"></param>
-        public Appearance(PedHash ped, int charID)
+        /// <param name="character"></param>
+        public Appearance(PedHash ped, Character character)
         {
             SkinModel = ped;
-            CharacterID = charID;
+            CharacterID = character.ID;
         }
 
         public void Apply(Client client)
@@ -383,7 +383,8 @@ namespace RPServer.Models
                 NeckWidth = jsonData.FaceFeatures[19];
             }
 
-            if (jsonData.Overlays.GetLength(0) > 12 && jsonData.Overlays.GetLength(1) > 4)
+
+            if (jsonData.Overlays.GetLength(0) > 12)
             {
                 Blemishes = (byte) jsonData.Overlays[0][0];
                 FacialHair = (byte) jsonData.Overlays[1][0];
