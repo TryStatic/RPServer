@@ -23,8 +23,6 @@ namespace RPServer.Models
                 CharacterName = newCharName
             };
             await newChar.CreateAsync();
-            var ch = await ReadByKeyAsync(()=> newChar.CharacterName, newCharName);
-            await new Appearance(PedHash.FreemodeFemale01, ch.First().ID).CreateAsync();
         }
         public static async Task<List<Character>> FetchAllAsync(Account account)
         {
