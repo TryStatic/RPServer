@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using GTANetworkAPI;
@@ -59,8 +59,8 @@ namespace RPServer.Controllers
         [RemoteEvent(ClientToServer.SubmitCharacterSelection)]
         public void ClientEvent_SubmitCharacterSelection(Client client, int selectedCharId)
         {
-            if(!client.IsLoggedIn()) return;
-            if(selectedCharId < 0) return;
+            if (!client.IsLoggedIn()) return;
+            if (selectedCharId < 0) return;
 
             TaskManager.Run(client, async () =>
             {
@@ -79,7 +79,7 @@ namespace RPServer.Controllers
                 }
 
                 var app = await fetchedChar.GetAppearance();
-                if(app != null) app.Apply(client);
+                if (app != null) app.Apply(client);
                 client.Transparency = 255;
             });
         }
@@ -87,8 +87,8 @@ namespace RPServer.Controllers
         [RemoteEvent(ClientToServer.SubmitSpawnCharacter)]
         public void ClientEvent_SubmitSpawnCharacter(Client client, int selectedCharId)
         {
-            if(!client.IsLoggedIn()) return;
-            if(selectedCharId < 0) return;
+            if (!client.IsLoggedIn()) return;
+            if (selectedCharId < 0) return;
 
             TaskManager.Run(client, async () =>
             {
@@ -120,7 +120,8 @@ namespace RPServer.Controllers
         [RemoteEvent(ClientToServer.SubmitInitialCharData)]
         public void ClientEvent_SubmitInitialCharData(Client client, string firstName, string lastName)
         {
-            client.SendChatMessage("OnSubmitInitialCharData on server");
+            if(!client.IsLoggedIn()) return;
+
             if (!ValidateString(ValidationStrings.CharFirstName, firstName))
             {
                 client.TriggerEvent(ServerToClient.DisplayCharError, "There is something wrong with that first name.");
@@ -143,6 +144,10 @@ namespace RPServer.Controllers
                     }
                     client.TriggerEvent(ServerToClient.StartCustomization);
                 });
+        [RemoteEvent(ClientToServer.SubmitNewCharacter)]
+        public void ClientEvent_SubmitNewCharacter(Client client, string dataAsJson)
+        {
+            if(!client.IsLoggedIn()) return;
 
         }
 

@@ -1,4 +1,4 @@
-﻿namespace Shared
+namespace Shared
 {
     public static class ClientToServer
     {
@@ -21,6 +21,7 @@
         // Other
         public const string SubmitPlayerCommand = "SubmitPlayerCommand";
         public const string SubmitInitialCharData = "SubmitInitialCharData";
+        public const string SubmitNewCharacter = "SubmitNewCharacter";
     }
 
     public static class ServerToClient

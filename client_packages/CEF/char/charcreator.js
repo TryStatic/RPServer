@@ -155,13 +155,11 @@ jQuery(function ($) {
         $('.creatorcontainer').animate({
             scrollTop: $(".scrollhere").offset().top - 1000
         }, 50);
-
-        mp.trigger()
+        SubmitNewCharacter();
     });
 
     $(".cancelbtn").click(function () {
         mp.trigger("SubmitCancel");
-
     });
 });
 
@@ -257,8 +255,6 @@ $(function () {
         });
     }
 });
-
-
 
 // HeadOverlay
 $(function () {
@@ -394,7 +390,14 @@ $(function () {
     });
 });
 
+function SubmitNewCharacter() {
+
+    var data = { firstname, lastname, isMale, ShapeFirst, ShapeSecond, SkinSecond, ShapeMix, SkinMix, FaceFeatures, Overlays, Hairstyle, HairColor, HairHighlightColor, HairStyleTexture, EyeColor };
+    mp.trigger("SubmitNewCharacter", JSON.stringify(data));
+}
+
 function SubmitInitialCharData() {
+
     mp.trigger("SubmitInitialCharData", firstname, lastname, isMale);
 }
 

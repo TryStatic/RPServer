@@ -1,4 +1,4 @@
-﻿using Multiplayer;
+using Multiplayer;
 using RAGE;
 using RAGE.Elements;
 using RPServerClient.Globals;
@@ -29,6 +29,8 @@ namespace RPServerClient.Character
             Events.Add("UpdateFaceFeature", OnUpdateFaceFeature); // Step 3
             Events.Add("UpdateExtras", OnUpdateExtras); // Step 4
             Events.Add("UpdateHeadBlend", OnUpdateHeadBlend); // Step 5
+            Events.Add("SubmitNewCharacter", OnSubmitNewCharacter); // Step 5
+
             Events.Add("SubmitCancel", OnQuitCharCreation);
 
         }
@@ -44,6 +46,12 @@ namespace RPServerClient.Character
         private void OnQuitCharCreation(object[] args)
         {
             // TODO: go back to char selector
+        }
+
+        private void OnSubmitNewCharacter(object[] args)
+        {
+            var dataAsJson = args[0].ToString();
+            Events.CallRemote(ClientToServer.SubmitNewCharacter, dataAsJson);
         }
         #endregion
 
@@ -117,11 +125,6 @@ namespace RPServerClient.Character
             if (indx == 1 || indx == 2 || indx == 10)
                 Player.LocalPlayer.SetHeadOverlayColor(indx, 1, color, secColor);
             else if (indx == 5 || indx == 8) Player.LocalPlayer.SetHeadOverlayColor(indx, 2, color, secColor);
-        }
-
-        private void SubmitNewCharacter(object[] args)
-        {
-
         }
         #endregion
 
