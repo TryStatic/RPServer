@@ -10,8 +10,8 @@ namespace RPServerClient.Character
 {
     internal class CharCreator : Events.Script
     {
-        Quaternion _displayPos = new Quaternion(-169.3321f, 482.2647f, 133.8789f, 282.6658f);
-        Quaternion _hiddenPos = new Quaternion(-163.4660f, 483.5910f, 134.5571f, 282.6658f);
+        private readonly Quaternion _displayPos = new Quaternion(-169.3321f, 482.2647f, 133.8789f, 282.6658f);
+        private readonly Quaternion _hiddenPos = new Quaternion(-163.4660f, 483.5910f, 134.5571f, 282.6658f);
         private CustomCamera _characterDisplayCamera;
 
         public CharCreator()
