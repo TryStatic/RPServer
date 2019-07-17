@@ -1,4 +1,4 @@
-namespace Shared
+﻿namespace Shared
 {
     public static class ClientToServer
     {
@@ -44,6 +44,7 @@ namespace Shared
         public const string EndCharSelection = "EndCharSelection";
         public const string DisplayCharError = "DisplayCharError";
         public const string StartCustomization = "StartCustomization";
+        public const string ResetCharCreation = "ResetCharCreation";
     }
 
     public static class SharedDataKey

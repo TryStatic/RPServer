@@ -1,4 +1,4 @@
-using Multiplayer;
+﻿using Multiplayer;
 using RAGE;
 using RAGE.Elements;
 using RPServerClient.Globals;
@@ -21,6 +21,7 @@ namespace RPServerClient.Character
 
             // Server Events
             Events.Add(ServerToClient.StartCustomization, OnStartCustomization);
+            Events.Add(ServerToClient.ResetCharCreation, ResetCharCreation);
             Events.Add(ServerToClient.DisplayCharError, DisplayError);
 
             // CEF
@@ -33,6 +34,13 @@ namespace RPServerClient.Character
 
             Events.Add("SubmitCancel", OnQuitCharCreation);
 
+        }
+
+        private void ResetCharCreation(object[] args)
+        {
+            ResetAppearance(Player.LocalPlayer);
+            CustomBrowser.ExecuteFunction(new object[] { "ShowStep", "1" });
+            if (args != null && args.Length > 0) DisplayError(new object[] { args[0].ToString() });
         }
 
         #region InitilationDestruction

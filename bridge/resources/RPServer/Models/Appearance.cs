@@ -1,6 +1,7 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Dapper.Contrib.Extensions;
 using GTANetworkAPI;
+using RPServer.Controllers.Util;
 
 namespace RPServer.Models
 {
@@ -347,6 +348,104 @@ namespace RPServer.Models
             };
 
             return arr;
+        }
+
+        public void Populate(AppearanceJson jsonData)
+        {
+            ShapeFirstID = (byte) jsonData.ShapeFirst;
+            ShapeSecondID = (byte) jsonData.ShapeSecond;
+            // SkinThird/second?
+            ShapeMix = jsonData.ShapeMix;
+            SkinMix = jsonData.SkinMix;
+
+            if (jsonData.FaceFeatures.Length > 19)
+            {
+                NoseWidth = jsonData.FaceFeatures[0];
+                NoseHeight = jsonData.FaceFeatures[1];
+                NoseLength = jsonData.FaceFeatures[2];
+                NoseBridge = jsonData.FaceFeatures[3];
+                NoseTip = jsonData.FaceFeatures[4];
+                NoseBridgeShift = jsonData.FaceFeatures[5];
+                BrowHeight = jsonData.FaceFeatures[6];
+                BrowWidth = jsonData.FaceFeatures[7];
+                CheekboneHeight = jsonData.FaceFeatures[8];
+                CheekboneWidth = jsonData.FaceFeatures[9];
+                CheeksWidth = jsonData.FaceFeatures[10];
+                Eyes = jsonData.FaceFeatures[11];
+                Lips = jsonData.FaceFeatures[12];
+                JawWidth = jsonData.FaceFeatures[13];
+                JawHeight = jsonData.FaceFeatures[14];
+                ChinLength = jsonData.FaceFeatures[15];
+                ChinPosition = jsonData.FaceFeatures[16];
+                ChinWidth = jsonData.FaceFeatures[17];
+                ChinShape = jsonData.FaceFeatures[18];
+                NeckWidth = jsonData.FaceFeatures[19];
+            }
+
+            if (jsonData.Overlays.GetLength(0) > 12 && jsonData.Overlays.GetLength(1) > 4)
+            {
+                Blemishes = (byte) jsonData.Overlays[0][0];
+                FacialHair = (byte) jsonData.Overlays[1][0];
+                Eyebrows = (byte) jsonData.Overlays[2][0];
+                Ageing = (byte) jsonData.Overlays[3][0];
+                Makeup = (byte) jsonData.Overlays[4][0];
+                Blush = (byte) jsonData.Overlays[5][0];
+                Complexion = (byte) jsonData.Overlays[6][0];
+                SunDamage = (byte) jsonData.Overlays[7][0];
+                Lipstick = (byte) jsonData.Overlays[8][0];
+                Freckles = (byte) jsonData.Overlays[9][0];
+                ChestHair = (byte) jsonData.Overlays[10][0];
+                BodyBlemishes = (byte) jsonData.Overlays[11][0];
+                AdditionalBodyBlemishes = (byte) jsonData.Overlays[12][0];
+
+                BlemishesOpacity = jsonData.Overlays[0][1];
+                FacialHairOpacity = jsonData.Overlays[1][1];
+                EyebrowsOpacity = jsonData.Overlays[2][1];
+                AgeingOpacity = jsonData.Overlays[3][1];
+                MakeupOpacity = jsonData.Overlays[4][1];
+                BlushOpacity = jsonData.Overlays[5][1];
+                ComplexionOpacity = jsonData.Overlays[6][1];
+                SunDamageOpacity = jsonData.Overlays[7][1];
+                LipstickOpacity = jsonData.Overlays[8][1];
+                FrecklesOpacity = jsonData.Overlays[9][1];
+                ChestHairOpacity = jsonData.Overlays[10][1];
+                BodyBlemishesOpacity = jsonData.Overlays[11][1];
+                AdditionalBodyBlemishesOpacity = jsonData.Overlays[12][1];
+
+                BlemishesColor = (byte) jsonData.Overlays[0][2];
+                FacialHairColor = (byte) jsonData.Overlays[1][2];
+                EyebrowsColor = (byte) jsonData.Overlays[2][2];
+                AgeingColor = (byte) jsonData.Overlays[3][2];
+                MakeupColor = (byte) jsonData.Overlays[4][2];
+                BlushColor = (byte) jsonData.Overlays[5][2];
+                ComplexionColor = (byte) jsonData.Overlays[6][2];
+                SunDamageColor = (byte) jsonData.Overlays[7][2];
+                LipstickColor = (byte) jsonData.Overlays[8][2];
+                FrecklesColor = (byte) jsonData.Overlays[9][2];
+                ChestHairColor = (byte) jsonData.Overlays[10][2];
+                BodyBlemishesColor = (byte) jsonData.Overlays[11][2];
+                AdditionalBodyBlemishesColor = (byte) jsonData.Overlays[12][2];
+
+                BlemishesSecColor = (byte) jsonData.Overlays[0][3];
+                FacialHairSecColor = (byte) jsonData.Overlays[1][3];
+                EyebrowsSecColor = (byte) jsonData.Overlays[2][3];
+                AgeingSecColor = (byte) jsonData.Overlays[3][3];
+                MakeupSecColor = (byte) jsonData.Overlays[4][3];
+                BlushSecColor = (byte) jsonData.Overlays[5][3];
+                ComplexionSecColor = (byte) jsonData.Overlays[6][3];
+                SunDamageSecColor = (byte) jsonData.Overlays[7][3];
+                LipstickSecColor = (byte) jsonData.Overlays[8][3];
+                FrecklesSecColor = (byte) jsonData.Overlays[9][3];
+                ChestHairSecColor = (byte) jsonData.Overlays[10][3];
+                BodyBlemishesSecColor = (byte) jsonData.Overlays[11][3];
+                AdditionalBodyBlemishesSecColor = (byte) jsonData.Overlays[12][3];
+            }
+
+            HairStyle = (byte) jsonData.Hairstyle;
+            HairColor = (byte) jsonData.HairColor;
+            HairHighlightColor = (byte) jsonData.HairHighlightColor;
+            HairStyleTexture = (byte) jsonData.HairStyleTexture;
+            EyeColor = (byte) jsonData.EyeColor;
         }
     }
 

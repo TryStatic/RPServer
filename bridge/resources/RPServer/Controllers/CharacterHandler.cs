@@ -1,11 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using GTANetworkAPI;
 using Newtonsoft.Json;
 using RPServer.Controllers.Util;
 using RPServer.Models;
-using RPServer.Resource;
 using RPServer.Util;
 using Shared;
 using static RPServer.Controllers.Util.DataValidator;
@@ -135,20 +134,57 @@ namespace RPServer.Controllers
             }
 
             TaskManager.Run(client, async () =>
+            {
+                var ch = await Character.ReadByKeyAsync(() => new Character().CharacterName, $"{firstName}_{lastName}");
+                if (ch.Any())
                 {
-                    var ch = await Character.ReadByKeyAsync(() => new Character().CharacterName, $"{firstName}_{lastName}");
-                    if (ch.Any())
-                    {
-                        client.TriggerEvent(ServerToClient.DisplayCharError, "That character name already exists.");
-                        return;
-                    }
-                    client.TriggerEvent(ServerToClient.StartCustomization);
-                });
+                    client.TriggerEvent(ServerToClient.DisplayCharError, "That character name already exists.");
+                    return;
+                }
+                client.TriggerEvent(ServerToClient.StartCustomization);
+            });
+        }
+
         [RemoteEvent(ClientToServer.SubmitNewCharacter)]
         public void ClientEvent_SubmitNewCharacter(Client client, string dataAsJson)
         {
             if(!client.IsLoggedIn()) return;
 
+            var newCharData = JsonConvert.DeserializeObject<AppearanceJson>(dataAsJson);
+
+            if (!ValidateString(ValidationStrings.CharFirstName, newCharData.firstname))
+            {
+                client.TriggerEvent(ServerToClient.ResetCharCreation, "There is something wrong with that first name.");
+                return;
+            }
+
+            if (!ValidateString(ValidationStrings.CharFirstName, newCharData.lastname))
+            {
+                client.TriggerEvent(ServerToClient.ResetCharCreation, "There is something wrong with that first name.");
+                return;
+            }
+
+            TaskManager.Run(client, async () =>
+            {
+                var charName = $"{newCharData.firstname}_{newCharData.lastname}";
+
+                var ch = await Character.ReadByKeyAsync(() => new Character().CharacterName, charName);
+                if (ch.Any())
+                {
+                    client.TriggerEvent(ServerToClient.ResetCharCreation, "That character name already exists.");
+                    return;
+                }
+
+
+                await Character.CreateNewAsync(client.GetAccount(), charName);
+                var newCh = Character.ReadByKeyAsync(() => new Character().CharacterName, charName);
+
+                var pedhash = newCharData.isMale ? PedHash.FreemodeMale01 : PedHash.FreemodeFemale01;
+                var newChApp = new Appearance(pedhash, newCh.Id);
+                newChApp.Populate(newCharData);
+                await Appearance.CreateAsync(newChApp);
+
+            });
         }
 
         private static void PlayerSuccessfulLogin(object source, EventArgs e)
