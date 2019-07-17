@@ -132,7 +132,7 @@ CREATE TABLE `appearances`  (
   `HairColor` tinyint(4) NOT NULL,
   `HairStyle` tinyint(4) NOT NULL,
   `HairStyleTexture` tinyint(4) NOT NULL,
-  PRIMARY KEY (`ID`, `ChinWidth`) USING BTREE,
+  PRIMARY KEY (`ID`, `CharacterID`) USING BTREE,
   UNIQUE INDEX `CharacterID_UNIQUE`(`CharacterID`) USING BTREE,
   INDEX `fkey_char_to_appearance_idx`(`CharacterID`) USING BTREE,
   CONSTRAINT `fkey_char_to_appearance` FOREIGN KEY (`CharacterID`) REFERENCES `characters` (`ID`) ON DELETE CASCADE ON UPDATE RESTRICT
