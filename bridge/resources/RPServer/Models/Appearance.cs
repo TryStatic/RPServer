@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Dapper.Contrib.Extensions;
 using GTANetworkAPI;
 
@@ -136,7 +136,7 @@ namespace RPServer.Models
 
         public byte HairStyle { get; set; }
         public byte HairColor { set; get; } // 0 .. 63
-        public byte HighlightColor { set; get; } // 0 .. 63
+        public byte HairHighlightColor { set; get; } // 0 .. 63
         public byte HairStyleTexture { get; set; }
         public byte EyeColor { set; get; } // 0 .. 31
 
@@ -162,7 +162,7 @@ namespace RPServer.Models
         {
             if (SkinModel != PedHash.FreemodeMale01 && SkinModel != PedHash.FreemodeFemale01) return;
 
-            client.SetCustomization(IsMale, GetHeadBlend(), EyeColor, HairColor, HighlightColor, GetFaceFeatures(), GetHeadOverlay(), new Decoration[0]);
+            client.SetCustomization(IsMale, GetHeadBlend(), EyeColor, HairColor, HairHighlightColor, GetFaceFeatures(), GetHeadOverlay(), new Decoration[0]);
             client.SetClothes((int)Components.Hair, HairStyle, HairStyleTexture);
         }
 

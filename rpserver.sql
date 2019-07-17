@@ -11,7 +11,7 @@
  Target Server Version : 80016
  File Encoding         : 65001
 
- Date: 11/07/2019 01:01:31
+ Date: 17/07/2019 21:10:33
 */
 
 SET NAMES utf8mb4;
@@ -128,7 +128,7 @@ CREATE TABLE `appearances`  (
   `ChinShape` float NOT NULL,
   `NeckWidth` float NOT NULL,
   `EyeColor` tinyint(4) NOT NULL,
-  `HighlightColor` tinyint(4) NOT NULL,
+  `HairHighlightColor` tinyint(4) NOT NULL,
   `HairColor` tinyint(4) NOT NULL,
   `HairStyle` tinyint(4) NOT NULL,
   `HairStyleTexture` tinyint(4) NOT NULL,
