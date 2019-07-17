@@ -24,7 +24,7 @@ namespace RPServerClient.Character
             Events.Add(ServerToClient.DisplayCharError, DisplayError);
 
             // CEF
-            Events.Add("SubmitCharData", SubmitCharData); // Step 1
+            Events.Add("SubmitInitialCharData", SubmitInitialCharData); // Step 1
             Events.Add("UpdateHeadOverlay", OnUpdateHeadOverlay); // Step 2
             Events.Add("UpdateFaceFeature", OnUpdateFaceFeature); // Step 3
             Events.Add("UpdateExtras", OnUpdateExtras); // Step 4
@@ -48,7 +48,7 @@ namespace RPServerClient.Character
         #endregion
 
         #region LocalDisplayCustomization
-        private void SubmitCharData(object[] args)
+        private void SubmitInitialCharData(object[] args)
         {
             if (args == null || args.Length < 3)
                 return;
@@ -117,6 +117,11 @@ namespace RPServerClient.Character
             if (indx == 1 || indx == 2 || indx == 10)
                 Player.LocalPlayer.SetHeadOverlayColor(indx, 1, color, secColor);
             else if (indx == 5 || indx == 8) Player.LocalPlayer.SetHeadOverlayColor(indx, 2, color, secColor);
+        }
+
+        private void SubmitNewCharacter(object[] args)
+        {
+
         }
         #endregion
 

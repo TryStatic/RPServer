@@ -140,6 +140,25 @@ jQuery(function ($) {
         }, 50);
     });
 
+    $(".backBtn").click(function () {
+
+        ShowPreviousStep();
+
+        $('.creatorcontainer').animate({
+            scrollTop: $(".scrollhere").offset().top - 1000
+        }, 50);
+    });
+
+    $("#createchar").click(function () {
+
+        ShowNextStep();
+        $('.creatorcontainer').animate({
+            scrollTop: $(".scrollhere").offset().top - 1000
+        }, 50);
+
+        mp.trigger()
+    });
+
     $(".cancelbtn").click(function () {
         mp.trigger("SubmitCancel");
 
@@ -376,7 +395,7 @@ $(function () {
 });
 
 function SubmitInitialCharData() {
-    mp.trigger("SubmitCharData", firstname, lastname, isMale);
+    mp.trigger("SubmitInitialCharData", firstname, lastname, isMale);
 }
 
 function UpdateHeadBlend(index) {
@@ -400,6 +419,11 @@ function UpdateExtras() {
 
 function ShowNextStep() {
     currentStep++;
+    ShowStep(currentStep);
+}
+
+function ShowPreviousStep() {
+    currentStep--;
     ShowStep(currentStep);
 }
 
