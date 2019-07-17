@@ -43,6 +43,7 @@ namespace RPServer.Models
         }
         public byte ShapeFirstID { get; set; }
         public byte ShapeSecondID { get; set; }
+        public byte SkinSecondID { get; set; }
         public float ShapeMix { get; set; }
         public float SkinMix { get; set; }
 
@@ -177,7 +178,7 @@ namespace RPServer.Models
                 ShapeThird = ShapeThirdID,
                 SkinFirst = ShapeFirstID,
                 SkinMix = SkinMix,
-                SkinSecond = ShapeSecondID,
+                SkinSecond = SkinSecondID,
                 SkinThird = SkinThirdID,
                 ThirdMix = ThirdMix
             };
@@ -354,7 +355,7 @@ namespace RPServer.Models
         {
             ShapeFirstID = (byte) jsonData.ShapeFirst;
             ShapeSecondID = (byte) jsonData.ShapeSecond;
-            // SkinThird/second?
+            SkinSecondID = (byte) jsonData.SkinSecond;
             ShapeMix = jsonData.ShapeMix;
             SkinMix = jsonData.SkinMix;
 

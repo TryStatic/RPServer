@@ -11,7 +11,7 @@
  Target Server Version : 80016
  File Encoding         : 65001
 
- Date: 17/07/2019 21:10:33
+ Date: 17/07/2019 23:39:52
 */
 
 SET NAMES utf8mb4;
@@ -53,6 +53,7 @@ CREATE TABLE `appearances`  (
   `IsMale` tinyint(4) NOT NULL,
   `ShapeFirstID` tinyint(4) NOT NULL,
   `ShapeSecondID` tinyint(4) NOT NULL,
+  `SkinSecondID` tinyint(4) NOT NULL,
   `ShapeMix` float NOT NULL,
   `SkinMix` float NOT NULL,
   `Blemishes` tinyint(4) NOT NULL,
