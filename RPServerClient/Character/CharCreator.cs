@@ -1,4 +1,5 @@
-﻿using Multiplayer;
+﻿using System.Net.Mail;
+using Multiplayer;
 using RAGE;
 using RAGE.Elements;
 using RPServerClient.Globals;
@@ -53,7 +54,8 @@ namespace RPServerClient.Character
 
         private void OnQuitCharCreation(object[] args)
         {
-            // TODO: go back to char selector
+            CustomBrowser.DestroyBrowser(null);
+            Events.CallLocal(ServerToClient.InitCharSelection);
         }
 
         private void OnSubmitNewCharacter(object[] args)
