@@ -1,6 +1,4 @@
-﻿using System.Net.Mail;
-using Multiplayer;
-using RAGE;
+﻿using Multiplayer;
 using RAGE.Elements;
 using RPServerClient.Globals;
 using RPServerClient.Util;
@@ -24,6 +22,7 @@ namespace RPServerClient.Character
             Events.Add(ServerToClient.StartCustomization, OnStartCustomization);
             Events.Add(ServerToClient.ResetCharCreation, ResetCharCreation);
             Events.Add(ServerToClient.DisplayCharError, DisplayError);
+            Events.Add(ServerToClient.SuccessCharCreation, OnSuccessCharCreation);
 
             // CEF
             Events.Add("SubmitInitialCharData", SubmitInitialCharData); // Step 1
@@ -35,6 +34,11 @@ namespace RPServerClient.Character
 
             Events.Add("SubmitCancel", OnQuitCharCreation);
 
+        }
+
+        private void OnSuccessCharCreation(object[] args)
+        {
+            CustomBrowser.ExecuteFunction(new object[] { "ShowStep", "7" });
         }
 
         private void ResetCharCreation(object[] args)
@@ -98,10 +102,10 @@ namespace RPServerClient.Character
             var shapeSecond = (int)args[1];
             var skinFirst = (int)args[2];
             var skinSecond = (int)args[3];
-            var ShapeMix = (float)args[4];
+            var shapeMix = (float)args[4];
             var skinMix = (float)args[5];
 
-            Player.LocalPlayer.SetHeadBlendData(shapeFirst, shapeSecond, skinFirst, skinSecond, 0, 0, ShapeMix, skinMix, 0, false);
+            Player.LocalPlayer.SetHeadBlendData(shapeFirst, shapeSecond, skinFirst, skinSecond, 0, 0, shapeMix, skinMix, 0, false);
         }
 
         private void OnUpdateFaceFeature(object[] args)

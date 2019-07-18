@@ -175,7 +175,6 @@ namespace RPServer.Controllers
                     return;
                 }
 
-
                 await Character.CreateNewAsync(client.GetAccount(), charName);
                 var newChIEnumerable = await Character.ReadByKeyAsync(() => new Character().CharacterName, charName);
                 var newCh = newChIEnumerable.First();
@@ -184,6 +183,8 @@ namespace RPServer.Controllers
                 var newChApp = new Appearance(pedhash, newCh);
                 newChApp.Populate(newCharData);
                 await Appearance.CreateAsync(newChApp);
+
+                client.TriggerEvent(ServerToClient.SuccessCharCreation);
             });
         }
 

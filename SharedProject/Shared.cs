@@ -45,6 +45,7 @@
         public const string DisplayCharError = "DisplayCharError";
         public const string StartCustomization = "StartCustomization";
         public const string ResetCharCreation = "ResetCharCreation";
+        public const string SuccessCharCreation = "SuccessCharCreation";
     }
 
     public static class SharedDataKey
