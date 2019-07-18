@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Dapper.Contrib.Extensions;
 using GTANetworkAPI;
 using RPServer.Controllers.Util;
@@ -9,17 +10,17 @@ namespace RPServer.Models
     internal class Appearance : Model<Appearance>
     {
         private bool _isMale;
-        private PedHash _skinModel;
+        private ulong _skinModel;
 
         public int CharacterID { set; get; }
 
         #region HEADBLEND_DATA
-        public PedHash SkinModel
+        public ulong SkinModel
         {
             set
             {
-                if (value == PedHash.FreemodeMale01) _isMale = true;
-                if (value == PedHash.FreemodeFemale01) _isMale = false;
+                if (value == (ulong)PedHash.FreemodeMale01) _isMale = true;
+                if (value == (ulong)PedHash.FreemodeFemale01) _isMale = false;
                 _skinModel = value;
             }
             get => _skinModel;
@@ -28,15 +29,15 @@ namespace RPServer.Models
         {
             set
             {
-                if (SkinModel == PedHash.FreemodeMale01) _isMale = true;
-                else if (SkinModel == PedHash.FreemodeFemale01) _isMale = false;
+                if (SkinModel == (ulong)PedHash.FreemodeMale01) _isMale = true;
+                else if (SkinModel == (ulong)PedHash.FreemodeFemale01) _isMale = false;
                 else _isMale = value;
             }
             get
             {
-                if (SkinModel == PedHash.FreemodeMale01)
+                if (SkinModel == (ulong)PedHash.FreemodeMale01)
                     return true;
-                if (SkinModel == PedHash.FreemodeFemale01)
+                if (SkinModel == (ulong)PedHash.FreemodeFemale01)
                     return false;
                 return _isMale;
             }
@@ -156,13 +157,13 @@ namespace RPServer.Models
         /// <param name="character"></param>
         public Appearance(PedHash ped, Character character)
         {
-            SkinModel = ped;
+            SkinModel = (ulong)ped;
             CharacterID = character.ID;
         }
 
         public void Apply(Client client)
         {
-            if (SkinModel != PedHash.FreemodeMale01 && SkinModel != PedHash.FreemodeFemale01) return;
+            if (SkinModel != (ulong)PedHash.FreemodeMale01 && SkinModel != (ulong)PedHash.FreemodeFemale01) return;
 
             client.SetCustomization(IsMale, GetHeadBlend(), EyeColor, HairColor, HairHighlightColor, GetFaceFeatures(), GetHeadOverlay(), new Decoration[0]);
             client.SetClothes((int)Components.Hair, HairStyle, HairStyleTexture);
