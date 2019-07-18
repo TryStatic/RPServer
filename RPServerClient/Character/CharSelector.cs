@@ -20,9 +20,13 @@ namespace RPServerClient.Character
         private List<CharDisplay> _charList = new List<CharDisplay>();
         private CustomCamera _characterDisplayCamera;
 
+        private bool _disableControls = false;
+
 
         public CharSelector()
         {
+            Events.Tick += Render;
+
             Events.Add(ServerToClient.InitCharSelector, OnInitCharSelector);
             Events.Add(ServerToClient.EndCharSelector, OnEndCharSelector);
             Events.Add(ServerToClient.RenderCharacterList, OnRenderCharacterList);
@@ -30,7 +34,11 @@ namespace RPServerClient.Character
             // Temp testing events
             Events.Add("selectchar", SelectChar);
             Events.Add("playchar", SpawnChar);
+        }
 
+        private void Render(List<Events.TickNametagData> nametags)
+        {
+            if (_disableControls) RAGE.Game.Pad.DisableAllControlActions(0);
         }
 
         private void OnInitCharSelector(object[] args)
@@ -47,6 +55,7 @@ namespace RPServerClient.Character
             RAGE.Chat.Output(_displayPosition.ToString());
             _characterDisplayCamera = new CustomCamera(cameraPos, _displayPosition);
             _characterDisplayCamera.SetActive(true);
+            _disableControls = true;
 
         }
 
@@ -58,6 +67,7 @@ namespace RPServerClient.Character
             Events.CallLocal("setChatState", true);
             RAGE.Game.Ui.DisplayHud(true);
             RAGE.Game.Ui.DisplayRadar(true);
+            _disableControls = false;
         }
 
         private void SpawnChar(object[] args)
