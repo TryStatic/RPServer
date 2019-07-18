@@ -298,6 +298,12 @@ namespace RPServer
 
             if (closest != null)
             {
+                var driver = NAPI.Vehicle.GetVehicleDriver(closest);
+                if (driver != null)
+                {
+                    player.SendChatMessage("Someone else is driving the closest vehicle.");
+                    return;
+                }
                 NAPI.Player.SetPlayerIntoVehicle(player, closest, -1);
             }
             else
