@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using RAGE;
 using RAGE.Elements;
@@ -37,12 +38,10 @@ namespace RPServerClient.Character
             Events.CallLocal("setChatState", true); // Enabled for testing TODO: needs to be removed
             var player = Player.LocalPlayer;
 
-            // Stage the model
             player.FreezePosition(true);
             UnStageModel(player);
 
             // Camera
-            //var cameraPos = Helper.GetPosInFrontOfPlayer(player, 1.5f);
             var cameraPos = Helper.GetPosInFrontOfVector3(_displayPosition, _displayHeading, 1.5f);
             RAGE.Chat.Output(cameraPos.ToString());
             RAGE.Chat.Output(_displayPosition.ToString());
@@ -64,18 +63,19 @@ namespace RPServerClient.Character
         private void SpawnChar(object[] args)
         {
             if(_selectedCharId < 0) return;
+            if(!IsOwnChar(_selectedCharId)) return;
             Events.CallRemote(ClientToServer.SubmitSpawnCharacter, _selectedCharId);
         }
-
+        
         private void SelectChar(object[] args)
         {
             if(args == null || args.Length < 1) return;
             
             var selectedID = (int)args[0];
             if(selectedID < 0) return;
+            if(!IsOwnChar(selectedID)) return;
 
             StageModel(Player.LocalPlayer);
-
             _selectedCharId = selectedID;
             Events.CallRemote(ClientToServer.SubmitCharacterSelection, _selectedCharId);
         }
@@ -84,7 +84,6 @@ namespace RPServerClient.Character
         {
             // Display the Browser UI
             //CustomBrowser.CreateBrowser("package://CEF/char/index.html");
-            //Events.CallRemote(ClientToServer.ApplyCharacterEditAnimation);
 
             if (args.Length < 2) return;
 
@@ -112,6 +111,6 @@ namespace RPServerClient.Character
             p.Position = _hiddenPosition;
         }
 
-
+        private bool IsOwnChar(int selectedCharID) => _charList.Any(c => c.CharID == selectedCharID);
     }
 }
