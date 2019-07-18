@@ -16,7 +16,7 @@ namespace RPServer.Controllers
         [Command("removecam")]
         public void cmd_removecam(Client client)
         { // Temporary (for testing)
-            client.TriggerEvent(ServerToClient.EndCharSelection);
+            client.TriggerEvent(ServerToClient.EndCharSelector);
         }
         [Command("changechar")]
         public void cmd_ChangeChar(Client client)
@@ -112,7 +112,7 @@ namespace RPServer.Controllers
                 client.SendChatMessage("TODO: Teleport to last known position here");
                 client.Position = new Vector3(-173.1077, 434.9248, 111.0801); // dummy
                 client.SetActiveChar(chData);
-                client.TriggerEvent(ServerToClient.EndCharSelection);
+                client.TriggerEvent(ServerToClient.EndCharSelector);
             });
         }
 
@@ -197,7 +197,7 @@ namespace RPServer.Controllers
         }
         private static void InitCharacterSelection(Client client)
         {
-            client.TriggerEvent(ServerToClient.InitCharSelection);
+            client.TriggerEvent(ServerToClient.InitCharSelector);
             client.ResetActiveChar();
             client.Dimension = (uint)client.Value + 1500;
 

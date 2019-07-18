@@ -55,7 +55,9 @@ namespace RPServerClient.Character
         private void OnQuitCharCreation(object[] args)
         {
             CustomBrowser.DestroyBrowser(null);
-            Events.CallLocal(ServerToClient.InitCharSelection);
+            _characterDisplayCamera.SetActive(false);
+            _characterDisplayCamera = null;
+            Events.CallLocal(ServerToClient.InitCharSelector);
         }
 
         private void OnSubmitNewCharacter(object[] args)

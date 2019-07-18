@@ -22,15 +22,43 @@ namespace RPServerClient.Character
 
         public CharSelector()
         {
-            Events.Add(ServerToClient.InitCharSelection, OnInitCharSelection);
+            Events.Add(ServerToClient.InitCharSelector, OnInitCharSelector);
+            Events.Add(ServerToClient.EndCharSelector, OnEndCharSelector);
             Events.Add(ServerToClient.RenderCharacterList, OnRenderCharacterList);
 
-
             // Temp testing events
-            Events.Add(ServerToClient.EndCharSelection, EndCharSelection);
             Events.Add("selectchar", SelectChar);
             Events.Add("playchar", SpawnChar);
 
+        }
+
+        private void OnInitCharSelector(object[] args)
+        {
+            Events.CallLocal("setChatState", true); // Enabled for testing TODO: needs to be removed
+            var player = Player.LocalPlayer;
+
+            // Stage the model
+            player.FreezePosition(true);
+            UnStageModel(player);
+
+            // Camera
+            //var cameraPos = Helper.GetPosInFrontOfPlayer(player, 1.5f);
+            var cameraPos = Helper.GetPosInFrontOfVector3(_displayPosition, _displayHeading, 1.5f);
+            RAGE.Chat.Output(cameraPos.ToString());
+            RAGE.Chat.Output(_displayPosition.ToString());
+            _characterDisplayCamera = new CustomCamera(cameraPos, _displayPosition);
+            _characterDisplayCamera.SetActive(true);
+
+        }
+
+        private void OnEndCharSelector(object[] args)
+        {
+            _characterDisplayCamera?.SetActive(false);
+            _charList = null;
+            Player.LocalPlayer.FreezePosition(false);
+            Events.CallLocal("setChatState", true);
+            RAGE.Game.Ui.DisplayHud(true);
+            RAGE.Game.Ui.DisplayRadar(true);
         }
 
         private void SpawnChar(object[] args)
@@ -52,25 +80,6 @@ namespace RPServerClient.Character
             Events.CallRemote(ClientToServer.SubmitCharacterSelection, _selectedCharId);
         }
 
-        private void OnInitCharSelection(object[] args)
-        {
-            Events.CallLocal("setChatState", true); // Enabled for testing TODO: needs to be removed
-            var player = Player.LocalPlayer;
-
-            // Stage the model
-            player.FreezePosition(true);
-            UnStageModel(player);
-
-            // Camera
-            //var cameraPos = Helper.GetPosInFrontOfPlayer(player, 1.5f);
-            var cameraPos = Helper.GetPosInFrontOfVector3(_displayPosition, _displayHeading, 1.5f);
-            RAGE.Chat.Output(cameraPos.ToString());
-            RAGE.Chat.Output(_displayPosition.ToString());
-            _characterDisplayCamera = new CustomCamera(cameraPos, _displayPosition);
-            _characterDisplayCamera.SetActive(true);
-
-        }
-
         private void OnRenderCharacterList(object[] args)
         {
             // Display the Browser UI
@@ -90,17 +99,6 @@ namespace RPServerClient.Character
             RAGE.Chat.Output("[CLIENT]: -------------");
 
             if(_selectedCharId >= 0) SelectChar(new object[]{ _selectedCharId });
-        }
-
-
-        private void EndCharSelection(object[] args)
-        {
-            _characterDisplayCamera?.SetActive(false);
-            _charList = null;
-            Player.LocalPlayer.FreezePosition(false);
-            Events.CallLocal("setChatState", true);
-            RAGE.Game.Ui.DisplayHud(true);
-            RAGE.Game.Ui.DisplayRadar(true);
         }
 
         private void StageModel(Player p)
