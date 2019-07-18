@@ -9,7 +9,7 @@ using Events = RAGE.Events;
 
 namespace RPServerClient.Character
 {
-    internal class CharManager : Events.Script
+    internal class CharSelector : Events.Script
     {
         private readonly Vector3 _displayPosition = new Vector3(-169.3321f, 482.2647f, 133.8789f);
         private readonly float _displayHeading = 282.6658f;
@@ -20,7 +20,7 @@ namespace RPServerClient.Character
         private CustomCamera _characterDisplayCamera;
 
 
-        public CharManager()
+        public CharSelector()
         {
             Events.Add(ServerToClient.InitCharSelection, OnInitCharSelection);
             Events.Add(ServerToClient.RenderCharacterList, OnRenderCharacterList);
