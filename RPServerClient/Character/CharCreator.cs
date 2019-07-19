@@ -1,4 +1,4 @@
-﻿using Multiplayer;
+using Multiplayer;
 using RAGE.Elements;
 using RPServerClient.Globals;
 using RPServerClient.Util;
@@ -53,13 +53,14 @@ namespace RPServerClient.Character
         {
             UnStageModel(Player.LocalPlayer);
             ResetAppearance(Player.LocalPlayer);
+            _characterDisplayCamera = new CustomCamera(Helper.GetPosInFrontOfVector3(_displayPos.GetVector3Part(), _displayPos.W, 1.5f), _displayPos.GetVector3Part(), true);
             CustomBrowser.CreateBrowser("package://CEF/char/charcreator.html");
         }
 
         private void OnQuitCharCreation(object[] args)
         {
             CustomBrowser.DestroyBrowser(null);
-            _characterDisplayCamera.SetActive(false);
+            _characterDisplayCamera.SetCameraState(false);
             _characterDisplayCamera = null;
             Events.CallLocal(ServerToClient.InitCharSelector);
         }
@@ -170,8 +171,7 @@ namespace RPServerClient.Character
         {
             var headCoords = Player.LocalPlayer.GetBoneCoords(12844, 0, 0, 0);
             var campos = Helper.GetPosInFrontOfVector3(headCoords, Player.LocalPlayer.GetHeading(), 0.35f);
-            _characterDisplayCamera = new CustomCamera(campos, headCoords);
-            _characterDisplayCamera.SetActive(true);
+            _characterDisplayCamera.SetCameraPos(campos, headCoords);
         }
 
         private void DisplayError(object[] args)

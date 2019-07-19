@@ -51,7 +51,8 @@ namespace RPServerClient.Character
         private void Render(List<Events.TickNametagData> nametags)
         {
             if (_disableControls) RAGE.Game.Pad.DisableAllControlActions(0);
-            _charMenu.ProcessMenus();
+            _charMenu?.ProcessMenus();
+
         }
 
         private void OnInitCharSelector(object[] args)
@@ -64,15 +65,14 @@ namespace RPServerClient.Character
 
             // Camera
             var cameraPos = Helper.GetPosInFrontOfVector3(_displayPosition, _displayHeading, 1.5f);
-            _characterDisplayCamera = new CustomCamera(cameraPos, _displayPosition);
-            _characterDisplayCamera.SetActive(true);
+            _characterDisplayCamera = new CustomCamera(cameraPos, _displayPosition, true);
             _disableControls = true;
 
         }
 
         private void OnEndCharSelector(object[] args)
         {
-            _characterDisplayCamera?.SetActive(false);
+            _characterDisplayCamera?.DestroyCamera();
             _charList = null;
             Player.LocalPlayer.FreezePosition(false);
             Events.CallLocal("setChatState", true);

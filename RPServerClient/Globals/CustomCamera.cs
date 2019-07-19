@@ -2,42 +2,45 @@
 
 namespace RPServerClient.Globals
 {
-    internal class CustomCamera
+    public class CustomCamera : RAGE.Events.Script
     {
-        private int _cameraId;
-        private readonly Vector3 _camPosition;
-        private readonly Vector3 _pointAtPosition;
-        private bool _cameraStatus;
+        private readonly uint _cameraHandle = RAGE.Game.Misc.GetHashKey("DEFAULT_SCRIPTED_CAMERA");
+        private int _cameraID;
 
-        public CustomCamera(Vector3 camPos, Vector3 pointAt)
+        public CustomCamera(Vector3 cameraPos, Vector3 cameraLookAt, bool active)
         {
-            if (camPos == null || pointAt == null) return;
-            _camPosition = camPos;
-            _pointAtPosition = pointAt;
+            var camera = RAGE.Game.Cam.CreateCamera(_cameraHandle, true);
+
+            RAGE.Game.Cam.SetCamCoord(camera, cameraPos.X, cameraPos.Y, cameraPos.Z);
+            RAGE.Game.Cam.PointCamAtCoord(camera, cameraLookAt.X, cameraLookAt.Y, cameraLookAt.Z);
+            RAGE.Game.Cam.SetCamActive(camera, active);
+            RAGE.Game.Cam.RenderScriptCams(active, false, 0, true, true, 0);
+
+            _cameraID = camera;
         }
 
-        public void SetActive(bool activate)
+        public void SetCameraState(bool state)
         {
-            if (activate)
-            {
-                if (_cameraStatus) return;
+            RAGE.Game.Cam.SetCamActive(_cameraID, state);
+            RAGE.Game.Cam.RenderScriptCams(state, false, 0, true, true, 0);
+        }
 
-                _cameraId = RAGE.Game.Cam.CreateCamera(RAGE.Game.Misc.GetHashKey("DEFAULT_SCRIPTED_CAMERA"), true);
-                RAGE.Game.Cam.SetCamCoord(_cameraId, _camPosition.X, _camPosition.Y, _camPosition.Z);
-                RAGE.Game.Cam.PointCamAtCoord(_cameraId, _pointAtPosition.X, _pointAtPosition.Y, _pointAtPosition.Z);
-                RAGE.Game.Cam.SetCamActive(_cameraId, true);
-                RAGE.Game.Cam.RenderScriptCams(true, false, 0, true, false, 0);
-                _cameraStatus = true;
-            }
-            else
-            {
-                if (!_cameraStatus) return;
+        public void SetCameraPos(Vector3 pos, Vector3 rot)
+        {
+            RAGE.Game.Cam.SetCamCoord(_cameraID, pos.X, pos.Y, pos.Z);
+            RAGE.Game.Cam.PointCamAtCoord(_cameraID, rot.X, rot.Y, rot.Z);
+        }
 
-                RAGE.Game.Cam.DestroyCam(_cameraId, true);
-                RAGE.Game.Cam.RenderScriptCams(false, false, 0, true, false, 0);
-                _cameraStatus = false;
+        public void DestroyCamera()
+        {
+            RAGE.Game.Cam.SetCamActive(_cameraID, false);
+            RAGE.Game.Cam.DestroyCam(_cameraID, true);
+            RAGE.Game.Cam.RenderScriptCams(false, false, 0, true, true, 0);
+        }
 
-            }
+        public Vector3 CameraPosition(int camera)
+        {
+            return RAGE.Game.Cam.GetCamCoord(camera);
         }
     }
 }
