@@ -3,7 +3,7 @@ using Shared;
 
 namespace RPServerClient.Globals
 {
-    internal class Globals : RAGE.Events.Script
+    internal class Globals
     {
         public static bool IsAccountLoggedIn => (bool)Player.LocalPlayer.GetSharedData(SharedDataKey.AccountLoggedIn);
 

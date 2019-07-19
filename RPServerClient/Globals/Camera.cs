@@ -2,7 +2,7 @@
 
 namespace RPServerClient.Globals
 {
-    public class Camera : RAGE.Events.Script
+    public class Camera
     {
         private readonly uint _cameraHandle = RAGE.Game.Misc.GetHashKey("DEFAULT_SCRIPTED_CAMERA");
         private readonly int _cameraID;

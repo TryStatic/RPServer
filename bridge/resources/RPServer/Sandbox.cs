@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using GTANetworkAPI;
 using RPServer.Controllers;
@@ -24,6 +24,12 @@ namespace RPServer
             player.SendChatMessage("/loadipl /removeipl /resetipls /gotopos /getpos /fd");
             player.SendChatMessage("/setheadblend /setheadoverlay, /setheadoverlaycolor, /setfacefeature, /setcompvar /seteyecolor");
             player.SendChatMessage("/removecam /changechar, /selectchar, /play /createchar /addx /addy /addz /getfowardpos");
+        }
+
+        [Command("gotowaypoint")]
+        public void cmd_gotowaypoint(Client client)
+        {
+            client.TriggerEvent("gotowaypoint");
         }
 
         [Command("test")]
