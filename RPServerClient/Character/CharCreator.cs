@@ -3,6 +3,7 @@ using RAGE.Elements;
 using RPServerClient.Globals;
 using RPServerClient.Util;
 using Shared;
+using Camera = RPServerClient.Globals.Camera;
 using Events = RAGE.Events;
 
 namespace RPServerClient.Character
@@ -11,7 +12,7 @@ namespace RPServerClient.Character
     {
         private readonly Quaternion _displayPos = new Quaternion(-169.3321f, 482.2647f, 133.8789f, 282.6658f);
         private readonly Quaternion _hiddenPos = new Quaternion(-163.4660f, 483.5910f, 134.5571f, 282.6658f);
-        private CustomCamera _characterDisplayCamera;
+        private Camera _characterDisplayCamera;
 
         public CharCreator()
         {
@@ -53,7 +54,7 @@ namespace RPServerClient.Character
         {
             UnStageModel(Player.LocalPlayer);
             ResetAppearance(Player.LocalPlayer);
-            _characterDisplayCamera = new CustomCamera(Helper.GetPosInFrontOfVector3(_displayPos.GetVector3Part(), _displayPos.W, 1.5f), _displayPos.GetVector3Part(), true);
+            _characterDisplayCamera = new Camera(Helper.GetPosInFrontOfVector3(_displayPos.GetVector3Part(), _displayPos.W, 1.5f), _displayPos.GetVector3Part(), true);
             CustomBrowser.CreateBrowser("package://CEF/char/charcreator.html");
         }
 

@@ -5,9 +5,9 @@ using Newtonsoft.Json;
 using RAGE;
 using RAGE.Elements;
 using RAGE.NUI;
-using RPServerClient.Globals;
 using RPServerClient.Util;
 using Shared;
+using Camera = RPServerClient.Globals.Camera;
 using Events = RAGE.Events;
 
 namespace RPServerClient.Character
@@ -26,7 +26,7 @@ namespace RPServerClient.Character
 
         private int _selectedCharId = -1;
         private List<CharDisplay> _charList = new List<CharDisplay>();
-        private CustomCamera _characterDisplayCamera;
+        private Camera _characterDisplayCamera;
         private MenuPool _charMenu;
 
         private bool _disableControls = false;
@@ -65,7 +65,7 @@ namespace RPServerClient.Character
 
             // Camera
             var cameraPos = Helper.GetPosInFrontOfVector3(_displayPosition, _displayHeading, 1.5f);
-            _characterDisplayCamera = new CustomCamera(cameraPos, _displayPosition, true);
+            _characterDisplayCamera = new Camera(cameraPos, _displayPosition, true);
             _disableControls = true;
 
         }

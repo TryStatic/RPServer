@@ -2,12 +2,12 @@
 
 namespace RPServerClient.Globals
 {
-    public class CustomCamera : RAGE.Events.Script
+    public class Camera : RAGE.Events.Script
     {
         private readonly uint _cameraHandle = RAGE.Game.Misc.GetHashKey("DEFAULT_SCRIPTED_CAMERA");
-        private int _cameraID;
+        private readonly int _cameraID;
 
-        public CustomCamera(Vector3 cameraPos, Vector3 cameraLookAt, bool active)
+        public Camera(Vector3 cameraPos, Vector3 cameraLookAt, bool active)
         {
             var camera = RAGE.Game.Cam.CreateCamera(_cameraHandle, true);
 
