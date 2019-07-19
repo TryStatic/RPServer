@@ -4,12 +4,12 @@ using RAGE.Ui;
 
 namespace RPServerClient.Globals
 {
-    internal class CustomBrowser : RAGE.Events.Script
+    internal class Browser : RAGE.Events.Script
     {
         private static object[] _parameters;
         public static HtmlWindow MainBrowser;
 
-        public CustomBrowser()
+        public Browser()
         {
             RAGE.Events.Add("createBrowser", CreateBrowser);
             RAGE.Events.Add("executeFunction", ExecuteFunction);
