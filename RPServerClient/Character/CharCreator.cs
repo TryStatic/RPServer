@@ -1,4 +1,4 @@
-using Multiplayer;
+﻿using Multiplayer;
 using RAGE.Elements;
 using RPServerClient.Globals;
 using RPServerClient.Util;
@@ -61,7 +61,7 @@ namespace RPServerClient.Character
         private void OnQuitCharCreation(object[] args)
         {
             CustomBrowser.DestroyBrowser(null);
-            _characterDisplayCamera.SetCameraState(false);
+            _characterDisplayCamera.SetActive(false);
             _characterDisplayCamera = null;
             Events.CallLocal(ServerToClient.InitCharSelector);
         }
@@ -172,7 +172,7 @@ namespace RPServerClient.Character
         {
             var headCoords = Player.LocalPlayer.GetBoneCoords(12844, 0, 0, 0);
             var campos = Helper.GetPosInFrontOfVector3(headCoords, Player.LocalPlayer.GetHeading(), 0.35f);
-            _characterDisplayCamera.SetCameraPos(campos, headCoords);
+            _characterDisplayCamera.SetPos(campos, headCoords);
         }
 
         private void DisplayError(object[] args)

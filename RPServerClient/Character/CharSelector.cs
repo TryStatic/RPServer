@@ -72,7 +72,7 @@ namespace RPServerClient.Character
 
         private void OnEndCharSelector(object[] args)
         {
-            _characterDisplayCamera?.DestroyCamera();
+            _characterDisplayCamera?.Destroy();
             _charList = null;
             Player.LocalPlayer.FreezePosition(false);
             Events.CallLocal("setChatState", true);
