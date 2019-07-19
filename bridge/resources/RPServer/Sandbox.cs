@@ -1,7 +1,6 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text.RegularExpressions;
 using GTANetworkAPI;
-using RPServer.Controllers;
 using RPServer.Controllers.Util;
 using RPServer.Game;
 using RPServer.Util;
@@ -24,6 +23,7 @@ namespace RPServer
             player.SendChatMessage("/loadipl /removeipl /resetipls /gotopos /getpos /fd");
             player.SendChatMessage("/setheadblend /setheadoverlay, /setheadoverlaycolor, /setfacefeature, /setcompvar /seteyecolor");
             player.SendChatMessage("/removecam /changechar, /selectchar, /play /createchar /addx /addy /addz /getfowardpos");
+            player.SendChatMessage("/createmarker, /createtextlabel, /createblip /gotowaypoint");
         }
 
         [Command("gotowaypoint")]
@@ -31,6 +31,27 @@ namespace RPServer
         {
             client.TriggerEvent("gotowaypoint");
         }
+
+
+        [Command("createmarker")]
+        public void cmd_createmarker(Client client, uint type)
+        {
+            NAPI.Marker.CreateMarker(type, client.Position, new Vector3(), new Vector3(), 1.0f, new Color(255, 0, 125), true, 0);
+        }
+
+        [Command("createtextlabel")]
+        public void cmd_createtextlabel(Client client, string text)
+        {
+            NAPI.TextLabel.CreateTextLabel(text, client.Position, 1.0f, 1.0f, 0, new Color(255, 0, 0), false, 0);
+        }
+
+        [Command("createblip")]
+        public void cmd_createtextlabel(Client client, string text, uint sprite)
+        {
+            NAPI.Blip.CreateBlip(sprite, client.Position, 1.0f, 0, text, 255, 0F, false, 0, 0);
+        }
+
+
 
         [Command("test")]
         public void test(Client client)
