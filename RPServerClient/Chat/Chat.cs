@@ -2,11 +2,11 @@
 
 namespace RPServerClient.Chat
 {
-    internal class CustomChat : RAGE.Events.Script
+    internal class Chat : RAGE.Events.Script
     {
         public static HtmlWindow ChatBrowser;
 
-        public CustomChat()
+        public Chat()
         {
             RAGE.Events.Add("SendToChat", OnSendToChat);
             RAGE.Events.Add("setChatState", OnSetChatState);
