@@ -22,6 +22,7 @@
         public const string SubmitPlayerCommand = "SubmitPlayerCommand";
         public const string SubmitInitialCharData = "SubmitInitialCharData";
         public const string SubmitNewCharacter = "SubmitNewCharacter";
+        public const string TriggerCharSelection = "TriggerCharSelection";
     }
 
     public static class ServerToClient

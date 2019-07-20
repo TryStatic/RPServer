@@ -70,6 +70,7 @@ namespace RPServer.Controllers
                     return;
                 }
                 var accData = client.GetAccount();
+                if(accData == null) return;
 
                 if (accData.ID != fetchedChar.CharOwnerID)
                 {
@@ -186,6 +187,12 @@ namespace RPServer.Controllers
 
                 client.TriggerEvent(ServerToClient.SuccessCharCreation);
             });
+        }
+
+        [RemoteEvent(ClientToServer.TriggerCharSelection)]
+        public void ClientEvent_TriggerCharSelection(Client client)
+        {
+            InitCharacterSelection(client);
         }
 
         private static void PlayerSuccessfulLogin(object source, EventArgs e)

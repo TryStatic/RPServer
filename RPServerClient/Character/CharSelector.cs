@@ -52,7 +52,6 @@ namespace RPServerClient.Character
         {
             if (_disableControls) RAGE.Game.Pad.DisableAllControlActions(0);
             _charMenu?.ProcessMenus();
-
         }
 
         private void OnInitCharSelector(object[] args)
@@ -67,7 +66,6 @@ namespace RPServerClient.Character
             var cameraPos = Helper.GetPosInFrontOfVector3(_displayPosition, _displayHeading, 1.5f);
             _characterDisplayCamera = new Camera(cameraPos, _displayPosition, true);
             _disableControls = true;
-
         }
 
         private void OnEndCharSelector(object[] args)
@@ -124,14 +122,26 @@ namespace RPServerClient.Character
                 menu.AddItem(ch);
             }
 
+            var spawnCharItem = new UIMenuColoredItem("Spawn Character", Color.DarkCyan, Color.LightBlue);
+            menu.AddItem(spawnCharItem);
+
             var createCharItem = new UIMenuColoredItem("Create New Character", Color.CadetBlue, Color.LightBlue);
             menu.AddItem(createCharItem);
+
 
             menu.OnItemSelect += (sender, item, index) =>
             {
                 if (item == createCharItem)
                 {
                     Events.CallLocal("createchar");
+                    _charMenu.CloseAllMenus();
+                    return;
+                }
+                if (item == spawnCharItem)
+                {
+                    if(_selectedCharId < 0) return;
+                    SpawnChar(null);
+                    _charMenu.CloseAllMenus();
                     return;
                 }
 

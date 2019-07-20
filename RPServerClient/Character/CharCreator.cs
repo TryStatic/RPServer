@@ -63,7 +63,7 @@ namespace RPServerClient.Character
             Browser.DestroyBrowser(null);
             _characterDisplayCamera.SetActive(false);
             _characterDisplayCamera = null;
-            Events.CallLocal(ServerToClient.InitCharSelector);
+            Events.CallRemote(ClientToServer.TriggerCharSelection);
         }
 
         private void OnSubmitNewCharacter(object[] args)
