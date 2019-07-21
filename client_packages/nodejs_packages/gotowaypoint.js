@@ -1,8 +1,7 @@
 mp.events.add("gotowaypoint", () =>
 {
-
 	if (mp.game.invoke('0x1DD1F58F493F1DA5'))
-	{
+	{ // Has waypoint set?
 		let blipIterator = mp.game.invoke('0x186E5D252FA50E7D');
 		let FirstInfoId = mp.game.invoke('0x1BEDE233E6CD2A1F', blipIterator);
 		let NextInfoId = mp.game.invoke('0x14F96AA50D6FBEA7', blipIterator);
@@ -14,7 +13,7 @@ mp.events.add("gotowaypoint", () =>
 				let coord = mp.game.ui.getBlipInfoIdCoord(i);
 
 				coord.z = mp.game.gameplay.getGroundZFor3dCoord(coord.x, coord.y, i * 50, 0, false); // try calcualte Z
-        mp.players.local.position = coord;
+        		mp.players.local.position = coord;
                  
 				mp.players.local.freezePosition(true);
 				setTimeout(function ()
@@ -39,5 +38,9 @@ mp.events.add("gotowaypoint", () =>
 				}, 1500);
 			}
 		}
+	}
+	else
+	{
+		mp.gui.chat.push("You have no waypoint set.");
 	}
 })
