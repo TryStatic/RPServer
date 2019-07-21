@@ -13,11 +13,6 @@ namespace RPServer.Controllers
 {
     internal class CharacterHandler : Script
     {
-        [Command("removecam")]
-        public void cmd_removecam(Client client)
-        { // Temporary (for testing)
-            client.TriggerEvent(Events.ServerToClient.Character.EndCharSelector);
-        }
         [Command("changechar")]
         public void cmd_ChangeChar(Client client)
         { // Temporary (?)
