@@ -13,6 +13,10 @@ namespace RPServer.Controllers.EventHandlers
             var acc = client.GetAccount();
             var sendMsg = $"{acc.Username}: {message}";
 
+            var ch = client.GetActiveChar();
+            if(client.GetActiveChar() != null) sendMsg = $"{client.GetActiveChar().CharacterName.Replace("_", " ")}: {message}";
+
+
             Logger.GetInstance().ChatLog(sendMsg);
             NAPI.ClientEvent.TriggerClientEventForAll("SendToChat", sendMsg);
         }
