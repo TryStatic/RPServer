@@ -1,8 +1,7 @@
-﻿using Multiplayer;
+using Multiplayer;
 using RAGE.Elements;
 using RPServerClient.Globals;
 using RPServerClient.Util;
-using Camera = RPServerClient.Globals.Camera;
 using Events = RAGE.Events;
 
 namespace RPServerClient.Character
@@ -11,7 +10,6 @@ namespace RPServerClient.Character
     {
         private readonly Quaternion _displayPos = new Quaternion(-169.3321f, 482.2647f, 133.8789f, 282.6658f);
         private readonly Quaternion _hiddenPos = new Quaternion(-163.4660f, 483.5910f, 134.5571f, 282.6658f);
-        private Camera _characterDisplayCamera;
 
         public CharCreator()
         {
@@ -33,7 +31,6 @@ namespace RPServerClient.Character
             Events.Add("SubmitNewCharacter", OnSubmitNewCharacter); // Step 5
 
             Events.Add("SubmitCancel", OnQuitCharCreation);
-
         }
 
         private void OnSuccessCharCreation(object[] args)
@@ -53,15 +50,14 @@ namespace RPServerClient.Character
         {
             UnStageModel(Player.LocalPlayer);
             ResetAppearance(Player.LocalPlayer);
-            _characterDisplayCamera = new Camera(Helper.GetPosInFrontOfVector3(_displayPos.GetVector3Part(), _displayPos.W, 1.5f), _displayPos.GetVector3Part(), true);
             Browser.CreateBrowser("package://CEF/char/charcreator.html");
+            Cam.SetPos(Helper.GetPosInFrontOfVector3(_displayPos.GetVector3Part(), _displayPos.W, 1.5f), _displayPos.GetVector3Part(), true);
         }
 
         private void OnQuitCharCreation(object[] args)
         {
             Browser.DestroyBrowser(null);
-            _characterDisplayCamera.SetActive(false);
-            _characterDisplayCamera = null;
+            Cam.SetActive(false);
             Events.CallRemote(Shared.Events.ClientToServer.Character.TriggerCharSelection);
         }
 
@@ -91,8 +87,11 @@ namespace RPServerClient.Character
         {
             StageModel(Player.LocalPlayer);
             Events.CallRemote(Shared.Events.ClientToServer.Character.ApplyCharacterEditAnimation);
-            ZoomToFace();
             Browser.ExecuteFunction("ShowNextStep");
+
+            var headCoords = Player.LocalPlayer.GetBoneCoords(12844, 0, 0, 0);
+            var campos = Helper.GetPosInFrontOfVector3(headCoords, Player.LocalPlayer.GetHeading(), 0.35f);
+            Cam.SetPos(campos, headCoords);
         }
 
         private void OnUpdateHeadBlend(object[] args)
@@ -165,13 +164,6 @@ namespace RPServerClient.Character
         private void UnStageModel(Player p)
         {
             p.Position = _hiddenPos.GetVector3Part();
-        }
-        
-        private void ZoomToFace()
-        {
-            var headCoords = Player.LocalPlayer.GetBoneCoords(12844, 0, 0, 0);
-            var campos = Helper.GetPosInFrontOfVector3(headCoords, Player.LocalPlayer.GetHeading(), 0.35f);
-            _characterDisplayCamera.SetPos(campos, headCoords);
         }
 
         private void DisplayError(object[] args)

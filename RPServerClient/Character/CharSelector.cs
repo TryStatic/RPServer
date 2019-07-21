@@ -3,12 +3,12 @@ using System.Drawing;
 using System.Linq;
 using Newtonsoft.Json;
 using RAGE;
-using RAGE.Elements;
 using RAGE.NUI;
 using RPServerClient.Util;
 using Shared;
-using Camera = RPServerClient.Globals.Camera;
+using Cam = RPServerClient.Globals.Cam;
 using Events = RAGE.Events;
+using Player = RAGE.Elements.Player;
 
 namespace RPServerClient.Character
 {
@@ -26,7 +26,6 @@ namespace RPServerClient.Character
 
         private int _selectedCharId = -1;
         private List<CharDisplay> _charList = new List<CharDisplay>();
-        private Camera _characterDisplayCamera;
         private MenuPool _charMenu;
 
         private bool _disableControls = false;
@@ -58,25 +57,21 @@ namespace RPServerClient.Character
         {
             Events.CallLocal("setChatState", true); // Enabled for testing TODO: needs to be removed
             var player = Player.LocalPlayer;
-
             player.FreezePosition(true);
             UnStageModel(player);
-
-            // Camera
-            var cameraPos = Helper.GetPosInFrontOfVector3(_displayPosition, _displayHeading, 1.5f);
-            _characterDisplayCamera = new Camera(cameraPos, _displayPosition, true);
             _disableControls = true;
+            Cam.SetPos(Helper.GetPosInFrontOfVector3(_displayPosition, _displayHeading, 1.5f), _displayPosition, true);
         }
 
         private void OnEndCharSelector(object[] args)
         {
-            _characterDisplayCamera?.Destroy();
             _charList = null;
             Player.LocalPlayer.FreezePosition(false);
             Events.CallLocal("setChatState", true);
             RAGE.Game.Ui.DisplayHud(true);
             RAGE.Game.Ui.DisplayRadar(true);
             _disableControls = false;
+            Cam.SetActive(false);
         }
 
         private void SpawnChar(object[] args)

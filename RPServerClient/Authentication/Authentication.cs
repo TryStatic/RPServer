@@ -1,8 +1,7 @@
-using RAGE;
+﻿using RAGE;
 using RAGE.Elements;
 using RPServerClient.Globals;
 using Events = RAGE.Events;
-using Camera = RPServerClient.Globals.Camera;
 
 // ReSharper disable CommentTypo
 
@@ -12,7 +11,6 @@ namespace RPServerClient.Authentication
     {
         private static readonly Vector3 LoginCamPos = new Vector3(148.88035583496094f, -1407.726318359375f, 156.79771423339844f);
         private static readonly Vector3 LoginCamPointAt = new Vector3(126.11740112304688f, -772.676025390625f, 155.15695190429688f);
-        private static readonly Camera LoginCam = new Camera(LoginCamPos, LoginCamPointAt, false);
 
         public Authentication()
         {
@@ -195,7 +193,6 @@ namespace RPServerClient.Authentication
         private void OnSetLoginScreen(object[] args)
         {
             var state = (bool) args[0];
-            LoginCam.SetActive(true);
 
             if (state)
             { // Enable
@@ -205,11 +202,13 @@ namespace RPServerClient.Authentication
                 Events.CallLocal("setChatState", false);
                 RAGE.Game.Ui.DisplayHud(false);
                 RAGE.Game.Ui.DisplayRadar(false);
+                Cam.SetPos(LoginCamPos, LoginCamPointAt, true);
             }
             else
             {
                 Browser.DestroyBrowser(null);
                 RAGE.Game.Graphics.TransitionFromBlurred(200);
+                Cam.SetActive(false);
             }
         }
     }
