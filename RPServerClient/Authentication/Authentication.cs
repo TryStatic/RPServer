@@ -2,7 +2,6 @@
 using RAGE.Elements;
 using RPServerClient.Globals;
 using Events = RAGE.Events;
-using Shared;
 using Camera = RPServerClient.Globals.Camera;
 
 // ReSharper disable CommentTypo
@@ -18,16 +17,16 @@ namespace RPServerClient.Authentication
         public Authentication()
         {
             #region SERVER_TO_CLIENT
-            Events.Add(ServerToClient.SetLoginScreen, OnSetLoginScreen);
-            Events.Add(ServerToClient.DisplayError, OnDisplayError);
-            Events.Add(ServerToClient.RegistrationSuccess, OnRegistrationSuccess);
-            Events.Add(ServerToClient.Show2FAbyEmailAddress, OnShow2FAbyEmailAddress);
-            Events.Add(ServerToClient.Show2FAbyGoogleAuth, OnShow2FAbyGoogleAuth);
-            Events.Add(ServerToClient.ShowInitialEmailVerification, OnShowInitialEmailVerification);
-            Events.Add(ServerToClient.ShowChangeEmailAddress, OnShowChangeEmailAddress);
-            Events.Add(ServerToClient.ShowLoginPage, OnShowLoginPage);
-            Events.Add(ServerToClient.ShowQRCode, OnShowQRCode);
-            Events.Add(ServerToClient.ShowQRCodeEnabled, OnShowQRCodeEnabled);
+            Events.Add(Shared.Events.ServerToClient.Authentication.SetLoginScreen, OnSetLoginScreen);
+            Events.Add(Shared.Events.ServerToClient.Authentication.DisplayError, OnDisplayError);
+            Events.Add(Shared.Events.ServerToClient.Authentication.RegistrationSuccess, OnRegistrationSuccess);
+            Events.Add(Shared.Events.ServerToClient.Authentication.Show2FAbyEmailAddress, OnShow2FAbyEmailAddress);
+            Events.Add(Shared.Events.ServerToClient.Authentication.Show2FAbyGoogleAuth, OnShow2FAbyGoogleAuth);
+            Events.Add(Shared.Events.ServerToClient.Authentication.ShowInitialEmailVerification, OnShowInitialEmailVerification);
+            Events.Add(Shared.Events.ServerToClient.Authentication.ShowChangeEmailAddress, OnShowChangeEmailAddress);
+            Events.Add(Shared.Events.ServerToClient.Authentication.ShowLoginPage, OnShowLoginPage);
+            Events.Add(Shared.Events.ServerToClient.Authentication.ShowQRCode, OnShowQRCode);
+            Events.Add(Shared.Events.ServerToClient.Authentication.ShowQRCodeEnabled, OnShowQRCodeEnabled);
             #endregion
 
             #region CEF_TO_CLIENT
@@ -114,48 +113,48 @@ namespace RPServerClient.Authentication
         private void onSubmitEnableGoogleAuthCode(object[] args)
         {
             Browser.ExecuteFunction("ShowLoading");
-            Events.CallRemote(ClientToServer.SubmitEnableGoogleAuthCode, args[0].ToString());
+            Events.CallRemote(Shared.Events.ClientToServer.Authentication.SubmitEnableGoogleAuthCode, args[0].ToString());
         }
 
         // mp.trigger("onSubmitNewEmail", email);
         private void OnSubmitNewEmail(object[] args)
         {
             Browser.ExecuteFunction("ShowLoading");
-            Events.CallRemote(ClientToServer.SubmitNewVerificationEmail, args[0].ToString());
+            Events.CallRemote(Shared.Events.ClientToServer.Authentication.SubmitNewVerificationEmail, args[0].ToString());
         }
 
         // mp.trigger("onSubmitFirstEmailToken", token);
         private void OnSubmitFirstEmailToken(object[] args)
         {
             Browser.ExecuteFunction("ShowLoading");
-            Events.CallRemote(ClientToServer.SubmitFirstEmailToken, args[0].ToString());
+            Events.CallRemote(Shared.Events.ClientToServer.Authentication.SubmitFirstEmailToken, args[0].ToString());
         }
 
         // mp.trigger("onSubmitGoogleAuthCode", code);
         private void OnSubmitGoogleAuthCode(object[] args)
         {
             Browser.ExecuteFunction("ShowLoading");
-            Events.CallRemote(ClientToServer.SubmitGoogleAuthCode, args[0].ToString());
+            Events.CallRemote(Shared.Events.ClientToServer.Authentication.SubmitGoogleAuthCode, args[0].ToString());
         }
 
         // mp.trigger("onSubmitEmailToken", user, pass);
         private void OnSubmitEmailToken(object[] args)
         {
             Browser.ExecuteFunction("ShowLoading");
-            Events.CallRemote(ClientToServer.SubmitEmailToken, args[0].ToString());
+            Events.CallRemote(Shared.Events.ClientToServer.Authentication.SubmitEmailToken, args[0].ToString());
         }
 
         // mp.trigger("onResendMail");
         private void OnResendMail(object[] args)
         {
-            Events.CallRemote(ClientToServer.SubmitResendEmail);
+            Events.CallRemote(Shared.Events.ClientToServer.Authentication.SubmitResendEmail);
         }
 
         // mp.trigger("onBackToLogin");
         private void OnBackToLogin(object[] args)
         {
             Browser.ExecuteFunction("ShowLoading");
-            Events.CallRemote(ClientToServer.SubmitBackToLogin);
+            Events.CallRemote(Shared.Events.ClientToServer.Authentication.SubmitBackToLogin);
         }
 
         // mp.trigger("onSubmitForgetPass", user, email);
@@ -176,14 +175,14 @@ namespace RPServerClient.Authentication
         private void OnSubmitLogin(object[] args)
         {
             Browser.ExecuteFunction("ShowLoading");
-            Events.CallRemote(ClientToServer.SubmitLoginAccount, args[0].ToString(), args[1].ToString());
+            Events.CallRemote(Shared.Events.ClientToServer.Authentication.SubmitLoginAccount, args[0].ToString(), args[1].ToString());
         }
 
         //mp.trigger("onSubmitRegister", user, email, pass);
         private void OnSubmitRegister(object[] args)
         {
             Browser.ExecuteFunction("ShowLoading");
-            Events.CallRemote(ClientToServer.SubmitRegisterAccount, args[0].ToString(), args[1].ToString(), args[2].ToString());
+            Events.CallRemote(Shared.Events.ClientToServer.Authentication.SubmitRegisterAccount, args[0].ToString(), args[1].ToString(), args[2].ToString());
         }
 
         private void OnDisplayError(object[] args)

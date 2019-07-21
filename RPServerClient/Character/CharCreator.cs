@@ -2,7 +2,6 @@
 using RAGE.Elements;
 using RPServerClient.Globals;
 using RPServerClient.Util;
-using Shared;
 using Camera = RPServerClient.Globals.Camera;
 using Events = RAGE.Events;
 
@@ -20,10 +19,10 @@ namespace RPServerClient.Character
             Events.Add("createchar", OnInitCharCreation);
 
             // Server Events
-            Events.Add(ServerToClient.StartCustomization, OnStartCustomization);
-            Events.Add(ServerToClient.ResetCharCreation, ResetCharCreation);
-            Events.Add(ServerToClient.DisplayCharError, DisplayError);
-            Events.Add(ServerToClient.SuccessCharCreation, OnSuccessCharCreation);
+            Events.Add(Shared.Events.ServerToClient.Character.StartCustomization, OnStartCustomization);
+            Events.Add(Shared.Events.ServerToClient.Character.ResetCharCreation, ResetCharCreation);
+            Events.Add(Shared.Events.ServerToClient.Character.DisplayCharError, DisplayError);
+            Events.Add(Shared.Events.ServerToClient.Character.SuccessCharCreation, OnSuccessCharCreation);
 
             // CEF
             Events.Add("SubmitInitialCharData", SubmitInitialCharData); // Step 1
@@ -63,13 +62,13 @@ namespace RPServerClient.Character
             Browser.DestroyBrowser(null);
             _characterDisplayCamera.SetActive(false);
             _characterDisplayCamera = null;
-            Events.CallRemote(ClientToServer.TriggerCharSelection);
+            Events.CallRemote(Shared.Events.ClientToServer.Character.TriggerCharSelection);
         }
 
         private void OnSubmitNewCharacter(object[] args)
         {
             var dataAsJson = args[0].ToString();
-            Events.CallRemote(ClientToServer.SubmitNewCharacter, dataAsJson);
+            Events.CallRemote(Shared.Events.ClientToServer.Character.SubmitNewCharacter, dataAsJson);
         }
         #endregion
 
@@ -85,13 +84,13 @@ namespace RPServerClient.Character
 
             Player.LocalPlayer.Model = isMale ? (uint)1885233650 : 2627665880;
 
-            Events.CallRemote(ClientToServer.SubmitInitialCharData, firstname, lastname);
+            Events.CallRemote(Shared.Events.ClientToServer.Character.SubmitInitialCharData, firstname, lastname);
         }
 
         private void OnStartCustomization(object[] args)
         {
             StageModel(Player.LocalPlayer);
-            Events.CallRemote(ClientToServer.ApplyCharacterEditAnimation);
+            Events.CallRemote(Shared.Events.ClientToServer.Character.ApplyCharacterEditAnimation);
             ZoomToFace();
             Browser.ExecuteFunction("ShowNextStep");
         }

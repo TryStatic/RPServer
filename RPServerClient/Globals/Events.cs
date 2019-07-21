@@ -1,6 +1,4 @@
-﻿using Shared;
-
-namespace RPServerClient.Globals
+﻿namespace RPServerClient.Globals
 {
     internal class Events : RAGE.Events.Script
     {
@@ -11,7 +9,7 @@ namespace RPServerClient.Globals
 
         private void OnPlayerCommandEvent(string cmd, RAGE.Events.CancelEventArgs cancel)
         {
-            RAGE.Events.CallRemote(ClientToServer.SubmitPlayerCommand, cmd);
+            RAGE.Events.CallRemote(Shared.Events.ClientToServer.Command.SubmitPlayerCommand, cmd);
         }
     }
 }

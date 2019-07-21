@@ -16,7 +16,7 @@ namespace RPServer.Controllers
         [Command("removecam")]
         public void cmd_removecam(Client client)
         { // Temporary (for testing)
-            client.TriggerEvent(ServerToClient.EndCharSelector);
+            client.TriggerEvent(Events.ServerToClient.Character.EndCharSelector);
         }
         [Command("changechar")]
         public void cmd_ChangeChar(Client client)
@@ -36,10 +36,10 @@ namespace RPServer.Controllers
 
         public CharacterHandler() => AuthenticationHandler.PlayerSuccessfulLogin += PlayerSuccessfulLogin;
 
-        [RemoteEvent(ClientToServer.ApplyCharacterEditAnimation)]
+        [RemoteEvent(Events.ClientToServer.Character.ApplyCharacterEditAnimation)]
         public void ClientEvent_ApplyCharacterEditAnimation(Client client) => client.PlayAnimation("missbigscore2aleadinout@ig_7_p2@bankman@", "leadout_waiting_loop", 1);
 
-        [RemoteEvent(ClientToServer.SubmitCharacterSelection)]
+        [RemoteEvent(Events.ClientToServer.Character.SubmitCharacterSelection)]
         public void ClientEvent_SubmitCharacterSelection(Client client, int selectedCharId)
         {
             if (!client.IsLoggedIn()) return;
@@ -68,7 +68,7 @@ namespace RPServer.Controllers
             });
         }
 
-        [RemoteEvent(ClientToServer.SubmitSpawnCharacter)]
+        [RemoteEvent(Events.ClientToServer.Character.SubmitSpawnCharacter)]
         public void ClientEvent_SubmitSpawnCharacter(Client client, int selectedCharId)
         {
             if (!client.IsLoggedIn()) return;
@@ -98,24 +98,24 @@ namespace RPServer.Controllers
                 client.Position = new Vector3(-173.1077, 434.9248, 111.0801); // dummy
                 client.SetActiveChar(chData);
                 client.Name = chData.CharacterName.Replace("_", " ");
-                client.TriggerEvent(ServerToClient.EndCharSelector);
+                client.TriggerEvent(Events.ServerToClient.Character.EndCharSelector);
             });
         }
 
-        [RemoteEvent(ClientToServer.SubmitInitialCharData)]
+        [RemoteEvent(Events.ClientToServer.Character.SubmitInitialCharData)]
         public void ClientEvent_SubmitInitialCharData(Client client, string firstName, string lastName)
         {
             if(!client.IsLoggedIn()) return;
 
             if (!ValidateString(ValidationStrings.CharFirstName, firstName))
             {
-                client.TriggerEvent(ServerToClient.DisplayCharError, "There is something wrong with that first name.");
+                client.TriggerEvent(Events.ServerToClient.Character.DisplayCharError, "There is something wrong with that first name.");
                 return;
             }
 
             if (!ValidateString(ValidationStrings.CharFirstName, lastName))
             {
-                client.TriggerEvent(ServerToClient.DisplayCharError, "There is something wrong with that last name.");
+                client.TriggerEvent(Events.ServerToClient.Character.DisplayCharError, "There is something wrong with that last name.");
                 return;
             }
 
@@ -124,14 +124,14 @@ namespace RPServer.Controllers
                 var ch = await Character.ReadByKeyAsync(() => new Character().CharacterName, $"{firstName}_{lastName}");
                 if (ch.Any())
                 {
-                    client.TriggerEvent(ServerToClient.DisplayCharError, "That character name already exists.");
+                    client.TriggerEvent(Events.ServerToClient.Character.DisplayCharError, "That character name already exists.");
                     return;
                 }
-                client.TriggerEvent(ServerToClient.StartCustomization);
+                client.TriggerEvent(Events.ServerToClient.Character.StartCustomization);
             });
         }
 
-        [RemoteEvent(ClientToServer.SubmitNewCharacter)]
+        [RemoteEvent(Events.ClientToServer.Character.SubmitNewCharacter)]
         public void ClientEvent_SubmitNewCharacter(Client client, string dataAsJson)
         {
             if(!client.IsLoggedIn()) return;
@@ -140,13 +140,13 @@ namespace RPServer.Controllers
 
             if (!ValidateString(ValidationStrings.CharFirstName, newCharData.firstname))
             {
-                client.TriggerEvent(ServerToClient.ResetCharCreation, "There is something wrong with that first name.");
+                client.TriggerEvent(Events.ServerToClient.Character.ResetCharCreation, "There is something wrong with that first name.");
                 return;
             }
 
             if (!ValidateString(ValidationStrings.CharFirstName, newCharData.lastname))
             {
-                client.TriggerEvent(ServerToClient.ResetCharCreation, "There is something wrong with that first name.");
+                client.TriggerEvent(Events.ServerToClient.Character.ResetCharCreation, "There is something wrong with that first name.");
                 return;
             }
 
@@ -157,7 +157,7 @@ namespace RPServer.Controllers
                 var ch = await Character.ReadByKeyAsync(() => new Character().CharacterName, charName);
                 if (ch.Any())
                 {
-                    client.TriggerEvent(ServerToClient.ResetCharCreation, "That character name already exists.");
+                    client.TriggerEvent(Events.ServerToClient.Character.ResetCharCreation, "That character name already exists.");
                     return;
                 }
 
@@ -170,11 +170,11 @@ namespace RPServer.Controllers
                 newChApp.Populate(newCharData);
                 await Appearance.CreateAsync(newChApp);
 
-                client.TriggerEvent(ServerToClient.SuccessCharCreation);
+                client.TriggerEvent(Events.ServerToClient.Character.SuccessCharCreation);
             });
         }
 
-        [RemoteEvent(ClientToServer.TriggerCharSelection)]
+        [RemoteEvent(Events.ClientToServer.Character.TriggerCharSelection)]
         public void ClientEvent_TriggerCharSelection(Client client)
         {
             InitCharacterSelection(client);
@@ -190,7 +190,7 @@ namespace RPServer.Controllers
         }
         private static void InitCharacterSelection(Client client)
         {
-            client.TriggerEvent(ServerToClient.InitCharSelector);
+            client.TriggerEvent(Events.ServerToClient.Character.InitCharSelector);
             client.ResetActiveChar();
             client.Dimension = (uint)client.Value + 1500;
 
@@ -203,7 +203,7 @@ namespace RPServer.Controllers
                 {
                     charDisplayList.Add(new CharDisplay(c.ID, c.CharacterName));
                 }
-                client.TriggerEvent(ServerToClient.RenderCharacterList, JsonConvert.SerializeObject(charDisplayList), acc.LastSpawnedCharId);
+                client.TriggerEvent(Events.ServerToClient.Character.RenderCharacterList, JsonConvert.SerializeObject(charDisplayList), acc.LastSpawnedCharId);
             });
         }
     }

@@ -39,9 +39,9 @@ namespace RPServerClient.Character
 
             Events.Tick += Render;
 
-            Events.Add(ServerToClient.InitCharSelector, OnInitCharSelector);
-            Events.Add(ServerToClient.EndCharSelector, OnEndCharSelector);
-            Events.Add(ServerToClient.RenderCharacterList, OnRenderCharacterList);
+            Events.Add(Shared.Events.ServerToClient.Character.InitCharSelector, OnInitCharSelector);
+            Events.Add(Shared.Events.ServerToClient.Character.EndCharSelector, OnEndCharSelector);
+            Events.Add(Shared.Events.ServerToClient.Character.RenderCharacterList, OnRenderCharacterList);
 
             // Temp testing events
             Events.Add("selectchar", SelectChar);
@@ -83,7 +83,7 @@ namespace RPServerClient.Character
         {
             if(_selectedCharId < 0) return;
             if(!IsOwnChar(_selectedCharId)) return;
-            Events.CallRemote(ClientToServer.SubmitSpawnCharacter, _selectedCharId);
+            Events.CallRemote(Shared.Events.ClientToServer.Character.SubmitSpawnCharacter, _selectedCharId);
         }
         
         private void SelectChar(object[] args)
@@ -96,7 +96,7 @@ namespace RPServerClient.Character
 
             StageModel(Player.LocalPlayer);
             _selectedCharId = selectedID;
-            Events.CallRemote(ClientToServer.SubmitCharacterSelection, _selectedCharId);
+            Events.CallRemote(Shared.Events.ClientToServer.Character.SubmitCharacterSelection, _selectedCharId);
         }
 
         private void OnRenderCharacterList(object[] args)
