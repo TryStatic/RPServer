@@ -1,4 +1,4 @@
-﻿using RAGE;
+using RAGE;
 using RAGE.Elements;
 using RPServerClient.Globals;
 using Events = RAGE.Events;
@@ -55,12 +55,10 @@ namespace RPServerClient.Authentication
             #endregion
         }
 
-
         private void OnShowQRCodeEnabled(object[] args)
         {
             Browser.MainBrowser.Url = "package://CEF/auth/enabledgoogleauth.html";
         }
-
 
         private void OnCloseWindow(object[] args)
         {
@@ -109,76 +107,65 @@ namespace RPServerClient.Authentication
             if (args[0] != null) OnDisplaySuccess(new[] { args[0] });
         }
 
-
         private void onSubmitEnableGoogleAuthCode(object[] args)
         {
             Browser.ExecuteFunction("ShowLoading");
             Events.CallRemote(Shared.Events.ClientToServer.Authentication.SubmitEnableGoogleAuthCode, args[0].ToString());
         }
 
-        // mp.trigger("onSubmitNewEmail", email);
         private void OnSubmitNewEmail(object[] args)
         {
             Browser.ExecuteFunction("ShowLoading");
             Events.CallRemote(Shared.Events.ClientToServer.Authentication.SubmitNewVerificationEmail, args[0].ToString());
         }
 
-        // mp.trigger("onSubmitFirstEmailToken", token);
         private void OnSubmitFirstEmailToken(object[] args)
         {
             Browser.ExecuteFunction("ShowLoading");
             Events.CallRemote(Shared.Events.ClientToServer.Authentication.SubmitFirstEmailToken, args[0].ToString());
         }
 
-        // mp.trigger("onSubmitGoogleAuthCode", code);
         private void OnSubmitGoogleAuthCode(object[] args)
         {
             Browser.ExecuteFunction("ShowLoading");
             Events.CallRemote(Shared.Events.ClientToServer.Authentication.SubmitGoogleAuthCode, args[0].ToString());
         }
 
-        // mp.trigger("onSubmitEmailToken", user, pass);
         private void OnSubmitEmailToken(object[] args)
         {
             Browser.ExecuteFunction("ShowLoading");
             Events.CallRemote(Shared.Events.ClientToServer.Authentication.SubmitEmailToken, args[0].ToString());
         }
 
-        // mp.trigger("onResendMail");
         private void OnResendMail(object[] args)
         {
             Events.CallRemote(Shared.Events.ClientToServer.Authentication.SubmitResendEmail);
         }
 
-        // mp.trigger("onBackToLogin");
         private void OnBackToLogin(object[] args)
         {
             Browser.ExecuteFunction("ShowLoading");
             Events.CallRemote(Shared.Events.ClientToServer.Authentication.SubmitBackToLogin);
         }
 
-        // mp.trigger("onSubmitForgetPass", user, email);
         private void OnSubmitForgetPass(object[] args)
         {
             Browser.ExecuteFunction("ShowLoading");
             Events.CallRemote("SubmitForgetPass", args[0].ToString(), args[1].ToString());
         }
 
-        // mp.trigger("onSubmitNewPass", pass);
         private void OnSubmitNewPass(object[] args)
         {
             Browser.ExecuteFunction("ShowLoading");
             Events.CallRemote("SubmitSubmitNewPass", args[0].ToString());
         }
 
-        // mp.trigger("onSubmitLogin", user, pass);
         private void OnSubmitLogin(object[] args)
         {
             Browser.ExecuteFunction("ShowLoading");
             Events.CallRemote(Shared.Events.ClientToServer.Authentication.SubmitLoginAccount, args[0].ToString(), args[1].ToString());
         }
 
-        //mp.trigger("onSubmitRegister", user, email, pass);
         private void OnSubmitRegister(object[] args)
         {
             Browser.ExecuteFunction("ShowLoading");

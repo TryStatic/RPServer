@@ -101,9 +101,6 @@ namespace RPServerClient.Character
 
         private void OnRenderCharacterList(object[] args)
         {
-            // Display the Browser UI
-            //CustomBrowser.CreateBrowser("package://CEF/char/index.html");
-
             if (args.Length < 2) return;
 
             _charList = JsonConvert.DeserializeObject<List<CharDisplay>>(args[0] as string);
