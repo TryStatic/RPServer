@@ -33,22 +33,6 @@ namespace RPServer.Controllers
 
             InitCharacterSelection(client);
         }
-        [Command("selectchar")]
-        public void cmd_selectchar(Client client, int id)
-        { // Temporary
-            client.TriggerEvent("selectchar", id);
-        }
-        [Command("play")]
-        public void cmd_selectchar(Client client)
-        { // Temporary
-            client.TriggerEvent("playchar");
-        }
-        [Command("createchar")]
-        public void cmd_createchar(Client client)
-        { // Temporary
-            client.SendChatMessage("Taking you to char creator.");
-            client.TriggerEvent("createchar");
-        }
 
         public CharacterHandler() => AuthenticationHandler.PlayerSuccessfulLogin += PlayerSuccessfulLogin;
 
@@ -113,6 +97,7 @@ namespace RPServer.Controllers
                 client.SendChatMessage("TODO: Teleport to last known position here");
                 client.Position = new Vector3(-173.1077, 434.9248, 111.0801); // dummy
                 client.SetActiveChar(chData);
+                client.Name = chData.CharacterName.Replace("_", " ");
                 client.TriggerEvent(ServerToClient.EndCharSelector);
             });
         }
