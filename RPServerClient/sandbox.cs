@@ -1,11 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using RAGE;
+using RAGE.NUI;
 using RPServerClient.Util;
 using Player = RAGE.Elements.Player;
 
 namespace RPServerClient
 {
+    class compvars
+    {
+        public int[] drawableid = new int[300];
+        public int[] textureid = new int[300];
+        public int[] paletteid = new int[300];
+
+    }
+
     internal class Sandbox : Events.Script
     {
         public static int ScreenX = 0;
@@ -16,8 +25,17 @@ namespace RPServerClient
 
         private static string VERSION = null;
 
+        private readonly MenuPool _clothespool = new MenuPool();
+        UIMenu menu = new UIMenu("Clothes", "Clothes", new Point(1350, 200));
+        private List<compvars> compvars = new List<compvars>();
+
         public Sandbox()
         {
+            for (int i = 0; i < 12; i++)
+            {
+                compvars.Add(new compvars());
+            }
+
             RAGE.Game.Graphics.GetScreenResolution(ref ScreenResX, ref ScreenResY);
             RAGE.Game.Graphics.GetActiveScreenResolution(ref ScreenX, ref ScreenY);
 
@@ -41,7 +59,7 @@ namespace RPServerClient
             Events.Add("compvar", SetCompVar);
             Events.Add("tpinfront", TeleportInFront);
             Events.Add("testpos", TestPos);
-            Events.Add("test", Test);
+            Events.Add("testclothes", TestClothes);
 
             // Boost
             uint stamina = RAGE.Game.Misc.GetHashKey("SP0_STAMINA");
@@ -58,13 +76,57 @@ namespace RPServerClient
             RAGE.Game.Stats.StatSetInt(stealth, 100, true);
             uint lungCapacity = RAGE.Game.Misc.GetHashKey("SP0_LUNGCAPACITY");
             RAGE.Game.Stats.StatSetInt(lungCapacity, 100, true);
+
+            _clothespool.Add(menu);
+
+            var comps = new List<dynamic>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
+            var drawables = new List<dynamic>();
+            var textures = new List<dynamic>();
+            var palletes = new List<dynamic>();
+
+            for (int i = 0; i < 300; i++)
+            {
+                drawables.Add(i);
+                textures.Add(i);
+                palletes.Add(i);
+            }
+
+            var compsMenu = new UIMenuListItem("CompID", comps, 0);
+            menu.AddItem(compsMenu);
+
+            var drawablesMenu = new UIMenuListItem("DrawableID", drawables, 0);
+            menu.AddItem(drawablesMenu);
+
+            var texturesMenu = new UIMenuListItem("Texture", drawables, 0);
+            menu.AddItem(texturesMenu);
+
+            var palletesMenu = new UIMenuListItem("Pallete", drawables, 0);
+            menu.AddItem(palletesMenu);
+
+
+            menu.OnListChange += (sender, item, index) =>
+            {
+                if (item == compsMenu)
+                {
+                    drawablesMenu.Index = compvars[compsMenu.Index].drawableid[compsMenu.Index];
+                    texturesMenu.Index = compvars[compsMenu.Index].textureid[compsMenu.Index];
+                    palletesMenu.Index = compvars[compsMenu.Index].paletteid[compsMenu.Index];
+                    return;
+                }
+
+                compvars[compsMenu.Index].drawableid[compsMenu.Index] = drawablesMenu.Index;
+                compvars[compsMenu.Index].textureid[compsMenu.Index] = texturesMenu.Index;
+                compvars[compsMenu.Index].paletteid[compsMenu.Index] = palletesMenu.Index;
+                RAGE.Chat.Output($"{comps[compsMenu.Index]}, {drawables[drawablesMenu.Index]}, {textures[texturesMenu.Index]}, {palletes[palletesMenu.Index]}");
+                Player.LocalPlayer.SetComponentVariation(comps[compsMenu.Index], drawables[drawablesMenu.Index], textures[texturesMenu.Index], palletes[palletesMenu.Index]);
+            };
+
         }
 
-        private void Test(object[] args)
+        private void TestClothes(object[] args)
         {
-
-            RAGE.Chat.Output("Reseting");
-            Player.LocalPlayer.SetDefaultComponentVariation();
+            _clothespool.RefreshIndex();
+            menu.Visible = true;
         }
 
         private void TestPos(object[] args)
@@ -88,6 +150,7 @@ namespace RPServerClient
                 RAGE.Game.UIText.Draw(VERSION, new Point(ScreenResX / 2, ScreenResY - (int)(ScreenResY * 0.03)), 0.35f, Color.White, RAGE.Game.Font.ChaletLondon, true);
             }
 
+            _clothespool?.ProcessMenus();
         }
 
         private void TeleportInFront(object[] args)

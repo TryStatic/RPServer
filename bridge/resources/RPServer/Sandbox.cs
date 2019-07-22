@@ -22,8 +22,8 @@ namespace RPServer
             player.SendChatMessage("/setskin /setnick /togflymode /getcamcords /spawnme /playanimation /stopani");
             player.SendChatMessage("/loadipl /removeipl /resetipls /gotopos /getpos /fd");
             player.SendChatMessage("/setheadblend /setheadoverlay, /setheadoverlaycolor, /setfacefeature, /setcompvar /seteyecolor");
-            player.SendChatMessage("/removecam /changechar, /selectchar, /play /createchar /addx /addy /addz /getfowardpos");
-            player.SendChatMessage("/createmarker, /createtextlabel, /createblip /gotowaypoint");
+            player.SendChatMessage("/changechar /addx /addy /addz /getfowardpos /testclothes");
+            player.SendChatMessage("/createmarker /createtextlabel, /createblip /gotowaypoint");
         }
 
         [Command("gotowaypoint")]
@@ -53,10 +53,10 @@ namespace RPServer
 
 
 
-        [Command("test")]
-        public void test(Client client)
+        [Command("testclothes")]
+        public void cmdtestclothes(Client client)
         {
-            client.TriggerEvent("test");
+            client.TriggerEvent("testclothes");
 
         }
 
