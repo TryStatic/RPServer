@@ -92,6 +92,27 @@ namespace RPServerClient.Character
             var headCoords = Player.LocalPlayer.GetBoneCoords(12844, 0, 0, 0);
             var campos = Helper.GetPosInFrontOfVector3(headCoords, Player.LocalPlayer.GetHeading(), 0.35f);
             Cam.SetPos(campos, headCoords);
+
+            // Set naked
+            if (Player.LocalPlayer.Model == 1885233650)
+            { // male
+                Player.LocalPlayer.SetComponentVariation(1, 0, 0, 0);
+                Player.LocalPlayer.SetComponentVariation(3, 15, 0, 0);
+                Player.LocalPlayer.SetComponentVariation(4, 61, 0, 0);
+                Player.LocalPlayer.SetComponentVariation(6, 34, 0, 0);
+                Player.LocalPlayer.SetComponentVariation(8, 42, 4, 0);
+                Player.LocalPlayer.SetComponentVariation(11, 14, 20, 0);
+            }
+            else
+            { // female
+                Player.LocalPlayer.SetComponentVariation(3, 15, 0, 0);
+                Player.LocalPlayer.SetComponentVariation(4, 17, 0, 0);
+                Player.LocalPlayer.SetComponentVariation(6, 35, 0, 0);
+                Player.LocalPlayer.SetComponentVariation(8, 2, 0, 0);
+                Player.LocalPlayer.SetComponentVariation(11, 5, 4, 0);
+            }
+
+
         }
 
         private void OnUpdateHeadBlend(object[] args)

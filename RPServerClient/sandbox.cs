@@ -97,10 +97,10 @@ namespace RPServerClient
             var drawablesMenu = new UIMenuListItem("DrawableID", drawables, 0);
             menu.AddItem(drawablesMenu);
 
-            var texturesMenu = new UIMenuListItem("Texture", drawables, 0);
+            var texturesMenu = new UIMenuListItem("TextureID", textures, 0);
             menu.AddItem(texturesMenu);
 
-            var palletesMenu = new UIMenuListItem("Pallete", drawables, 0);
+            var palletesMenu = new UIMenuListItem("PalleteID", palletes, 0);
             menu.AddItem(palletesMenu);
 
 
