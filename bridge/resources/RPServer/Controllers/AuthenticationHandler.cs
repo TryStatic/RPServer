@@ -6,9 +6,9 @@ using RPServer.Models;
 using RPServer.Models.Util;
 using RPServer.Resource;
 using RPServer.Util;
-using Shared;
 using static RPServer.Controllers.Util.DataValidator;
 using Task = System.Threading.Tasks.Task;
+using Events = Shared.Events;
 
 namespace RPServer.Controllers
 {
@@ -444,7 +444,7 @@ namespace RPServer.Controllers
                 client.SendChatMessage(AccountStrings.SuccessLogin);
                 client.SendChatMessage("SUM COMMANDS: /cmds");
             }
-            client.SetSharedData(SharedDataKey.AccountLoggedIn, !state);
+            client.SetSharedData(Shared.Data.Keys.AccountLoggedIn, !state);
             client.TriggerEvent(Events.ServerToClient.Authentication.SetLoginScreen, state);
 
             // Keep this at the end of the Method

@@ -9,6 +9,15 @@
     <Import_RootNamespace>SharedProject</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Shared.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\CharDisplay.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events\ClientToServer\Authentication.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events\ClientToServer\Character.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events\ClientToServer\Command.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events\ServerToClient\Authentication.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events\ServerToClient\Character.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Keys.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Data\" />
   </ItemGroup>
 </Project>

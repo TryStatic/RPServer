@@ -84,12 +84,12 @@ namespace RPServer.Util
                 return;
             }
             client.SetData(DataKey.ActiveCharData, character);
-            client.SetSharedData(SharedDataKey.ActiveCharID, character.ID);
+            client.SetSharedData(Shared.Data.Keys.ActiveCharID, character.ID);
         }
         internal static void ResetActiveChar(this Client client)
         {
             client.ResetData(DataKey.ActiveCharData);
-            client.SetSharedData(SharedDataKey.ActiveCharID, -1);
+            client.SetSharedData(Shared.Data.Keys.ActiveCharID, -1);
         }
 
         // TaskManager

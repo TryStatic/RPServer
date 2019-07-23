@@ -1,6 +1,5 @@
 ﻿using GTANetworkAPI;
 using RPServer.Util;
-using Shared;
 
 namespace RPServer.Controllers.EventHandlers
 {
@@ -10,7 +9,7 @@ namespace RPServer.Controllers.EventHandlers
         /// Event Handler that receives executed commands by relying on the Client.
         /// This cannot block command execution it merely records them.
         /// </summary>
-        [RemoteEvent(Events.ClientToServer.Command.SubmitPlayerCommand)]
+        [RemoteEvent(Shared.Events.ClientToServer.Command.SubmitPlayerCommand)]
         public void ClientEvent_OnPlayerCommand(Client client, string cmd)
         {
             // Log the command

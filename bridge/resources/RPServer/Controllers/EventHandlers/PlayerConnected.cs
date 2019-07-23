@@ -11,7 +11,7 @@ namespace RPServer.Controllers.EventHandlers
         public void OnPlayerConnected(Client client)
         {
             // Init Shared Data
-            client.SetSharedData(SharedDataKey.AccountLoggedIn, false);
+            client.SetSharedData(Shared.Data.Keys.AccountLoggedIn, false);
             client.ResetActiveChar();
 
             client.SendChatMessage(AccountStrings.InfoWelcome);

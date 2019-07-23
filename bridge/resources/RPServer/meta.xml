@@ -12,9 +12,9 @@
     <setting name="DB_PROVIDER" value="MySql.Data.MySqlClient"/>
 
     <!-- SMTP Settings -->
-    <setting name="SMTP_HOST" value=""/>
-    <setting name="SMTP_PORT" value=""/>
-    <setting name="SMTP_USERNAME" value=""/>
-    <setting name="SMTP_PASSWORD" value=""/>
+    <setting name="SMTP_HOST" value="smtp.gmail.com"/>
+    <setting name="SMTP_PORT" value="25"/>
+    <setting name="SMTP_USERNAME" value="roleplaytestserver@gmail.com"/>
+    <setting name="SMTP_PASSWORD" value="asxetos123321123"/>
   </settings>
 </meta>

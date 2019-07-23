@@ -6,7 +6,8 @@ using Newtonsoft.Json;
 using RPServer.Controllers.Util;
 using RPServer.Models;
 using RPServer.Util;
-using Shared;
+using Shared.Data;
+using Events = Shared.Events;
 using static RPServer.Controllers.Util.DataValidator;
 
 namespace RPServer.Controllers
