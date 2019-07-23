@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using RAGE.Elements;
+using RPServerClient.Util;
 using Vector3 = RAGE.Vector3;
 
 namespace RPServerClient.Globals
@@ -18,6 +19,22 @@ namespace RPServerClient.Globals
             RAGE.Game.Cam.PointCamAtCoord(_cameraID, lookAt.X, lookAt.Y, lookAt.Z);
 
             if(setActive) SetActive(true);
+        }
+
+        /// <summary>
+        /// Sets the Camera to point at some Player's Pedbone
+        /// </summary>
+        /// <param name="player">De playa whom bone you are interested</param>
+        /// <param name="bone">Teh boneID</param>
+        /// <param name="heading">Teh Direction around the bone to place the camera towards</param>
+        /// <param name="distance">Some distance</param>
+        /// <param name="setActive">Whether or not to set the camera active</param>
+        public static void PointAtBone(Player player, Shared.Enums.Bone bone, float heading, float distance, bool setActive = false)
+        {
+            var boneCoords = player.GetBoneCoords((int)bone, 0, 0, 0);
+            var cameraPos = Helper.GetPosInFrontOfVector3(boneCoords, heading, distance);
+            SetPos(cameraPos, boneCoords);
+            if (setActive) SetActive(true);
         }
 
         public static void SetActive(bool state)

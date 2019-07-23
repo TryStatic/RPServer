@@ -89,9 +89,7 @@ namespace RPServerClient.Character
             Events.CallRemote(Shared.Events.ClientToServer.Character.ApplyCharacterEditAnimation);
             Browser.ExecuteFunction("ShowNextStep");
 
-            var headCoords = Player.LocalPlayer.GetBoneCoords((int)Shared.Enums.Bone.IK_Head, 0, 0, 0);
-            var campos = Helper.GetPosInFrontOfVector3(headCoords, Player.LocalPlayer.GetHeading(), 0.35f);
-            Cam.SetPos(campos, headCoords);
+            Cam.PointAtBone(Player.LocalPlayer, Shared.Enums.Bone.IK_Head, Player.LocalPlayer.GetHeading(), 0.35f, true);
 
             // Set naked
             if (Player.LocalPlayer.Model == 1885233650)
