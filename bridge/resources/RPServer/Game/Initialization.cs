@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using GTANetworkAPI;
+using RPServer.Controllers;
 using RPServer.Database;
 using RPServer.Models;
 using RPServer.Models.Util;
@@ -57,7 +58,7 @@ namespace RPServer.Game
 
             // Sever World Settings
             var worldData = await World.GetWorldData();
-            Controllers.World.WorldHandler.CurrentTime = worldData.ServerTime;
+            WorldHandler.CurrentTime = worldData.ServerTime;
             NAPI.World.ResetIplList();
         }
 

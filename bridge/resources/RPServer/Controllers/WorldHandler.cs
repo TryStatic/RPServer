@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Threading;
 using GTANetworkAPI;
-using RPServer.Util;
 
-namespace RPServer.Controllers.World
+namespace RPServer.Controllers
 {
     internal class WorldHandler : Script
     {
@@ -29,7 +28,7 @@ namespace RPServer.Controllers.World
         {
             // Save World Data
             var worldData = await Models.World.GetWorldData();
-            worldData.ServerTime = WorldHandler.CurrentTime;
+            worldData.ServerTime = CurrentTime;
             await Models.World.SaveWorldData(worldData);
 
             // Dispose Timers
