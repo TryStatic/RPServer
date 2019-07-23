@@ -54,15 +54,13 @@ namespace RPServer.Game
             EmailSender.SmtpUsername = NAPI.Resource.GetSetting<string>(this, "SMTP_USERNAME");
             EmailSender.SmtpPassword = NAPI.Resource.GetSetting<string>(this, "SMTP_PASSWORD");
             // Have expired tokens get removed once per hour
-            _expiredEmailTokensTimer = new Timer(OnRemoveExpiredEmailTokens, null, 1, Timeout.Infinite);
+            _expiredEmailTokensTimer = new Timer(OnRemoveExpiredEmailTokens, null, 1, 1000 * 60 * 60);
         }
 
         private async void OnRemoveExpiredEmailTokens(object state)
         {
             await EmailToken.RemoveExpiredCodesAsync();
             Logger.GetInstance().ServerInfo("Removing expired email verification tokens from the database.");
-            _expiredEmailTokensTimer.Change(1000 * 60 * 60, Timeout.Infinite);
-
         }
     }
 }

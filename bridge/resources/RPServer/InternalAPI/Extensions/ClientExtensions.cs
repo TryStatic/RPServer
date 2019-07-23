@@ -76,7 +76,7 @@ namespace RPServer.InternalAPI.Extensions
             if (player == null) return;
 
             player.SetData(DataKey.ActionQueue, new ConcurrentQueue<Action>());
-            player.SetData(DataKey.ActionQueueTimer, new Timer(TaskManager.OnHandleDequeue, player, 1, Timeout.Infinite));
+            player.SetData(DataKey.ActionQueueTimer, new Timer(TaskManager.OnHandleDequeue, player, 0, 200));
         }
         internal static ConcurrentQueue<Action> GetActionQueue(this Client player)
         {
