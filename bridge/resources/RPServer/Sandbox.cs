@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using GTANetworkAPI;
 using RPServer.Controllers.Util;
 using RPServer.Game;
+using RPServer.InternalAPI.Extensions;
 using RPServer.Util;
 
 namespace RPServer
@@ -279,8 +280,8 @@ namespace RPServer
             player.SendChatMessage("---[Online]---");
             foreach (var p in NAPI.Pools.GetAllPlayers())
             {
-                if (!p.IsLoggedIn()) player.SendChatMessage($"[UNAUTHED]: Social: {p.SocialClubName}, ClientName: {p.Name}, Ping: {p.Ping}");
-                else player.SendChatMessage($"[{p.GetAccount().Username}]: Social: {p.SocialClubName}, ClientName: {p.Name}, Ping: {p.Ping}");
+                if (!ClientExtensions.IsLoggedIn(p)) player.SendChatMessage($"[UNAUTHED]: Social: {p.SocialClubName}, ClientName: {p.Name}, Ping: {p.Ping}");
+                else player.SendChatMessage($"[{ClientExtensions.GetAccount(p).Username}]: Social: {p.SocialClubName}, ClientName: {p.Name}, Ping: {p.Ping}");
             }
         }
 

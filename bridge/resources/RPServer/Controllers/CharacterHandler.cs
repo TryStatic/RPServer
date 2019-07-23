@@ -4,6 +4,7 @@ using System.Linq;
 using GTANetworkAPI;
 using Newtonsoft.Json;
 using RPServer.Controllers.Util;
+using RPServer.InternalAPI.Extensions;
 using RPServer.Models;
 using RPServer.Util;
 using Shared.Data;

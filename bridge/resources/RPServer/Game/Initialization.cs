@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using GTANetworkAPI;
 using RPServer.Database;
-using RPServer.Models;
 using RPServer.Models.Util;
 using RPServer.Util;
 

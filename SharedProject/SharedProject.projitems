@@ -16,7 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Events\ServerToClient\Authentication.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\ServerToClient\Character.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Keys.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Structures\Bone.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\Bone.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Data\" />

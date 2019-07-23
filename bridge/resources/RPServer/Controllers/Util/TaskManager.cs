@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using GTANetworkAPI;
+using RPServer.InternalAPI.Extensions;
 using RPServer.Util;
 
 namespace RPServer.Controllers.Util
