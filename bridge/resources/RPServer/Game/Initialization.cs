@@ -1,7 +1,10 @@
 using System;
 using System.Threading;
 using GTANetworkAPI;
+using RPServer.Controllers.World;
 using RPServer.Database;
+using RPServer.InternalAPI.Extensions;
+using RPServer.Models;
 using RPServer.Models.Util;
 using RPServer.Util;
 
@@ -26,11 +29,7 @@ namespace RPServer.Game
             NAPI.Server.SetAutoRespawnAfterDeath(false);
             NAPI.Server.SetDefaultSpawnLocation(DefaultSpawnPos);
             NAPI.Server.SetGlobalServerChat(false);
-
-            // Sever World Settings
-            NAPI.World.SetTime(0, 0, 0);
-            NAPI.World.ResetIplList();
-
+            
             // Initialize the Logger 
             Logger.GetInstance();
 
@@ -55,6 +54,11 @@ namespace RPServer.Game
             EmailSender.SmtpPassword = NAPI.Resource.GetSetting<string>(this, "SMTP_PASSWORD");
             // Have expired tokens get removed once per hour
             _expiredEmailTokensTimer = new Timer(OnRemoveExpiredEmailTokens, null, 1, 1000 * 60 * 60);
+
+            // Sever World Settings
+            var worldData = await World.GetWorldData();
+            Controllers.World.WorldHandler.CurrentTime = worldData.ServerTime;
+            NAPI.World.ResetIplList();
         }
 
         private async void OnRemoveExpiredEmailTokens(object state)
