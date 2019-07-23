@@ -88,7 +88,7 @@ namespace RPServer
             client.TriggerEvent("testpos", x, y, z, heading);
         }
 
-        [Command("gethere")]
+        [Command("gethere", GreedyArg = true)]
         public void CmdGetHere(Client client, string trg)
         {
             var target = NAPI.Player.GetPlayerFromName(trg);
@@ -100,7 +100,7 @@ namespace RPServer
         }
 
 
-        [Command("goto")]
+        [Command("goto", GreedyArg = true)]
         public void CmdGoto(Client client, string trg)
         {
             var target = NAPI.Player.GetPlayerFromName(trg);
