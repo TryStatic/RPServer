@@ -2,6 +2,7 @@ using System;
 using GTANetworkAPI;
 using RPServer.Controllers.Util;
 using RPServer.Game;
+using RPServer.InternalAPI.Extensions;
 using RPServer.Models;
 using RPServer.Models.Util;
 using RPServer.Resource;
@@ -454,8 +455,8 @@ namespace RPServer.Controllers
         {
             foreach (var p in NAPI.Pools.GetAllPlayers())
             {
-                if (!p.IsLoggedIn(true)) continue;
-                if (p.GetAccount() != account) continue;
+                if (!ClientExtensions.IsLoggedIn(p, true)) continue;
+                if (ClientExtensions.GetAccount(p) != account) continue;
                 return true;
             }
             return false;

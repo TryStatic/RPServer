@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using GTANetworkAPI;
+using RPServer.InternalAPI.Extensions;
 using RPServer.Util;
 
 namespace RPServer.Controllers.Util
@@ -39,9 +40,6 @@ namespace RPServer.Controllers.Util
             // We stop the timer too here and handle it in Run(..) too
             if(client == null) return;
 
-            // Reset the timer
-            client.GetActionQueueTimer().Change(200, Timeout.Infinite);
-            
             var hasNext = client.GetActionQueue().TryDequeue(out var action);
             if (!hasNext)
                 return;

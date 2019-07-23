@@ -1,6 +1,5 @@
-﻿using System.Numerics;
-using RAGE.Elements;
-using RPServerClient.Util;
+﻿using RPServerClient.Util;
+using Player = RAGE.Elements.Player;
 using Vector3 = RAGE.Vector3;
 
 namespace RPServerClient.Globals
@@ -17,7 +16,6 @@ namespace RPServerClient.Globals
         {
             RAGE.Game.Cam.SetCamCoord(_cameraID, pos.X, pos.Y, pos.Z);
             RAGE.Game.Cam.PointCamAtCoord(_cameraID, lookAt.X, lookAt.Y, lookAt.Z);
-
             if(setActive) SetActive(true);
         }
 
@@ -43,9 +41,14 @@ namespace RPServerClient.Globals
             RAGE.Game.Cam.RenderScriptCams(state, false, 0, true, true, 0);
         }
 
-        public Vector3 GetPosition(int camera)
+        public static Vector3 GetPosition(int camera)
         {
             return RAGE.Game.Cam.GetCamCoord(camera);
+        }
+
+        public static Vector3 GetPointingAt(int camera)
+        {
+            return RAGE.Game.Cam.GetCamRot(camera, 2);
         }
 
         private static class CameraHash

@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using GTANetworkAPI;
+using RPServer.Controllers;
 using RPServer.Database;
 using RPServer.Models;
 using RPServer.Models.Util;
@@ -16,6 +17,8 @@ namespace RPServer.Game
         [ServerEvent(Event.ResourceStart)]
         public async void OnResourceStart()
         {
+            AppDomain.CurrentDomain.ProcessExit += OnServerShutdown;
+
             Console.ForegroundColor = ConsoleColor.White;
             Console.BackgroundColor = ConsoleColor.Blue;
             Console.WriteLine($"\n\n---------------------------- STARTING {Globals.SERVER_NAME} ({Globals.VERSION}) ----------------------------");
@@ -27,11 +30,7 @@ namespace RPServer.Game
             NAPI.Server.SetAutoRespawnAfterDeath(false);
             NAPI.Server.SetDefaultSpawnLocation(DefaultSpawnPos);
             NAPI.Server.SetGlobalServerChat(false);
-
-            // Sever World Settings
-            NAPI.World.SetTime(0, 0, 0);
-            NAPI.World.ResetIplList();
-
+            
             // Initialize the Logger 
             Logger.GetInstance();
 
@@ -55,15 +54,23 @@ namespace RPServer.Game
             EmailSender.SmtpUsername = NAPI.Resource.GetSetting<string>(this, "SMTP_USERNAME");
             EmailSender.SmtpPassword = NAPI.Resource.GetSetting<string>(this, "SMTP_PASSWORD");
             // Have expired tokens get removed once per hour
-            _expiredEmailTokensTimer = new Timer(OnRemoveExpiredEmailTokens, null, 1, Timeout.Infinite);
+            _expiredEmailTokensTimer = new Timer(OnRemoveExpiredEmailTokens, null, 1, 1000 * 60 * 60);
+
+            // Sever World Settings
+            var worldData = await World.GetWorldData();
+            WorldHandler.CurrentTime = worldData.ServerTime;
+            NAPI.World.ResetIplList();
+        }
+
+        private void OnServerShutdown(object sender, EventArgs e)
+        {
+            _expiredEmailTokensTimer.Dispose();
         }
 
         private async void OnRemoveExpiredEmailTokens(object state)
         {
             await EmailToken.RemoveExpiredCodesAsync();
             Logger.GetInstance().ServerInfo("Removing expired email verification tokens from the database.");
-            _expiredEmailTokensTimer.Change(1000 * 60 * 60, Timeout.Infinite);
-
         }
     }
 }
