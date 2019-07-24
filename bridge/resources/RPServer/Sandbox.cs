@@ -2,11 +2,15 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 using GTANetworkAPI;
+using GTANetworkMethods;
 using RPServer.Controllers.Util;
 using RPServer.Game;
+using RPServer.InternalAPI;
 using RPServer.InternalAPI.Extensions;
 using RPServer.Util;
 using Shared.Enums;
+using Entity = GTANetworkAPI.Entity;
+using Vehicle = GTANetworkAPI.Vehicle;
 
 namespace RPServer
 {
@@ -25,7 +29,7 @@ namespace RPServer
             player.SendChatMessage("/setskin /setnick /togflymode /getcamcords /spawnme /playanimation /stopani");
             player.SendChatMessage("/loadipl /removeipl /resetipls /gotopos /getpos /fd");
             player.SendChatMessage("/changechar /addx /addy /addz /getfowardpos /testclothes");
-            player.SendChatMessage("/createmarker /createtextlabel, /createblip /gotowaypoint");
+            player.SendChatMessage("/createmarker /createtextlabel, /createblip /gotowp");
         }
 
         [Command("setforumname")]
@@ -35,7 +39,7 @@ namespace RPServer
         }
 
 
-        [Command("gotowaypoint")]
+        [Command("gotowp")]
         public void cmd_gotowaypoint(Client client)
         {
             client.TriggerEvent("gotowaypoint");
@@ -108,25 +112,40 @@ namespace RPServer
         [Command("gethere", GreedyArg = true)]
         public void CmdGetHere(Client client, string trg)
         {
-            var target = NAPI.Player.GetPlayerFromName(trg);
+            var target = ClientMethods.FindClient(trg);
 
             if (target == null)
                 return;
 
-            target.Position = client.Position.Around(5);
+
+            if (client == target)
+            {
+                client.SendChatMessage("Can't /gethere to urself.");
+                return;
+            }
+
+
+            target.Position = client.Position.Around(2);
         }
 
 
         [Command("goto", GreedyArg = true)]
         public void CmdGoto(Client client, string trg)
         {
-            var target = NAPI.Player.GetPlayerFromName(trg);
+            Client target = ClientMethods.FindClient(trg);
 
             if (target == null)
                 return;
 
-            client.Position = target.Position.Around(5);
+            if (client == target)
+            {
+                client.SendChatMessage("Can't /goto to urself.");
+                return;
+            }
+
+            client.Position = target.Position.Around(2);
         }
+
 
         [Command("fd")]
         public void CmdFD(Client player)
