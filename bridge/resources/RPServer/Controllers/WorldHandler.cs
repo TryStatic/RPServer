@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using GTANetworkAPI;
 using RPServer.Util;
 
@@ -13,7 +14,6 @@ namespace RPServer.Controllers
 
         public WorldHandler()
         {
-            AppDomain.CurrentDomain.ProcessExit += OnServerShutdown;
             _updateTimeTimer = new Timer(OnUpdateTime, null, 0, 1000);
         }
         
@@ -25,8 +25,8 @@ namespace RPServer.Controllers
             NAPI.World.SetTime(CurrentTime.Hour, CurrentTime.Minute, CurrentTime.Second);
         }
 
-        private async void OnServerShutdown(object sender, EventArgs e)
-        {
+        public static async Task OnServerShutdown()
+        { 
             Logger.GetInstance().ServerInfo("[SHUTDOWN]: Started saving World Data.");
             // Save World Data
             var worldData = await Models.World.GetWorldData();

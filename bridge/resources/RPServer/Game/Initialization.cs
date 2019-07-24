@@ -17,8 +17,6 @@ namespace RPServer.Game
         [ServerEvent(Event.ResourceStart)]
         public async void OnResourceStart()
         {
-            AppDomain.CurrentDomain.ProcessExit += OnServerShutdown;
-
             Console.ForegroundColor = ConsoleColor.White;
             Console.BackgroundColor = ConsoleColor.Blue;
             Console.WriteLine($"\n\n---------------------------- STARTING {Globals.SERVER_NAME} ({Globals.VERSION}) ----------------------------");
@@ -62,7 +60,7 @@ namespace RPServer.Game
             NAPI.World.ResetIplList();
         }
 
-        private void OnServerShutdown(object sender, EventArgs e)
+        public static void OnServerShutdown()
         {
             _expiredEmailTokensTimer.Dispose();
         }

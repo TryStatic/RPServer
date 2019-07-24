@@ -21,7 +21,6 @@ namespace RPServer.Controllers
 
         public AuthenticationHandler()
         {
-            AppDomain.CurrentDomain.ProcessExit += OnServerShutdown;
         }
 
         [Command(CmdStrings.CMD_ToggleTwoFactorEmail)]
@@ -465,7 +464,7 @@ namespace RPServer.Controllers
             }
             return false;
         }
-        private void OnServerShutdown(object sender, EventArgs e)
+        public static void OnServerShutdown()
         {
             Logger.GetInstance().ServerInfo("[SHUTDOWN]: Started saving Accounts.");
             foreach (var p in NAPI.Pools.GetAllPlayers()) p.GetAccount()?.UpdateAsync();

@@ -33,7 +33,6 @@ namespace RPServer.Controllers
 
         public CharacterHandler()
         {
-            AppDomain.CurrentDomain.ProcessExit += OnServerShutdown;
             AuthenticationHandler.PlayerSuccessfulLogin += PlayerSuccessfulLogin;
         }
 
@@ -207,8 +206,7 @@ namespace RPServer.Controllers
                 client.TriggerEvent(Events.ServerToClient.Character.RenderCharacterList, JsonConvert.SerializeObject(charDisplayList), acc.LastSpawnedCharId);
             });
         }
-
-        private void OnServerShutdown(object sender, EventArgs e)
+        public static void OnServerShutdown()
         {
             Logger.GetInstance().ServerInfo("[SHUTDOWN]: Started saving Characters.");
             foreach (var p in NAPI.Pools.GetAllPlayers()) p.GetActiveChar()?.UpdateAsync();
