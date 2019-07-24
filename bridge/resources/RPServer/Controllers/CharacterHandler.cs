@@ -13,8 +13,12 @@ using static RPServer.Controllers.Util.DataValidator;
 
 namespace RPServer.Controllers
 {
+    public delegate void OnCharacterSpawnDelegate(object source, EventArgs e);
+
     internal class CharacterHandler : Script
     {
+        public static event OnCharacterSpawnDelegate CharacterSpawn;
+
         [Command("changechar")]
         public void cmd_ChangeChar(Client client)
         { // Temporary (?)
@@ -99,6 +103,9 @@ namespace RPServer.Controllers
                 client.SetActiveChar(chData);
                 client.Name = chData.CharacterName.Replace("_", " ");
                 client.TriggerEvent(Events.ServerToClient.Character.EndCharSelector);
+
+                // Invoke Character Spawn Listeners
+                CharacterSpawn?.Invoke(client, EventArgs.Empty);
             });
         }
 
@@ -212,6 +219,5 @@ namespace RPServer.Controllers
             foreach (var p in NAPI.Pools.GetAllPlayers()) p.GetActiveChar()?.UpdateAsync();
             Logger.GetInstance().ServerInfo("[SHUTDOWN]: Done saving Characters.");
         }
-
     }
 }
