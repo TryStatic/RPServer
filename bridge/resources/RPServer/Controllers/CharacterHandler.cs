@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using RPServer.Controllers.Util;
 using RPServer.InternalAPI.Extensions;
 using RPServer.Models;
+using RPServer.Resource;
 using RPServer.Util;
 using Shared.Data;
 using Events = Shared.Events;
@@ -19,7 +20,7 @@ namespace RPServer.Controllers
     {
         public static event OnCharacterSpawnDelegate CharacterSpawn;
 
-        [Command("changechar")]
+        [Command(CmdStrings.CMD_ChangeChar)]
         public void cmd_ChangeChar(Client client)
         { // Temporary (?)
             if (!client.HasActiveChar())
