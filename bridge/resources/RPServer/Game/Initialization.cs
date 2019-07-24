@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Threading;
 using GTANetworkAPI;
 using RPServer.Controllers;
@@ -41,7 +42,6 @@ namespace RPServer.Game
             NAPI.Server.SetAutoRespawnAfterDeath(false);
             NAPI.Server.SetDefaultSpawnLocation(DefaultSpawnPos);
             NAPI.Server.SetGlobalServerChat(false);
-            
             // Initialize the Logger 
             Logger.GetInstance();
 

@@ -32,7 +32,6 @@ namespace RPServerClient.Character
 
         private void Tick(List<Events.TickNametagData> nametags)
         {
-            throw new System.NotImplementedException();
         }
     }
 }
