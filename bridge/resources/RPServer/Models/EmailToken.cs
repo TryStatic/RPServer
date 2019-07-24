@@ -6,7 +6,7 @@ using Dapper;
 using RPServer.Database;
 using RPServer.Util;
 
-namespace RPServer.Models.Util
+namespace RPServer.Models
 {
     internal class EmailToken
     {
