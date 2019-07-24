@@ -18,7 +18,7 @@ namespace RPServer.Game
         [Command(CmdStrings.CMD_Shutdown)]
         public async void CMD_Shutdown(Client client)
         {
-            NAPI.Chat.SendChatMessageToAll("[SERVER]: Shutting down...");
+            NAPI.Chat.SendChatMessageToAll("[SERVER]: Shutdown inititated, saving data...");
             AuthenticationHandler.OnServerShutdown();
             CharacterHandler.OnServerShutdown();
             Initialization.OnServerShutdown();

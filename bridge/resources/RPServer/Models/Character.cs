@@ -12,6 +12,10 @@ namespace RPServer.Models
         public int CharOwnerID { set; get; }
         public string CharacterName { set; get; }
 
+        public Character()
+        {
+        }
+
         /// <summary>
         /// Use to create new character
         /// </summary>
