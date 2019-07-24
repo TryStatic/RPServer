@@ -7,5 +7,8 @@
 	"csharp" : "enabled",
 	"port": 22005,
 	"language" : "en",
-	"allow-cef-debugging": true
+	"allow-cef-debugging": true,
+	"sync-rate" : 40,
+	"voice-chat" : true,
+	"voice-chat-sample-rate" : 8000
 }
