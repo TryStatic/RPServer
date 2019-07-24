@@ -5,6 +5,7 @@ using RPServer.Controllers;
 using RPServer.Database;
 using RPServer.Models;
 using RPServer.Models.Util;
+using RPServer.Resource;
 using RPServer.Util;
 
 namespace RPServer.Game
@@ -13,6 +14,18 @@ namespace RPServer.Game
     {
         public static readonly Vector3 DefaultSpawnPos = new Vector3(-782.1527709960938f, 19.77294921875f, 41.93227767944336f);
         private static Timer _expiredEmailTokensTimer;
+
+        [Command(CmdStrings.CMD_Shutdown)]
+        public async void CMD_Shutdown(Client client)
+        {
+            NAPI.Chat.SendChatMessageToAll("[SERVER]: Shutting down...");
+            AuthenticationHandler.OnServerShutdown();
+            CharacterHandler.OnServerShutdown();
+            Initialization.OnServerShutdown();
+            await WorldHandler.OnServerShutdown();
+
+            Environment.Exit(1);
+        }
 
         [ServerEvent(Event.ResourceStart)]
         public async void OnResourceStart()
