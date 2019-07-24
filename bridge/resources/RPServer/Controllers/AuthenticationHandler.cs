@@ -216,7 +216,7 @@ namespace RPServer.Controllers
             {
                 var accData = client.GetAccount();
 
-                if (!accData.HasVerifiedEmail()) throw new Exception("Tried to verify Two-Step by Email when user has no email set"); // Dummy check
+                if (!accData.HasVerifiedEmail()) return;
 
                 if (!accData.Is2FAbyEmailEnabled())
                 {
