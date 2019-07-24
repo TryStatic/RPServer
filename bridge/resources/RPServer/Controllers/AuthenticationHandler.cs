@@ -220,7 +220,7 @@ namespace RPServer.Controllers
 
                 if (!accData.Is2FAbyEmailEnabled())
                 {
-                    client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, "2FA by EMAIL is not enabled for this account.");
+                    client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.TwoFactorByEmailIsNotEnabled);
                     return;
                 }
 
@@ -234,7 +234,7 @@ namespace RPServer.Controllers
 
                 if (accData.Is2FAbyGAEnabled() && !accData.HasPassedTwoStepByGA)
                 {
-                    client.TriggerEvent(Events.ServerToClient.Authentication.Show2FAbyGoogleAuth, "Need to Verify 2FA by GA");
+                    client.TriggerEvent(Events.ServerToClient.Authentication.Show2FAbyGoogleAuth, AccountStrings.VerifyTwoFactorByGA);
                     return;
                 }
                 SetLoginState(client, false);
@@ -446,7 +446,7 @@ namespace RPServer.Controllers
                 // This part gets triggered only once per successful login
                 NAPI.Player.SpawnPlayer(client, Initialization.DefaultSpawnPos);
                 client.SendChatMessage(AccountStrings.SuccessLogin);
-                client.SendChatMessage("SUM COMMANDS: /cmds");
+                client.SendChatMessage("SANDBOX TEST COMMANDS: /cmds");
             }
             client.SetSharedData(Shared.Data.Keys.AccountLoggedIn, !state);
             client.TriggerEvent(Events.ServerToClient.Authentication.SetLoginScreen, state);
