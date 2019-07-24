@@ -1,10 +1,12 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using GTANetworkAPI;
 using RPServer.Controllers.Util;
 using RPServer.Game;
 using RPServer.InternalAPI.Extensions;
 using RPServer.Util;
+using Shared.Enums;
 
 namespace RPServer
 {
@@ -47,9 +49,17 @@ namespace RPServer
         }
 
         [Command("createtextlabel")]
-        public void cmd_createtextlabel(Client client, string text)
+        public void cmd_createtextlabel(Client client, string text, float range, int fontInt)
         {
-            NAPI.TextLabel.CreateTextLabel(text, client.Position, 1.0f, 1.0f, 0, new Color(255, 0, 0), false, 0);
+            if (!Enum.IsDefined(typeof(Font), fontInt))
+            {
+                client.SendChatMessage("Invalid font, valid values are 0, 1, 2, 4, 7");
+                return;
+            }
+
+            Enum.TryParse<Font>(fontInt.ToString(), out var font);
+
+            NAPI.TextLabel.CreateTextLabel(text, client.Position, range, font, new Color(255, 0, 25));
         }
 
         [Command("createblip")]
