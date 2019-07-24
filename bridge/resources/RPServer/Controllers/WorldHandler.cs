@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using GTANetworkAPI;
+using RPServer.Util;
 
 namespace RPServer.Controllers
 {
@@ -26,11 +27,12 @@ namespace RPServer.Controllers
 
         private async void OnServerShutdown(object sender, EventArgs e)
         {
+            Logger.GetInstance().ServerInfo("[SHUTDOWN]: Started saving World Data.");
             // Save World Data
             var worldData = await Models.World.GetWorldData();
             worldData.ServerTime = CurrentTime;
             await Models.World.SaveWorldData(worldData);
-
+            Logger.GetInstance().ServerInfo("[SHUTDOWN]: Finished saving World Data.");
             // Dispose Timers
             _updateTimeTimer.Dispose();
         }

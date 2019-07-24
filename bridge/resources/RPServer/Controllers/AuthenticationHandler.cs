@@ -18,7 +18,12 @@ namespace RPServer.Controllers
     internal class AuthenticationHandler : Script
     {
         public static event OnPlayerSuccessfulLoginDelegate PlayerSuccessfulLogin;
-        
+
+        public AuthenticationHandler()
+        {
+            AppDomain.CurrentDomain.ProcessExit += OnServerShutdown;
+        }
+
         [Command(CmdStrings.CMD_ToggleTwoFactorEmail)]
         public void CMD_ToggleTwoFactorEmail(Client client)
         {
@@ -426,7 +431,6 @@ namespace RPServer.Controllers
             player.TriggerEvent(Events.ServerToClient.Authentication.ShowQRCodeEnabled);
         }
 
-
         private static async Task LoginAccount(Account fetchedAcc, Client client)
         {
             fetchedAcc.LastHWID = client.Serial;
@@ -460,6 +464,12 @@ namespace RPServer.Controllers
                 return true;
             }
             return false;
+        }
+        private void OnServerShutdown(object sender, EventArgs e)
+        {
+            Logger.GetInstance().ServerInfo("[SHUTDOWN]: Started saving Accounts.");
+            foreach (var p in NAPI.Pools.GetAllPlayers()) p.GetAccount()?.UpdateAsync();
+            Logger.GetInstance().ServerInfo("[SHUTDOWN]: Done saving Accounts.");
         }
     }
 }

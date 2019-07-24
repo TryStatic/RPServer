@@ -31,7 +31,11 @@ namespace RPServer.Controllers
             InitCharacterSelection(client);
         }
 
-        public CharacterHandler() => AuthenticationHandler.PlayerSuccessfulLogin += PlayerSuccessfulLogin;
+        public CharacterHandler()
+        {
+            AppDomain.CurrentDomain.ProcessExit += OnServerShutdown;
+            AuthenticationHandler.PlayerSuccessfulLogin += PlayerSuccessfulLogin;
+        }
 
         [RemoteEvent(Events.ClientToServer.Character.ApplyCharacterEditAnimation)]
         public void ClientEvent_ApplyCharacterEditAnimation(Client client) => client.PlayAnimation("missbigscore2aleadinout@ig_7_p2@bankman@", "leadout_waiting_loop", 1);
@@ -203,5 +207,13 @@ namespace RPServer.Controllers
                 client.TriggerEvent(Events.ServerToClient.Character.RenderCharacterList, JsonConvert.SerializeObject(charDisplayList), acc.LastSpawnedCharId);
             });
         }
+
+        private void OnServerShutdown(object sender, EventArgs e)
+        {
+            Logger.GetInstance().ServerInfo("[SHUTDOWN]: Started saving Characters.");
+            foreach (var p in NAPI.Pools.GetAllPlayers()) p.GetActiveChar()?.UpdateAsync();
+            Logger.GetInstance().ServerInfo("[SHUTDOWN]: Done saving Characters.");
+        }
+
     }
 }
