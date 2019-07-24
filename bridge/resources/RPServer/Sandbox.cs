@@ -22,10 +22,16 @@ namespace RPServer
             player.SendChatMessage("/veh /ecc /heal /hmc /time /weather /getping /onlineppl /givegun");
             player.SendChatMessage("/setskin /setnick /togflymode /getcamcords /spawnme /playanimation /stopani");
             player.SendChatMessage("/loadipl /removeipl /resetipls /gotopos /getpos /fd");
-            player.SendChatMessage("/setheadblend /setheadoverlay, /setheadoverlaycolor, /setfacefeature, /setcompvar /seteyecolor");
             player.SendChatMessage("/changechar /addx /addy /addz /getfowardpos /testclothes");
             player.SendChatMessage("/createmarker /createtextlabel, /createblip /gotowaypoint");
         }
+
+        [Command("setforumname")]
+        public void setforumname(Client client, string forumName)
+        {
+            client.GetAccount().ForumName = forumName;
+        }
+
 
         [Command("gotowaypoint")]
         public void cmd_gotowaypoint(Client client)
@@ -116,37 +122,6 @@ namespace RPServer
         public void CmdFD(Client player)
         {
             player.TriggerEvent("tpinfront");
-        }
-
-        [Command("setheadblend")]
-        public void SetHeadBlend(Client player, int i1, int i2, int i3, int i4, int i5, int i6, float f1, float f2, float f3, int b = 0)
-        {
-            bool b1 = b != 0;
-            player.TriggerEvent("headdata", i1, i2, i3, i4, i5, i6, f1, f2, f3, b1);
-        }
-
-        [Command("setheadoverlay")]
-        public void SetHeadOverlay(Client player, int i1, int i2, float f1)
-        {
-            player.TriggerEvent("headoverlay", i1, i2, f1);
-        }
-
-        [Command("setheadoverlaycolor")]
-        public void SetHeadOverlayColor(Client player, int i1, int i2, int i3, int i4)
-        {
-            player.TriggerEvent("headoverlaycolor", i1, i2, i3, i4);
-        }
-
-        [Command("setfacefeature")]
-        public void SetHeadBlend(Client player, int i1, float f1)
-        {
-            player.TriggerEvent("facefeautre", i1, f1);
-        }
-
-        [Command("setcompvar")]
-        public void SetCompVar(Client player, int i1, int i2, int i3, int i4)
-        {
-            player.TriggerEvent("compvar", i1, i2, i3, i4);
         }
 
         [Command("spawnme")]
