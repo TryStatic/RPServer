@@ -30,7 +30,6 @@ namespace RPServerClient.Character
             Events.CallRemote(Shared.Events.ClientToServer.Character.RequestAliasInfo, p.RemoteId);
         }
 
-
         private void OnPlayerStreamOut(Entity entity)
         {
             if (entity.Type != Type.Player) return;
@@ -53,14 +52,8 @@ namespace RPServerClient.Character
 
             var al = _clientAlises.Find(p => p.Player == other);
 
-            if (al == null)
-            {
-                _clientAlises.Add(new Alias(other, aliasTxt));
-            }
-            else
-            {
-                al.AliasText = aliasTxt;
-            }
+            if (al == null) _clientAlises.Add(new Alias(other, aliasTxt));
+            else al.AliasText = aliasTxt;
         }
 
         private void Tick(List<Events.TickNametagData> nametags)
@@ -71,8 +64,6 @@ namespace RPServerClient.Character
                 RAGE.NUI.UIResText.Draw(alias.AliasText, 0, 0, RAGE.Game.Font.ChaletLondon, 0.3f, System.Drawing.Color.White, RAGE.NUI.UIResText.Alignment.Centered, false, false, 0);
                 RAGE.Game.Graphics.ClearDrawOrigin();
             }
-
         }
-
     }
 }
