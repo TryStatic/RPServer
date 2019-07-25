@@ -54,6 +54,7 @@ namespace RPServerClient
             Events.Add("tpinfront", TeleportInFront);
             Events.Add("testpos", TestPos);
             Events.Add("testclothes", TestClothes);
+            Events.Add("test", test);
 
             // Boost
             uint stamina = RAGE.Game.Misc.GetHashKey("SP0_STAMINA");
@@ -115,6 +116,11 @@ namespace RPServerClient
                 Player.LocalPlayer.SetComponentVariation(comps[compsMenu.Index], drawables[drawablesMenu.Index], textures[texturesMenu.Index], palletes[palletesMenu.Index]);
             };
 
+        }
+
+        private void test(object[] args)
+        {
+            Events.CallRemote(Shared.Events.ClientToServer.Character.RequestAliasInfo, Player.LocalPlayer.RemoteId);
         }
 
         private void TestClothes(object[] args)

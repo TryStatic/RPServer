@@ -37,6 +37,12 @@ namespace RPServer
             client.GetAccount().ForumName = forumName;
         }
 
+        [Command("test")]
+        public void test(Client client)
+        {
+            client.TriggerEvent("test");
+        }
+
 
         [Command("gotowp")]
         public void cmd_gotowaypoint(Client client)
