@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using GTANetworkAPI;
@@ -38,7 +38,7 @@ namespace RPServer.Controllers
 
         public CharacterHandler()
         {
-            AuthenticationHandler.PlayerSuccessfulLogin += PlayerSuccessfulLogin;
+            AuthenticationHandler.PlayerSuccessfulLogin += OnPlayerLogin;
         }
 
         [RemoteEvent(Events.ClientToServer.Character.ApplyCharacterEditAnimation)]
@@ -188,7 +188,7 @@ namespace RPServer.Controllers
             InitCharacterSelection(client);
         }
 
-        private static void PlayerSuccessfulLogin(object source, EventArgs e)
+        private static void OnPlayerLogin(object source, EventArgs e)
         {
             var client = source as Client;
             if (client == null) return;
