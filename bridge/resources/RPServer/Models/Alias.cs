@@ -9,8 +9,8 @@ namespace RPServer.Models
 {
     internal class Alias
     { 
-        public int CharID { set; get; }
-        public int AliasedID { set; get; }
+        public int CharID { set; get; } // Key 1
+        public int AliasedID { set; get; } // Key 2
         public string AliasName { set; get; }
         public string AliasDesc { set; get; }
 
