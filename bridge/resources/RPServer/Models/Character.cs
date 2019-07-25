@@ -13,12 +13,12 @@ namespace RPServer.Models
         public string CharacterName { set; get; }
 
         public Appearance Appearance;
-        public List<Alias> Aliases;
+        public HashSet<Alias> Aliases = new HashSet<Alias>();
         public int AltIdentifier = RandomGenerator.GetInstance().UniqueNext();
 
         public Character()
         {
-            Aliases = new List<Alias>();
+            
         }
 
         /// <summary>
@@ -44,13 +44,40 @@ namespace RPServer.Models
             var app =  await Appearance.ReadByKeyAsync(() => new Appearance().CharacterID, this.ID);
             return app.FirstOrDefault();
         }
-        public async Task<List<Alias>> GetAliases() => await Alias.FetchAllByChar(this);
+
+        #region Alias
+        public async Task<HashSet<Alias>> GetAliases() => await Alias.FetchAllByChar(this);
+        #endregion
 
         public async Task SaveAll()
         {
             await UpdateAsync(this); // Update character
             await Appearance.UpdateAsync(Appearance); // Update Appearance
-            await Alias.UpdateAlises(Aliases, ID);
+            await UpdateAlises();
+        }
+
+
+        public async Task UpdateAlises()
+        {
+            var dbRecords = await Alias.FetchAllByChar(this);
+
+            foreach (var dbRec in dbRecords)
+            {
+                if (Aliases.Contains(dbRec))
+                {
+                    await Alias.UpdateAlias(Aliases.First(r => r.Equals(dbRec)));
+                    Aliases.Remove(dbRec);
+                }
+                else
+                {
+                    await Alias.DeleteAlias(Aliases.First(r => r.Equals(dbRec)));
+                }
+            }
+            
+            foreach (var i in Aliases)
+            {
+                await Alias.CreateAsync(i.CharID, i.AliasedID, i.AliasName, i.AliasDesc);
+            }
         }
     }
 }

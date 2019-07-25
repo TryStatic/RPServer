@@ -21,7 +21,6 @@ namespace RPServer.Models
             AliasName = aliasName;
             AliasDesc = aliasDesc;
         }
-
         public Alias(int charid, int aliased, string aliasName, string aliasDesc = "")
         {
             CharID = charid;
@@ -78,43 +77,16 @@ namespace RPServer.Models
             }
         }
 
-        public static async Task<Alias> FetchAlias(Character character, Character target)
-        {
-            const string query = "SELECT * FROM aliases WHERE charID = @charID AND AliasedID = @aliasedID";
-
-            using (var dbConn = DbConnectionProvider.CreateDbConnection())
-            {
-                try
-                {
-                    var result = await dbConn.QueryAsync(query, new { charID = character.ID, aliasedID = target.ID });
-                    var unwrapped = result.SingleOrDefault();
-
-                    if (unwrapped == null) return null;
-                    return new Alias(unwrapped.CharID, unwrapped.AliasedID, unwrapped.AliasName, unwrapped.AliasDesc);
-
-                }
-                catch (DbException ex)
-                {
-                    DbConnectionProvider.HandleDbException(ex);
-                }
-
-                return null;
-            }
-        }
-
-        public static async Task<List<Alias>> FetchAllByCharID(int charID)
+        public static async Task<HashSet<Alias>> FetchAllByChar(Character character)
         {
             const string query = "SELECT * FROM aliases WHERE charID = @charID";
 
             using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
-                {
-                    var result = await dbConn.QueryAsync(query, new { charID = charID });
-                    var aliases = new List<Alias>();
-                    var aliasesDyn = result.ToList();
-                    foreach (var al in aliasesDyn) aliases.Add(new Alias(al.CharID, al.AliasedID, al.AliasName, al.AliasDesc));
-                    return aliases;
+                { // cumhere
+                    var result = await dbConn.QueryAsync<Alias>(query, new { charID = character.ID });
+                    return result.ToHashSet();
                 }
                 catch (DbException ex)
                 {
@@ -124,8 +96,6 @@ namespace RPServer.Models
                 return null;
             }
         }
-
-        public static async Task<List<Alias>> FetchAllByChar(Character character) => await FetchAllByCharID(character.ID);
 
         public static async Task<bool> UpdateAlias(Alias alias)
         {
@@ -152,7 +122,6 @@ namespace RPServer.Models
                 return false;
             }
         }
-        
         public async Task<bool> UpdateAlias() => await UpdateAlias(this);
 
         public static async Task<bool> DeleteAlias(Alias alias)
@@ -177,35 +146,13 @@ namespace RPServer.Models
             }
             return false;
         }
-
         public async Task<bool> DeleteAlias() => await DeleteAlias(this);
 
-        public static async Task UpdateAlises(List<Alias> aliasCache, int charID)
-        {
-            var dbRecords = await FetchAllByCharID(charID);
-            foreach (var dbI in dbRecords)
-            {
-                var indx = aliasCache.IndexOf(dbI);
-                if (indx == -1)
-                { // db has something cache doesn't have
-                    await Alias.DeleteAlias(dbI); // delete it
-                }
-                else
-                { // both cache and db have the same thing
-                    await Alias.UpdateAlias(aliasCache[indx]); // update it
-                    aliasCache.RemoveAt(indx); // remove it from the cache
-                }
-
-                // we are left with only the new aliases in the cache
-                foreach (var i in aliasCache) await Alias.CreateAsync(i.CharID, i.AliasedID, i.AliasName, i.AliasDesc);
-            }
-        }
-
+        #region Generated
         protected bool Equals(Alias other)
         {
             return CharID == other.CharID && AliasedID == other.AliasedID;
         }
-
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
@@ -213,7 +160,6 @@ namespace RPServer.Models
             if (obj.GetType() != this.GetType()) return false;
             return Equals((Alias) obj);
         }
-
         public override int GetHashCode()
         {
             unchecked
@@ -221,15 +167,14 @@ namespace RPServer.Models
                 return (CharID * 397) ^ AliasedID;
             }
         }
-
         public static bool operator ==(Alias left, Alias right)
         {
             return Equals(left, right);
         }
-
         public static bool operator !=(Alias left, Alias right)
         {
             return !Equals(left, right);
         }
+        #endregion
     }
 }

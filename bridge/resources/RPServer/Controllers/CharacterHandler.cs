@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using GTANetworkAPI;
 using Newtonsoft.Json;
@@ -19,7 +20,6 @@ namespace RPServer.Controllers
     internal class CharacterHandler : Script
     {
         public static event OnCharacterSpawnDelegate CharacterSpawn;
-
         [Command(CmdStrings.CMD_ChangeChar)]
         public void CMD_ChangeChar(Client client)
         { // Temporary (?)
@@ -35,7 +35,7 @@ namespace RPServer.Controllers
 
             InitCharacterSelection(client);
         }
-
+        
         [Command(CmdStrings.CMD_Alias)]
         public void CMD_Alias(Client client, string identifier, string aliasText = "")
         {
@@ -70,28 +70,36 @@ namespace RPServer.Controllers
                 return;
             }
 
+            // TODO: DISTANCE CHECK
+
             var chData = client.GetActiveChar();
             var chOtherData = otherClient.GetActiveChar();
 
             if (aliasText == "")
             {
-                var alias = chData.Aliases.Find(i => i.CharID == chData.ID && i.AliasedID == chOtherData.ID);
+                var alias = chData.Aliases.First(i => i.CharID == chData.ID && i.AliasedID == chOtherData.ID);
                 if (alias == null)
                 {
                     client.SendChatMessage("No Alias set for that player.");
                     return;
                 }
                 chData.Aliases.Remove(alias);
+                ClientEvent_RequestAliasInfo(client, otherClient.Value);
                 client.SendChatMessage("Alias removed.");
                 return;
             }
 
-            if (chData.Aliases.Exists(i => i.CharID == chData.ID && i.AliasedID == chOtherData.ID))
+            var exist = chData.Aliases.First(i => i.CharID == chData.ID && i.AliasedID == chOtherData.ID);
+            if (exist != null)
             {
-                client.SendChatMessage("Alias already set.");
-                return;
+                exist.AliasName = aliasText;
             }
-            chData.Aliases.Add(new Alias(chData, chOtherData, aliasText));
+            else
+            {
+                chData.Aliases.Add(new Alias(chData, chOtherData, aliasText));
+            }
+
+            ClientEvent_RequestAliasInfo(client, otherClient.Value);
             client.SendChatMessage($"Alias set.");
         }
 
@@ -246,6 +254,22 @@ namespace RPServer.Controllers
         public void ClientEvent_TriggerCharSelection(Client client)
         {
             InitCharacterSelection(client);
+        }
+
+        [RemoteEvent(Events.ClientToServer.Character.RequestAliasInfo)]
+        public void ClientEvent_RequestAliasInfo(Client client, int remoteid)
+        {
+            if(!client.IsLoggedIn() || !client.HasActiveChar()) return;
+            var streamedClient = ClientMethods.FindClientByPlayerID(remoteid);
+            if (!streamedClient.IsLoggedIn() || !streamedClient.HasActiveChar()) return;
+
+            var chData = client.GetActiveChar();
+            var chOtherData = streamedClient.GetActiveChar();
+
+            var alias = chData.Aliases.First(i => i.AliasedID == chOtherData.ID);
+
+            if (alias != null) client.TriggerEvent(Events.ServerToClient.Character.SetAliasInfo, $"{alias.AliasName} ({chOtherData.AltIdentifier.ToString()})", remoteid);
+            else client.TriggerEvent(Events.ServerToClient.Character.SetAliasInfo, $"({chOtherData.AltIdentifier.ToString()})", remoteid);
         }
 
         private static void OnPlayerLogin(object source, EventArgs e)
