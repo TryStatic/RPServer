@@ -39,6 +39,24 @@ namespace RPServer.Controllers
         public CharacterHandler()
         {
             AuthenticationHandler.PlayerSuccessfulLogin += OnPlayerLogin;
+            CharacterHandler.CharacterSpawn += OnCharacterSpawn;
+        }
+
+        private void OnCharacterSpawn(object source, EventArgs e)
+        {
+            // Load Character Data
+            var client = source as Client;
+            if (client == null) return;
+            if (!client.IsLoggedIn()) return;
+            var chData = client.GetActiveChar();
+            if(chData == null) return;
+
+            TaskManager.Run(client, async () =>
+            {
+                chData.Appearance = await chData.GetAppearance();
+                chData.Aliases = await chData.GetAliases();
+            });
+
         }
 
         [RemoteEvent(Events.ClientToServer.Character.ApplyCharacterEditAnimation)]
