@@ -32,7 +32,7 @@ namespace RPServer.Controllers
             }
 
             var ch = client.GetActiveChar();
-            ch?.UpdateAsync();
+            ch?.SaveAll();
             client.ResetActiveChar();
 
             InitCharacterSelection(client);
