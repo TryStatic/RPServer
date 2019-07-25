@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GTANetworkAPI;
+using GTANetworkMethods;
 using Newtonsoft.Json;
 using RPServer.Controllers.Util;
+using RPServer.InternalAPI;
 using RPServer.InternalAPI.Extensions;
 using RPServer.Models;
 using RPServer.Resource;
@@ -21,7 +23,7 @@ namespace RPServer.Controllers
         public static event OnCharacterSpawnDelegate CharacterSpawn;
 
         [Command(CmdStrings.CMD_ChangeChar)]
-        public void cmd_ChangeChar(Client client)
+        public void CMD_ChangeChar(Client client)
         { // Temporary (?)
             if (!client.HasActiveChar())
             {
@@ -34,6 +36,47 @@ namespace RPServer.Controllers
             client.ResetActiveChar();
 
             InitCharacterSelection(client);
+        }
+
+        [Command(CmdStrings.CMD_Alias)]
+        public void CMD_Alias(Client client, string identifier, string aliasText = "")
+        {
+            if (!client.IsLoggedIn())
+            {
+                client.SendChatMessage("You are not logged in.");
+                return;
+            }
+
+            if (!client.HasActiveChar())
+            {
+                client.SendChatMessage("You are not properly spawned.");
+                return;
+            }
+
+            var otherClient = ClientMethods.FindClient(identifier);
+            if (otherClient == null)
+            {
+                client.SendChatMessage("Invalid Player Identifier.");
+                return;
+            }
+
+            if (!otherClient.IsLoggedIn())
+            {
+                client.SendChatMessage("That player is not logged in.");
+                return;
+            }
+
+            if (!otherClient.HasActiveChar())
+            {
+                client.SendChatMessage("That player is not spawned.");
+                return;
+            }
+
+            var chData = client.GetActiveChar();
+            var chOtherData = otherClient.GetActiveChar();
+            
+
+
         }
 
         public CharacterHandler()
