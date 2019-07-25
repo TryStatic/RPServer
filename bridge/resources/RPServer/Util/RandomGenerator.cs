@@ -21,7 +21,7 @@ namespace RPServer.Util
         /// </summary>
         private void InitUniqueRandPool()
         {
-            var nums = Enumerable.Range(1000, 9999).ToArray();
+            var nums = Enumerable.Range(1000, 8999).ToArray();
             for (var i = 0; i < nums.Length; ++i)
             {
                 var randomIndex = Next(0, nums.Length);
