@@ -268,8 +268,8 @@ namespace RPServer.Controllers
 
             var alias = chData.Aliases.First(i => i.AliasedID == chOtherData.ID);
 
-            if (alias != null) client.TriggerEvent(Events.ServerToClient.Character.SetAliasInfo, $"{alias.AliasName} ({chOtherData.AltIdentifier.ToString()})", remoteid);
-            else client.TriggerEvent(Events.ServerToClient.Character.SetAliasInfo, $"({chOtherData.AltIdentifier.ToString()})", remoteid);
+            if (alias != null) client.TriggerEvent(Events.ServerToClient.Character.SetAliasInfo, $"{alias.AliasName} ({streamedClient.Value})", remoteid);
+            else client.TriggerEvent(Events.ServerToClient.Character.SetAliasInfo, $"({streamedClient.Value})", remoteid);
         }
 
         private static void OnPlayerLogin(object source, EventArgs e)

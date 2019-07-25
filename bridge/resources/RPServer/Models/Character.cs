@@ -14,7 +14,6 @@ namespace RPServer.Models
 
         public Appearance Appearance;
         public HashSet<Alias> Aliases = new HashSet<Alias>();
-        public int AltIdentifier = RandomGenerator.GetInstance().UniqueNext();
 
         public Character()
         {
