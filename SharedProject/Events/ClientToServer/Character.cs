@@ -8,5 +8,6 @@
         public const string SubmitInitialCharData = "SubmitInitialCharData";
         public const string SubmitNewCharacter = "SubmitNewCharacter";
         public const string TriggerCharSelection = "TriggerCharSelection";
+        public const string RequestAliasInfo = "RequestAliasInfo";
     }
 }
