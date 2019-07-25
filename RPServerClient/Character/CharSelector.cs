@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 using RAGE;
 using RAGE.NUI;
 using RPServerClient.Util;
-using Shared;
 using Shared.Data;
 using Cam = RPServerClient.Globals.Cam;
 using Events = RAGE.Events;

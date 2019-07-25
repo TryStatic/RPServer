@@ -1,5 +1,4 @@
 ﻿using RAGE.Elements;
-using Shared;
 
 namespace RPServerClient.Globals
 {
