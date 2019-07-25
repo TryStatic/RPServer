@@ -1,24 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Security;
-using RAGE;
 using RAGE.Elements;
-using Shared.Enums;
+using RPServerClient.Character.Util;
 using Events = RAGE.Events;
 
 namespace RPServerClient.Character
 {
-    internal class Alias
-    {
-        public Player Player { set; get; }
-        public string AliasText { set; get; }
-
-        public Alias(Player player, string aliasText)
-        {
-            Player = player;
-            AliasText = aliasText;
-        }
-    }
-
     internal class AliasManager : Events.Script
     {
         private readonly List<Alias> _clientAlises;
