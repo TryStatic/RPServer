@@ -10,9 +10,12 @@ namespace RPServerClient.Character
     {
         private readonly Quaternion _displayPos = new Quaternion(-169.3321f, 482.2647f, 133.8789f, 282.6658f);
         private readonly Quaternion _hiddenPos = new Quaternion(-163.4660f, 483.5910f, 134.5571f, 282.6658f);
+        private static Cam _camera;
 
         public CharCreator()
         {
+            _camera = new Cam();
+
             // TEMP commands
             Events.Add("createchar", OnInitCharCreation);
 
@@ -51,13 +54,13 @@ namespace RPServerClient.Character
             UnStageModel(Player.LocalPlayer);
             ResetAppearance(Player.LocalPlayer);
             Browser.CreateBrowser("package://CEF/char/charcreator.html");
-            Cam.SetPos(Helper.GetPosInFrontOfVector3(_displayPos.GetVector3Part(), _displayPos.W, 1.5f), _displayPos.GetVector3Part(), true);
+            _camera.SetPos(Helper.GetPosInFrontOfVector3(_displayPos.GetVector3Part(), _displayPos.W, 1.5f), _displayPos.GetVector3Part(), true);
         }
 
         private void OnQuitCharCreation(object[] args)
         {
             Browser.DestroyBrowser(null);
-            Cam.SetActive(false);
+            _camera.SetActive(false);
             Events.CallRemote(Shared.Events.ClientToServer.Character.TriggerCharSelection);
         }
 
@@ -89,7 +92,7 @@ namespace RPServerClient.Character
             Events.CallRemote(Shared.Events.ClientToServer.Character.ApplyCharacterEditAnimation);
             Browser.ExecuteFunction("ShowNextStep");
 
-            Cam.PointAtBone(Player.LocalPlayer, Shared.Enums.Bone.IK_Head, Player.LocalPlayer.GetHeading(), 0.35f, true);
+            _camera.PointAtBone(Player.LocalPlayer, Shared.Enums.Bone.IK_Head, Player.LocalPlayer.GetHeading(), 0.35f, true);
 
             // Set naked
             if (Player.LocalPlayer.Model == 1885233650)
