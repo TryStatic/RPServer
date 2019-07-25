@@ -9,13 +9,13 @@ namespace RPServerClient.Character
 {
     internal class Alias
     {
-        public Player player { set; get; }
-        public string aliasText { set; get; }
+        public Player Player { set; get; }
+        public string AliasText { set; get; }
 
         public Alias(Player player, string aliasText)
         {
-            this.player = player;
-            this.aliasText = aliasText;
+            Player = player;
+            AliasText = aliasText;
         }
     }
 
@@ -31,7 +31,7 @@ namespace RPServerClient.Character
             Events.OnEntityStreamOut += OnPlayerStreamOut;
             Events.Tick += Tick;
 
-            Events.Add(Shared.Events.ServerToClient.Character.SetAliasInfo, SetAliasInfo);
+            Events.Add(Shared.Events.ServerToClient.Character.SetAliasInfo, OnSetAliasInfo);
         }
 
         private void OnPlayerStreamIn(Entity entity)
@@ -44,29 +44,6 @@ namespace RPServerClient.Character
             Events.CallRemote(Shared.Events.ClientToServer.Character.RequestAliasInfo, p.RemoteId);
         }
 
-        private void SetAliasInfo(object[] args)
-        {
-            if(args == null || args.Length < 2) return;
-
-            var aliasTxt = args[0] as string;
-            RAGE.Chat.Output(aliasTxt);
-            var remoteID = int.Parse(args[1].ToString());
-            RAGE.Chat.Output(remoteID.ToString());
-            //var other = Entities.Players.Streamed.Find(p => p.RemoteId == remoteID);
-            var other = Entities.Players.All.Find(p => p.RemoteId == remoteID);
-            if (other == null) return;
-
-            var al = _clientAlises.Find(p => p.player == other);
-
-            if (al == null)
-            {
-                _clientAlises.Add(new Alias(other, aliasTxt));
-            }
-            else
-            {
-                al.aliasText = aliasTxt;
-            }
-        }
 
         private void OnPlayerStreamOut(Entity entity)
         {
@@ -75,16 +52,37 @@ namespace RPServerClient.Character
 
             if (!Client.Globals.IsAccountLoggedIn || !Client.Globals.HasActiveChar) return;
 
-
+            _clientAlises.RemoveAll(al => al.Player == p);
         }
 
+        private void OnSetAliasInfo(object[] args)
+        {
+            if (args == null || args.Length < 2) return;
+
+            var aliasTxt = args[0] as string;
+            var remoteID = int.Parse(args[1].ToString());
+            //var other = Entities.Players.Streamed.Find(p => p.RemoteId == remoteID);
+            var other = Entities.Players.All.Find(p => p.RemoteId == remoteID);
+            if (other == null) return;
+
+            var al = _clientAlises.Find(p => p.Player == other);
+
+            if (al == null)
+            {
+                _clientAlises.Add(new Alias(other, aliasTxt));
+            }
+            else
+            {
+                al.AliasText = aliasTxt;
+            }
+        }
 
         private void Tick(List<Events.TickNametagData> nametags)
         {
             foreach (var alias in _clientAlises)
             {
-                RAGE.Game.Graphics.SetDrawOrigin(alias.player.Position.X, alias.player.Position.Y, alias.player.Position.Z + 1f, 0);
-                RAGE.NUI.UIResText.Draw(alias.aliasText, 0, 0, RAGE.Game.Font.ChaletLondon, 0.3f, System.Drawing.Color.White, RAGE.NUI.UIResText.Alignment.Centered, false, false, 0);
+                RAGE.Game.Graphics.SetDrawOrigin(alias.Player.Position.X, alias.Player.Position.Y, alias.Player.Position.Z + 1f, 0);
+                RAGE.NUI.UIResText.Draw(alias.AliasText, 0, 0, RAGE.Game.Font.ChaletLondon, 0.3f, System.Drawing.Color.White, RAGE.NUI.UIResText.Alignment.Centered, false, false, 0);
                 RAGE.Game.Graphics.ClearDrawOrigin();
             }
 
