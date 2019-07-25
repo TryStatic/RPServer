@@ -275,14 +275,5 @@ namespace RPServer.Controllers
                 client.TriggerEvent(Events.ServerToClient.Character.RenderCharacterList, JsonConvert.SerializeObject(charDisplayList), acc.LastSpawnedCharId);
             });
         }
-        public static void OnServerShutdown()
-        {
-            Logger.GetInstance().ServerInfo("[SHUTDOWN]: Started saving Characters.");
-            foreach (var p in NAPI.Pools.GetAllPlayers())
-            {
-                p.GetActiveChar()?.SaveAll();
-            }
-            Logger.GetInstance().ServerInfo("[SHUTDOWN]: Done saving Characters.");
-        }
     }
 }

@@ -16,18 +16,6 @@ namespace RPServer.Game
         public static readonly Vector3 DefaultSpawnPos = new Vector3(-782.1527709960938f, 19.77294921875f, 41.93227767944336f);
         private static Timer _expiredEmailTokensTimer;
 
-        [Command(CmdStrings.CMD_Shutdown)]
-        public async void CMD_Shutdown(Client client)
-        {
-            NAPI.Chat.SendChatMessageToAll("[SERVER]: Shutdown inititated, saving data...");
-            AuthenticationHandler.OnServerShutdown();
-            CharacterHandler.OnServerShutdown();
-            Initialization.OnServerShutdown();
-            await WorldHandler.OnServerShutdown();
-
-            Environment.Exit(1);
-        }
-
         [ServerEvent(Event.ResourceStart)]
         public async void OnResourceStart()
         {

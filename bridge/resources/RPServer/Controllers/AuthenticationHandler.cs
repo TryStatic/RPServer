@@ -464,11 +464,5 @@ namespace RPServer.Controllers
             }
             return false;
         }
-        public static void OnServerShutdown()
-        {
-            Logger.GetInstance().ServerInfo("[SHUTDOWN]: Started saving Accounts.");
-            foreach (var p in NAPI.Pools.GetAllPlayers()) p.GetAccount()?.UpdateAsync();
-            Logger.GetInstance().ServerInfo("[SHUTDOWN]: Done saving Accounts.");
-        }
     }
 }
