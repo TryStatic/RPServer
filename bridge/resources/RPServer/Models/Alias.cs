@@ -1,4 +1,5 @@
-﻿using System.Data.Common;
+﻿using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
@@ -91,6 +92,30 @@ namespace RPServer.Models
                     if (unwrapped == null) return null;
                     return new Alias(unwrapped.CharID, unwrapped.AliasedID, unwrapped.AliasName, unwrapped.AliasDesc);
 
+                }
+                catch (DbException ex)
+                {
+                    DbConnectionProvider.HandleDbException(ex);
+                }
+
+                return null;
+            }
+        }
+
+
+        public static async Task<List<Alias>> FetchAllByChar(Character character)
+        {
+            const string query = "SELECT * FROM aliases WHERE charID = @charID";
+
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
+            {
+                try
+                {
+                    var result = await dbConn.QueryAsync(query, new { charID = character.ID });
+                    var aliases = new List<Alias>();
+                    var aliasesDyn = result.ToList();
+                    foreach (var al in aliasesDyn) aliases.Add(new Alias(al.CharID, al.AliasedID, al.AliasName, al.AliasDesc));
+                    return aliases;
                 }
                 catch (DbException ex)
                 {
