@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper.Contrib.Extensions;
-using GTANetworkAPI;
 
 namespace RPServer.Models
 {
@@ -12,8 +11,12 @@ namespace RPServer.Models
         public int CharOwnerID { set; get; }
         public string CharacterName { set; get; }
 
+        public Appearance Appearance;
+        public List<Alias> Aliases;
+
         public Character()
         {
+            Aliases = new List<Alias>();
         }
 
         /// <summary>
@@ -34,11 +37,18 @@ namespace RPServer.Models
             var charsData = result.ToList();
             return charsData;
         }
-
         public async Task<Appearance> GetAppearance()
         {
             var app =  await Appearance.ReadByKeyAsync(() => new Appearance().CharacterID, this.ID);
             return app.FirstOrDefault();
+        }
+        public async Task<List<Alias>> GetAliases() => await Alias.FetchAllByChar(this);
+
+        public async Task SaveAll()
+        {
+            await UpdateAsync(this); // Update character
+            await Appearance.UpdateAsync(Appearance); // Update Appearance
+            foreach (var i in Aliases) await Alias.UpdateAlias(i); // Update Aliases
         }
     }
 }
