@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.PortableExecutable;
 using System.Threading.Tasks;
 using Dapper.Contrib.Extensions;
 
@@ -48,7 +49,11 @@ namespace RPServer.Models
         {
             await UpdateAsync(this); // Update character
             await Appearance.UpdateAsync(Appearance); // Update Appearance
-            foreach (var i in Aliases) await Alias.UpdateAlias(i); // Update Aliases
+            foreach (var i in Aliases)
+            {
+                if (await Alias.Exist(i.CharID, i.AliasedID)) await Alias.UpdateAlias(i);
+                else await Alias.CreateAsync(i.CharID, i.AliasedID, i.AliasName, i.AliasDesc); 
+            }
         }
     }
 }

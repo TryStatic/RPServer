@@ -74,9 +74,28 @@ namespace RPServer.Controllers
 
             var chData = client.GetActiveChar();
             var chOtherData = otherClient.GetActiveChar();
-            
 
+            if (aliasText == "")
+            {
+                var alias = chData.Aliases.Find(i => i.CharID == chData.ID && i.AliasedID == chOtherData.ID);
+                if (alias == null)
+                {
+                    client.SendChatMessage("No Alias set for that player.");
+                    return;
+                }
+                chData.Aliases.Remove(alias);
+                TaskManager.Run(client, async () => await Alias.DeleteAlias(alias));
+                client.SendChatMessage("Alias removed.");
+                return;
+            }
 
+            if (chData.Aliases.Exists(i => i.CharID == chData.ID && i.AliasedID == chOtherData.ID))
+            {
+                client.SendChatMessage("Alias already set.");
+                return;
+            }
+            chData.Aliases.Add(new Alias(chData, chOtherData, aliasText));
+            client.SendChatMessage($"Alias set.");
         }
 
         public CharacterHandler()

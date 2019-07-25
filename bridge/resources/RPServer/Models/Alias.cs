@@ -14,7 +14,7 @@ namespace RPServer.Models
         public string AliasName { set; get; }
         public string AliasDesc { set; get; }
 
-        private Alias(Character character, Character aliasedCharacter, string aliasName, string aliasDesc = "")
+        public Alias(Character character, Character aliasedCharacter, string aliasName, string aliasDesc = "")
         {
             CharID = character.ID;
             AliasedID = aliasedCharacter.ID;
@@ -22,7 +22,7 @@ namespace RPServer.Models
             AliasDesc = aliasDesc;
         }
 
-        private Alias(int charid, int aliased, string aliasName, string aliasDesc = "")
+        public Alias(int charid, int aliased, string aliasName, string aliasDesc = "")
         {
             CharID = charid;
             AliasedID = aliased;
@@ -30,11 +30,11 @@ namespace RPServer.Models
             AliasDesc = aliasDesc;
         }
 
-        public static async Task<bool> CreateAsync(Character character, Character aliasedCharacter, string aliasName, string aliasDesc = "")
+        public static async Task<bool> CreateAsync(int charid, int alisedid, string aliasName, string aliasDesc = "")
         {
             const string query = "INSERT INTO aliases(CharID, AliasedID, AliasName, AliasDesc) VALUES (@CharID, @AliasedID, @AliasName, @AliasDesc)";
 
-            var newAlias = new Alias(character, aliasedCharacter, aliasName, aliasDesc);
+            var newAlias = new Alias(charid, alisedid, aliasName, aliasDesc);
 
             using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
@@ -57,7 +57,7 @@ namespace RPServer.Models
             return false;
         }
 
-        public static async Task<bool> HasAliasedTarget(Character character, Character target)
+        public static async Task<bool> Exist(int charid, int alisedID)
         {
             const string query = "SELECT * FROM aliases WHERE charID = @charID AND AliasedID = @aliasedID";
 
@@ -66,7 +66,7 @@ namespace RPServer.Models
                 try
                 {
                     var result =
-                        await dbConn.QueryAsync<int>(query, new {charID = character.ID, aliasedID = target.ID});
+                        await dbConn.QueryAsync<int>(query, new {charID = charid, aliasedID = alisedID});
                     return result.Any();
                 }
                 catch (DbException ex)
