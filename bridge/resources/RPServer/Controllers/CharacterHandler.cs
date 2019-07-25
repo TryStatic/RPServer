@@ -102,23 +102,6 @@ namespace RPServer.Controllers
             CharacterHandler.CharacterSpawn += OnCharacterSpawn;
         }
 
-        private void OnCharacterSpawn(object source, EventArgs e)
-        {
-            // Load Character Data
-            var client = source as Client;
-            if (client == null) return;
-            if (!client.IsLoggedIn()) return;
-            var chData = client.GetActiveChar();
-            if(chData == null) return;
-
-            TaskManager.Run(client, async () =>
-            {
-                chData.Appearance = await chData.GetAppearance();
-                chData.Aliases = await chData.GetAliases();
-            });
-
-        }
-
         [RemoteEvent(Events.ClientToServer.Character.ApplyCharacterEditAnimation)]
         public void ClientEvent_ApplyCharacterEditAnimation(Client client) => client.PlayAnimation("missbigscore2aleadinout@ig_7_p2@bankman@", "leadout_waiting_loop", 1);
 
@@ -274,6 +257,23 @@ namespace RPServer.Controllers
 
             InitCharacterSelection(client);
         }
+        private static void OnCharacterSpawn(object source, EventArgs e)
+        {
+            // Load Character Data
+            var client = source as Client;
+            if (client == null) return;
+            if (!client.IsLoggedIn()) return;
+            var chData = client.GetActiveChar();
+            if (chData == null) return;
+
+            TaskManager.Run(client, async () =>
+            {
+                chData.Appearance = await chData.GetAppearance();
+                chData.Aliases = await chData.GetAliases();
+            });
+
+        }
+
         private static void InitCharacterSelection(Client client)
         {
             client.TriggerEvent(Events.ServerToClient.Character.InitCharSelector);
