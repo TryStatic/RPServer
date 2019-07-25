@@ -82,7 +82,6 @@ namespace RPServer.Controllers
                     return;
                 }
                 chData.Aliases.Remove(alias);
-                TaskManager.Run(client, async () => await Alias.DeleteAlias(alias));
                 client.SendChatMessage("Alias removed.");
                 return;
             }
