@@ -1,4 +1,4 @@
-﻿namespace RPServerClient.Globals
+﻿namespace RPServerClient.Client
 {
     internal class Initialization : RAGE.Events
     {

@@ -1,6 +1,6 @@
 using Multiplayer;
 using RAGE.Elements;
-using RPServerClient.Globals;
+using RPServerClient.Client;
 using RPServerClient.Util;
 using Events = RAGE.Events;
 

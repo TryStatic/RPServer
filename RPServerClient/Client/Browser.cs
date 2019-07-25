@@ -2,7 +2,7 @@
 using System.Linq;
 using RAGE.Ui;
 
-namespace RPServerClient.Globals
+namespace RPServerClient.Client
 {
     internal class Browser : RAGE.Events.Script
     {

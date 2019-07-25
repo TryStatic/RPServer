@@ -2,7 +2,7 @@
 using Player = RAGE.Elements.Player;
 using Vector3 = RAGE.Vector3;
 
-namespace RPServerClient.Globals
+namespace RPServerClient.Client
 {
     internal class Cam : RAGE.Events.Script
     {

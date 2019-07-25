@@ -6,7 +6,7 @@ using RAGE;
 using RAGE.NUI;
 using RPServerClient.Util;
 using Shared.Data;
-using Cam = RPServerClient.Globals.Cam;
+using Cam = RPServerClient.Client.Cam;
 using Events = RAGE.Events;
 using Player = RAGE.Elements.Player;
 

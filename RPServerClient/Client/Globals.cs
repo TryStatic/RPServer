@@ -1,6 +1,6 @@
 ﻿using RAGE.Elements;
 
-namespace RPServerClient.Globals
+namespace RPServerClient.Client
 {
     internal class Globals
     {

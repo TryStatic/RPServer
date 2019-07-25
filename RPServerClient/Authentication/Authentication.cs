@@ -1,6 +1,6 @@
 ﻿using RAGE;
 using RAGE.Elements;
-using RPServerClient.Globals;
+using RPServerClient.Client;
 using Events = RAGE.Events;
 
 // ReSharper disable CommentTypo
