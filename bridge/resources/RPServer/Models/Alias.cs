@@ -85,8 +85,10 @@ namespace RPServer.Models
             {
                 try
                 { // cumhere
-                    var result = await dbConn.QueryAsync<Alias>(query, new { charID = character.ID });
-                    return result.ToHashSet();
+                    var result = await dbConn.QueryAsync(query, new { charID = character.ID });
+                    var aliases = new HashSet<Alias>();
+                    foreach (var i in result) aliases.Add(new Alias(i.CharID, i.AliasedID, i.AliasName, i.AliasDesc));
+                    return aliases;
                 }
                 catch (DbException ex)
                 {

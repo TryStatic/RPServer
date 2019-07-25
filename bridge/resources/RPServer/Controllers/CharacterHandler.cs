@@ -36,7 +36,7 @@ namespace RPServer.Controllers
             InitCharacterSelection(client);
         }
         
-        [Command(CmdStrings.CMD_Alias)]
+        [Command(CmdStrings.CMD_Alias, GreedyArg = true)]
         public void CMD_Alias(Client client, string identifier, string aliasText = "")
         {
             if (!client.IsLoggedIn())
@@ -89,7 +89,7 @@ namespace RPServer.Controllers
                 return;
             }
 
-            var exist = chData.Aliases.First(i => i.CharID == chData.ID && i.AliasedID == chOtherData.ID);
+            var exist = chData.Aliases.FirstOrDefault(i => i.CharID == chData.ID && i.AliasedID == chOtherData.ID);
             if (exist != null)
             {
                 exist.AliasName = aliasText;
@@ -266,7 +266,7 @@ namespace RPServer.Controllers
             var chData = client.GetActiveChar();
             var chOtherData = streamedClient.GetActiveChar();
 
-            var alias = chData.Aliases.First(i => i.AliasedID == chOtherData.ID);
+            var alias = chData.Aliases.FirstOrDefault(i => i.AliasedID == chOtherData.ID);
 
             if (alias != null) client.TriggerEvent(Events.ServerToClient.Character.SetAliasInfo, $"{alias.AliasName} ({streamedClient.Value})", remoteid);
             else client.TriggerEvent(Events.ServerToClient.Character.SetAliasInfo, $"({streamedClient.Value})", remoteid);
