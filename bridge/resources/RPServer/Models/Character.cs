@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper.Contrib.Extensions;
+using RPServer.Util;
 
 namespace RPServer.Models
 {
@@ -13,6 +14,7 @@ namespace RPServer.Models
 
         public Appearance Appearance;
         public List<Alias> Aliases;
+        public int AltIdentifier = RandomGenerator.GetInstance().UniqueNext();
 
         public Character()
         {

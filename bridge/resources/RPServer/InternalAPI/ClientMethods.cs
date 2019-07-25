@@ -1,5 +1,6 @@
 ﻿using System;
 using GTANetworkAPI;
+using RPServer.InternalAPI.Extensions;
 
 namespace RPServer.InternalAPI
 {
@@ -15,7 +16,7 @@ namespace RPServer.InternalAPI
             }
 
             if (IsPlayerID(someID)) return FindClientByPlayerID(someID);
-            if (IsAliasID(someID)) return FindClientByAliasID(someID);
+            if (IsAltID(someID)) return FindClientByAltID(someID);
 
             return null;
         }
@@ -28,22 +29,15 @@ namespace RPServer.InternalAPI
         internal static Client FindClientByID(int id)
         {
             if (IsPlayerID(id)) return FindClientByPlayerID(id);
-            if (IsAliasID(id)) return FindClientByAliasID(id);
+            if (IsAltID(id)) return FindClientByAltID(id);
             return null;
         }
 
         internal static Client FindClientByPlayerID(int id) => IsPlayerID(id) ? NAPI.Pools.GetAllPlayers().Find(p => p.Value == id) : null;
-
-        internal static Client FindClientByAliasID(int id)
-        {
-            if (IsAliasID(id)) return null;
-
-            return null; // TODO: IMPLEMENT ME
-        }
+        internal static Client FindClientByAltID(int id) => IsAltID(id) ? NAPI.Pools.GetAllPlayers().Find(p => p.GetActiveChar() != null && p.GetActiveChar().AltIdentifier == id) : null;
 
         internal static bool IsPlayerID(int id) => id >= 0 && id < NAPI.Server.GetMaxPlayers(); // 0 <= id < max_players
-
-        internal static bool IsAliasID(int id) => id >= NAPI.Server.GetMaxPlayers(); // id >= max_players
+        internal static bool IsAltID(int id) => id >= NAPI.Server.GetMaxPlayers(); // id >= max_players
 
         private static bool IsNumeric(string identifier, out int outID)
         {
