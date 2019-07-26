@@ -7,7 +7,7 @@ using RPServer.Util;
 
 namespace RPServer.Game
 {
-    internal class Terminate : Script
+    internal class Termination : Script
     {
         [Command(CmdStrings.CMD_Shutdown)]
         public async void CMD_Shutdown(Client client)
