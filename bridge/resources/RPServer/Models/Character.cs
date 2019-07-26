@@ -39,71 +39,23 @@ namespace RPServer.Models
             var charsData = result.ToList();
             return charsData;
         }
-        public async Task<Appearance> GetAppearance()
-        {
-            var app =  await Appearance.ReadByKeyAsync(() => new Appearance().CharacterID, this.ID);
-            return app.FirstOrDefault();
-        }
-        public async Task<HashSet<Alias>> GetAliases() => await Alias.FetchAllByChar(this);
-        public async Task<HashSet<Vehicle>> GetVehicles() => (await Vehicle.ReadByKeyAsync(() => new Vehicle().OwnerID, ID)).ToHashSet();
 
         public async Task SaveAll()
         {
-            await UpdateAsync(this); // Update character
-            await Appearance.UpdateAsync(Appearance); // Update Appearance
-            await UpdateAlises();
-            await UpdateVehicles();
+            // This Character Instance
+            await UpdateAsync(this);
+            // One to One Relationships
+            await Appearance.UpdateAsync();
+            // One to Many Relationships (data must be HashSet<T> where T a Model descendant)
+            await Vehicle.UpdateAllByKeyAsync(() => new Vehicle().OwnerID, ID, Vehicles);
+            // Other
+            await Alias.UpdateAllByChar(Aliases, this);
         }
         public async Task FetchAll()
         {
-            Appearance = await GetAppearance();
-            Aliases = await GetAliases();
-            Vehicles = await GetVehicles();
-        }
-
-        private async Task UpdateVehicles()
-        {
-            var dbRecsEnumerable = await Vehicle.ReadByKeyAsync(() => new Vehicle().OwnerID, ID);
-            var dbRecords = dbRecsEnumerable.ToHashSet();
-            foreach (var dbRec in dbRecords)
-            {
-                if (Vehicles.Contains(dbRec))
-                {
-                    await Vehicle.UpdateAsync(dbRec);
-                    Vehicles.Remove(dbRec);
-                }
-                else
-                {
-                    await Vehicle.DeleteAsync(dbRec);
-                }
-            }
-
-            foreach (var i in Vehicles)
-            {
-                await Vehicle.CreateAsync(new Vehicle(i.OwnerID));
-            }
-        }
-        public async Task UpdateAlises()
-        {
-            var dbRecords = await Alias.FetchAllByChar(this);
-
-            foreach (var dbRec in dbRecords)
-            {
-                if (Aliases.Contains(dbRec))
-                {
-                    await Alias.UpdateAlias(Aliases.First(r => r.Equals(dbRec)));
-                    Aliases.Remove(dbRec);
-                }
-                else
-                {
-                    await Alias.DeleteAlias(Aliases.First(r => r.Equals(dbRec)));
-                }
-            }
-            
-            foreach (var i in Aliases)
-            {
-                await Alias.CreateAsync(i.CharID, i.AliasedID, i.AliasName, i.AliasDesc);
-            }
+            Appearance = (await Appearance.ReadByKeyAsync(() => new Appearance().CharacterID, this.ID)).FirstOrDefault();
+            Aliases = await Alias.FetchAllByChar(this);
+            Vehicles = (await Vehicle.ReadByKeyAsync(() => new Vehicle().OwnerID, ID)).ToHashSet();
         }
     }
 }

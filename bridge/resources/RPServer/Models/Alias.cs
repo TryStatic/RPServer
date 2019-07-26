@@ -8,7 +8,7 @@ using RPServer.Database;
 namespace RPServer.Models
 {
     internal class Alias
-    { 
+    { // Aliases use a Composite key and had to hard-implemented
         public int CharID { set; get; } // Key 1
         public int AliasedID { set; get; } // Key 2
         public string AliasName { set; get; }
@@ -145,6 +145,29 @@ namespace RPServer.Models
             return false;
         }
         public async Task<bool> DeleteAlias() => await DeleteAlias(this);
+        public static async Task UpdateAllByChar(HashSet<Alias> aliasesRef, Character character)
+        {
+            var aliases = aliasesRef.ToHashSet();
+            var dbRecords = await FetchAllByChar(character);
+
+            foreach (var dbRec in dbRecords)
+            {
+                if (aliases.Contains(dbRec))
+                {
+                    await UpdateAlias(aliases.First(r => r.Equals(dbRec)));
+                    aliases.Remove(dbRec);
+                }
+                else
+                {
+                    await DeleteAlias(aliases.First(r => r.Equals(dbRec)));
+                }
+            }
+
+            foreach (var i in aliases)
+            {
+                await CreateAsync(i.CharID, i.AliasedID, i.AliasName, i.AliasDesc);
+            }
+        }
 
         #region Generated
         protected bool Equals(Alias other)

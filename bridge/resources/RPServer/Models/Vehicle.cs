@@ -15,6 +15,5 @@ namespace RPServer.Models
         {
             OwnerID = ownerID;
         }
-
     }
 }
