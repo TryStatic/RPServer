@@ -135,7 +135,7 @@ namespace RPServer.Controllers
                     return;
                 }
 
-                var app = await fetchedChar.GetAppearance();
+                var app = (await Appearance.ReadByKeyAsync(() => new Appearance().CharacterID, fetchedChar.ID)).FirstOrDefault();
                 if (app != null) app.Apply(client);
                 client.Transparency = 255;
             });
