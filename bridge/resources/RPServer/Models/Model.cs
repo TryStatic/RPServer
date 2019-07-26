@@ -114,9 +114,8 @@ namespace RPServer.Models
         public async Task<bool> UpdateAsync() => await UpdateAsync(this as T);
         public static async Task UpdateAllByKeyAsync<TC>(Expression<Func<TC>> expression, object searchKey, HashSet<T> dataref)
         {
+            var dbRecords = (await ReadByKeyAsync(expression, searchKey)).ToHashSet();
             var data = dataref.ToHashSet();
-            var dbRecsEnumerable = await ReadByKeyAsync(expression, searchKey);
-            var dbRecords = dbRecsEnumerable.ToHashSet();
 
             foreach (var dbRec in dbRecords)
             {
@@ -135,6 +134,8 @@ namespace RPServer.Models
             {
                 await CreateAsync(i);
             }
+
+            dataref = (await ReadByKeyAsync(expression, searchKey)).ToHashSet();
         }
 
         public static async Task<bool> DeleteAsync(T entry)
