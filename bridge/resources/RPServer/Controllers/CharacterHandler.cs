@@ -77,7 +77,7 @@ namespace RPServer.Controllers
 
             if (aliasText == "")
             {
-                var alias = chData.Aliases.First(i => i.CharID == chData.ID && i.AliasedID == chOtherData.ID);
+                var alias = chData.Aliases.FirstOrDefault(i => i.CharID == chData.ID && i.AliasedID == chOtherData.ID);
                 if (alias == null)
                 {
                     client.SendChatMessage("No Alias set for that player.");
