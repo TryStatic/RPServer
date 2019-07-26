@@ -54,6 +54,12 @@ namespace RPServer.Models
             await UpdateAlises();
             await UpdateVehicles();
         }
+        public async Task FetchAll()
+        {
+            Appearance = await GetAppearance();
+            Aliases = await GetAliases();
+            Vehicles = await GetVehicles();
+        }
 
         private async Task UpdateVehicles()
         {
@@ -77,8 +83,6 @@ namespace RPServer.Models
                 await Vehicle.CreateAsync(new Vehicle(i.OwnerID));
             }
         }
-
-
         public async Task UpdateAlises()
         {
             var dbRecords = await Alias.FetchAllByChar(this);

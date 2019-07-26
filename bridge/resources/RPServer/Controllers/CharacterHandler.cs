@@ -289,13 +289,8 @@ namespace RPServer.Controllers
             var chData = client.GetActiveChar();
             if (chData == null) return;
 
-            TaskManager.Run(client, async () =>
-            {
-                chData.Appearance = await chData.GetAppearance();
-                chData.Aliases = await chData.GetAliases();
-                chData.Vehicles = await chData.GetVehicles();
-            });
-
+            // TODO: This needs to be moved out of here before the player spawns eventually
+            TaskManager.Run(client, async () => await chData.FetchAll());
         }
 
         private static void InitCharacterSelection(Client client)
