@@ -18,10 +18,7 @@ namespace RPServer.Models
         [Key]
         public int ID { get; set; }
 
-        protected Model()
-        {
-            ID = _tempID--;
-        }
+        protected Model() => ID = _tempID--;
 
         #region CRUD
         public static async Task<int> CreateAsync(T newEntry)
