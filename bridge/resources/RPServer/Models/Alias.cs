@@ -55,7 +55,6 @@ namespace RPServer.Models
             }
             return false;
         }
-
         public static async Task<bool> Exist(int charid, int alisedID)
         {
             const string query = "SELECT * FROM aliases WHERE charID = @charID AND AliasedID = @aliasedID";
@@ -76,7 +75,6 @@ namespace RPServer.Models
                 return false;
             }
         }
-
         public static async Task<HashSet<Alias>> FetchAllByChar(Character character)
         {
             const string query = "SELECT * FROM aliases WHERE charID = @charID";
@@ -98,7 +96,6 @@ namespace RPServer.Models
                 return null;
             }
         }
-
         public static async Task<bool> UpdateAlias(Alias alias)
         {
             var query = "UPDATE aliases SET aliasName = @aliasname, aliasDesc = @aliasdesc WHERE CharID = @charID AND AliasedID = @aliasedID";
@@ -125,7 +122,6 @@ namespace RPServer.Models
             }
         }
         public async Task<bool> UpdateAlias() => await UpdateAlias(this);
-
         public static async Task<bool> DeleteAlias(Alias alias)
         {
             var query = "DELETE FROM aliases WHERE CharID = @charID AND AliasedID = @aliasedID";
