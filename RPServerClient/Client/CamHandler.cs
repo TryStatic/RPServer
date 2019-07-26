@@ -5,11 +5,11 @@ using Vector3 = RAGE.Vector3;
 
 namespace RPServerClient.Client
 {
-    internal class Cam : RAGE.Events.Script
+    internal class CamHandler : RAGE.Events.Script
     {
         public readonly int CameraID;
 
-        public Cam()
+        public CamHandler()
         {
             CameraID = RAGE.Game.Cam.CreateCam(CameraType.DefaultScriptedCamera, false);
         }
@@ -21,7 +21,7 @@ namespace RPServerClient.Client
             if(setActive) SetActive(true);
         }
 
-        public static void SetPosWithInterp(Cam destCamId, Cam origCamId, int durationInMs, int easeLocation, int easeRotation)
+        public static void SetPosWithInterp(CamHandler destCamId, CamHandler origCamId, int durationInMs, int easeLocation, int easeRotation)
         {
             RAGE.Game.Cam.SetCamActiveWithInterp(destCamId.CameraID, origCamId.CameraID, durationInMs, easeLocation, easeRotation);
             RAGE.Game.Cam.RenderScriptCams(true, false, 0, true, true, 0);

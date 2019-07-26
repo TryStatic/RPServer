@@ -9,14 +9,14 @@ namespace RPServerClient.Authentication
 {
     internal class Authentication : Events.Script
     {
-        public static Cam Camera;
+        public static CamHandler Camera;
 
         private static readonly Vector3 LoginCamPos = new Vector3(148.88035583496094f, -1407.726318359375f, 156.79771423339844f);
         private static readonly Vector3 LoginCamPointAt = new Vector3(126.11740112304688f, -772.676025390625f, 155.15695190429688f);
 
         public Authentication()
         {
-             Camera = new Cam();
+             Camera = new CamHandler();
 
             #region SERVER_TO_CLIENT
             Events.Add(Shared.Events.ServerToClient.Authentication.SetLoginScreen, OnSetLoginScreen);

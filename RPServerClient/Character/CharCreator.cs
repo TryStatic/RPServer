@@ -10,11 +10,11 @@ namespace RPServerClient.Character
     {
         private readonly Quaternion _displayPos = new Quaternion(-169.3321f, 482.2647f, 133.8789f, 282.6658f);
         private readonly Quaternion _hiddenPos = new Quaternion(-163.4660f, 483.5910f, 134.5571f, 282.6658f);
-        private static Cam _camera;
+        private static CamHandler _camera;
 
         public CharCreator()
         {
-            _camera = new Cam();
+            _camera = new CamHandler();
 
             // TEMP commands
             Events.Add("createchar", OnInitCharCreation);

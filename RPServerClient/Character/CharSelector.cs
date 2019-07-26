@@ -4,9 +4,9 @@ using System.Linq;
 using Newtonsoft.Json;
 using RAGE;
 using RAGE.NUI;
+using RPServerClient.Client;
 using RPServerClient.Util;
 using Shared.Data;
-using Cam = RPServerClient.Client.Cam;
 using Events = RAGE.Events;
 using Player = RAGE.Elements.Player;
 
@@ -28,14 +28,14 @@ namespace RPServerClient.Character
         private List<CharDisplay> _charList = new List<CharDisplay>();
         private MenuPool _charMenu;
 
-        public static Cam _camera;
+        public static CamHandler _camera;
 
         private bool _disableControls = false;
 
 
         public CharSelector()
         {
-            _camera = new Cam();
+            _camera = new CamHandler();
             
             RAGE.Game.Graphics.GetScreenResolution(ref ScreenResX, ref ScreenResY);
             RAGE.Game.Graphics.GetActiveScreenResolution(ref ScreenX, ref ScreenY);
