@@ -38,13 +38,13 @@ namespace RPServerClient.Character
 
         private void OnSuccessCharCreation(object[] args)
         {
-            Browser.ExecuteFunction(new object[] { "ShowStep", "7" });
+            BrowserHandler.ExecuteFunction(new object[] { "ShowStep", "7" });
         }
 
         private void ResetCharCreation(object[] args)
         {
             ResetAppearance(Player.LocalPlayer);
-            Browser.ExecuteFunction(new object[] { "ShowStep", "1" });
+            BrowserHandler.ExecuteFunction(new object[] { "ShowStep", "1" });
             if (args != null && args.Length > 0) DisplayError(new object[] { args[0].ToString() });
         }
 
@@ -53,13 +53,13 @@ namespace RPServerClient.Character
         {
             UnStageModel(Player.LocalPlayer);
             ResetAppearance(Player.LocalPlayer);
-            Browser.CreateBrowser("package://CEF/char/charcreator.html");
+            BrowserHandler.CreateBrowser("package://CEF/char/charcreator.html");
             _camera.SetPos(Helper.GetPosInFrontOfVector3(_displayPos.GetVector3Part(), _displayPos.W, 1.5f), _displayPos.GetVector3Part(), true);
         }
 
         private void OnQuitCharCreation(object[] args)
         {
-            Browser.DestroyBrowser(null);
+            BrowserHandler.DestroyBrowser(null);
             _camera.SetActive(false);
             Events.CallRemote(Shared.Events.ClientToServer.Character.TriggerCharSelection);
         }
@@ -90,7 +90,7 @@ namespace RPServerClient.Character
         {
             StageModel(Player.LocalPlayer);
             Events.CallRemote(Shared.Events.ClientToServer.Character.ApplyCharacterEditAnimation);
-            Browser.ExecuteFunction("ShowNextStep");
+            BrowserHandler.ExecuteFunction("ShowNextStep");
 
             _camera.PointAtBone(Player.LocalPlayer, Shared.Enums.Bone.IK_Head, Player.LocalPlayer.GetHeading(), 0.35f, true);
 
@@ -194,7 +194,7 @@ namespace RPServerClient.Character
 
             var msg = args[0] as string;
 
-            Browser.ExecuteFunction(new object[] { "showError", msg.Replace("'", @"\'") });
+            BrowserHandler.ExecuteFunction(new object[] { "showError", msg.Replace("'", @"\'") });
         }
         #endregion
     }
