@@ -48,12 +48,12 @@ namespace RPServer.Models
         }
         public static async Task<AccountModel> FetchAsync(string username)
         {
-            var result = await ReadByKeyAsync(() => new AccountModel().Username, username);
+            var result = await ReadByKeyAsync(() => AccountModel.Mock.Username, username);
             return result.FirstOrDefault();
         }
         public static async Task<bool> ExistsAsync(string username)
         {
-            var result = await ReadByKeyAsync(() => new AccountModel().Username, username);
+            var result = await ReadByKeyAsync(() => AccountModel.Mock.Username, username);
             return result.FirstOrDefault() != null;
         }
         public static async Task<bool> AuthenticateAsync(string username, string password)
@@ -63,7 +63,7 @@ namespace RPServer.Models
         }
         public static async Task<bool> IsEmailTakenAsync(string emailAddress)
         {
-            var accList = await ReadByKeyAsync(() => new AccountModel().EmailAddress, emailAddress);
+            var accList = await ReadByKeyAsync(() => AccountModel.Mock.EmailAddress, emailAddress);
             return accList.FirstOrDefault() != null;
         }
         #endregion

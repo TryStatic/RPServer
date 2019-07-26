@@ -35,7 +35,7 @@ namespace RPServer.Models
         }
         public static async Task<List<CharacterModel>> FetchAllAsync(AccountModel account)
         {
-            var result = await ReadByKeyAsync(() => new CharacterModel().CharOwnerID, account.ID);
+            var result = await ReadByKeyAsync(() => CharacterModel.Mock.CharOwnerID, account.ID);
             var charsData = result.ToList();
             return charsData;
         }
@@ -47,15 +47,15 @@ namespace RPServer.Models
             // One to One Relationships
             await Appearance.UpdateAsync();
             // One to Many Relationships (data must be HashSet<T> where T a Model descendant)
-            await VehicleModel.UpdateAllByKeyAsync(() => new VehicleModel().OwnerID, ID, Vehicles);
+            await VehicleModel.UpdateAllByKeyAsync(() => VehicleModel.Mock.OwnerID, ID, Vehicles);
             // Other
             await Alias.UpdateAllByChar(Aliases, this);
         }
         public async Task ReadAllData()
         {
-            Appearance = (await AppearanceModel.ReadByKeyAsync(() => new AppearanceModel().CharacterID, this.ID)).FirstOrDefault();
+            Appearance = (await AppearanceModel.ReadByKeyAsync(() => AppearanceModel.Mock.CharacterID, this.ID)).FirstOrDefault();
             Aliases = await Alias.ReadAllByChar(this);
-            Vehicles = (await VehicleModel.ReadByKeyAsync(() => new VehicleModel().OwnerID, ID)).ToHashSet();
+            Vehicles = (await VehicleModel.ReadByKeyAsync(() => VehicleModel.Mock.OwnerID, ID)).ToHashSet();
         }
     }
 }

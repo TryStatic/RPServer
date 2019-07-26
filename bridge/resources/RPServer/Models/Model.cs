@@ -10,10 +10,11 @@ using RPServer.Database;
 
 namespace RPServer.Models
 {
-    internal abstract class Model<T> where T: Model<T>
+    internal abstract class Model<T> where T: Model<T>, new()
     {
         // ReSharper disable once StaticMemberInGenericType
         private static int _tempID = -1;
+        public static T Mock = new T();
 
         [Key]
         public int ID { get; set; }

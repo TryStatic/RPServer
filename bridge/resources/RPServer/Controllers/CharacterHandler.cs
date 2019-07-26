@@ -135,7 +135,7 @@ namespace RPServer.Controllers
                     return;
                 }
 
-                var app = (await AppearanceModel.ReadByKeyAsync(() => new AppearanceModel().CharacterID, fetchedChar.ID)).FirstOrDefault();
+                var app = (await AppearanceModel.ReadByKeyAsync(() => AppearanceModel.Mock.CharacterID, fetchedChar.ID)).FirstOrDefault();
                 if (app != null) app.Apply(client);
                 client.Transparency = 255;
             });
@@ -197,7 +197,7 @@ namespace RPServer.Controllers
 
             TaskManager.Run(client, async () =>
             {
-                var ch = await CharacterModel.ReadByKeyAsync(() => new CharacterModel().CharacterName, $"{firstName}_{lastName}");
+                var ch = await CharacterModel.ReadByKeyAsync(() => CharacterModel.Mock.CharacterName, $"{firstName}_{lastName}");
                 if (ch.Any())
                 {
                     client.TriggerEvent(Events.ServerToClient.Character.DisplayCharError, "That character name already exists.");
@@ -230,7 +230,7 @@ namespace RPServer.Controllers
             {
                 var charName = $"{newCharData.firstname}_{newCharData.lastname}";
 
-                var ch = await CharacterModel.ReadByKeyAsync(() => new CharacterModel().CharacterName, charName);
+                var ch = await CharacterModel.ReadByKeyAsync(() => CharacterModel.Mock.CharacterName, charName);
                 if (ch.Any())
                 {
                     client.TriggerEvent(Events.ServerToClient.Character.ResetCharCreation, "That character name already exists.");
@@ -238,7 +238,7 @@ namespace RPServer.Controllers
                 }
 
                 await CharacterModel.CreateNewAsync(client.GetAccount(), charName);
-                var newChIEnumerable = await CharacterModel.ReadByKeyAsync(() => new CharacterModel().CharacterName, charName);
+                var newChIEnumerable = await CharacterModel.ReadByKeyAsync(() => CharacterModel.Mock.CharacterName, charName);
                 var newCh = newChIEnumerable.First();
 
                 var pedhash = newCharData.isMale ? PedHash.FreemodeMale01 : PedHash.FreemodeFemale01;
