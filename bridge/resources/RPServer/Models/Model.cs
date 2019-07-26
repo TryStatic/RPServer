@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using Dapper;
 using Dapper.Contrib.Extensions;
@@ -14,6 +16,7 @@ namespace RPServer.Models
         [Key]
         public int ID { get; set; }
 
+        #region CRUD
         public static async Task<int> CreateAsync(T newEntry)
         {
             using (var dbConn = DbConnectionProvider.CreateDbConnection())
@@ -109,6 +112,30 @@ namespace RPServer.Models
             }
         }
         public async Task<bool> UpdateAsync() => await UpdateAsync(this as T);
+        public static async Task UpdateAllByKeyAsync<TC>(Expression<Func<TC>> expression, object searchKey, HashSet<T> dataref)
+        {
+            var data = dataref.ToHashSet();
+            var dbRecsEnumerable = await ReadByKeyAsync(expression, searchKey);
+            var dbRecords = dbRecsEnumerable.ToHashSet();
+
+            foreach (var dbRec in dbRecords)
+            {
+                if (data.Contains(dbRec))
+                {
+                    await UpdateAsync(dbRec);
+                    data.Remove(dbRec);
+                }
+                else
+                {
+                    await DeleteAsync(dbRec);
+                }
+            }
+
+            foreach (var i in data)
+            {
+                await CreateAsync(i);
+            }
+        }
 
         public static async Task<bool> DeleteAsync(T entry)
         {
@@ -127,7 +154,7 @@ namespace RPServer.Models
             }
         }
         public async Task<bool> DeleteAsync() => await DeleteAsync(this as T);
-
+        #endregion
 
         public override bool Equals(object obj) => !ReferenceEquals(null, obj) && (ReferenceEquals(this, obj) || obj.GetType() == this.GetType() && Equals((Model<T>) obj));
         protected bool Equals(Model<T> other) => ID == other.ID;
