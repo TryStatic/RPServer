@@ -293,6 +293,7 @@ namespace RPServer.Controllers
             {
                 chData.Appearance = await chData.GetAppearance();
                 chData.Aliases = await chData.GetAliases();
+                chData.Vehicles = await chData.GetVehicles();
             });
 
         }

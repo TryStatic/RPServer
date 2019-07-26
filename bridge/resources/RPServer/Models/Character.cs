@@ -14,6 +14,7 @@ namespace RPServer.Models
 
         public Appearance Appearance;
         public HashSet<Alias> Aliases;
+        public HashSet<Vehicle> Vehicles;
 
         public Character()
         {
@@ -43,16 +44,38 @@ namespace RPServer.Models
             var app =  await Appearance.ReadByKeyAsync(() => new Appearance().CharacterID, this.ID);
             return app.FirstOrDefault();
         }
-
-        #region Alias
         public async Task<HashSet<Alias>> GetAliases() => await Alias.FetchAllByChar(this);
-        #endregion
+        public async Task<HashSet<Vehicle>> GetVehicles() => (await Vehicle.ReadByKeyAsync(() => new Vehicle().OwnerID, ID)).ToHashSet();
 
         public async Task SaveAll()
         {
             await UpdateAsync(this); // Update character
             await Appearance.UpdateAsync(Appearance); // Update Appearance
             await UpdateAlises();
+            await UpdateVehicles();
+        }
+
+        private async Task UpdateVehicles()
+        {
+            var dbRecsEnumerable = await Vehicle.ReadByKeyAsync(() => new Vehicle().OwnerID, ID);
+            var dbRecords = dbRecsEnumerable.ToHashSet();
+            foreach (var dbRec in dbRecords)
+            {
+                if (Vehicles.Contains(dbRec))
+                {
+                    await Vehicle.UpdateAsync(dbRec);
+                    Vehicles.Remove(dbRec);
+                }
+                else
+                {
+                    await Vehicle.DeleteAsync(dbRec);
+                }
+            }
+
+            foreach (var i in Vehicles)
+            {
+                await Vehicle.CreateAsync(new Vehicle(i.OwnerID));
+            }
         }
 
 
