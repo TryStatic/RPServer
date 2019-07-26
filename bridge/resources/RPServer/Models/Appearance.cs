@@ -2,6 +2,7 @@
 using Dapper.Contrib.Extensions;
 using GTANetworkAPI;
 using RPServer.Controllers.Util;
+using RPServer.Models.Util;
 
 namespace RPServer.Models
 {
@@ -165,7 +166,7 @@ namespace RPServer.Models
             if (SkinModel != (ulong)PedHash.FreemodeMale01 && SkinModel != (ulong)PedHash.FreemodeFemale01) return;
 
             client.SetCustomization(IsMale, GetHeadBlend(), EyeColor, HairColor, HairHighlightColor, GetFaceFeatures(), GetHeadOverlay(), new Decoration[0]);
-            client.SetClothes((int)Components.Hair, HairStyle, HairStyleTexture);
+            client.SetClothes((int)ClothesSlotID.Hair, HairStyle, HairStyleTexture);
         }
 
         public HeadBlend GetHeadBlend()
@@ -449,60 +450,5 @@ namespace RPServer.Models
             HairStyleTexture = (byte) jsonData.HairStyleTexture;
             EyeColor = (byte) jsonData.EyeColor;
         }
-    }
-
-    internal enum Components
-    {
-        Face = 0,
-        Mask = 1,
-        Hair = 2,
-        Torso = 3,
-        Legs = 4,
-        BagsParachutes =5,
-        Shoes = 6,
-        Accessories = 7,
-        Undershirts = 8,
-        BodyArmor = 9,
-        Decals = 10,
-        Tops = 11
-    }
-    internal enum HeadOverlayID
-    {
-        Blemishes = 0,
-        FacialHair = 1,
-        Eyebrows = 2,
-        Ageing = 3,
-        Makeup = 4,
-        Blush = 5,
-        Complexion = 6,
-        SunDamage = 7,
-        Lipstick = 8,
-        Freckles = 9,
-        ChestHair = 10,
-        BodyBlemishes = 11,
-        AdditionalBodyBlemishes = 12
-    }
-    internal enum FeatureID
-    {
-        NoseWidth = 0,
-        NoseHeight = 1,
-        NoseLength = 2,
-        NoseBridge = 3,
-        NoseTip = 4,
-        NoseBridgeShift = 5,
-        BrowHeight = 6,
-        BrowWidth = 7,
-        CheekboneHeight = 8,
-        CheekboneWidth = 9,
-        CheeksWidth = 10,
-        Eyes = 11,
-        Lips = 12,
-        JawWidth = 13,
-        JawHeight = 14,
-        ChinLength = 15,
-        ChinPosition = 16,
-        ChinWidth = 17,
-        ChinShape = 18,
-        NeckWidth = 19
     }
 }
