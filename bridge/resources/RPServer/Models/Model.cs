@@ -1,9 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Security.Policy;
 using System.Threading.Tasks;
 using Dapper;
 using Dapper.Contrib.Extensions;
@@ -13,8 +12,16 @@ namespace RPServer.Models
 {
     internal abstract class Model<T> where T: Model<T>
     {
+        // ReSharper disable once StaticMemberInGenericType
+        private static int _tempID = -1;
+
         [Key]
         public int ID { get; set; }
+
+        protected Model()
+        {
+            ID = _tempID--;
+        }
 
         #region CRUD
         public static async Task<int> CreateAsync(T newEntry)
