@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using RPServer.Database;
+using RPServer.Email;
 using RPServer.Util;
 
 namespace RPServer.Models

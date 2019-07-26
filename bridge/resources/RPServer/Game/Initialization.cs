@@ -3,6 +3,7 @@ using System.Threading;
 using GTANetworkAPI;
 using RPServer.Controllers;
 using RPServer.Database;
+using RPServer.Email;
 using RPServer.Models;
 using RPServer.Util;
 

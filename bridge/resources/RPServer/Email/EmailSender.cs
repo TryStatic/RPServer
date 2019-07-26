@@ -1,7 +1,7 @@
 ﻿using System.Net.Mail;
 using System.Threading.Tasks;
 
-namespace RPServer.Util
+namespace RPServer.Email
 {
     public class EmailSender
     {
