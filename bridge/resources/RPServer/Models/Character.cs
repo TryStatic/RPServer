@@ -13,7 +13,7 @@ namespace RPServer.Models
         public string CharacterName { set; get; }
 
         public Appearance Appearance;
-        public HashSet<Alias> Aliases = new HashSet<Alias>();
+        public HashSet<Alias> Aliases;
 
         public Character()
         {
