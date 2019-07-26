@@ -1,10 +1,15 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using GTANetworkAPI;
 using RPServer.Controllers.Util;
 using RPServer.Game;
+using RPServer.InternalAPI;
 using RPServer.InternalAPI.Extensions;
 using RPServer.Util;
+using Shared.Enums;
+using Entity = GTANetworkAPI.Entity;
+using Vehicle = GTANetworkAPI.Vehicle;
 
 namespace RPServer
 {
@@ -22,12 +27,24 @@ namespace RPServer
             player.SendChatMessage("/veh /ecc /heal /hmc /time /weather /getping /onlineppl /givegun");
             player.SendChatMessage("/setskin /setnick /togflymode /getcamcords /spawnme /playanimation /stopani");
             player.SendChatMessage("/loadipl /removeipl /resetipls /gotopos /getpos /fd");
-            player.SendChatMessage("/setheadblend /setheadoverlay, /setheadoverlaycolor, /setfacefeature, /setcompvar /seteyecolor");
             player.SendChatMessage("/changechar /addx /addy /addz /getfowardpos /testclothes");
-            player.SendChatMessage("/createmarker /createtextlabel, /createblip /gotowaypoint");
+            player.SendChatMessage("/createmarker /createtextlabel, /createblip /gotowp");
         }
 
-        [Command("gotowaypoint")]
+        [Command("setforumname")]
+        public void setforumname(Client client, string forumName)
+        {
+            client.GetAccount().ForumName = forumName;
+        }
+
+        [Command("test")]
+        public void test(Client client)
+        {
+            client.TriggerEvent("test");
+        }
+
+
+        [Command("gotowp")]
         public void cmd_gotowaypoint(Client client)
         {
             client.TriggerEvent("gotowaypoint");
@@ -41,9 +58,17 @@ namespace RPServer
         }
 
         [Command("createtextlabel")]
-        public void cmd_createtextlabel(Client client, string text)
+        public void cmd_createtextlabel(Client client, string text, float range, int fontInt)
         {
-            NAPI.TextLabel.CreateTextLabel(text, client.Position, 1.0f, 1.0f, 0, new Color(255, 0, 0), false, 0);
+            if (!Enum.IsDefined(typeof(Font), fontInt))
+            {
+                client.SendChatMessage("Invalid font, valid values are 0, 1, 2, 4, 7");
+                return;
+            }
+
+            Enum.TryParse<Font>(fontInt.ToString(), out var font);
+
+            NAPI.TextLabel.CreateTextLabel(text, client.Position, range, font, new Color(255, 0, 25));
         }
 
         [Command("createblip")]
@@ -92,61 +117,45 @@ namespace RPServer
         [Command("gethere", GreedyArg = true)]
         public void CmdGetHere(Client client, string trg)
         {
-            var target = NAPI.Player.GetPlayerFromName(trg);
+            var target = ClientMethods.FindClient(trg);
 
             if (target == null)
                 return;
 
-            target.Position = client.Position.Around(5);
+
+            if (client == target)
+            {
+                client.SendChatMessage("Can't /gethere to urself.");
+                return;
+            }
+
+
+            target.Position = client.Position.Around(2);
         }
 
 
         [Command("goto", GreedyArg = true)]
         public void CmdGoto(Client client, string trg)
         {
-            var target = NAPI.Player.GetPlayerFromName(trg);
+            Client target = ClientMethods.FindClient(trg);
 
             if (target == null)
                 return;
 
-            client.Position = target.Position.Around(5);
+            if (client == target)
+            {
+                client.SendChatMessage("Can't /goto to urself.");
+                return;
+            }
+
+            client.Position = target.Position.Around(2);
         }
+
 
         [Command("fd")]
         public void CmdFD(Client player)
         {
             player.TriggerEvent("tpinfront");
-        }
-
-        [Command("setheadblend")]
-        public void SetHeadBlend(Client player, int i1, int i2, int i3, int i4, int i5, int i6, float f1, float f2, float f3, int b = 0)
-        {
-            bool b1 = b != 0;
-            player.TriggerEvent("headdata", i1, i2, i3, i4, i5, i6, f1, f2, f3, b1);
-        }
-
-        [Command("setheadoverlay")]
-        public void SetHeadOverlay(Client player, int i1, int i2, float f1)
-        {
-            player.TriggerEvent("headoverlay", i1, i2, f1);
-        }
-
-        [Command("setheadoverlaycolor")]
-        public void SetHeadOverlayColor(Client player, int i1, int i2, int i3, int i4)
-        {
-            player.TriggerEvent("headoverlaycolor", i1, i2, i3, i4);
-        }
-
-        [Command("setfacefeature")]
-        public void SetHeadBlend(Client player, int i1, float f1)
-        {
-            player.TriggerEvent("facefeautre", i1, f1);
-        }
-
-        [Command("setcompvar")]
-        public void SetCompVar(Client player, int i1, int i2, int i3, int i4)
-        {
-            player.TriggerEvent("compvar", i1, i2, i3, i4);
         }
 
         [Command("spawnme")]

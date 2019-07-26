@@ -4,9 +4,7 @@ using RPServer.Controllers.Util;
 using RPServer.Game;
 using RPServer.InternalAPI.Extensions;
 using RPServer.Models;
-using RPServer.Models.Util;
 using RPServer.Resource;
-using RPServer.Util;
 using static RPServer.Controllers.Util.DataValidator;
 using Task = System.Threading.Tasks.Task;
 using Events = Shared.Events;
@@ -18,7 +16,11 @@ namespace RPServer.Controllers
     internal class AuthenticationHandler : Script
     {
         public static event OnPlayerSuccessfulLoginDelegate PlayerSuccessfulLogin;
-        
+
+        public AuthenticationHandler()
+        {
+        }
+
         [Command(CmdStrings.CMD_ToggleTwoFactorEmail)]
         public void CMD_ToggleTwoFactorEmail(Client client)
         {
@@ -104,12 +106,12 @@ namespace RPServer.Controllers
             }
             TaskManager.Run(client, async () =>
             {
-                if (await Account.ExistsAsync(username))
+                if (await AccountModel.ExistsAsync(username))
                 {
                     client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorUsernameTaken);
                     return;
                 }
-                if (await Account.IsEmailTakenAsync(emailAddress))
+                if (await AccountModel.IsEmailTakenAsync(emailAddress))
                 { // Another account with the that email address
                     client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorEmailTaken);
                     return;
@@ -120,8 +122,8 @@ namespace RPServer.Controllers
                     return;
                 }
 
-                await Account.CreateAsync(username, password, client.SocialClubName);
-                var newAcc = await Account.FetchAsync(username);
+                await AccountModel.CreateAsync(username, password, client.SocialClubName);
+                var newAcc = await AccountModel.FetchAsync(username);
                 await EmailToken.CreateAsync(newAcc, emailAddress);
                 await EmailToken.SendEmail(newAcc);
 
@@ -149,18 +151,18 @@ namespace RPServer.Controllers
             }
             TaskManager.Run(client, async () =>
             {
-                if (!await Account.ExistsAsync(username))
+                if (!await AccountModel.ExistsAsync(username))
                 {
                     client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorUsernameNotExist);
                     return;
                 }
-                if (!await Account.AuthenticateAsync(username, password))
+                if (!await AccountModel.AuthenticateAsync(username, password))
                 {
                     client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorInvalidCredentials);
                     return;
                 }
 
-                var fetchedAcc = await Account.FetchAsync(username);
+                var fetchedAcc = await AccountModel.FetchAsync(username);
 
                 if (IsAccountLoggedIn(fetchedAcc))
                 {
@@ -212,11 +214,11 @@ namespace RPServer.Controllers
             {
                 var accData = client.GetAccount();
 
-                if (!accData.HasVerifiedEmail()) throw new Exception("Tried to verify Two-Step by Email when user has no email set"); // Dummy check
+                if (!accData.HasVerifiedEmail()) return;
 
                 if (!accData.Is2FAbyEmailEnabled())
                 {
-                    client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, "2FA by EMAIL is not enabled for this account.");
+                    client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.TwoFactorByEmailIsNotEnabled);
                     return;
                 }
 
@@ -230,7 +232,7 @@ namespace RPServer.Controllers
 
                 if (accData.Is2FAbyGAEnabled() && !accData.HasPassedTwoStepByGA)
                 {
-                    client.TriggerEvent(Events.ServerToClient.Authentication.Show2FAbyGoogleAuth, "Need to Verify 2FA by GA");
+                    client.TriggerEvent(Events.ServerToClient.Authentication.Show2FAbyGoogleAuth, AccountStrings.VerifyTwoFactorByGA);
                     return;
                 }
                 SetLoginState(client, false);
@@ -338,7 +340,7 @@ namespace RPServer.Controllers
             }
             TaskManager.Run(client, async () =>
             {
-                if (await Account.IsEmailTakenAsync(newEmail))
+                if (await AccountModel.IsEmailTakenAsync(newEmail))
                 {
                     client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorEmailTaken);
                     return;
@@ -426,8 +428,7 @@ namespace RPServer.Controllers
             player.TriggerEvent(Events.ServerToClient.Authentication.ShowQRCodeEnabled);
         }
 
-
-        private static async Task LoginAccount(Account fetchedAcc, Client client)
+        private static async Task LoginAccount(AccountModel fetchedAcc, Client client)
         {
             fetchedAcc.LastHWID = client.Serial;
             fetchedAcc.LastIP = client.Address;
@@ -443,7 +444,7 @@ namespace RPServer.Controllers
                 // This part gets triggered only once per successful login
                 NAPI.Player.SpawnPlayer(client, Initialization.DefaultSpawnPos);
                 client.SendChatMessage(AccountStrings.SuccessLogin);
-                client.SendChatMessage("SUM COMMANDS: /cmds");
+                client.SendChatMessage("SANDBOX TEST COMMANDS: /cmds");
             }
             client.SetSharedData(Shared.Data.Keys.AccountLoggedIn, !state);
             client.TriggerEvent(Events.ServerToClient.Authentication.SetLoginScreen, state);
@@ -451,7 +452,7 @@ namespace RPServer.Controllers
             // Keep this at the end of the Method
             if(!state) PlayerSuccessfulLogin?.Invoke(client, EventArgs.Empty);
         }
-        private static bool IsAccountLoggedIn(Account account)
+        private static bool IsAccountLoggedIn(AccountModel account)
         {
             foreach (var p in NAPI.Pools.GetAllPlayers())
             {

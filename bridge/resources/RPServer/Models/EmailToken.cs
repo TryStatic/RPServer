@@ -4,20 +4,21 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using RPServer.Database;
+using RPServer.Email;
 using RPServer.Util;
 
-namespace RPServer.Models.Util
+namespace RPServer.Models
 {
     internal class EmailToken
     {
         public static int Length = GetTokenLength();
 
-        public Account Account { get; set; }
+        public AccountModel Account { get; set; }
         public string Token { get; set; }
         public string EmailAddress { get; set; }
         public DateTime ExpiryDate { get; set; }
 
-        private EmailToken(Account account, string emailAddress)
+        private EmailToken(AccountModel account, string emailAddress)
         {
             Account = account;
             Token = GenerateNewToken();
@@ -25,7 +26,7 @@ namespace RPServer.Models.Util
             ExpiryDate = DateTime.Now.AddDays(1);
         }
 
-        private EmailToken(Account account, string token, DateTime expiryDate, string emailAddress)
+        private EmailToken(AccountModel account, string token, DateTime expiryDate, string emailAddress)
         {
             Account = account;
             Token = token;
@@ -34,7 +35,7 @@ namespace RPServer.Models.Util
         }
 
         #region DATABASE
-        public static async Task<bool> CreateAsync(Account account, string emailAddress)
+        public static async Task<bool> CreateAsync(AccountModel account, string emailAddress)
         {
             const string query = "INSERT INTO emailtokens(accountID, token, expirydate, emailaddress) VALUES (@accountid, @token, @expirydate, @emailaddress)";
 
@@ -63,7 +64,7 @@ namespace RPServer.Models.Util
                 return false;
             }
         }
-        public static async Task<bool> ExistsAsync(Account account)
+        public static async Task<bool> ExistsAsync(AccountModel account)
         {
             const string query = "SELECT accountID FROM emailtokens WHERE accountID = @accountid";
 
@@ -100,7 +101,7 @@ namespace RPServer.Models.Util
             }
             throw new Exception("There was an error in [EmailToken.IsEmailTakenAsync]");
         }
-        public static async Task<EmailToken> FetchAsync(Account account)
+        public static async Task<EmailToken> FetchAsync(AccountModel account)
         {
             const string query = "SELECT accountID, token, expirydate, emailaddress FROM emailtokens WHERE accountID = @accountid";
 
@@ -124,7 +125,7 @@ namespace RPServer.Models.Util
             }
             throw new Exception("Error in [EmailToken.FetchAsync]");
         }
-        public static async Task<bool> ValidateAsync(Account account, string token)
+        public static async Task<bool> ValidateAsync(AccountModel account, string token)
         {
             if (!await ExistsAsync(account))
                 return false;
@@ -182,7 +183,7 @@ namespace RPServer.Models.Util
                 }
             }
         }
-        private static async Task RemoveAsync(Account account)
+        private static async Task RemoveAsync(AccountModel account)
         {
             if (!await ExistsAsync(account)) return;
 
@@ -200,7 +201,7 @@ namespace RPServer.Models.Util
                 }
             }
         }
-        public static async Task ChangeEmailAsync(Account account, string newEmailAddress)
+        public static async Task ChangeEmailAsync(AccountModel account, string newEmailAddress)
         {
             var fetchedToken = await FetchAsync(account);
 
@@ -209,7 +210,7 @@ namespace RPServer.Models.Util
             fetchedToken.ExpiryDate = DateTime.Now.AddDays(1);
             await fetchedToken.SaveAsync();
         }
-        public static async Task SendEmail(Account account)
+        public static async Task SendEmail(AccountModel account)
         {
             var tok = await FetchAsync(account);
             await EmailSender.SendMailMessageAsync(tok.EmailAddress, "RPServer - Email Verifciaton", $"Your verification token is {tok.Token} and it's valid until {tok.ExpiryDate}.");

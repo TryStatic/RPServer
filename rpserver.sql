@@ -11,7 +11,7 @@
  Target Server Version : 80016
  File Encoding         : 65001
 
- Date: 18/07/2019 00:15:49
+ Date: 26/07/2019 04:56:32
 */
 
 SET NAMES utf8mb4;
@@ -40,7 +40,22 @@ CREATE TABLE `accounts`  (
   PRIMARY KEY (`ID`) USING BTREE,
   UNIQUE INDEX `username_UNIQUE`(`Username`) USING BTREE,
   UNIQUE INDEX `emailaddress_UNIQUE`(`EmailAddress`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 242 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 243 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for aliases
+-- ----------------------------
+DROP TABLE IF EXISTS `aliases`;
+CREATE TABLE `aliases`  (
+  `CharID` int(11) NOT NULL,
+  `AliasedID` int(11) NOT NULL,
+  `AliasName` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL,
+  `AliasDesc` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`CharID`, `AliasedID`) USING BTREE,
+  INDEX `fkey_char_to__idx`(`AliasedID`) USING BTREE,
+  CONSTRAINT `fkey_char_to_charaliasid` FOREIGN KEY (`AliasedID`) REFERENCES `characters` (`ID`) ON DELETE CASCADE ON UPDATE RESTRICT,
+  CONSTRAINT `fkey_char_to_charid` FOREIGN KEY (`CharID`) REFERENCES `characters` (`ID`) ON DELETE CASCADE ON UPDATE RESTRICT
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for appearances
@@ -49,7 +64,7 @@ DROP TABLE IF EXISTS `appearances`;
 CREATE TABLE `appearances`  (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `CharacterID` int(11) NOT NULL,
-  `SkinModel` bigint(4) NOT NULL,
+  `SkinModel` bigint(4) UNSIGNED NOT NULL,
   `IsMale` tinyint(4) UNSIGNED NOT NULL,
   `ShapeFirstID` tinyint(4) UNSIGNED NOT NULL,
   `ShapeSecondID` tinyint(4) UNSIGNED NOT NULL,
@@ -137,7 +152,7 @@ CREATE TABLE `appearances`  (
   UNIQUE INDEX `CharacterID_UNIQUE`(`CharacterID`) USING BTREE,
   INDEX `fkey_char_to_appearance_idx`(`CharacterID`) USING BTREE,
   CONSTRAINT `fkey_char_to_appearance` FOREIGN KEY (`CharacterID`) REFERENCES `characters` (`ID`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for characters
@@ -151,7 +166,7 @@ CREATE TABLE `characters`  (
   UNIQUE INDEX `name_UNIQUE`(`CharacterName`) USING BTREE,
   INDEX `fkey_idx`(`CharOwnerID`) USING BTREE,
   CONSTRAINT `fkey_acc_to_char` FOREIGN KEY (`CharOwnerID`) REFERENCES `accounts` (`ID`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 26 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for emailtokens
@@ -167,5 +182,27 @@ CREATE TABLE `emailtokens`  (
   INDEX `accountID_UNIQUE`(`accountID`) USING BTREE,
   CONSTRAINT `fkey_acc_to_emailtoken` FOREIGN KEY (`accountID`) REFERENCES `accounts` (`ID`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for vehicles
+-- ----------------------------
+DROP TABLE IF EXISTS `vehicles`;
+CREATE TABLE `vehicles`  (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `OwnerID` int(11) NOT NULL,
+  PRIMARY KEY (`ID`) USING BTREE,
+  INDEX `fkey_vehicle_to_charid_idx`(`OwnerID`) USING BTREE,
+  CONSTRAINT `fkey_vehicle_to_charid` FOREIGN KEY (`OwnerID`) REFERENCES `characters` (`ID`) ON DELETE CASCADE ON UPDATE RESTRICT
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for world
+-- ----------------------------
+DROP TABLE IF EXISTS `world`;
+CREATE TABLE `world`  (
+  `id` int(11) NOT NULL,
+  `ServerTime` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0),
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci COMMENT = '	' ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;

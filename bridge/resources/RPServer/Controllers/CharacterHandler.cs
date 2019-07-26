@@ -1,22 +1,27 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using GTANetworkAPI;
 using Newtonsoft.Json;
 using RPServer.Controllers.Util;
+using RPServer.InternalAPI;
 using RPServer.InternalAPI.Extensions;
 using RPServer.Models;
-using RPServer.Util;
+using RPServer.Resource;
 using Shared.Data;
 using Events = Shared.Events;
 using static RPServer.Controllers.Util.DataValidator;
 
 namespace RPServer.Controllers
 {
+    public delegate void OnCharacterSpawnDelegate(object source, EventArgs e);
+
     internal class CharacterHandler : Script
     {
-        [Command("changechar")]
-        public void cmd_ChangeChar(Client client)
+        public static event OnCharacterSpawnDelegate CharacterSpawn;
+        [Command(CmdStrings.CMD_ChangeChar)]
+        public void CMD_ChangeChar(Client client)
         { // Temporary (?)
             if (!client.HasActiveChar())
             {
@@ -25,13 +30,84 @@ namespace RPServer.Controllers
             }
 
             var ch = client.GetActiveChar();
-            ch?.UpdateAsync();
+            ch?.SaveAllData();
             client.ResetActiveChar();
 
             InitCharacterSelection(client);
         }
+        
+        [Command(CmdStrings.CMD_Alias, GreedyArg = true)]
+        public void CMD_Alias(Client client, string identifier, string aliasText = "")
+        {
+            if (!client.IsLoggedIn())
+            {
+                client.SendChatMessage("You are not logged in.");
+                return;
+            }
 
-        public CharacterHandler() => AuthenticationHandler.PlayerSuccessfulLogin += PlayerSuccessfulLogin;
+            if (!client.HasActiveChar())
+            {
+                client.SendChatMessage("You are not properly spawned.");
+                return;
+            }
+
+            var otherClient = ClientMethods.FindClient(identifier);
+            if (otherClient == null)
+            {
+                client.SendChatMessage("Invalid Player Identifier.");
+                return;
+            }
+
+            if (!otherClient.IsLoggedIn())
+            {
+                client.SendChatMessage("That player is not logged in.");
+                return;
+            }
+
+            if (!otherClient.HasActiveChar())
+            {
+                client.SendChatMessage("That player is not spawned.");
+                return;
+            }
+
+            // TODO: DISTANCE CHECK
+
+            var chData = client.GetActiveChar();
+            var chOtherData = otherClient.GetActiveChar();
+
+            if (aliasText == "")
+            {
+                var alias = chData.Aliases.FirstOrDefault(i => i.CharID == chData.ID && i.AliasedID == chOtherData.ID);
+                if (alias == null)
+                {
+                    client.SendChatMessage("No Alias set for that player.");
+                    return;
+                }
+                chData.Aliases.Remove(alias);
+                ClientEvent_RequestAliasInfo(client, otherClient.Value);
+                client.SendChatMessage("Alias removed.");
+                return;
+            }
+
+            var exist = chData.Aliases.FirstOrDefault(i => i.CharID == chData.ID && i.AliasedID == chOtherData.ID);
+            if (exist != null)
+            {
+                exist.AliasName = aliasText;
+            }
+            else
+            {
+                chData.Aliases.Add(new Alias(chData, chOtherData, aliasText));
+            }
+
+            ClientEvent_RequestAliasInfo(client, otherClient.Value);
+            client.SendChatMessage($"Alias set.");
+        }
+
+        public CharacterHandler()
+        {
+            AuthenticationHandler.PlayerSuccessfulLogin += OnPlayerLogin;
+            CharacterHandler.CharacterSpawn += OnCharacterSpawn;
+        }
 
         [RemoteEvent(Events.ClientToServer.Character.ApplyCharacterEditAnimation)]
         public void ClientEvent_ApplyCharacterEditAnimation(Client client) => client.PlayAnimation("missbigscore2aleadinout@ig_7_p2@bankman@", "leadout_waiting_loop", 1);
@@ -44,7 +120,7 @@ namespace RPServer.Controllers
 
             TaskManager.Run(client, async () =>
             {
-                var fetchedChar = await Character.ReadAsync(selectedCharId);
+                var fetchedChar = await CharacterModel.ReadAsync(selectedCharId);
                 if (fetchedChar == null)
                 {
                     client.SendChatMessage("Error retriving char. Bad char id?");
@@ -59,7 +135,7 @@ namespace RPServer.Controllers
                     return;
                 }
 
-                var app = await fetchedChar.GetAppearance();
+                var app = (await AppearanceModel.ReadByKeyAsync(() => new AppearanceModel().CharacterID, fetchedChar.ID)).FirstOrDefault();
                 if (app != null) app.Apply(client);
                 client.Transparency = 255;
             });
@@ -73,7 +149,7 @@ namespace RPServer.Controllers
 
             TaskManager.Run(client, async () =>
             {
-                var chData = await Character.ReadAsync(selectedCharId);
+                var chData = await CharacterModel.ReadAsync(selectedCharId);
                 if (chData == null)
                 {
                     client.SendChatMessage("Error retriving char. Bad char id?");
@@ -96,6 +172,9 @@ namespace RPServer.Controllers
                 client.SetActiveChar(chData);
                 client.Name = chData.CharacterName.Replace("_", " ");
                 client.TriggerEvent(Events.ServerToClient.Character.EndCharSelector);
+
+                // Invoke Character Spawn Listeners
+                CharacterSpawn?.Invoke(client, EventArgs.Empty);
             });
         }
 
@@ -118,7 +197,7 @@ namespace RPServer.Controllers
 
             TaskManager.Run(client, async () =>
             {
-                var ch = await Character.ReadByKeyAsync(() => new Character().CharacterName, $"{firstName}_{lastName}");
+                var ch = await CharacterModel.ReadByKeyAsync(() => new CharacterModel().CharacterName, $"{firstName}_{lastName}");
                 if (ch.Any())
                 {
                     client.TriggerEvent(Events.ServerToClient.Character.DisplayCharError, "That character name already exists.");
@@ -151,21 +230,21 @@ namespace RPServer.Controllers
             {
                 var charName = $"{newCharData.firstname}_{newCharData.lastname}";
 
-                var ch = await Character.ReadByKeyAsync(() => new Character().CharacterName, charName);
+                var ch = await CharacterModel.ReadByKeyAsync(() => new CharacterModel().CharacterName, charName);
                 if (ch.Any())
                 {
                     client.TriggerEvent(Events.ServerToClient.Character.ResetCharCreation, "That character name already exists.");
                     return;
                 }
 
-                await Character.CreateNewAsync(client.GetAccount(), charName);
-                var newChIEnumerable = await Character.ReadByKeyAsync(() => new Character().CharacterName, charName);
+                await CharacterModel.CreateNewAsync(client.GetAccount(), charName);
+                var newChIEnumerable = await CharacterModel.ReadByKeyAsync(() => new CharacterModel().CharacterName, charName);
                 var newCh = newChIEnumerable.First();
 
                 var pedhash = newCharData.isMale ? PedHash.FreemodeMale01 : PedHash.FreemodeFemale01;
-                var newChApp = new Appearance(pedhash, newCh);
+                var newChApp = new AppearanceModel(pedhash, newCh);
                 newChApp.Populate(newCharData);
-                await Appearance.CreateAsync(newChApp);
+                await AppearanceModel.CreateAsync(newChApp);
 
                 client.TriggerEvent(Events.ServerToClient.Character.SuccessCharCreation);
             });
@@ -177,7 +256,23 @@ namespace RPServer.Controllers
             InitCharacterSelection(client);
         }
 
-        private static void PlayerSuccessfulLogin(object source, EventArgs e)
+        [RemoteEvent(Events.ClientToServer.Character.RequestAliasInfo)]
+        public void ClientEvent_RequestAliasInfo(Client client, int remoteid)
+        {
+            if(!client.IsLoggedIn() || !client.HasActiveChar()) return;
+            var streamedClient = ClientMethods.FindClientByPlayerID(remoteid);
+            if (!streamedClient.IsLoggedIn() || !streamedClient.HasActiveChar()) return;
+
+            var chData = client.GetActiveChar();
+            var chOtherData = streamedClient.GetActiveChar();
+
+            var alias = chData.Aliases.FirstOrDefault(i => i.AliasedID == chOtherData.ID);
+
+            if (alias != null) client.TriggerEvent(Events.ServerToClient.Character.SetAliasInfo, $"{alias.AliasName} ({streamedClient.Value})", remoteid);
+            else client.TriggerEvent(Events.ServerToClient.Character.SetAliasInfo, $"({streamedClient.Value})", remoteid);
+        }
+
+        private static void OnPlayerLogin(object source, EventArgs e)
         {
             var client = source as Client;
             if (client == null) return;
@@ -185,6 +280,19 @@ namespace RPServer.Controllers
 
             InitCharacterSelection(client);
         }
+        private static void OnCharacterSpawn(object source, EventArgs e)
+        {
+            // Load Character Data
+            var client = source as Client;
+            if (client == null) return;
+            if (!client.IsLoggedIn()) return;
+            var chData = client.GetActiveChar();
+            if (chData == null) return;
+
+            // TODO: This needs to be moved out of here before the player spawns eventually
+            TaskManager.Run(client, async () => await chData.ReadAllData());
+        }
+
         private static void InitCharacterSelection(Client client)
         {
             client.TriggerEvent(Events.ServerToClient.Character.InitCharSelector);
@@ -194,7 +302,7 @@ namespace RPServer.Controllers
             TaskManager.Run(client, async () =>
             {
                 var acc = client.GetAccount();
-                var charList = await Character.FetchAllAsync(acc);
+                var charList = await CharacterModel.FetchAllAsync(acc);
                 var charDisplayList = new List<CharDisplay>();
                 foreach (var c in charList)
                 {

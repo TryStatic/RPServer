@@ -2,14 +2,14 @@
 using System.Linq;
 using RAGE.Ui;
 
-namespace RPServerClient.Globals
+namespace RPServerClient.Client
 {
-    internal class Browser : RAGE.Events.Script
+    internal class BrowserHandler : RAGE.Events.Script
     {
         private static object[] _parameters;
         public static HtmlWindow MainBrowser;
 
-        public Browser()
+        public BrowserHandler()
         {
             RAGE.Events.Add("createBrowser", CreateBrowser);
             RAGE.Events.Add("executeFunction", ExecuteFunction);

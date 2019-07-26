@@ -11,6 +11,8 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Data\CharDisplay.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\Blip.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\Font.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Enums\KeyCodes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\ClientToServer\Authentication.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\ClientToServer\Character.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\ClientToServer\Command.cs" />

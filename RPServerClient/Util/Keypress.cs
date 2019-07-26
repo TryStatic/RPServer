@@ -5,7 +5,7 @@ using RAGE;
 namespace RPServerClient.Util
 {
     internal class Keypress : RAGE.Events.Script
-    {
+    { // Todo: Add a proper key handler
         public static bool IsKeypressReady = true;
         public static double ticks = 0;
         public static double around_one_sec = 80;
@@ -25,8 +25,8 @@ namespace RPServerClient.Util
                 IsKeypressReady = true;
             }
 
-            if (Input.IsDown(113) && IsKeypressReady)
-            {
+            if (Input.IsDown((int)Shared.Enums.KeyCodes.VK_F2) && IsKeypressReady)
+            { // TODO: Move me out of here and after a proper key handler is added
                 RAGE.Ui.Cursor.Visible = !RAGE.Ui.Cursor.Visible;
                 IsKeypressReady = false;
             }

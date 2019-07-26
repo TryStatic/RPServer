@@ -16,7 +16,7 @@ namespace RPServer.Util
 
         private Logger()
         {
-            AppDomain.CurrentDomain.ProcessExit += OnServerShutdown;
+            AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
 
             Directory.CreateDirectory(LogsFolder);
             FileWrite(MySqlLogFn, $"------------------------ [SERVER STARTED AT: {DateTime.Now}] ------------------------");
@@ -81,7 +81,7 @@ namespace RPServer.Util
                     sw.WriteLine(message);
             }
         }
-        private static void OnServerShutdown(object sender, EventArgs e)
+        private static void OnProcessExit(object sender, EventArgs e)
         {
             FileWrite(MySqlLogFn, $"------------------------ [SERVER STOPPED AT: {DateTime.Now}] ------------------------");
             FileWrite(CommandLogFn, $"------------------------ [SERVER STOPPED AT: {DateTime.Now}] ------------------------");

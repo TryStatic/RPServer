@@ -51,15 +51,10 @@ namespace RPServerClient
             Events.Add("ToggleFlyMode", OnToggleFlyMode);
 
             // Chars
-            Events.Add("headdata", SetHeadData);
-            Events.Add("headoverlay", SetHeadOverlay);
-            Events.Add("headoverlaycolor", SetHeadOverlayColor);
-            Events.Add("headdata", SetHeadData);
-            Events.Add("facefeautre", SetFaceFeature);
-            Events.Add("compvar", SetCompVar);
             Events.Add("tpinfront", TeleportInFront);
             Events.Add("testpos", TestPos);
             Events.Add("testclothes", TestClothes);
+            Events.Add("test", test);
 
             // Boost
             uint stamina = RAGE.Game.Misc.GetHashKey("SP0_STAMINA");
@@ -123,6 +118,11 @@ namespace RPServerClient
 
         }
 
+        private void test(object[] args)
+        {
+            Events.CallRemote(Shared.Events.ClientToServer.Character.RequestAliasInfo, Player.LocalPlayer.RemoteId);
+        }
+
         private void TestClothes(object[] args)
         {
             _clothespool.RefreshIndex();
@@ -161,33 +161,5 @@ namespace RPServerClient
 
         private void OnToggleFlyMode(object[] args) => Events.CallLocal("flyModeStart");
 
-
-        private void SetCompVar(object[] args)
-        {
-            Player.LocalPlayer.SetComponentVariation((int)args[0], (int)args[1], (int)args[2], (int)args[3]);
-        }
-
-        private void SetFaceFeature(object[] args)
-        {
-            Player.LocalPlayer.SetFaceFeature((int)args[0], (float)args[1]);
-        }
-
-        private void SetHeadOverlay(object[] args)
-        {
-            Player.LocalPlayer.SetHeadOverlay((int)args[0], (int)args[1], (float)args[2]);
-        }
-
-        private void SetHeadOverlayColor(object[] args)
-        {
-            RAGE.Chat.Output("Triggert/crted");
-            Player.LocalPlayer.SetHeadOverlayColor((int)args[0], (int)args[1], (int)args[2], (int)args[3]);
-        }
-
-        private void SetHeadData(object[] args)
-        {
-            if (args.Length < 9) return;
-
-            Player.LocalPlayer.SetHeadBlendData((int)args[0], (int)args[1], (int)args[2], (int)args[3], (int)args[4], (int)args[5], (float)args[6], (float)args[7], (float)args[8], (bool)args[9]);
-        }
     }
 }

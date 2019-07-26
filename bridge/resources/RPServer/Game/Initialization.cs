@@ -3,8 +3,8 @@ using System.Threading;
 using GTANetworkAPI;
 using RPServer.Controllers;
 using RPServer.Database;
+using RPServer.Email;
 using RPServer.Models;
-using RPServer.Models.Util;
 using RPServer.Util;
 
 namespace RPServer.Game
@@ -17,8 +17,6 @@ namespace RPServer.Game
         [ServerEvent(Event.ResourceStart)]
         public async void OnResourceStart()
         {
-            AppDomain.CurrentDomain.ProcessExit += OnServerShutdown;
-
             Console.ForegroundColor = ConsoleColor.White;
             Console.BackgroundColor = ConsoleColor.Blue;
             Console.WriteLine($"\n\n---------------------------- STARTING {Globals.SERVER_NAME} ({Globals.VERSION}) ----------------------------");
@@ -30,7 +28,6 @@ namespace RPServer.Game
             NAPI.Server.SetAutoRespawnAfterDeath(false);
             NAPI.Server.SetDefaultSpawnLocation(DefaultSpawnPos);
             NAPI.Server.SetGlobalServerChat(false);
-            
             // Initialize the Logger 
             Logger.GetInstance();
 
@@ -57,12 +54,12 @@ namespace RPServer.Game
             _expiredEmailTokensTimer = new Timer(OnRemoveExpiredEmailTokens, null, 1, 1000 * 60 * 60);
 
             // Sever World Settings
-            var worldData = await World.GetWorldData();
+            var worldData = await WorldModel.GetWorldData();
             WorldHandler.CurrentTime = worldData.ServerTime;
             NAPI.World.ResetIplList();
         }
 
-        private void OnServerShutdown(object sender, EventArgs e)
+        public static void OnServerShutdown()
         {
             _expiredEmailTokensTimer.Dispose();
         }

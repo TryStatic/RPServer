@@ -16,11 +16,11 @@ namespace RPServer.InternalAPI.Extensions
             if (excludeTwoFactor) return player.HasData(DataKey.AccountData);
             return player.HasData(DataKey.AccountData) && player.GetAccount().IsTwoFactorAuthenticated();
         }
-        internal static Account GetAccount(this Client player)
+        internal static AccountModel GetAccount(this Client player)
         {
-            return player.IsLoggedIn(true) ? (Account)player.GetData(DataKey.AccountData) : null;
+            return player.IsLoggedIn(true) ? (AccountModel)player.GetData(DataKey.AccountData) : null;
         }
-        internal static bool Login(this Client player, Account account)
+        internal static bool Login(this Client player, AccountModel account)
         {
             if (player.IsLoggedIn(true)) return false;
             player.SetData(DataKey.AccountData, account);
@@ -37,14 +37,14 @@ namespace RPServer.InternalAPI.Extensions
         internal static bool HasActiveChar(this Client client)
         {
             if (!client.HasData(DataKey.ActiveCharData)) return false;
-            return (Character)client.GetData(DataKey.ActiveCharData) != null;
+            return (CharacterModel)client.GetData(DataKey.ActiveCharData) != null;
         }
-        internal static Character GetActiveChar(this Client client)
+        internal static CharacterModel GetActiveChar(this Client client)
         {
             if (!client.HasActiveChar()) return null;
-            return (Character)client.GetData(DataKey.ActiveCharData);
+            return (CharacterModel)client.GetData(DataKey.ActiveCharData);
         }
-        internal static void SetActiveChar(this Client client, Character character)
+        internal static void SetActiveChar(this Client client, CharacterModel character)
         {
             if (character == null)
             {

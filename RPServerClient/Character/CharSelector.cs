@@ -4,10 +4,9 @@ using System.Linq;
 using Newtonsoft.Json;
 using RAGE;
 using RAGE.NUI;
+using RPServerClient.Client;
 using RPServerClient.Util;
-using Shared;
 using Shared.Data;
-using Cam = RPServerClient.Globals.Cam;
 using Events = RAGE.Events;
 using Player = RAGE.Elements.Player;
 
@@ -29,11 +28,15 @@ namespace RPServerClient.Character
         private List<CharDisplay> _charList = new List<CharDisplay>();
         private MenuPool _charMenu;
 
+        public static CamHandler _camera;
+
         private bool _disableControls = false;
 
 
         public CharSelector()
         {
+            _camera = new CamHandler();
+            
             RAGE.Game.Graphics.GetScreenResolution(ref ScreenResX, ref ScreenResY);
             RAGE.Game.Graphics.GetActiveScreenResolution(ref ScreenX, ref ScreenY);
 
@@ -61,7 +64,7 @@ namespace RPServerClient.Character
             player.FreezePosition(true);
             UnStageModel(player);
             _disableControls = true;
-            Cam.SetPos(Helper.GetPosInFrontOfVector3(_displayPosition, _displayHeading, 1.5f), _displayPosition, true);
+            _camera.SetPos(Helper.GetPosInFrontOfVector3(_displayPosition, _displayHeading, 1.5f), _displayPosition, true);
         }
 
         private void OnEndCharSelector(object[] args)
@@ -72,7 +75,7 @@ namespace RPServerClient.Character
             RAGE.Game.Ui.DisplayHud(true);
             RAGE.Game.Ui.DisplayRadar(true);
             _disableControls = false;
-            Cam.SetActive(false);
+            _camera.SetActive(false);
         }
 
         private void SpawnChar(object[] args)

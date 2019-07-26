@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 
 namespace RPServer.Util
@@ -7,8 +9,28 @@ namespace RPServer.Util
     {
         private static RandomGenerator _randomGenerator;
         private readonly RNGCryptoServiceProvider _csp;
+        private Stack<int> UniqueRandomPool;
+        private RandomGenerator()
+        {
+            _csp = new RNGCryptoServiceProvider();
+            InitUniqueRandPool();
+        }
 
-        private RandomGenerator() => _csp = new RNGCryptoServiceProvider();
+        /// <summary>
+        /// After ~9000 generations it re-initializes which means you can get dupes
+        /// </summary>
+        private void InitUniqueRandPool()
+        {
+            var nums = Enumerable.Range(1000, 8999).ToArray();
+            for (var i = 0; i < nums.Length; ++i)
+            {
+                var randomIndex = Next(0, nums.Length);
+                var temp = nums[randomIndex];
+                nums[randomIndex] = nums[i];
+                nums[i] = temp;
+            }
+            UniqueRandomPool = new Stack<int>(nums);
+        }
 
         public int Next(int minValue, int maxExclusiveValue)
         {
@@ -25,6 +47,13 @@ namespace RPServer.Util
             } while (ui >= upperBound);
             return (int)(minValue + (ui % diff));
         }
+
+        public int UniqueNext()
+        {
+            if(UniqueRandomPool.Count == 0) InitUniqueRandPool();
+            return UniqueRandomPool.Pop();
+        }
+
         private uint GetRandomUInt()
         {
             var randomBytes = GenerateRandomBytes(sizeof(uint));

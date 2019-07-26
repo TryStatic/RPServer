@@ -7,7 +7,7 @@ using RPServer.Models.Util;
 namespace RPServer.Models
 {
     [Table("accounts")]
-    internal class Account : Model<Account>
+    internal class AccountModel : Model<AccountModel>
     {
         public string Username { get; set; }
         public string EmailAddress { get; set; }
@@ -29,9 +29,9 @@ namespace RPServer.Models
         public bool HasPassedTwoStepByEmail = false;
         public byte[] TempTwoFactorGASharedKey = null;
 
-        public Account() { }
+        public AccountModel() { }
 
-        public Account(string username, byte[] hash, string regSocialClubName)
+        public AccountModel(string username, byte[] hash, string regSocialClubName)
         {
             Username = username;
             Hash = hash;
@@ -43,17 +43,17 @@ namespace RPServer.Models
         public static async Task CreateAsync(string username, string password, string regSocialClubName)
         {
             var hash = new PasswordHash(password).ToArray();
-            var newAcc = new Account(username, hash, regSocialClubName);
+            var newAcc = new AccountModel(username, hash, regSocialClubName);
             await newAcc.CreateAsync();
         }
-        public static async Task<Account> FetchAsync(string username)
+        public static async Task<AccountModel> FetchAsync(string username)
         {
-            var result = await ReadByKeyAsync(() => new Account().Username, username);
+            var result = await ReadByKeyAsync(() => new AccountModel().Username, username);
             return result.FirstOrDefault();
         }
         public static async Task<bool> ExistsAsync(string username)
         {
-            var result = await ReadByKeyAsync(() => new Account().Username, username);
+            var result = await ReadByKeyAsync(() => new AccountModel().Username, username);
             return result.FirstOrDefault() != null;
         }
         public static async Task<bool> AuthenticateAsync(string username, string password)
@@ -63,7 +63,7 @@ namespace RPServer.Models
         }
         public static async Task<bool> IsEmailTakenAsync(string emailAddress)
         {
-            var accList = await ReadByKeyAsync(() => new Account().EmailAddress, emailAddress);
+            var accList = await ReadByKeyAsync(() => new AccountModel().EmailAddress, emailAddress);
             return accList.FirstOrDefault() != null;
         }
         #endregion

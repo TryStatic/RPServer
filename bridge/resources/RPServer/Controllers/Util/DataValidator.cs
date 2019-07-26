@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using RPServer.Models.Util;
+using RPServer.Models;
 using RPServer.Util;
 
 namespace RPServer.Controllers.Util

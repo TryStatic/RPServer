@@ -2,7 +2,6 @@
 using RPServer.InternalAPI.Extensions;
 using RPServer.Resource;
 using RPServer.Util;
-using Shared;
 
 namespace RPServer.Controllers.EventHandlers
 {
