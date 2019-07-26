@@ -4,7 +4,7 @@ using System.Net.Mail;
 
 namespace RPServer.Util
 {
-    public static class Extensions
+    public static class StringExtensions
     {
         #region StringExtensions
         public static string FirstCharToUpper(this string input)
