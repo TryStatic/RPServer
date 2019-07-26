@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
@@ -40,7 +40,12 @@ namespace RPServer.Models
                 return -1;
             }
         }
-        public async Task<int> CreateAsync() => await CreateAsync(this as T);
+        public async Task<int> CreateAsync()
+        {
+            var sqlID = await CreateAsync(this as T);
+            this.ID = sqlID;
+            return sqlID;
+        }
 
         public static async Task<T> ReadAsync(int sqlID)
         {
