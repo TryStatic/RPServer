@@ -1,5 +1,8 @@
-﻿namespace RPServer.Models
+﻿using Dapper.Contrib.Extensions;
+
+namespace RPServer.Models
 {
+    [Table("vehicles")]
     internal class Vehicle : Model<Vehicle>
     {
         public int OwnerID { get; set; }
