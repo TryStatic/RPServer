@@ -42,11 +42,11 @@ namespace RPServer.Controllers
         }
         private static async Task SaveWorldData()
         {
-            var worldData = await Models.World.GetWorldData();
+            var worldData = await Models.WorldModel.GetWorldData();
             if(worldData == null) return;
             // Add world data here
             worldData.ServerTime = CurrentTime;
-            await Models.World.SaveWorldData(worldData);
+            await Models.WorldModel.SaveWorldData(worldData);
         }
     }
 }

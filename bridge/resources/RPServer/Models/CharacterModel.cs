@@ -7,16 +7,16 @@ using RPServer.Util;
 namespace RPServer.Models
 {
     [Table("characters")]
-    internal class Character : Model<Character>
+    internal class CharacterModel : Model<CharacterModel>
     {
         public int CharOwnerID { set; get; }
         public string CharacterName { set; get; }
 
-        public Appearance Appearance;
+        public AppearanceModel Appearance;
         public HashSet<Alias> Aliases;
-        public HashSet<Vehicle> Vehicles;
+        public HashSet<VehicleModel> Vehicles;
 
-        public Character()
+        public CharacterModel()
         {
             
         }
@@ -24,18 +24,18 @@ namespace RPServer.Models
         /// <summary>
         /// Use to create new character
         /// </summary>
-        public static async Task CreateNewAsync(Account charOwner, string newCharName)
+        public static async Task CreateNewAsync(AccountModel charOwner, string newCharName)
         {
-            var newChar = new Character()
+            var newChar = new CharacterModel()
             {
                 CharOwnerID = charOwner.ID,
                 CharacterName = newCharName
             };
             await newChar.CreateAsync();
         }
-        public static async Task<List<Character>> FetchAllAsync(Account account)
+        public static async Task<List<CharacterModel>> FetchAllAsync(AccountModel account)
         {
-            var result = await ReadByKeyAsync(() => new Character().CharOwnerID, account.ID);
+            var result = await ReadByKeyAsync(() => new CharacterModel().CharOwnerID, account.ID);
             var charsData = result.ToList();
             return charsData;
         }
@@ -47,15 +47,15 @@ namespace RPServer.Models
             // One to One Relationships
             await Appearance.UpdateAsync();
             // One to Many Relationships (data must be HashSet<T> where T a Model descendant)
-            await Vehicle.UpdateAllByKeyAsync(() => new Vehicle().OwnerID, ID, Vehicles);
+            await VehicleModel.UpdateAllByKeyAsync(() => new VehicleModel().OwnerID, ID, Vehicles);
             // Other
             await Alias.UpdateAllByChar(Aliases, this);
         }
         public async Task ReadAllData()
         {
-            Appearance = (await Appearance.ReadByKeyAsync(() => new Appearance().CharacterID, this.ID)).FirstOrDefault();
+            Appearance = (await AppearanceModel.ReadByKeyAsync(() => new AppearanceModel().CharacterID, this.ID)).FirstOrDefault();
             Aliases = await Alias.ReadAllByChar(this);
-            Vehicles = (await Vehicle.ReadByKeyAsync(() => new Vehicle().OwnerID, ID)).ToHashSet();
+            Vehicles = (await VehicleModel.ReadByKeyAsync(() => new VehicleModel().OwnerID, ID)).ToHashSet();
         }
     }
 }

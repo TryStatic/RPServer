@@ -14,7 +14,7 @@ namespace RPServer.Models
         public string AliasName { set; get; }
         public string AliasDesc { set; get; }
 
-        public Alias(Character character, Character aliasedCharacter, string aliasName, string aliasDesc = "")
+        public Alias(CharacterModel character, CharacterModel aliasedCharacter, string aliasName, string aliasDesc = "")
         {
             CharID = character.ID;
             AliasedID = aliasedCharacter.ID;
@@ -75,7 +75,7 @@ namespace RPServer.Models
                 return false;
             }
         }
-        public static async Task<HashSet<Alias>> ReadAllByChar(Character character)
+        public static async Task<HashSet<Alias>> ReadAllByChar(CharacterModel character)
         {
             const string query = "SELECT * FROM aliases WHERE charID = @charID";
 
@@ -145,7 +145,7 @@ namespace RPServer.Models
             return false;
         }
         public async Task<bool> DeleteAlias() => await DeleteAlias(this);
-        public static async Task UpdateAllByChar(HashSet<Alias> aliasesRef, Character character)
+        public static async Task UpdateAllByChar(HashSet<Alias> aliasesRef, CharacterModel character)
         {
             var aliases = aliasesRef.ToHashSet();
             var dbRecords = await ReadAllByChar(character);

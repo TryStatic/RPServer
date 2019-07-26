@@ -53,7 +53,7 @@ namespace RPServer.Game
             _expiredEmailTokensTimer = new Timer(OnRemoveExpiredEmailTokens, null, 1, 1000 * 60 * 60);
 
             // Sever World Settings
-            var worldData = await World.GetWorldData();
+            var worldData = await WorldModel.GetWorldData();
             WorldHandler.CurrentTime = worldData.ServerTime;
             NAPI.World.ResetIplList();
         }

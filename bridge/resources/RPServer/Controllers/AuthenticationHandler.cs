@@ -106,12 +106,12 @@ namespace RPServer.Controllers
             }
             TaskManager.Run(client, async () =>
             {
-                if (await Account.ExistsAsync(username))
+                if (await AccountModel.ExistsAsync(username))
                 {
                     client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorUsernameTaken);
                     return;
                 }
-                if (await Account.IsEmailTakenAsync(emailAddress))
+                if (await AccountModel.IsEmailTakenAsync(emailAddress))
                 { // Another account with the that email address
                     client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorEmailTaken);
                     return;
@@ -122,8 +122,8 @@ namespace RPServer.Controllers
                     return;
                 }
 
-                await Account.CreateAsync(username, password, client.SocialClubName);
-                var newAcc = await Account.FetchAsync(username);
+                await AccountModel.CreateAsync(username, password, client.SocialClubName);
+                var newAcc = await AccountModel.FetchAsync(username);
                 await EmailToken.CreateAsync(newAcc, emailAddress);
                 await EmailToken.SendEmail(newAcc);
 
@@ -151,18 +151,18 @@ namespace RPServer.Controllers
             }
             TaskManager.Run(client, async () =>
             {
-                if (!await Account.ExistsAsync(username))
+                if (!await AccountModel.ExistsAsync(username))
                 {
                     client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorUsernameNotExist);
                     return;
                 }
-                if (!await Account.AuthenticateAsync(username, password))
+                if (!await AccountModel.AuthenticateAsync(username, password))
                 {
                     client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorInvalidCredentials);
                     return;
                 }
 
-                var fetchedAcc = await Account.FetchAsync(username);
+                var fetchedAcc = await AccountModel.FetchAsync(username);
 
                 if (IsAccountLoggedIn(fetchedAcc))
                 {
@@ -340,7 +340,7 @@ namespace RPServer.Controllers
             }
             TaskManager.Run(client, async () =>
             {
-                if (await Account.IsEmailTakenAsync(newEmail))
+                if (await AccountModel.IsEmailTakenAsync(newEmail))
                 {
                     client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorEmailTaken);
                     return;
@@ -428,7 +428,7 @@ namespace RPServer.Controllers
             player.TriggerEvent(Events.ServerToClient.Authentication.ShowQRCodeEnabled);
         }
 
-        private static async Task LoginAccount(Account fetchedAcc, Client client)
+        private static async Task LoginAccount(AccountModel fetchedAcc, Client client)
         {
             fetchedAcc.LastHWID = client.Serial;
             fetchedAcc.LastIP = client.Address;
@@ -452,7 +452,7 @@ namespace RPServer.Controllers
             // Keep this at the end of the Method
             if(!state) PlayerSuccessfulLogin?.Invoke(client, EventArgs.Empty);
         }
-        private static bool IsAccountLoggedIn(Account account)
+        private static bool IsAccountLoggedIn(AccountModel account)
         {
             foreach (var p in NAPI.Pools.GetAllPlayers())
             {

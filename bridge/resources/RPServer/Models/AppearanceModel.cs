@@ -7,7 +7,7 @@ using RPServer.Models.Util;
 namespace RPServer.Models
 {
     [Table("appearances")]
-    internal class Appearance : Model<Appearance>
+    internal class AppearanceModel : Model<AppearanceModel>
     {
         private bool _isMale;
         private ulong _skinModel;
@@ -145,7 +145,7 @@ namespace RPServer.Models
 
         #endregion
 
-        public Appearance()
+        public AppearanceModel()
         {
 
         }
@@ -155,7 +155,7 @@ namespace RPServer.Models
         /// </summary>
         /// <param name="ped"></param>
         /// <param name="character"></param>
-        public Appearance(PedHash ped, Character character)
+        public AppearanceModel(PedHash ped, CharacterModel character)
         {
             SkinModel = (ulong)ped;
             CharacterID = character.ID;

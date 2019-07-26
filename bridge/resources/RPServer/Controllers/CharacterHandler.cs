@@ -120,7 +120,7 @@ namespace RPServer.Controllers
 
             TaskManager.Run(client, async () =>
             {
-                var fetchedChar = await Character.ReadAsync(selectedCharId);
+                var fetchedChar = await CharacterModel.ReadAsync(selectedCharId);
                 if (fetchedChar == null)
                 {
                     client.SendChatMessage("Error retriving char. Bad char id?");
@@ -135,7 +135,7 @@ namespace RPServer.Controllers
                     return;
                 }
 
-                var app = (await Appearance.ReadByKeyAsync(() => new Appearance().CharacterID, fetchedChar.ID)).FirstOrDefault();
+                var app = (await AppearanceModel.ReadByKeyAsync(() => new AppearanceModel().CharacterID, fetchedChar.ID)).FirstOrDefault();
                 if (app != null) app.Apply(client);
                 client.Transparency = 255;
             });
@@ -149,7 +149,7 @@ namespace RPServer.Controllers
 
             TaskManager.Run(client, async () =>
             {
-                var chData = await Character.ReadAsync(selectedCharId);
+                var chData = await CharacterModel.ReadAsync(selectedCharId);
                 if (chData == null)
                 {
                     client.SendChatMessage("Error retriving char. Bad char id?");
@@ -197,7 +197,7 @@ namespace RPServer.Controllers
 
             TaskManager.Run(client, async () =>
             {
-                var ch = await Character.ReadByKeyAsync(() => new Character().CharacterName, $"{firstName}_{lastName}");
+                var ch = await CharacterModel.ReadByKeyAsync(() => new CharacterModel().CharacterName, $"{firstName}_{lastName}");
                 if (ch.Any())
                 {
                     client.TriggerEvent(Events.ServerToClient.Character.DisplayCharError, "That character name already exists.");
@@ -230,21 +230,21 @@ namespace RPServer.Controllers
             {
                 var charName = $"{newCharData.firstname}_{newCharData.lastname}";
 
-                var ch = await Character.ReadByKeyAsync(() => new Character().CharacterName, charName);
+                var ch = await CharacterModel.ReadByKeyAsync(() => new CharacterModel().CharacterName, charName);
                 if (ch.Any())
                 {
                     client.TriggerEvent(Events.ServerToClient.Character.ResetCharCreation, "That character name already exists.");
                     return;
                 }
 
-                await Character.CreateNewAsync(client.GetAccount(), charName);
-                var newChIEnumerable = await Character.ReadByKeyAsync(() => new Character().CharacterName, charName);
+                await CharacterModel.CreateNewAsync(client.GetAccount(), charName);
+                var newChIEnumerable = await CharacterModel.ReadByKeyAsync(() => new CharacterModel().CharacterName, charName);
                 var newCh = newChIEnumerable.First();
 
                 var pedhash = newCharData.isMale ? PedHash.FreemodeMale01 : PedHash.FreemodeFemale01;
-                var newChApp = new Appearance(pedhash, newCh);
+                var newChApp = new AppearanceModel(pedhash, newCh);
                 newChApp.Populate(newCharData);
-                await Appearance.CreateAsync(newChApp);
+                await AppearanceModel.CreateAsync(newChApp);
 
                 client.TriggerEvent(Events.ServerToClient.Character.SuccessCharCreation);
             });
@@ -302,7 +302,7 @@ namespace RPServer.Controllers
             TaskManager.Run(client, async () =>
             {
                 var acc = client.GetAccount();
-                var charList = await Character.FetchAllAsync(acc);
+                var charList = await CharacterModel.FetchAllAsync(acc);
                 var charDisplayList = new List<CharDisplay>();
                 foreach (var c in charList)
                 {

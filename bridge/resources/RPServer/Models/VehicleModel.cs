@@ -3,15 +3,15 @@
 namespace RPServer.Models
 {
     [Table("vehicles")]
-    internal class Vehicle : Model<Vehicle>
+    internal class VehicleModel : Model<VehicleModel>
     {
         public int OwnerID { get; set; }
 
-        public Vehicle()
+        public VehicleModel()
         {
         }
 
-        public Vehicle(int ownerID)
+        public VehicleModel(int ownerID)
         {
             OwnerID = ownerID;
         }
