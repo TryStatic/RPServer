@@ -1,8 +1,8 @@
 ﻿namespace RPServerClient.Client
 {
-    internal class Events : RAGE.Events.Script
+    internal class EventsHandler : RAGE.Events.Script
     {
-        public Events()
+        public EventsHandler()
         {
             RAGE.Events.OnPlayerCommand += OnPlayerCommandEvent;
         }
