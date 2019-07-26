@@ -30,7 +30,7 @@ namespace RPServer.Controllers
             }
 
             var ch = client.GetActiveChar();
-            ch?.SaveAll();
+            ch?.SaveAllData();
             client.ResetActiveChar();
 
             InitCharacterSelection(client);
@@ -290,7 +290,7 @@ namespace RPServer.Controllers
             if (chData == null) return;
 
             // TODO: This needs to be moved out of here before the player spawns eventually
-            TaskManager.Run(client, async () => await chData.FetchAll());
+            TaskManager.Run(client, async () => await chData.ReadAllData());
         }
 
         private static void InitCharacterSelection(Client client)

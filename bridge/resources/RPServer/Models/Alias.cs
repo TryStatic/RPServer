@@ -75,7 +75,7 @@ namespace RPServer.Models
                 return false;
             }
         }
-        public static async Task<HashSet<Alias>> FetchAllByChar(Character character)
+        public static async Task<HashSet<Alias>> ReadAllByChar(Character character)
         {
             const string query = "SELECT * FROM aliases WHERE charID = @charID";
 
@@ -148,7 +148,7 @@ namespace RPServer.Models
         public static async Task UpdateAllByChar(HashSet<Alias> aliasesRef, Character character)
         {
             var aliases = aliasesRef.ToHashSet();
-            var dbRecords = await FetchAllByChar(character);
+            var dbRecords = await ReadAllByChar(character);
 
             foreach (var dbRec in dbRecords)
             {

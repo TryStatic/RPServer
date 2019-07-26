@@ -40,7 +40,7 @@ namespace RPServer.Models
             return charsData;
         }
 
-        public async Task SaveAll()
+        public async Task SaveAllData()
         {
             // This Character Instance
             await UpdateAsync(this);
@@ -51,10 +51,10 @@ namespace RPServer.Models
             // Other
             await Alias.UpdateAllByChar(Aliases, this);
         }
-        public async Task FetchAll()
+        public async Task ReadAllData()
         {
             Appearance = (await Appearance.ReadByKeyAsync(() => new Appearance().CharacterID, this.ID)).FirstOrDefault();
-            Aliases = await Alias.FetchAllByChar(this);
+            Aliases = await Alias.ReadAllByChar(this);
             Vehicles = (await Vehicle.ReadByKeyAsync(() => new Vehicle().OwnerID, ID)).ToHashSet();
         }
     }

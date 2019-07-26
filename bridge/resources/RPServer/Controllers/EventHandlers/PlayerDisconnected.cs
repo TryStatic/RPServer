@@ -31,7 +31,7 @@ namespace RPServer.Controllers.EventHandlers
                 TaskManager.Run(client, async () =>
                 {
                     await accData.UpdateAsync();
-                    if (chData != null) await chData.SaveAll();
+                    if (chData != null) await chData.SaveAllData();
                 }, force: true);
 
                 client.ResetActiveChar();
