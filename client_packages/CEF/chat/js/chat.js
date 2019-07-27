@@ -39,6 +39,8 @@ var chatAPI =
 {
 	push: (text) =>
 	{
+        text = text.replace(/"/g, "\"");
+
         if(chat.container == null) {
             return;
         }
