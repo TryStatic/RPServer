@@ -16,8 +16,6 @@ namespace RPServerClient.Authentication
 
         public Authentication()
         {
-             Camera = new CamHandler();
-
             #region SERVER_TO_CLIENT
             Events.Add(Shared.Events.ServerToClient.Authentication.SetLoginScreen, OnSetLoginScreen);
             Events.Add(Shared.Events.ServerToClient.Authentication.DisplayError, OnDisplayError);
@@ -206,6 +204,7 @@ namespace RPServerClient.Authentication
                 Events.CallLocal("setChatState", false);
                 RAGE.Game.Ui.DisplayHud(false);
                 RAGE.Game.Ui.DisplayRadar(false);
+                Camera = new CamHandler();
                 Camera.SetPos(LoginCamPos, LoginCamPointAt, true);
             }
             else
@@ -213,6 +212,8 @@ namespace RPServerClient.Authentication
                 BrowserHandler.DestroyBrowser(null);
                 RAGE.Game.Graphics.TransitionFromBlurred(200);
                 Camera.SetActive(false);
+                Camera.Destroy();
+                Camera = null;
             }
         }
     }

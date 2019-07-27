@@ -35,8 +35,6 @@ namespace RPServerClient.Character
 
         public CharSelector()
         {
-            _camera = new CamHandler();
-            
             RAGE.Game.Graphics.GetScreenResolution(ref ScreenResX, ref ScreenResY);
             RAGE.Game.Graphics.GetActiveScreenResolution(ref ScreenX, ref ScreenY);
 
@@ -59,6 +57,7 @@ namespace RPServerClient.Character
 
         private void OnInitCharSelector(object[] args)
         {
+            _camera = new CamHandler();
             Events.CallLocal("setChatState", true); // Enabled for testing TODO: needs to be removed
             var player = Player.LocalPlayer;
             player.FreezePosition(true);
@@ -76,6 +75,8 @@ namespace RPServerClient.Character
             RAGE.Game.Ui.DisplayRadar(true);
             _disableControls = false;
             _camera.SetActive(false);
+            _camera.Destroy();
+            _camera = null;
         }
 
         private void SpawnChar(object[] args)

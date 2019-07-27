@@ -14,10 +14,8 @@ namespace RPServerClient.Character
 
         public CharCreator()
         {
-            _camera = new CamHandler();
-
             // TEMP commands
-            Events.Add("createchar", OnInitCharCreation);
+            Events.Add("createchar", OnInitCharCreator);
 
             // Server Events
             Events.Add(Shared.Events.ServerToClient.Character.StartCustomization, OnStartCustomization);
@@ -49,11 +47,12 @@ namespace RPServerClient.Character
         }
 
         #region InitilationDestruction
-        private void OnInitCharCreation(object[] args)
+        private void OnInitCharCreator(object[] args)
         {
             UnStageModel(Player.LocalPlayer);
             ResetAppearance(Player.LocalPlayer);
             BrowserHandler.CreateBrowser("package://CEF/char/charcreator.html");
+            _camera = new CamHandler();
             _camera.SetPos(Helper.GetPosInFrontOfVector3(_displayPos.GetVector3Part(), _displayPos.W, 1.5f), _displayPos.GetVector3Part(), true);
         }
 
@@ -61,6 +60,8 @@ namespace RPServerClient.Character
         {
             BrowserHandler.DestroyBrowser(null);
             _camera.SetActive(false);
+            _camera.Destroy();
+            _camera = null;
             Events.CallRemote(Shared.Events.ClientToServer.Character.TriggerCharSelection);
         }
 

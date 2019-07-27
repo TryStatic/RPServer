@@ -49,6 +49,11 @@ namespace RPServerClient.Client
             RAGE.Game.Cam.RenderScriptCams(state, false, 0, true, true, 0);
         }
 
+        public void Destroy()
+        {
+            RAGE.Game.Cam.DestroyCam(CameraID, false);
+        }
+
         public Vector3 GetPosition(int camera)
         {
             return RAGE.Game.Cam.GetCamCoord(camera);
