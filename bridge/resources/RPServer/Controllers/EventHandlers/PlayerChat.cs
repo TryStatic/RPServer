@@ -10,7 +10,7 @@ namespace RPServer.Controllers.EventHandlers
     {
         [ServerEvent(Event.ChatMessage)]
         public void OnChatMessage(Client client, string message)
-        {
+        { // Default Chat
             if (!client.IsLoggedIn()) return;
             if (!client.HasActiveChar()) return;
 
@@ -18,7 +18,8 @@ namespace RPServer.Controllers.EventHandlers
 
             var sendMsg = $"{client.GetActiveChar().CharacterName}: {message}";
             Logger.GetInstance().ChatLog(sendMsg);
-            NAPI.ClientEvent.TriggerClientEventForAll("SendToChat", sendMsg);
+
+            ChatHandler.SendNormalChat(client, sendMsg);
         }
 
         public string Filter(string message)
