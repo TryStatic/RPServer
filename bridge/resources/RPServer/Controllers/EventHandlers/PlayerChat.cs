@@ -10,26 +10,31 @@ namespace RPServer.Controllers.EventHandlers
     {
         [ServerEvent(Event.ChatMessage)]
         public void OnChatMessage(Client client, string message)
-        { // Default Chat
+        { // Default Chat, called by the API
             if (!client.IsLoggedIn()) return;
             if (!client.HasActiveChar()) return;
 
             message = Filter(message);
 
-            var sendMsg = $"{client.GetActiveChar().CharacterName}: {message}";
-            Logger.GetInstance().ChatLog(sendMsg);
+            //var sendMsg = $"{client.GetActiveChar().CharacterName}: {message}";
+            Logger.GetInstance().ChatLog(message);
 
-            ChatHandler.SendNormalChat(client, sendMsg);
+            ChatHandler.SendNormalChat(client, message);
         }
 
-        public string Filter(string message)
+        public static string Filter(string message)
         {
             if (message == null) return null;
             if (message == "") return message;
 
+            // Filter HTML
             message = System.Security.SecurityElement.Escape(message);
+
+            // Filter colors
             var matches = new Regex(@"(!{#[0-9A-F]{6}})+").Matches(message);
             foreach (Match m in matches) message = message.Remove(message.IndexOf(m.Value, StringComparison.OrdinalIgnoreCase), 10);
+
+
 
             return message;
         }

@@ -1,5 +1,7 @@
 using System.Text.RegularExpressions;
 using RAGE.Ui;
+using RPServerClient.Character;
+using Player = RAGE.Elements.Player;
 
 namespace RPServerClient.Chat
 {
@@ -9,11 +11,38 @@ namespace RPServerClient.Chat
 
         public Chat()
         {
-            RAGE.Events.Add("SendToChat", OnSendToChat);
-            RAGE.Events.Add("setChatState", OnSetChatState);
+            // Disable Default Chat
             RAGE.Chat.Show(false);
             ChatBrowser = new HtmlWindow("package://CEF/chat/index.html");
             ChatBrowser.MarkAsChat();
+
+            RAGE.Events.Add("setChatState", OnSetChatState);
+            RAGE.Events.Add("SendToChat", OnSendToChat);
+            RAGE.Events.Add("SendNormalChat", OnRecieveChatMessageFromPlayer);
+        }
+
+        private void OnRecieveChatMessageFromPlayer(object[] args)
+        {
+            var message = args[0].ToString();
+            var playerid = int.Parse(args[1].ToString());
+
+            if (Player.LocalPlayer.RemoteId == playerid)
+            { // this was send by this client
+                OnSendToChat(new object[]{ $"{Player.LocalPlayer.Name} ({playerid}): {message}" });
+            }
+            else
+            {
+                var alias = AliasManager.ClientAlises.Find(al => al.Player.RemoteId == playerid);
+                if (alias == null)
+                {
+                    OnSendToChat(new object[] { $"Stranger ({playerid}): {message}" });
+                }
+                else
+                {
+                    OnSendToChat(new object[] { $"{alias.AliasText} ({playerid}): {message}" });
+                }
+            }
+
         }
 
         public void OnSetChatState(object[] args)

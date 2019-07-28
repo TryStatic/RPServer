@@ -7,12 +7,10 @@ namespace RPServerClient.Character
 {
     internal class AliasManager : Events.Script
     {
-        private readonly List<Alias> _clientAlises;
+        public static readonly List<Alias> ClientAlises = new List<Alias>();
 
         public AliasManager()
         {
-            _clientAlises = new List<Alias>();
-            
             Events.OnEntityStreamIn += OnPlayerStreamIn;
             Events.OnEntityStreamOut += OnPlayerStreamOut;
             Events.Tick += Tick;
@@ -37,7 +35,7 @@ namespace RPServerClient.Character
 
             if (!Client.Globals.IsAccountLoggedIn || !Client.Globals.HasActiveChar) return;
 
-            _clientAlises.RemoveAll(al => al.Player == p);
+            ClientAlises.RemoveAll(al => al.Player == p);
         }
 
         private void OnSetAliasInfo(object[] args)
@@ -50,15 +48,15 @@ namespace RPServerClient.Character
             var other = Entities.Players.All.Find(p => p.RemoteId == remoteID);
             if (other == null) return;
 
-            var al = _clientAlises.Find(p => p.Player == other);
+            var al = ClientAlises.Find(p => p.Player == other);
 
-            if (al == null) _clientAlises.Add(new Alias(other, aliasTxt));
+            if (al == null) ClientAlises.Add(new Alias(other, aliasTxt));
             else al.AliasText = aliasTxt;
         }
 
         private void Tick(List<Events.TickNametagData> nametags)
         {
-            foreach (var alias in _clientAlises)
+            foreach (var alias in ClientAlises)
             {
                 RAGE.Game.Graphics.SetDrawOrigin(alias.Player.Position.X, alias.Player.Position.Y, alias.Player.Position.Z + 1f, 0);
                 RAGE.NUI.UIResText.Draw(alias.AliasText, 0, 0, RAGE.Game.Font.ChaletLondon, 0.3f, System.Drawing.Color.White, RAGE.NUI.UIResText.Alignment.Centered, false, false, 0);
