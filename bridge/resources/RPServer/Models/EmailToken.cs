@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
@@ -213,7 +213,7 @@ namespace RPServer.Models
         public static async Task SendEmail(AccountModel account)
         {
             var tok = await FetchAsync(account);
-            await EmailSender.SendMailMessageAsync(tok.EmailAddress, "RPServer - Email Verifciaton", $"Your verification token is {tok.Token} and it's valid until {tok.ExpiryDate}.");
+            await EmailSender.SendEmailVerificationCode(tok);
 
         }
         #endregion
