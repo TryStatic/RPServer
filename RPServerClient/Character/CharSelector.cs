@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -12,8 +13,14 @@ using Player = RAGE.Elements.Player;
 
 namespace RPServerClient.Character
 {
+    public delegate void OnCharacterSpawnDelegate(object source, EventArgs e);
+    public delegate void OnCharacterDespawnDelegate(object source, EventArgs e);
+
     internal class CharSelector : Events.Script
     {
+        public static event OnCharacterSpawnDelegate CharacterSpawn;
+        public static event OnCharacterDespawnDelegate CharacterDespawn;
+
         public static int ScreenX = 0;
         public static int ScreenY = 0;
 
@@ -64,6 +71,7 @@ namespace RPServerClient.Character
             UnStageModel(player);
             _disableControls = true;
             _camera.SetPos(Helper.GetPosInFrontOfVector3(_displayPosition, _displayHeading, 1.5f), _displayPosition, true);
+            CharacterDespawn?.Invoke(Player.LocalPlayer, EventArgs.Empty);
         }
 
         private void OnEndCharSelector(object[] args)
@@ -77,6 +85,7 @@ namespace RPServerClient.Character
             _camera.SetActive(false);
             _camera.Destroy();
             _camera = null;
+            CharacterSpawn?.Invoke(Player.LocalPlayer, EventArgs.Empty);
         }
 
         private void SpawnChar(object[] args)
