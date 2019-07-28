@@ -50,6 +50,8 @@ namespace RPServerClient.Chat
             }
             if (counter != 0) msg = msg.Insert(msg.Length, $"</span>");
 
+            msg = msg.Replace("\"", "\\\"");
+
             RAGE.Chat.Output(msg);
         }
     }
