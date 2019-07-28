@@ -17,13 +17,6 @@ namespace RPServerClient
 
     internal class Sandbox : Events.Script
     {
-        public static int ScreenX = 0;
-        public static int ScreenY = 0;
-
-        public static int ScreenResX = 0;
-        public static int ScreenResY = 0;
-
-        private static string VERSION = null;
 
         private readonly MenuPool _clothespool = new MenuPool();
         UIMenu menu = new UIMenu("Clothes", "Clothes", new Point(1350, 200));
@@ -36,16 +29,7 @@ namespace RPServerClient
                 compvars.Add(new compvars());
             }
 
-            RAGE.Game.Graphics.GetScreenResolution(ref ScreenResX, ref ScreenResY);
-            RAGE.Game.Graphics.GetActiveScreenResolution(ref ScreenX, ref ScreenY);
-
-
             Events.Tick += Tick;
-
-
-
-            Events.Add("GetVersion", OnGetVersion);
-
 
             // FlyScript
             Events.Add("ToggleFlyMode", OnToggleFlyMode);
@@ -135,21 +119,8 @@ namespace RPServerClient
             RAGE.Chat.Output(vect.ToString());
         }
 
-        private void OnGetVersion(object[] args)
-        {
-            if (args == null || args.Length < 1) return;
-            VERSION = args[0].ToString();
-        }
-
-
         private void Tick(List<Events.TickNametagData> nametags)
         {
-            if (VERSION != null)
-            {
-                RAGE.Game.Ui.SetTextOutline();
-                RAGE.Game.UIText.Draw(VERSION, new Point(ScreenResX / 2, ScreenResY - (int)(ScreenResY * 0.03)), 0.35f, Color.White, RAGE.Game.Font.ChaletLondon, true);
-            }
-
             _clothespool?.ProcessMenus();
         }
 

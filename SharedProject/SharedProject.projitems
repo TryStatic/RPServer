@@ -22,6 +22,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Data\Keys.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\Bone.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\ServerToClient\Chat.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events\ServerToClient\HUD.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Data\" />

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using RAGE;
-using RAGE.Game;
 using RPServerClient.Character.Util;
 using RPServerClient.Util;
 
@@ -21,13 +20,13 @@ namespace RPServerClient.Character
         {
             var player = source as RAGE.Elements.Player;
 
-            player?.SetData(LocalDataKeys.CurrentChatMode, ChatMode.NormalChat);
+            player?.SetData(LocalDataKeys.CurrentChatMode, ChatMode.Normal);
         }
 
         private void OnCharacterDespawn(object source, EventArgs e)
         {
             var player = source as RAGE.Elements.Player;
-            player?.SetData(LocalDataKeys.CurrentChatMode, ChatMode.NormalChat);
+            player?.SetData(LocalDataKeys.CurrentChatMode, ChatMode.Normal);
         }
 
         private void Tick(List<Events.TickNametagData> nametags)
@@ -36,7 +35,6 @@ namespace RPServerClient.Character
             {
                     var chatmode = RAGE.Elements.Player.LocalPlayer.GetData<ChatMode>(LocalDataKeys.CurrentChatMode);
                     chatmode = chatmode.Next();
-                    RAGE.Chat.Output($"Chatmode set to: {chatmode}");
                     RAGE.Elements.Player.LocalPlayer.SetData(LocalDataKeys.CurrentChatMode, chatmode);
             });
         }

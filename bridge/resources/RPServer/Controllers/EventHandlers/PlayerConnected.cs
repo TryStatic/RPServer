@@ -1,3 +1,4 @@
+﻿using System;
 using GTANetworkAPI;
 using RPServer.InternalAPI.Extensions;
 using RPServer.Resource;
@@ -14,14 +15,22 @@ namespace RPServer.Controllers.EventHandlers
             client.Logout();
             client.ResetActiveChar();
 
+            InitializeSharedData(client);
+            
             client.SendChatMessage(AccountStrings.InfoWelcome);
             client.SendChatMessage("To toggle cursor press F2");
             AuthenticationHandler.SetLoginState(client, true);
             Logger.GetInstance().AuthLog($"Player (name: {client.Name}, social: {client.SocialClubName}, IP: {client.Address}) has connected to the server.");
-            client.TriggerEvent("GetVersion", $"{Game.Globals.SERVER_NAME}-{Game.Globals.VERSION}");
 
-            // Init the Action Queue for the Task Manager
-            client.InitActionQueue();
+        }
+
+        private void InitializeSharedData(Client client)
+        { // Init all static HUD shared data here
+            client.SetSharedData(Shared.Data.Keys.ServerVersion, $"{Game.Globals.SERVER_NAME}-{Game.Globals.VERSION}");
+            client.SetSharedData(Shared.Data.Keys.AccountLoggedIn, false);
+            client.SetSharedData(Shared.Data.Keys.ActiveCharID, -1);
+
+            client.TriggerEvent(Shared.Events.ServerToClient.HUD.UpdateStaticHudValues);
         }
     }
 }

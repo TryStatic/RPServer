@@ -40,11 +40,11 @@ namespace RPServerClient.Chat
 
             switch (mode)
             {
-                case ChatMode.NormalChat:
+                case ChatMode.Normal:
                     Events.CallRemote(Shared.Events.ClientToServer.Chat.SubmitLocalNormalChatMessage, text);
                     // Log Chat
                     break;
-                case ChatMode.ShoutChat:
+                case ChatMode.Shout:
                     Events.CallRemote(Shared.Events.ClientToServer.Chat.SubmitLocalShoutChatMessage, text);
                     // Log Chat
                     break;
@@ -80,10 +80,10 @@ namespace RPServerClient.Chat
 
             switch (chatmode)
             {
-                case ChatMode.NormalChat:
+                case ChatMode.Normal:
                     RAGE.Chat.Output($"{senderName} says: {message}");
                     break;
-                case ChatMode.ShoutChat:
+                case ChatMode.Shout:
                     RAGE.Chat.Output($"{senderName} shouts: {message}");
                     break;
             }
