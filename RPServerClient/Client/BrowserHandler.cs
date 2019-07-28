@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using RAGE;
 using RAGE.Ui;
+using RPServerClient.Util;
 
 namespace RPServerClient.Client
 {
@@ -15,6 +18,7 @@ namespace RPServerClient.Client
             RAGE.Events.Add("executeFunction", ExecuteFunction);
             RAGE.Events.Add("destroyBrowser", DestroyBrowser);
             RAGE.Events.OnBrowserCreated += OnBrowserCreated;
+            RAGE.Events.Tick += Tick;
         }
 
         public static void CreateBrowser(object[] args)
@@ -93,6 +97,11 @@ namespace RPServerClient.Client
                 // Call the function passed as parameter
                 ExecuteFunction(_parameters);
             }
+        }
+
+        private void Tick(List<Events.TickNametagData> nametags)
+        {
+            KeyManager.KeyBind(Shared.Enums.KeyCodes.VK_F2, () => Cursor.Visible = !Cursor.Visible);
         }
     }
 }
