@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 using GTANetworkAPI;
+using RPServer.Controllers;
 using RPServer.Controllers.Util;
 using RPServer.Game;
 using RPServer.InternalAPI;
@@ -372,8 +373,9 @@ namespace RPServer
         [Command("time")]
         public void CmdExplodeMyCar(Client player, int time)
         {
-            NAPI.World.SetTime(time, 0, 0);
-
+            var currTime = DateTime.Now;
+            var newtime = new DateTime(currTime.Year, currTime.Month, currTime.Day, time, 0, 0);
+            WorldHandler.CurrentTime = newtime;
         }
 
         [Command("weather")]
