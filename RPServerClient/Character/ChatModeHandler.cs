@@ -1,18 +1,13 @@
 ﻿using System;
 using RAGE;
 using RAGE.Game;
+using RPServerClient.Character.Util;
 
 namespace RPServerClient.Character
 {
-    internal enum ChatMode
+    internal class ChatModeHandler : Events.Script
     {
-        NormalChat,
-        ShoutChat
-    }
-
-    internal class Character : Events.Script
-    {
-        public Character()
+        public ChatModeHandler()
         {
             CharSelector.CharacterSpawn += OnCharacterSpawn;
             CharSelector.CharacterDespawn += OnCharacterDespawn;
@@ -27,8 +22,8 @@ namespace RPServerClient.Character
 
         private void OnCharacterDespawn(object source, EventArgs e)
         {
-            var player = source as Player;
-
+            var player = source as RAGE.Elements.Player;
+            player?.SetData(RPServerClient.Util.LocalDataKeys.CurrentChatMode, ChatMode.NormalChat);
         }
     }
 }

@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using RAGE;
-using RAGE.Game;
-using RPServerClient.Character;
+using RPServerClient.Character.Util;
 
 namespace RPServerClient.Util
 {

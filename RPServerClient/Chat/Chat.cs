@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using RAGE;
 using RAGE.Ui;
 using RPServerClient.Character;
+using RPServerClient.Character.Util;
 using RPServerClient.Util;
 using Player = RAGE.Elements.Player;
 
