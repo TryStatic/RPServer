@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using RAGE;
+using RAGE.Game;
+using RPServerClient.Character;
 
 namespace RPServerClient.Util
 {
@@ -30,6 +32,27 @@ namespace RPServerClient.Util
                 RAGE.Ui.Cursor.Visible = !RAGE.Ui.Cursor.Visible;
                 IsKeypressReady = false;
             }
+
+            if (Input.IsDown((int)Shared.Enums.KeyCodes.VK_B) && Input.IsDown((int)Shared.Enums.KeyCodes.VK_CONTROL) && IsKeypressReady)
+            { // TODO: Move me out of here and after a proper key handler is added
+                IsKeypressReady = false;
+                var chatmode = RAGE.Elements.Player.LocalPlayer.GetData<ChatMode>(LocalDataKeys.CurrentChatMode);
+                chatmode = chatmode.Next();
+                RAGE.Chat.Output($"Chatmode set to: {chatmode}");
+                RAGE.Elements.Player.LocalPlayer.SetData(LocalDataKeys.CurrentChatMode, chatmode);
+            }
+        }
+    }
+
+    public static class Extensions
+    {
+        public static T Next<T>(this T src) where T : struct
+        {
+            if (!typeof(T).IsEnum) throw new ArgumentException($"Argument {typeof(T).FullName} is not an Enum");
+
+            T[] Arr = (T[])Enum.GetValues(src.GetType());
+            int j = Array.IndexOf<T>(Arr, src) + 1;
+            return (Arr.Length == j) ? Arr[0] : Arr[j];
         }
     }
 }

@@ -13,13 +13,6 @@ namespace RPServer.Controllers.EventHandlers
         { // Default Chat, called by the API
             if (!client.IsLoggedIn()) return;
             if (!client.HasActiveChar()) return;
-
-            message = Filter(message);
-
-            //var sendMsg = $"{client.GetActiveChar().CharacterName}: {message}";
-            Logger.GetInstance().ChatLog(message);
-
-            ChatHandler.SendNormalChat(client, message);
         }
 
         public static string Filter(string message)
@@ -33,8 +26,6 @@ namespace RPServer.Controllers.EventHandlers
             // Filter colors
             var matches = new Regex(@"(!{#[0-9A-F]{6}})+").Matches(message);
             foreach (Match m in matches) message = message.Remove(message.IndexOf(m.Value, StringComparison.OrdinalIgnoreCase), 10);
-
-
 
             return message;
         }

@@ -1,6 +1,10 @@
+using System;
+using System.IO.Pipes;
 using System.Text.RegularExpressions;
+using RAGE;
 using RAGE.Ui;
 using RPServerClient.Character;
+using RPServerClient.Util;
 using Player = RAGE.Elements.Player;
 
 namespace RPServerClient.Chat
@@ -16,33 +20,38 @@ namespace RPServerClient.Chat
             ChatBrowser = new HtmlWindow("package://CEF/chat/index.html");
             ChatBrowser.MarkAsChat();
 
+            RAGE.Events.Add("PushToChatUnfiltered", OnPushToChatUnfiltered);
+            RAGE.Events.Add("PushToChat", OnPushToChat);
             RAGE.Events.Add("setChatState", OnSetChatState);
-            RAGE.Events.Add("SendToChat", OnSendToChat);
-            RAGE.Events.Add("SendNormalChat", OnRecieveChatMessageFromPlayer);
+            RAGE.Events.OnPlayerChat += OnPlayerChat;
         }
 
-        private void OnRecieveChatMessageFromPlayer(object[] args)
+        private void OnPushToChatUnfiltered(object[] args)
         {
             var message = args[0].ToString();
-            var playerid = int.Parse(args[1].ToString());
+            message = message.Replace("\"", "\\\"");
+            RAGE.Chat.Output($"{message}");
+        }
 
-            if (Player.LocalPlayer.RemoteId == playerid)
-            { // this was send by this client
-                OnSendToChat(new object[]{ $"{Player.LocalPlayer.Name} ({playerid}): {message}" });
-            }
-            else
+        private void OnPlayerChat(string text, Events.CancelEventArgs cancel)
+        {
+            var mode = Player.LocalPlayer.GetData<ChatMode>(Util.LocalDataKeys.CurrentChatMode);
+
+            switch (mode)
             {
-                var alias = AliasManager.ClientAlises.Find(al => al.Player.RemoteId == playerid);
-                if (alias == null)
-                {
-                    OnSendToChat(new object[] { $"Stranger ({playerid}): {message}" });
-                }
-                else
-                {
-                    OnSendToChat(new object[] { $"{alias.AliasText} ({playerid}): {message}" });
-                }
+                case ChatMode.NormalChat:
+                    Events.CallRemote(Shared.Events.ClientToServer.Chat.SubmitLocalNormalChatMessage, text);
+                    // Log Chat
+                    break;
+                case ChatMode.ShoutChat:
+                    Events.CallRemote(Shared.Events.ClientToServer.Chat.SubmitLocalShoutChatMessage, text);
+                    // Log Chat
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
 
+            cancel.Cancel = true;
         }
 
         public void OnSetChatState(object[] args)
@@ -55,33 +64,73 @@ namespace RPServerClient.Chat
         /// <summary>
         /// Used from the server to push messages to the ChatBox
         /// </summary>
-        private void OnSendToChat(object[] args)
+        private void OnPushToChat(object[] args)
         {
-            if (args == null || args.Length < 1) return;
+            if (args == null || args.Length < 2) return;
 
-            var msg = args[0].ToString();
+            var message = args[0].ToString();
+            var senderID = int.Parse(args[1].ToString());
 
-            var matches = new Regex(@"(!{#[0-9A-F]{6}})+").Matches(msg);
+            var senderName = GetSenderName(senderID);
+            message = ParseColors(message);
+
+            var chatmode = Player.LocalPlayer.GetData<ChatMode>(LocalDataKeys.CurrentChatMode);
+
+
+            switch (chatmode)
+            {
+                case ChatMode.NormalChat:
+                    RAGE.Chat.Output($"{senderName} says: {message}");
+                    break;
+                case ChatMode.ShoutChat:
+                    RAGE.Chat.Output($"{senderName} shouts: {message}");
+                    break;
+            }
+
+        }
+
+        private string ParseColors(string message)
+        {
+            var matches = new Regex(@"(!{#[0-9A-F]{6}})+").Matches(message);
             var counter = 0;
+
             foreach (Match m in matches)
             {
                 if (m.Length != 10)
                 {
-                    return;
+                    return "";
                 }
 
                 var hexColor = m.Value.Remove(9).Remove(0, 2);
 
-                if (counter == 0) msg = msg.Replace(m.Value, $"<span style='color: {hexColor}'>");
-                else msg = msg.Replace(m.Value, $"</span><span style='color: {hexColor}'>");
+                if (counter == 0) message = message.Replace(m.Value, $"<span style='color: {hexColor}'>");
+                else message = message.Replace(m.Value, $"</span><span style='color: {hexColor}'>");
 
                 counter++;
             }
-            if (counter != 0) msg = msg.Insert(msg.Length, $"</span>");
+            if (counter != 0) message = message.Insert(message.Length, $"</span>");
+            message = message.Replace("\"", "\\\"");
+            return message;
+        }
 
-            msg = msg.Replace("\"", "\\\"");
-
-            RAGE.Chat.Output(msg);
+        private string GetSenderName(int senderID)
+        {
+            if (Player.LocalPlayer.RemoteId == senderID)
+            { // this was send by this client
+                return $"{Player.LocalPlayer.Name}";
+            }
+            else
+            {
+                var alias = AliasManager.ClientAlises.Find(al => al.Player.RemoteId == senderID);
+                if (alias == null)
+                {
+                    return $"Stranger";
+                }
+                else
+                {
+                    return $"{alias.AliasText}";
+                }
+            }
         }
     }
 }
