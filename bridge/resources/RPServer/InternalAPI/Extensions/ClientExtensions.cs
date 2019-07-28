@@ -24,12 +24,14 @@ namespace RPServer.InternalAPI.Extensions
         {
             if (player.IsLoggedIn(true)) return false;
             player.SetData(DataKey.AccountData, account);
+            player.SetSharedData(Shared.Data.Keys.AccountLoggedIn, true);
             return true;
         }
         internal static bool Logout(this Client player)
         {
             if (!player.IsLoggedIn(true)) return false;
             player.ResetData(DataKey.AccountData);
+            player.SetSharedData(Shared.Data.Keys.AccountLoggedIn, false);
             return true;
         }
 

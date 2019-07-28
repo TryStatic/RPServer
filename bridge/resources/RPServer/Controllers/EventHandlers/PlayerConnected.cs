@@ -1,4 +1,4 @@
-﻿using GTANetworkAPI;
+using GTANetworkAPI;
 using RPServer.InternalAPI.Extensions;
 using RPServer.Resource;
 using RPServer.Util;
@@ -10,8 +10,8 @@ namespace RPServer.Controllers.EventHandlers
         [ServerEvent(Event.PlayerConnected)]
         public void OnPlayerConnected(Client client)
         {
-            // Init Shared Data
-            client.SetSharedData(Shared.Data.Keys.AccountLoggedIn, false);
+            client.InitActionQueue();
+            client.Logout();
             client.ResetActiveChar();
 
             client.SendChatMessage(AccountStrings.InfoWelcome);

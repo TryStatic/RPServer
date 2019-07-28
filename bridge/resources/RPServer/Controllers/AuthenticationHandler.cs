@@ -446,7 +446,6 @@ namespace RPServer.Controllers
                 client.SendChatMessage(AccountStrings.SuccessLogin);
                 client.SendChatMessage("SANDBOX TEST COMMANDS: /cmds");
             }
-            client.SetSharedData(Shared.Data.Keys.AccountLoggedIn, !state);
             client.TriggerEvent(Events.ServerToClient.Authentication.SetLoginScreen, state);
 
             // Keep this at the end of the Method
