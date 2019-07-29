@@ -1,4 +1,5 @@
-﻿using System.Data.Common;
+﻿using System;
+using System.Data.Common;
 using RPServer.Util;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
@@ -70,6 +71,7 @@ namespace RPServer.Database
                 if (tries >= 10)
                 {
                     Logger.GetInstance().SqlInfo("Failed to establish a connection with the MySQL Database");
+                    Environment.Exit(1);
                     return false;
                 }
                 Logger.GetInstance().SqlInfo("Successfully established a connection with the MySQL Database");
