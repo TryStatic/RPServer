@@ -1,6 +1,8 @@
-﻿namespace RPServerClient.Util
+﻿using System.Drawing;
+
+namespace RPServerClient.Util
 {
-    internal class ScreenRes : RAGE.Events.Script
+    internal static class ScreenRes
     {
         public static int ScreenX
         {
@@ -24,9 +26,15 @@
             }
         }
 
-        public ScreenRes()
+        public static Point ScreenXY
         {
-
+            get
+            {
+                var pY = 0;
+                var pX = 0;
+                RAGE.Game.Graphics.GetActiveScreenResolution(ref pX, ref pY);
+                return new Point(pX, pY);
+            }
         }
     }
 }
