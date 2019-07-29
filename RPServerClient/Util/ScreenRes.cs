@@ -1,10 +1,14 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 
 namespace RPServerClient.Util
 {
     internal static class ScreenRes
     {
-        public static int ScreenX
+        public const int UIStandardResX = 1280;
+        public const int UIStandardResY =  720;
+
+        public static int ClientResX
         {
             get
             {
@@ -15,7 +19,7 @@ namespace RPServerClient.Util
             }
         }
 
-        public static int ScreenY
+        public static int ClientResY
         {
             get
             {
@@ -26,7 +30,7 @@ namespace RPServerClient.Util
             }
         }
 
-        public static Point ScreenXY
+        public static Point ClientResolution
         {
             get
             {
@@ -35,6 +39,21 @@ namespace RPServerClient.Util
                 RAGE.Game.Graphics.GetActiveScreenResolution(ref pX, ref pY);
                 return new Point(pX, pY);
             }
+        }
+
+        public static Point ConvertToStandardCoords(Point screenCoords)
+        {
+            var clientRes = ClientResolution;
+            if (screenCoords.X > clientRes.X || screenCoords.Y > clientRes.Y)
+            {
+                RAGE.Chat.Output("Static fucked up. Report to dev.");
+                throw new Exception("ConvertToStandardCoords in ScreenRes.cs");
+            }
+
+            var standardX = screenCoords.X / clientRes.X * UIStandardResX;
+            var standardY = screenCoords.Y / clientRes.Y * UIStandardResY;
+
+            return new Point(standardX, standardY);
         }
     }
 }
