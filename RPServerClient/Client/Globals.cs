@@ -1,5 +1,6 @@
 ﻿using RAGE;
 using RAGE.Elements;
+using Shared.Data;
 
 namespace RPServerClient.Client
 {
@@ -10,8 +11,8 @@ namespace RPServerClient.Client
             Nametags.Enabled = false;
         }
 
-        public static bool IsAccountLoggedIn => (bool)Player.LocalPlayer.GetSharedData(Shared.Data.Keys.AccountLoggedIn);
-        public static bool HasActiveChar => (int)Player.LocalPlayer.GetSharedData(Shared.Data.Keys.ActiveCharID) > 0;
-        public static int GetActiveCharID => (int)Player.LocalPlayer.GetSharedData(Shared.Data.Keys.ActiveCharID);
+        public static bool IsAccountLoggedIn => Player.LocalPlayer.GetSharedData(Keys.AccountLoggedIn) != null && (bool) Player.LocalPlayer.GetSharedData(Keys.AccountLoggedIn);
+        public static bool HasActiveChar => Player.LocalPlayer.GetSharedData(Keys.ActiveCharID) != null && (int) Player.LocalPlayer.GetSharedData(Keys.ActiveCharID) > 0;
+        public static int GetActiveCharID => Player.LocalPlayer.GetSharedData(Keys.ActiveCharID) == null ? -1 : (int) Player.LocalPlayer.GetSharedData(Keys.ActiveCharID);
     }
 }
