@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using RAGE;
+using RPServerClient.Character;
 using RPServerClient.Character.Util;
 using RPServerClient.Util;
 
-namespace RPServerClient.Character
+namespace RPServerClient.Chat
 {
     internal class ChatModeHandler : Events.Script
     {
