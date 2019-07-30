@@ -170,7 +170,7 @@ namespace RPServer.Controllers
                 client.SendChatMessage("TODO: Teleport to last known position here");
                 client.Position = new Vector3(-173.1077, 434.9248, 111.0801); // dummy
                 client.SetActiveChar(chData);
-                client.Name = chData.CharacterName.Replace("_", " ");
+                client.Name = chData.CharacterName;
                 client.TriggerEvent(Events.ServerToClient.Character.EndCharSelector);
 
                 // Invoke Character Spawn Listeners
