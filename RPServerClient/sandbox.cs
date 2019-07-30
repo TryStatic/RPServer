@@ -2,7 +2,9 @@
 using System.Drawing;
 using RAGE;
 using RAGE.NUI;
+using RAGE.Ui;
 using RPServerClient.Util;
+using Shared.Enums;
 using Player = RAGE.Elements.Player;
 
 namespace RPServerClient
@@ -121,6 +123,12 @@ namespace RPServerClient
 
         private void Tick(List<Events.TickNametagData> nametags)
         {
+
+            KeyManager.KeyBind(KeyCodes.VK_CONTROL ,KeyCodes.VK_G, () =>
+            {
+                RAGE.Chat.Output($"{ScreenRes.ClientResX} {ScreenRes.ClientResY}");
+                RAGE.Chat.Output(Cursor.Position.X / ScreenRes.ClientResX + " " + Cursor.Position.Y / ScreenRes.ClientResY);
+            });
             _clothespool?.ProcessMenus();
         }
 

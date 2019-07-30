@@ -41,12 +41,6 @@ namespace RPServerClient.HUD
                 RAGE.Game.Ui.SetTextOutline();
                 UIText.Draw(mode.ToString(), new Point((int) (0.03f * ScreenRes.UIStandardResX), (int)(0.26f * ScreenRes.UIStandardResY)), 0.4f, Color.White, Font.Monospace, true);
             }
-
-            KeyManager.KeyBind(KeyCodes.VK_G, () =>
-            {
-                RAGE.Chat.Output($"{ScreenRes.ClientResX} {ScreenRes.ClientResY}");
-                RAGE.Chat.Output(Cursor.Position.X / ScreenRes.ClientResX + " " + Cursor.Position.Y / ScreenRes.ClientResY);
-            });
         }
     }
 }
