@@ -17,6 +17,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Events\ClientToServer\Character.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\ClientToServer\Chat.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\ClientToServer\Command.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events\ClientToServer\VoiceChat.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\ServerToClient\Authentication.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\ServerToClient\Character.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Data\Keys.cs" />
