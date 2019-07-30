@@ -19,21 +19,9 @@ namespace RPServer.InternalAPI
             return null;
         }
 
-        /// <summary>
-        /// Finds Client by an ID
-        /// </summary>
-        /// <param name="id">Either PlayerID or AliasID</param>
-        /// <returns></returns>
-        internal static Client FindClientByID(int id)
-        {
-            if (IsPlayerID(id)) return FindClientByPlayerID(id);
-            return null;
-        }
-
         internal static Client FindClientByPlayerID(int id) => IsPlayerID(id) ? NAPI.Pools.GetAllPlayers().Find(p => p.Value == id) : null;
 
         internal static bool IsPlayerID(int id) => id >= 0 && id < NAPI.Server.GetMaxPlayers(); // 0 <= id < max_players
-
         private static bool IsNumeric(string identifier, out int outID)
         {
             var isNumeric = int.TryParse(identifier, out var someID);
