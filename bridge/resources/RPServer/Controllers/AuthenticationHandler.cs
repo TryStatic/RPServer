@@ -19,6 +19,7 @@ namespace RPServer.Controllers
 
         public AuthenticationHandler()
         {
+            AuthenticationHandler.PlayerLogin += OnPlayerLogin;
         }
 
         [Command(CmdStrings.CMD_ToggleTwoFactorEmail)]
@@ -442,15 +443,25 @@ namespace RPServer.Controllers
             if (!state)
             {
                 // This part gets triggered only once per successful login
-                NAPI.Player.SpawnPlayer(client, Initialization.DefaultSpawnPos);
-                client.SendChatMessage(AccountStrings.SuccessLogin);
-                client.SendChatMessage("SANDBOX TEST COMMANDS: /sandboxcmds");
+                PlayerLogin?.Invoke(client, EventArgs.Empty);
             }
             client.TriggerEvent(Events.ServerToClient.Authentication.SetLoginScreen, state);
-
-            // Keep this at the end of the Method
-            if(!state) PlayerLogin?.Invoke(client, EventArgs.Empty);
         }
+
+        private void OnPlayerLogin(object source, EventArgs e)
+        {
+            var client = source as Client;
+            if(client == null) return;
+
+            NAPI.Player.SpawnPlayer(client, Initialization.DefaultSpawnPos);
+            client.SendChatMessage(AccountStrings.SuccessLogin);
+            if (client.GetAccount().IsAdmin())
+            {
+                
+            }
+            client.SendChatMessage("SANDBOX TEST COMMANDS: /sandboxcmds");
+        }
+
         private static bool IsAccountAlreadyLoggedIn(AccountModel account)
         {
             foreach (var p in NAPI.Pools.GetAllPlayers())
