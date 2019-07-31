@@ -4,6 +4,7 @@ using RAGE;
 using RAGE.Game;
 using RAGE.Ui;
 using RPServerClient.Character.Util;
+using RPServerClient.Chat.Util;
 using RPServerClient.Client;
 using RPServerClient.Util;
 using Shared.Enums;

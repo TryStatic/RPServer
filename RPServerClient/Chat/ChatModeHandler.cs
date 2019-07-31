@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using RAGE;
 using RPServerClient.Character;
-using RPServerClient.Character.Util;
+using RPServerClient.Chat.Util;
 using RPServerClient.Util;
 
 namespace RPServerClient.Chat

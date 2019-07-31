@@ -1,4 +1,4 @@
-﻿namespace RPServerClient.Character.Util
+﻿namespace RPServerClient.Chat.Util
 {
     internal enum ChatMode
     {

@@ -1,10 +1,9 @@
 using System;
-using System.IO.Pipes;
 using System.Text.RegularExpressions;
 using RAGE;
 using RAGE.Ui;
 using RPServerClient.Character;
-using RPServerClient.Character.Util;
+using RPServerClient.Chat.Util;
 using RPServerClient.Util;
 using Player = RAGE.Elements.Player;
 
@@ -37,7 +36,7 @@ namespace RPServerClient.Chat
         private void OnPlayerChat(string text, Events.CancelEventArgs cancel)
         { // Normal Chat
 
-            var mode = Player.LocalPlayer.GetData<ChatMode>(Util.LocalDataKeys.CurrentChatMode);
+            var mode = Player.LocalPlayer.GetData<ChatMode>(LocalDataKeys.CurrentChatMode);
 
             switch (mode)
             {
