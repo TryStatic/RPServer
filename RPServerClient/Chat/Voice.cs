@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO.Pipes;
 using RAGE;
 using RAGE.Elements;
 using RAGE.Game;
@@ -16,7 +17,7 @@ namespace RPServerClient.Chat
         private const float MaxDistance = 50.0f;
         private const long VoiceRefreshRateInMS = 250;
 
-        private static readonly List<Player> Listeners = new List<Player>();
+        private static readonly HashSet<Player> Listeners = new HashSet<Player>();
 
         private static long _latestProcess;
         private static bool _justPressedN;
@@ -29,32 +30,11 @@ namespace RPServerClient.Chat
             Events.Tick += Tick;
             Events.OnPlayerQuit += OnPlayerQuit;
         }
-
-        private static void AddListener(Player p)
-        {
-            p.SetData<bool>(LocalDataKeys.IsListener, true);
-            Events.CallRemote(Shared.Events.ClientToServer.VoiceChat.SumbitAddVoiceListener, p.RemoteId);
-
-            Listeners.Add(p);
-            p.Voice3d = true;
-        }
-
-        private static void RemoveListener(Player p, bool notifyServer = true)
-        {
-            Listeners.Remove(p);
-            p.SetData<bool>(LocalDataKeys.IsListener, false);
-            if (notifyServer) Events.CallRemote(Shared.Events.ClientToServer.VoiceChat.SumbitRemoveVoiceListener, p.RemoteId);
-        }
-
-        public static void OnPlayerQuit(Player player)
-        {
-            RemoveListener(player, false);
-        }
-
+        
         private void Tick(List<Events.TickNametagData> nametags)
         {
             if(!Globals.IsAccountLoggedIn || !Globals.HasActiveChar) return;
-            
+
             if (RAGE.Input.IsDown((int)Shared.Enums.KeyCodes.VK_N))
             {
                 RAGE.Game.Ui.SetTextOutline();
@@ -83,40 +63,51 @@ namespace RPServerClient.Chat
             {
                 _latestProcess = currentTime;
 
-                var localPosition = Player.LocalPlayer.Position;
-
-                
-                /*#region TEST
-                if (!Player.LocalPlayer.GetData<bool>(LocalDataKeys.IsListener))
+                // Add new people
+                foreach (var p in Entities.Players.All)
                 {
-                    AddListener(Player.LocalPlayer);
-                }
-                #endregion
-                */
+                    if(!p.Exists) continue;
 
-                foreach (var p in Entities.Players.Streamed)
-                {
-                    if (p.GetData<bool>(LocalDataKeys.IsListener)) continue;
-
-                    var dist = localPosition.DistanceToSquared(p.Position);
-                    if (dist < MaxDistance) AddListener(p);
+                    var dist = Player.LocalPlayer.Position.DistanceToSquared(p.Position);
+                    if (dist < MaxDistance)
+                    {
+                        var added = Listeners.Add(p);
+                        if (added)
+                        {
+                            Events.CallRemote(Shared.Events.ClientToServer.VoiceChat.SumbitAddVoiceListener, p.RemoteId);
+                            RAGE.Chat.Output($"[DEBUG-CLIENT]: Setting {p.Name} as your voice listener.");
+                        }
+                    }
                 }
 
+                // Remove streamed out ppl
                 foreach (var p in Listeners)
                 {
                     if (p.Handle != 0)
                     {
-                        var dist = localPosition.DistanceToSquared(p.Position);
-
-                        if (dist > MaxDistance) RemoveListener(p);
-                        else p.VoiceVolume = (1.0f - (dist / MaxDistance));
+                        var dist = Player.LocalPlayer.Position.DistanceToSquared(p.Position);
+                        if (dist > MaxDistance)
+                        {
+                            var removed = Listeners.Remove(p);
+                            if (removed)
+                            {
+                                RAGE.Chat.Output($"[DEBUG-CLIENT]: removing {p.Name} from your voice listeners.");
+                                Events.CallRemote(Shared.Events.ClientToServer.VoiceChat.SumbitRemoveVoiceListener, p.RemoteId);
+                            }
+                        }
+                        else
+                        {
+                            p.VoiceVolume = 1.0f - (dist / MaxDistance);
+                        }
                     }
                     else
                     {
-                        RemoveListener(p);
+                        Listeners.Remove(p);
                     }
                 }
             }
         }
+
+        private void OnPlayerQuit(Player player) => Listeners.Remove(player);
     }
 }
