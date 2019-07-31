@@ -164,7 +164,7 @@ namespace RPServer.Controllers
 
                 var fetchedAcc = await AccountModel.FetchAsync(username);
 
-                if (IsAccountLoggedIn(fetchedAcc))
+                if (IsAccountAlreadyLoggedIn(fetchedAcc))
                 {
                     client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorAccountAlreadyLoggedIn);
                     return;
@@ -451,12 +451,12 @@ namespace RPServer.Controllers
             // Keep this at the end of the Method
             if(!state) PlayerSuccessfulLogin?.Invoke(client, EventArgs.Empty);
         }
-        private static bool IsAccountLoggedIn(AccountModel account)
+        private static bool IsAccountAlreadyLoggedIn(AccountModel account)
         {
             foreach (var p in NAPI.Pools.GetAllPlayers())
             {
-                if (!ClientExtensions.IsLoggedIn(p, true)) continue;
-                if (ClientExtensions.GetAccount(p) != account) continue;
+                if (!p.IsLoggedIn(true)) continue;
+                if (p.GetAccount() != account) continue;
                 return true;
             }
             return false;
