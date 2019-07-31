@@ -22,7 +22,7 @@ namespace RPServerClient.Chat
             ChatBrowser.MarkAsChat();
 
             RAGE.Events.Add("PushToChatUnfiltered", OnPushToChatUnfiltered);
-            RAGE.Events.Add("PushToChat", OnPushToChat);
+            RAGE.Events.Add(Shared.Events.ServerToClient.Chat.PushToChat, OnPushToChat);
             RAGE.Events.Add(Shared.Events.ServerToClient.Chat.SetChatDisplayStatus, OnSetChatDisplayStatus);
             RAGE.Events.OnPlayerChat += OnPlayerChat;
         }
