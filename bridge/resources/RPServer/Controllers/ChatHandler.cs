@@ -6,8 +6,6 @@ namespace RPServer.Controllers
 {
     internal class ChatHandler : Script
     {
-        // TODO: Add commands and methods for chat related stuff (local/faction w/e chat etc)
-        // TODO: This should work in combination with the PlayerChat Event Handler
         [Command("unfiltered", GreedyArg = true)]
         public void cmd_colorchar(Client client, string message)
         {
