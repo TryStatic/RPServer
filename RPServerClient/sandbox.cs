@@ -41,6 +41,8 @@ namespace RPServerClient
             Events.Add("testpos", TestPos);
             Events.Add("testclothes", TestClothes);
             Events.Add("test", test);
+            Events.Add("NotifyClient", NotifyClient);
+
 
             // Boost
             uint stamina = RAGE.Game.Misc.GetHashKey("SP0_STAMINA");
@@ -101,6 +103,18 @@ namespace RPServerClient
                 RAGE.Chat.Output($"{comps[compsMenu.Index]}, {drawables[drawablesMenu.Index]}, {textures[texturesMenu.Index]}, {palletes[palletesMenu.Index]}");
                 Player.LocalPlayer.SetComponentVariation(comps[compsMenu.Index], drawables[drawablesMenu.Index], textures[texturesMenu.Index], palletes[palletesMenu.Index]);
             };
+
+        }
+
+        private void NotifyClient(object[] args)
+        {
+            if(args == null || args.Length < 1) return;
+
+            var msg = args[0] as string;
+
+            RAGE.Game.Ui.SetNotificationTextEntry("STRING");
+            RAGE.Game.Ui.AddTextComponentSubstringPlayerName(msg);
+            RAGE.Game.Ui.DrawNotification(false, false);
 
         }
 
