@@ -84,5 +84,7 @@ namespace RPServer.Models
             if (!HasPassedTwoStepByEmail) return false;
             return !Is2FAbyGAEnabled() || HasPassedTwoStepByGA;
         }
+
+        public bool IsAdmin() => AdminLevel > 0;
     }
 }
