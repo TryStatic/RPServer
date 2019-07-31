@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Text;
 using System.Text.RegularExpressions;
 using GTANetworkAPI;
 using RPServer.Controllers;
@@ -296,7 +297,7 @@ namespace RPServer
         }
 
         [Command("veh")]
-        public void Veh(Client player, string vehicleName = "")
+        public void Veh(Client player, string vehicleName, int color1 = 0, int color2 = 0)
         {
             if (player.HasData("PERSONAL_VEHICLE"))
             {
@@ -305,16 +306,44 @@ namespace RPServer
                 player.ResetData("PERSONAL_VEHICLE");
             }
 
-            VehicleHash vehHash = NAPI.Util.VehicleNameToModel(vehicleName);
-            if (vehHash.ToString().Equals("0"))
+            Vehicle v = null;
+
+            if (!vehicleName.StartsWith("0x"))
+            {
+                VehicleHash vehHash = NAPI.Util.VehicleNameToModel(vehicleName);
+                if (vehHash.ToString().Equals("0"))
+                    return;
+
+                v = NAPI.Vehicle.CreateVehicle(vehHash, player.Position.Around(5), 0f, 0, 0);
+            }
+            else
+            {
+                try
+                {
+                    var vehID = Convert.ToUInt32(vehicleName, 16);
+                    v = NAPI.Vehicle.CreateVehicle(vehID, player.Position.Around(5), 0f, 0, 0);
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
+            }
+
+            if (v == null)
+            {
+                NAPI.Chat.SendChatMessageToPlayer(player, "Error.");
                 return;
-            Vehicle v = NAPI.Vehicle.CreateVehicle(vehHash, player.Position.Around(5), 0f, 0, 0);
+            }
+
             v.NumberPlate = "STATIQUE";
             v.WindowTint = 5;
             v.NumberPlateStyle = 2;
+            v.PrimaryColor = color1;
+            v.SecondaryColor = color2;
             player.SetData("PERSONAL_VEHICLE", v);
-            NAPI.Chat.SendChatMessageToPlayer(player, "Spawned a " + vehicleName + ".");
+            player.TriggerEvent("NotifyClient", $"Spawned a ~r~{v.DisplayName}");
         }
+
         [Command("ecc")]
         public void ecc(Client player)
         {
