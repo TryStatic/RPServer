@@ -11,11 +11,11 @@ using Events = Shared.Events;
 
 namespace RPServer.Controllers
 {
-    public delegate void OnPlayerSuccessfulLoginDelegate(object source, EventArgs e);
+    public delegate void OnPlayerLoginDelegate(object source, EventArgs e);
 
     internal class AuthenticationHandler : Script
     {
-        public static event OnPlayerSuccessfulLoginDelegate PlayerSuccessfulLogin;
+        public static event OnPlayerLoginDelegate PlayerLogin;
 
         public AuthenticationHandler()
         {
@@ -449,7 +449,7 @@ namespace RPServer.Controllers
             client.TriggerEvent(Events.ServerToClient.Authentication.SetLoginScreen, state);
 
             // Keep this at the end of the Method
-            if(!state) PlayerSuccessfulLogin?.Invoke(client, EventArgs.Empty);
+            if(!state) PlayerLogin?.Invoke(client, EventArgs.Empty);
         }
         private static bool IsAccountAlreadyLoggedIn(AccountModel account)
         {

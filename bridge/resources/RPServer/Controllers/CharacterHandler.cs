@@ -105,7 +105,7 @@ namespace RPServer.Controllers
 
         public CharacterHandler()
         {
-            AuthenticationHandler.PlayerSuccessfulLogin += OnPlayerLogin;
+            AuthenticationHandler.PlayerLogin += OnPlayerLogin;
             CharacterHandler.CharacterSpawn += OnCharacterSpawn;
         }
 
