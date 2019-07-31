@@ -23,7 +23,7 @@ namespace RPServerClient.Chat
 
             RAGE.Events.Add("PushToChatUnfiltered", OnPushToChatUnfiltered);
             RAGE.Events.Add("PushToChat", OnPushToChat);
-            RAGE.Events.Add("setChatState", OnSetChatState);
+            RAGE.Events.Add(Shared.Events.ServerToClient.Chat.SetChatDisplayStatus, OnSetChatDisplayStatus);
             RAGE.Events.OnPlayerChat += OnPlayerChat;
         }
 
@@ -35,7 +35,8 @@ namespace RPServerClient.Chat
         }
 
         private void OnPlayerChat(string text, Events.CancelEventArgs cancel)
-        {
+        { // Normal Chat
+
             var mode = Player.LocalPlayer.GetData<ChatMode>(Util.LocalDataKeys.CurrentChatMode);
 
             switch (mode)
@@ -53,13 +54,6 @@ namespace RPServerClient.Chat
             }
 
             cancel.Cancel = true;
-        }
-
-        public void OnSetChatState(object[] args)
-        {
-            if (args[0] == null) return;
-            var state = (bool) args[0];
-            ChatBrowser.ExecuteJs(state ? "setEnabled(true);" : "setEnabled(false);");
         }
 
         /// <summary>
@@ -90,6 +84,12 @@ namespace RPServerClient.Chat
 
         }
 
+        public void OnSetChatDisplayStatus(object[] args)
+        {
+            if (args[0] == null) return;
+            var state = (bool)args[0];
+            ChatBrowser.ExecuteJs(state ? "setEnabled(true);" : "setEnabled(false);");
+        }
         private string ParseColors(string message)
         {
             var matches = new Regex(@"(!{#[0-9A-F]{6}})+").Matches(message);
@@ -113,7 +113,6 @@ namespace RPServerClient.Chat
             message = message.Replace("\"", "\\\"");
             return message;
         }
-
         private string GetSenderName(int senderID)
         {
             if (Player.LocalPlayer.RemoteId == senderID)

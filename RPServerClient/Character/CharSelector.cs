@@ -65,7 +65,6 @@ namespace RPServerClient.Character
         private void OnInitCharSelector(object[] args)
         {
             _camera = new CamHandler();
-            Events.CallLocal("setChatState", true); // Enabled for testing TODO: needs to be removed
             var player = Player.LocalPlayer;
             player.FreezePosition(true);
             UnStageModel(player);
@@ -78,7 +77,7 @@ namespace RPServerClient.Character
         {
             _charList = null;
             Player.LocalPlayer.FreezePosition(false);
-            Events.CallLocal("setChatState", true);
+            Events.CallLocal(Shared.Events.ServerToClient.Chat.SetChatDisplayStatus, true);
             RAGE.Game.Ui.DisplayHud(true);
             RAGE.Game.Ui.DisplayRadar(true);
             _disableControls = false;
