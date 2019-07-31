@@ -444,7 +444,7 @@ namespace RPServer.Controllers
                 // This part gets triggered only once per successful login
                 NAPI.Player.SpawnPlayer(client, Initialization.DefaultSpawnPos);
                 client.SendChatMessage(AccountStrings.SuccessLogin);
-                client.SendChatMessage("SANDBOX TEST COMMANDS: /cmds");
+                client.SendChatMessage("SANDBOX TEST COMMANDS: /sandboxcmds");
             }
             client.TriggerEvent(Events.ServerToClient.Authentication.SetLoginScreen, state);
 

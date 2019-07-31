@@ -22,7 +22,7 @@ namespace RPServer
         }
 
 
-        [Command("cmds")]
+        [Command("sandboxcmds")]
         public void Cmds(Client player)
         {
             player.SendChatMessage("/logout /toggletwofactorga /toggletwofactoremail");
