@@ -23,6 +23,7 @@ namespace RPServer.Models
         public bool HasEnabledTwoStepByEmail { get; set; }
         public byte[] TwoFactorGASharedKey { get; set; }
         public int LastSpawnedCharId { get; set; } = -1;
+        public ushort AdminLevel { set; get; }
 
 
         public bool HasPassedTwoStepByGA = false;

@@ -11,7 +11,7 @@
  Target Server Version : 80016
  File Encoding         : 65001
 
- Date: 26/07/2019 04:56:32
+ Date: 31/07/2019 15:20:10
 */
 
 SET NAMES utf8mb4;
@@ -26,6 +26,7 @@ CREATE TABLE `accounts`  (
   `Username` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `EmailAddress` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   `Hash` varbinary(64) NOT NULL,
+  `AdminLevel` int(11) UNSIGNED NOT NULL DEFAULT 0,
   `ForumName` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   `NickName` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
   `RegSocialClubName` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
@@ -40,7 +41,7 @@ CREATE TABLE `accounts`  (
   PRIMARY KEY (`ID`) USING BTREE,
   UNIQUE INDEX `username_UNIQUE`(`Username`) USING BTREE,
   UNIQUE INDEX `emailaddress_UNIQUE`(`EmailAddress`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 243 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 244 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for aliases
@@ -152,7 +153,7 @@ CREATE TABLE `appearances`  (
   UNIQUE INDEX `CharacterID_UNIQUE`(`CharacterID`) USING BTREE,
   INDEX `fkey_char_to_appearance_idx`(`CharacterID`) USING BTREE,
   CONSTRAINT `fkey_char_to_appearance` FOREIGN KEY (`CharacterID`) REFERENCES `characters` (`ID`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for characters
@@ -166,7 +167,7 @@ CREATE TABLE `characters`  (
   UNIQUE INDEX `name_UNIQUE`(`CharacterName`) USING BTREE,
   INDEX `fkey_idx`(`CharOwnerID`) USING BTREE,
   CONSTRAINT `fkey_acc_to_char` FOREIGN KEY (`CharOwnerID`) REFERENCES `accounts` (`ID`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 26 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 27 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for emailtokens
@@ -193,7 +194,7 @@ CREATE TABLE `vehicles`  (
   PRIMARY KEY (`ID`) USING BTREE,
   INDEX `fkey_vehicle_to_charid_idx`(`OwnerID`) USING BTREE,
   CONSTRAINT `fkey_vehicle_to_charid` FOREIGN KEY (`OwnerID`) REFERENCES `characters` (`ID`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 24 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for world
