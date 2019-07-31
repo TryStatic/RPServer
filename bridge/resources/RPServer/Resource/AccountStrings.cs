@@ -16,7 +16,7 @@
         public const string ErrorUsernameInvalid = "This is not a valid username.";
         public const string ErrorUsernameNotExist = "We couldn't a record related to that username.";
         public const string ErrorUsernameTaken = "That username is already taken.";
-        public const string InfoWelcome = "Hello welcome to our server. Please /login or /register appropriately.";
+        public const string InfoWelcome = "Hello welcome to our server.";
         public const string SuccessChangeVerificationEmailAddress = "You have changed your verification email address. Check your inbox.";
         public const string SuccessEmailVerification = "Congratulations, you have successfully verified your email address. Welcome to our server.";
         public const string SuccessLogin = "You have successfully logged in, welcome back.";
