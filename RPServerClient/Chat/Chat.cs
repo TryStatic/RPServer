@@ -20,75 +20,50 @@ namespace RPServerClient.Chat
             ChatBrowser = new HtmlWindow("package://CEF/chat/index.html");
             ChatBrowser.MarkAsChat();
 
-            RAGE.Events.Add("PushToChatUnfiltered", OnPushToChatUnfiltered);
-            RAGE.Events.Add(Shared.Events.ServerToClient.Chat.PushToChat, OnPushToChat);
-            RAGE.Events.Add(Shared.Events.ServerToClient.Chat.SetChatDisplayStatus, OnSetChatDisplayStatus);
             RAGE.Events.OnPlayerChat += OnPlayerChat;
+
+            RAGE.Events.Add(Shared.Events.ServerToClient.Chat.SetChatDisplayStatus, OnSetChatDisplayStatus);
+            RAGE.Events.Add(Shared.Events.ServerToClient.Chat.PushChatMessage, OnPushChatMessage);
         }
 
-        private void OnPushToChatUnfiltered(object[] args)
-        {
-            var message = args[0].ToString();
-            message = message.Replace("\"", "\\\"");
-            RAGE.Chat.Output($"{message}");
-        }
-
-        private void OnPlayerChat(string text, Events.CancelEventArgs cancel)
-        { // Normal Chat
-
-            var mode = Player.LocalPlayer.GetData<ChatMode>(LocalDataKeys.CurrentChatMode);
-
-            switch (mode)
-            {
-                case ChatMode.Normal:
-                    Events.CallRemote(Shared.Events.ClientToServer.Chat.SubmitLocalNormalChatMessage, text);
-                    // Log Chat
-                    break;
-                case ChatMode.Shout:
-                    Events.CallRemote(Shared.Events.ClientToServer.Chat.SubmitLocalShoutChatMessage, text);
-                    // Log Chat
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-            cancel.Cancel = true;
-        }
-
-        /// <summary>
-        /// Used from the server to push messages to the ChatBox
-        /// </summary>
-        private void OnPushToChat(object[] args)
-        {
-            if (args == null || args.Length < 2) return;
-
-            var message = args[0].ToString();
-            var senderID = int.Parse(args[1].ToString());
-
-            var senderName = GetSenderName(senderID);
-            message = ParseColors(message);
-
-            var chatmode = Player.LocalPlayer.GetData<ChatMode>(LocalDataKeys.CurrentChatMode);
-
-
-            switch (chatmode)
-            {
-                case ChatMode.Normal:
-                    RAGE.Chat.Output($"{senderName} says: {message}");
-                    break;
-                case ChatMode.Shout:
-                    RAGE.Chat.Output($"{senderName} shouts: {message}");
-                    break;
-            }
-
-        }
-
-        public void OnSetChatDisplayStatus(object[] args)
+        private void OnSetChatDisplayStatus(object[] args)
         {
             if (args[0] == null) return;
             var state = (bool)args[0];
             ChatBrowser.ExecuteJs(state ? "setEnabled(true);" : "setEnabled(false);");
         }
+
+        private void OnPlayerChat(string text, Events.CancelEventArgs cancel)
+        { // Chat
+
+            var chatmode = Player.LocalPlayer.GetData<ChatMode>(LocalDataKeys.CurrentChatMode);
+
+            Events.CallRemote(Shared.Events.ClientToServer.Chat.SubmitChatMessage, text, chatmode);
+
+            cancel.Cancel = true;
+        }
+
+        private void OnPushChatMessage(object[] args)
+        {
+            if (args == null || args.Length < 3) return;
+
+            var message = args[0].ToString(); // The actual message (colors removed/html escaped)
+            var senderID = int.Parse(args[1].ToString()); // The ID of the sender
+            var color = args[2].ToString(); // The color of the message
+
+            var senderName = GetSenderName(senderID); // The sender name for THIS client
+            var finalMessage = $"{color}{senderName} {message}";
+
+            finalMessage = ParseColors(finalMessage);
+            PushToChatBox(finalMessage);
+        }
+
+        public void PushToChatBox(string message)
+        {
+            message = EscapeDoubleQuotes(message);
+            RAGE.Chat.Output(message);
+        }
+
         private string ParseColors(string message)
         {
             var matches = new Regex(@"(!{#[0-9A-F]{6}})+").Matches(message);
@@ -109,9 +84,14 @@ namespace RPServerClient.Chat
                 counter++;
             }
             if (counter != 0) message = message.Insert(message.Length, $"</span>");
-            message = message.Replace("\"", "\\\"");
             return message;
         }
+
+        private string EscapeDoubleQuotes(string message)
+        {
+            return message.Replace("\"", "\\\"");
+        }
+
         private string GetSenderName(int senderID)
         {
             if (Player.LocalPlayer.RemoteId == senderID)
@@ -123,7 +103,7 @@ namespace RPServerClient.Chat
                 var alias = AliasManager.ClientAlises.Find(al => al.Player.RemoteId == senderID);
                 if (alias == null)
                 {
-                    return $"Stranger";
+                    return $"Stranger ({senderID})";
                 }
                 else
                 {

@@ -2,7 +2,6 @@
 {
     public static class Chat
     {
-        public const string SubmitLocalNormalChatMessage = "SubmitLocalNormalChatMessage";
-        public const string SubmitLocalShoutChatMessage = "SubmitLocalShoutChatMessage";
+        public const string SubmitChatMessage = "SumbitChatMessage";
     }
 }

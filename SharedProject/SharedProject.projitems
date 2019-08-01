@@ -10,6 +10,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Data\CharDisplay.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\ChatMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Data\Colors.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\Blip.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\Font.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Enums\KeyCodes.cs" />
@@ -24,8 +26,5 @@
     <Compile Include="$(MSBuildThisFileDirectory)Enums\Bone.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\ServerToClient\Chat.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\ServerToClient\HUD.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Data\" />
   </ItemGroup>
 </Project>

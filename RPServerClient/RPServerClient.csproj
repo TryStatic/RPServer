@@ -21,6 +21,10 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Chat\Util\" />
+  </ItemGroup>
+
   <Import Project="..\SharedProject\SharedProject.projitems" Label="Shared" />
 
 </Project>

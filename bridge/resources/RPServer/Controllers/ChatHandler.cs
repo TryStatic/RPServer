@@ -1,36 +1,82 @@
-﻿using GTANetworkAPI;
+﻿using System;
+using System.Linq;
+using System.Text.RegularExpressions;
+using GTANetworkAPI;
 using RPServer.InternalAPI.Extensions;
 using RPServer.Util;
+using RPServerClient.Chat.Util;
 
 namespace RPServer.Controllers
 {
     internal class ChatHandler : Script
     {
-        private const float NormalChatDistance = 10f; // TODO: needs tweaking
-        private const float ShoutChatDistance = 20; // TODO: needs tweaking
+        private const float NormalChatMaxDistance = 10f;
+        private const float ShoutChatMaxDistance = 20f;
 
-        [Command("unfiltered", GreedyArg = true)]
-        public void cmd_colorchar(Client client, string message)
-        {
-            NAPI.ClientEvent.TriggerClientEventForAll("PushToChatUnfiltered", message);
-        }
 
-        [RemoteEvent(Shared.Events.ClientToServer.Chat.SubmitLocalNormalChatMessage)]
-        public void ClientEvent_OnSubmitLocalNormalChatMessage(Client client, string message)
+        [RemoteEvent(Shared.Events.ClientToServer.Chat.SubmitChatMessage)]
+        public void OnSubmitChatMessage(Client client, string playerText, int chatModeAsInt)
         {
             if (!client.IsLoggedIn() || !client.HasActiveChar()) return;
 
-            NAPI.ClientEvent.TriggerClientEventInRange(client.Position, NormalChatDistance, Shared.Events.ServerToClient.Chat.PushToChat, message, client.Value);
-            Logger.GetInstance().ChatLog($"{client.GetActiveChar().CharacterName} says: {message}");
+            ChatMode chatMode = (ChatMode)chatModeAsInt;
+            playerText = EscapeHTML(playerText);
+            playerText = RemoveColors(playerText);
+
+            foreach (var p in NAPI.Pools.GetAllPlayers())
+            {
+                string textColor;
+                switch (chatMode)
+                {
+                    case ChatMode.Normal:
+                        if (client.Position.DistanceToSquared(p.Position) > NormalChatMaxDistance) continue;
+
+                        // Add a full stop at the end of the message if needed
+                        if (playerText[playerText.Length - 1] != '.') playerText += ".";
+
+                        textColor = GetLocalChatMessageColor(client, p, NormalChatMaxDistance);
+                        NAPI.ClientEvent.TriggerClientEvent(p, Shared.Events.ServerToClient.Chat.PushChatMessage, $"says: {playerText}", client.Value, textColor);
+                        break;
+                    case ChatMode.Shout:
+                        if (client.Position.DistanceToSquared(p.Position) > ShoutChatMaxDistance) continue;
+
+                        // Add an exclamation mark at the end of the message if needed
+                        if (playerText[playerText.Length - 1] != '!') playerText += "!";
+
+                        textColor = GetLocalChatMessageColor(client, p, ShoutChatMaxDistance);
+                        NAPI.ClientEvent.TriggerClientEvent(p, Shared.Events.ServerToClient.Chat.PushChatMessage, $"shouts: {playerText}", client.Value, textColor);
+                        break;
+                    default:
+                        NAPI.Util.ConsoleOutput("Error OnSubmitChatMessage while switching though chatmodes.");
+                        return;
+                }
+            }
+            Logger.GetInstance().ChatLog($"{client.GetActiveChar().CharacterName}: {playerText}");
         }
 
-        [RemoteEvent(Shared.Events.ClientToServer.Chat.SubmitLocalShoutChatMessage)]
-        public void ClientEvent_OnSubmitLocalShoutChatMessage(Client client, string message)
+        private string GetLocalChatMessageColor(Client client, Client other, float maxDistance)
         {
-            if (!client.IsLoggedIn() || !client.HasActiveChar()) return;
+            var distance = client.Position.DistanceToSquared(other.Position);
 
-            NAPI.ClientEvent.TriggerClientEventInRange(client.Position, ShoutChatDistance, Shared.Events.ServerToClient.Chat.PushToChat, message, client.Value);
-            Logger.GetInstance().ChatLog($"{client.GetActiveChar().CharacterName} shout: {message}");
+            if(distance < maxDistance / 16) return Shared.Data.Colors.COLOR_WHITE;
+            if (distance < maxDistance / 8) return Shared.Data.Colors.COLOR_GRAD1;
+            if (distance < maxDistance / 4) return Shared.Data.Colors.COLOR_GRAD2;
+            if (distance < maxDistance / 2) return Shared.Data.Colors.COLOR_GRAD3;
+            if (distance < maxDistance) return Shared.Data.Colors.COLOR_GRAD4;
+            return Shared.Data.Colors.COLOR_GRAD5;
+        }
+
+
+        private string RemoveColors(string message)
+        {
+            var matches = new Regex(@"(!{#[0-9A-F]{6}})+").Matches(message);
+            foreach (Match m in matches) message = message.Remove(message.IndexOf(m.Value, StringComparison.OrdinalIgnoreCase), 10);
+            return message;
+        }
+
+        private string EscapeHTML(string message)
+        {
+            return System.Security.SecurityElement.Escape(message);
         }
     }
 }
