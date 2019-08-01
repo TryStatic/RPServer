@@ -10,7 +10,7 @@ namespace RPServerClient.Client
     internal class BrowserHandler : RAGE.Events.Script
     {
         private static object[] _parameters;
-        public static HtmlWindow MainBrowser;
+        public static HtmlWindow BrowserHtmlWindow;
 
         public BrowserHandler()
         {
@@ -23,14 +23,14 @@ namespace RPServerClient.Client
 
         public static void CreateBrowser(object[] args)
         {
-            if (MainBrowser != null) return;
+            if (BrowserHtmlWindow != null) return;
 
             // Get the URL from the parameters
             var url = args[0].ToString();
             // Save the rest of the parameters
             _parameters = args.Skip(1).ToArray();
             // Create the browser
-            MainBrowser = new HtmlWindow(url);
+            BrowserHtmlWindow = new HtmlWindow(url);
         }
 
         public static void CreateBrowser(string link)
@@ -54,7 +54,7 @@ namespace RPServerClient.Client
                 return;
             }
 
-            MainBrowser.ExecuteJs($"{funcName}();");
+            BrowserHtmlWindow.ExecuteJs($"{funcName}();");
 
         }
 
@@ -73,7 +73,7 @@ namespace RPServerClient.Client
                 input += input.Length > 0 ? (", '" + arg + "'") : ("'" + arg + "'");
             }
             // Call the function with the parameters
-            MainBrowser.ExecuteJs($"{function}({input});");
+            BrowserHtmlWindow.ExecuteJs($"{function}({input});");
         }
 
         public static void DestroyBrowser(object[] args)
@@ -81,13 +81,13 @@ namespace RPServerClient.Client
             // Disable the cursor
             Cursor.Visible = false;
             // Destroy the browser
-            MainBrowser.Destroy();
-            MainBrowser = null;
+            BrowserHtmlWindow.Destroy();
+            BrowserHtmlWindow = null;
         }
 
         public static void OnBrowserCreated(HtmlWindow window)
         {
-            if (MainBrowser != null && window.Id != MainBrowser.Id) return;
+            if (BrowserHtmlWindow != null && window.Id != BrowserHtmlWindow.Id) return;
 
             // Enable the cursor
             Cursor.Visible = true;

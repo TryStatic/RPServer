@@ -57,7 +57,7 @@ namespace RPServerClient.Authentication
 
         private void OnShowQRCodeEnabled(object[] args)
         {
-            BrowserHandler.MainBrowser.Url = "package://CEF/auth/enabledgoogleauth.html";
+            BrowserHandler.BrowserHtmlWindow.Url = "package://CEF/auth/enabledgoogleauth.html";
         }
 
         private void OnCloseWindow(object[] args)
@@ -75,35 +75,35 @@ namespace RPServerClient.Authentication
 
         private void OnShowLoginPage(object[] args)
         {
-            BrowserHandler.MainBrowser.Url = "package://CEF/auth/login.html";
+            BrowserHandler.BrowserHtmlWindow.Url = "package://CEF/auth/login.html";
         }
 
         private void OnShowInitialEmailVerification(object[] args)
         {
-            BrowserHandler.MainBrowser.Url = "package://CEF/auth/verifyemailfirst.html";
+            BrowserHandler.BrowserHtmlWindow.Url = "package://CEF/auth/verifyemailfirst.html";
         }
 
         private void OnShow2FAbyGoogleAuth(object[] args)
         {
-            BrowserHandler.MainBrowser.Url = "package://CEF/auth/verifygoogleauth.html";
+            BrowserHandler.BrowserHtmlWindow.Url = "package://CEF/auth/verifygoogleauth.html";
             if(args[0] != null) OnDisplayError(new[] { args[0] });
         }
 
         private void OnShow2FAbyEmailAddress(object[] args)
         {
-            BrowserHandler.MainBrowser.Url = "package://CEF/auth/verifyemail.html";
+            BrowserHandler.BrowserHtmlWindow.Url = "package://CEF/auth/verifyemail.html";
             if (args[0] != null) OnDisplayError(new[] { args[0] });
         }
 
         private void OnShowChangeEmailAddress(object[] args)
         {
-            BrowserHandler.MainBrowser.Url = "package://CEF/auth/changemail.html";
+            BrowserHandler.BrowserHtmlWindow.Url = "package://CEF/auth/changemail.html";
             if (args[0] != null) OnDisplayError(new[] { args[0] });
         }
 
         private void OnRegistrationSuccess(object[] args)
         {
-            BrowserHandler.MainBrowser.Url = "package://CEF/auth/login.html";
+            BrowserHandler.BrowserHtmlWindow.Url = "package://CEF/auth/login.html";
             if (args[0] != null) OnDisplaySuccess(new[] { args[0] });
         }
 
