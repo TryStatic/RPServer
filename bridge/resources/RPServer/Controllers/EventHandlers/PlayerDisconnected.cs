@@ -10,17 +10,17 @@ namespace RPServer.Controllers.EventHandlers
         [ServerEvent(Event.PlayerDisconnected)]
         public void OnPlayerDisconnected(Client client, DisconnectionType type, string reason)
         {
-            var str = client.IsLoggedIn(true) ? $"Registered (user: {client.GetAccount().Username}" : $"Player (name: {client.Name}";
+            var str = client.IsLoggedIn(true) ? $"Registered (user: {client.GetAccount().Username}, " : "Player (";
             switch (type)
             {
                 case DisconnectionType.Left:
-                    Logger.GetInstance().AuthLog($"{str}, social: {client.SocialClubName}, IP: {client.Address}) has left the server."); break;
+                    Logger.GetInstance().AuthLog($"{str}social: {client.SocialClubName}, IP: {client.Address}) has left the server."); break;
                 case DisconnectionType.Timeout:
-                    Logger.GetInstance().AuthLog($"{str}, social: {client.SocialClubName}, IP: {client.Address}) has left the server. (timed out)"); break;
+                    Logger.GetInstance().AuthLog($"{str}social: {client.SocialClubName}, IP: {client.Address}) has left the server. (timed out)"); break;
                 case DisconnectionType.Kicked:
-                    Logger.GetInstance().AuthLog($"{str}, social: {client.SocialClubName}, IP: {client.Address}) has been kicked off the server. Reason: {reason}"); break;
+                    Logger.GetInstance().AuthLog($"{str}social: {client.SocialClubName}, IP: {client.Address}) has been kicked off the server. Reason: {reason}"); break;
                 default: // bug in rageMP API can cause this to run
-                    Logger.GetInstance().AuthLog($"{str}, social: {client.SocialClubName}, IP: {client.Address}) has left the server. (default case)"); break;
+                    Logger.GetInstance().AuthLog($"{str}social: {client.SocialClubName}, IP: {client.Address}) has left the server. (default case)"); break;
             }
 
             if (client.IsLoggedIn())

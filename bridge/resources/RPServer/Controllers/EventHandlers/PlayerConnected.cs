@@ -20,7 +20,7 @@ namespace RPServer.Controllers.EventHandlers
             client.SendChatMessage(AccountStrings.InfoWelcome);
             client.SendChatMessage("To toggle cursor press F2");
             AuthenticationHandler.SetLoginState(client, true);
-            Logger.GetInstance().AuthLog($"Player (name: {client.Name}, social: {client.SocialClubName}, IP: {client.Address}) has connected to the server.");
+            Logger.GetInstance().AuthLog($"Player (social: {client.SocialClubName}, IP: {client.Address}) has connected to the server.");
 
         }
 
