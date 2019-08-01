@@ -10,5 +10,5 @@
 	"allow-cef-debugging": true,
 	"sync-rate" : 40,
 	"voice-chat" : true,
-	"voice-chat-sample-rate" : 8000
+	"voice-chat-sample-rate" : 48000
 }
