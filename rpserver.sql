@@ -11,7 +11,7 @@
  Target Server Version : 80016
  File Encoding         : 65001
 
- Date: 31/07/2019 15:20:10
+ Date: 02/08/2019 18:41:12
 */
 
 SET NAMES utf8mb4;
@@ -153,7 +153,7 @@ CREATE TABLE `appearances`  (
   UNIQUE INDEX `CharacterID_UNIQUE`(`CharacterID`) USING BTREE,
   INDEX `fkey_char_to_appearance_idx`(`CharacterID`) USING BTREE,
   CONSTRAINT `fkey_char_to_appearance` FOREIGN KEY (`CharacterID`) REFERENCES `characters` (`ID`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for characters
@@ -167,7 +167,7 @@ CREATE TABLE `characters`  (
   UNIQUE INDEX `name_UNIQUE`(`CharacterName`) USING BTREE,
   INDEX `fkey_idx`(`CharOwnerID`) USING BTREE,
   CONSTRAINT `fkey_acc_to_char` FOREIGN KEY (`CharOwnerID`) REFERENCES `accounts` (`ID`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 27 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 28 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for emailtokens
@@ -191,10 +191,15 @@ DROP TABLE IF EXISTS `vehicles`;
 CREATE TABLE `vehicles`  (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `OwnerID` int(11) NOT NULL,
+  `Model` int(11) UNSIGNED NOT NULL,
+  `PrimaryColor` int(11) NOT NULL,
+  `SecondaryColor` int(11) NOT NULL,
+  `PlateText` varchar(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT 'STATIQUE',
+  `PlateStyle` tinyint(4) NOT NULL,
   PRIMARY KEY (`ID`) USING BTREE,
   INDEX `fkey_vehicle_to_charid_idx`(`OwnerID`) USING BTREE,
   CONSTRAINT `fkey_vehicle_to_charid` FOREIGN KEY (`OwnerID`) REFERENCES `characters` (`ID`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 24 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 25 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for world

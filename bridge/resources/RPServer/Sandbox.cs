@@ -341,7 +341,7 @@ namespace RPServer
             v.PrimaryColor = color1;
             v.SecondaryColor = color2;
             player.SetData("PERSONAL_VEHICLE", v);
-            player.TriggerEvent("NotifyClient", $"Spawned a ~r~{v.DisplayName}");
+            player.TriggerEvent("NotifyClient", $"Spawned ~r~{v.DisplayName}");
         }
 
         [Command("ecc")]
