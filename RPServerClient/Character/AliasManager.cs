@@ -7,6 +7,7 @@ namespace RPServerClient.Character
 {
     internal class AliasManager : Events.Script
     {
+        public const float AliasDisplayDistance = 10f;
         public static readonly List<Alias> ClientAlises = new List<Alias>();
 
         public AliasManager()
@@ -58,6 +59,8 @@ namespace RPServerClient.Character
         {
             foreach (var alias in ClientAlises)
             {
+                if(Player.LocalPlayer.Position.DistanceToSquared(alias.Player.Position) < AliasDisplayDistance) continue;
+
                 RAGE.Game.Graphics.SetDrawOrigin(alias.Player.Position.X, alias.Player.Position.Y, alias.Player.Position.Z + 1f, 0);
                 RAGE.NUI.UIResText.Draw(alias.AliasText, 0, 0, RAGE.Game.Font.ChaletLondon, 0.3f, System.Drawing.Color.White, RAGE.NUI.UIResText.Alignment.Centered, false, false, 0);
                 RAGE.Game.Graphics.ClearDrawOrigin();
