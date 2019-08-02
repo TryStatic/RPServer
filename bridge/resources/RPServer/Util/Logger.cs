@@ -9,10 +9,12 @@ namespace RPServer.Util
         private static Logger _logger;
 
         private const string LogsFolder = "bridge\\logs\\";
+
         private const string MySqlLogFn = "mysql.log";
         private const string CommandLogFn = "command.log";
         private const string AuthLogFn = "auth.log";
         private const string ChatLogFn = "chat.log";
+        private const string ServerErrorFn = "server-error.log";
 
         private Logger()
         {
@@ -27,6 +29,11 @@ namespace RPServer.Util
         internal void ServerInfo(string sendMsg)
         {
             NAPI.Util.ConsoleOutput($"[{DateTime.Now:MM/dd/yyyy HH:mm:ss}][SRV INFO]: {sendMsg}");
+        }
+        public void ServerError(string erorrMsg)
+        {
+            NAPI.Util.ConsoleOutput($"[{DateTime.Now:MM/dd/yyyy HH:mm:ss}][SERVER ERROR]: {erorrMsg}");
+            FileWriteAsync(ServerErrorFn, $"[{DateTime.Now:MM/dd/yyyy HH:mm:ss}][SERVER ERROR]: {erorrMsg}");
         }
         public void SqlInfo(string msg)
         {
