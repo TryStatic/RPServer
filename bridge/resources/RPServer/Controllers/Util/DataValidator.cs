@@ -24,7 +24,7 @@ namespace RPServer.Controllers.Util
             CharLastName
         }
 
-        public enum ValidationInt32
+        public enum ValidationNumbers
         {
             VehicleModelID
         }
@@ -60,11 +60,11 @@ namespace RPServer.Controllers.Util
             return true;
         }
 
-        public static bool ValidateUInt32(ValidationInt32 numbers, int data)
+        public static bool ValidateNumber(ValidationNumbers numbers, int data)
         {
             switch (numbers)
             {
-                case ValidationInt32.VehicleModelID:
+                case ValidationNumbers.VehicleModelID:
                     if (ValidVehicleIDs == null)
                     {
                         Logger.GetInstance().ServerError("Tried to access ValidVehicleIDs HashSet before initialized.");
