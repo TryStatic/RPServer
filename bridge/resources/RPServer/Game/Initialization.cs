@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using GTANetworkAPI;
 using RPServer.Controllers;
+using RPServer.Controllers.Util;
 using RPServer.Database;
 using RPServer.Email;
 using RPServer.Models;
@@ -28,6 +29,7 @@ namespace RPServer.Game
             NAPI.Server.SetAutoRespawnAfterDeath(false);
             NAPI.Server.SetDefaultSpawnLocation(DefaultSpawnPos);
             NAPI.Server.SetGlobalServerChat(false);
+
             // Initialize the Logger 
             Logger.GetInstance();
 
@@ -53,10 +55,13 @@ namespace RPServer.Game
             // Have expired tokens get removed once per hour
             _expiredEmailTokensTimer = new Timer(OnRemoveExpiredEmailTokens, null, 1, 1000 * 60 * 60);
 
-            // Sever World Settings
+            // Read Sever World Settings from Database
             var worldData = await WorldModel.GetWorldData();
             WorldHandler.CurrentTime = worldData.ServerTime;
             NAPI.World.ResetIplList();
+
+            // Initialize ValidVehicleIDs
+            DataValidator.InitializeValidVehicleModelIDs();
         }
 
         public static void OnServerShutdown()
