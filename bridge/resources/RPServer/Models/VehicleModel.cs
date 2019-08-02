@@ -9,7 +9,7 @@ namespace RPServer.Models
         private string _plateText;
         public int OwnerID { get; set; }
 
-        public uint Model { set; get; }
+        public int Model { set; get; }
         public int PrimaryColor { set; get; }
         public int SecondaryColor { set; get; }
         public string PlateText

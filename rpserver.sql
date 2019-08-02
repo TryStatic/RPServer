@@ -11,7 +11,7 @@
  Target Server Version : 80016
  File Encoding         : 65001
 
- Date: 02/08/2019 18:41:12
+ Date: 02/08/2019 19:46:31
 */
 
 SET NAMES utf8mb4;
@@ -191,7 +191,7 @@ DROP TABLE IF EXISTS `vehicles`;
 CREATE TABLE `vehicles`  (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `OwnerID` int(11) NOT NULL,
-  `Model` int(11) UNSIGNED NOT NULL,
+  `Model` int(11) NOT NULL,
   `PrimaryColor` int(11) NOT NULL,
   `SecondaryColor` int(11) NOT NULL,
   `PlateText` varchar(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT 'STATIQUE',
