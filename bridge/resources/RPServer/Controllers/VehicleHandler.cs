@@ -18,6 +18,28 @@ namespace RPServer.Controllers
 {
     internal class VehicleHandler : Script
     {
+        public VehicleHandler()
+        {
+            CharacterHandler.CharacterSpawn += OnCharacterSpawn;
+        }
+
+        private void OnCharacterSpawn(object source, EventArgs e)
+        {
+            var client = source as Client;
+
+            foreach (var veh in NAPI.Pools.GetAllVehicles())
+            {
+                if(!veh.HasData("SERVER_VEHICLE_DATA")) continue;
+                var spawnedVehData = (VehicleModel)veh.GetData("SERVER_VEHICLE_DATA");
+                foreach (var vehData in client.GetActiveChar().Vehicles)
+                {
+                    if (vehData != spawnedVehData) continue;
+                    vehData.VehEntity = veh;
+                    break;
+                }
+            }
+        }
+
         [Command("vehicle", Alias = "v", GreedyArg = true)]
         public async void CMD_Vehicle(Client client, string args = "")
         {
