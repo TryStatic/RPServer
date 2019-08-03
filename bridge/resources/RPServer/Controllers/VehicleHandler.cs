@@ -204,12 +204,19 @@ namespace RPServer.Controllers
 
         private void DisplayVehicles(Client client, HashSet<VehicleModel> vehicles)
         {
-            ChatHandler.SendClientMessage(client, "!{#D4D4D4}Your owned vehicles:");
-            foreach (var v in client.GetActiveChar().Vehicles)
+            if (client.GetActiveChar().Vehicles.Count == 0)
             {
-                var spawned = v.VehEntity != null;
-                if(spawned) ChatHandler.SendClientMessage(client, $"\t{COLOR_GRAD3}SqlID: {COLOR_WHITE}{v.ID}{COLOR_GRAD3} | Model: {COLOR_WHITE}{v.Model}{COLOR_GRAD3} | Spawned: {COLOR_GREEN}Yes");
-                else ChatHandler.SendClientMessage(client, $"\t{COLOR_GRAD3}SqlID: {COLOR_WHITE}{v.ID}{COLOR_GRAD3} | Model: {COLOR_WHITE}{v.Model}{COLOR_GRAD3} | Spawned: {COLOR_RED}No");
+                ChatHandler.SendClientMessage(client, "!{#D4D4D4}You don't own any vehicles.");
+            }
+            else
+            {
+                ChatHandler.SendClientMessage(client, "!{#D4D4D4}Your owned vehicles:");
+                foreach (var v in client.GetActiveChar().Vehicles)
+                {
+                    var spawned = v.VehEntity != null;
+                    if (spawned) ChatHandler.SendClientMessage(client, $"\t{COLOR_GRAD3}SqlID: {COLOR_WHITE}{v.ID}{COLOR_GRAD3} | Model: {COLOR_WHITE}{v.Model}{COLOR_GRAD3} | Spawned: {COLOR_GREEN}Yes");
+                    else ChatHandler.SendClientMessage(client, $"\t{COLOR_GRAD3}SqlID: {COLOR_WHITE}{v.ID}{COLOR_GRAD3} | Model: {COLOR_WHITE}{v.Model}{COLOR_GRAD3} | Spawned: {COLOR_RED}No");
+                }
             }
         }
 
