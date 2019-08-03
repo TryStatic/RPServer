@@ -61,7 +61,6 @@ namespace RPServer.Controllers
         [Command(CmdStrings.CMD_Logout)]
         public async void Cmd_Logout(Client player)
         {
-            await Task.Delay(10000);
             if (!player.IsLoggedIn())
             {
                 player.SendChatMessage("You are not logged in.");
