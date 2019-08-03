@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading;
 using GTANetworkAPI;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 using GTANetworkMethods;
 using RPServer.Controllers.Util;
 using RPServer.InternalAPI.Extensions;
+using RPServer.Util;
 using static Shared.Data.Colors;
 using Task = System.Threading.Tasks.Task;
 using Vehicle = GTANetworkAPI.Vehicle;
@@ -229,12 +231,49 @@ namespace RPServer.Controllers
         public static async Task<int> CreateVehicleAsync(CharacterModel owner, uint model)
         {
             if(owner == null) throw new Exception("CreateVehicleAsync in VehicleHandler was passed a null ChatacterModel owner.");
-            var newVeh = new VehicleModel(owner.ID);
-            newVeh.Model = model;
+            var newVeh = new VehicleModel(owner.ID)
+            {
+                Model = model,
+                PlateText = await GenerateLicensePlateText()
+            };
             var vehID = await newVeh.CreateAsync();
             if (vehID < 0) throw new Exception("There was an error while creating a new vehicle.");
             owner.Vehicles.Add(newVeh);
             return vehID;
+        }
+
+        private static async Task<string> GenerateLicensePlateText()
+        {
+            var newPlate = "UNDEF";
+            var iterations = 0;
+            while (iterations < 10)
+            {
+                iterations++;
+                int index1 = RandomGenerator.GetInstance().Next(7, 10);
+                int index2 = RandomGenerator.GetInstance().Next('A', 'Z'+1);
+                if (index2 == 'O') index2 += 1;
+                int index3 = RandomGenerator.GetInstance().Next('A', 'Z'+1);
+                if (index3 == 'O') index3 -= 1;
+                int index4 = RandomGenerator.GetInstance().Next('A', 'Z'+1);
+                if (index4 == 'O')
+                {
+                    if (RandomGenerator.GetInstance().Next(0, 2) % 2 == 0) index4 += 1;
+                    else index4 -= 1;
+                }
+                int index5 = RandomGenerator.GetInstance().Next(0, 10);
+                int index6 = RandomGenerator.GetInstance().Next(0, 10);
+                int index7 = RandomGenerator.GetInstance().Next(0, 10);
+                newPlate = $"{index1}{(char)index2}{(char)index3}{(char)index4}{index5}{index6}{index7}";
+
+                var exist = await VehicleModel.ReadByKeyAsync(() => VehicleModel.Mock.PlateText, newPlate);
+                if (!exist.Any() || iterations == 10)
+                {
+                    if (iterations == 10) Logger.GetInstance().ServerError($"GenerateLicensePlate ran too many times. Forcing duplicate. (Plate: {newPlate})"); // After doomsday maybe this will run
+                    break;
+                }
+            }
+
+            return newPlate;
         }
     }
 }
