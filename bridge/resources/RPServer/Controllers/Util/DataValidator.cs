@@ -11,7 +11,7 @@ namespace RPServer.Controllers.Util
 {
     internal static class DataValidator
     {
-        public static HashSet<int> ValidVehicleIDs;
+        public static HashSet<uint> ValidVehicleIDs;
 
         public enum ValidationStrings
         {
@@ -60,7 +60,7 @@ namespace RPServer.Controllers.Util
             return true;
         }
 
-        public static bool ValidateNumber(ValidationNumbers numbers, int data)
+        public static bool ValidatePositiveNumber(ValidationNumbers numbers, uint data)
         {
             switch (numbers)
             {
@@ -87,9 +87,9 @@ namespace RPServer.Controllers.Util
             }
 
             Logger.GetInstance().ServerInfo("Initializing Valid Vehicle Model IDs from VehicleData.json");
-            ValidVehicleIDs = new HashSet<int>();
+            ValidVehicleIDs = new HashSet<uint>();
             var vehData = JsonConvert.DeserializeObject<Dictionary<int, dynamic>>(File.ReadAllText(Globals.VehicleDataJsonFile));
-            foreach (var veh in vehData) ValidVehicleIDs.Add(veh.Key);
+            foreach (var veh in vehData) ValidVehicleIDs.Add((uint)veh.Value.hash);
         }
 
         public static bool IsDigitsOnly(string str)

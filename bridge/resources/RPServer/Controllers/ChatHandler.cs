@@ -66,7 +66,6 @@ namespace RPServer.Controllers
             return Shared.Data.Colors.COLOR_GRAD5;
         }
 
-
         private string RemoveColors(string message)
         {
             var matches = new Regex(@"(!{#[0-9A-F]{6}})+").Matches(message);
@@ -74,9 +73,29 @@ namespace RPServer.Controllers
             return message;
         }
 
-        private string EscapeHTML(string message)
+        private static string EscapeHTML(string message)
         {
             return System.Security.SecurityElement.Escape(message);
+        }
+
+        internal static void SendCommandUsageText(Client client, string usageText)
+        {
+            client.TriggerEvent(Shared.Events.ServerToClient.Chat.PushChatMessageUnfiltered, EscapeHTML($"{Shared.Data.Colors.COLOR_GRAD3}[Usage]: {Shared.Data.Colors.COLOR_GRAD1}{usageText}"));
+        }
+
+        internal static void SendCommandErrorText(Client client, string errorText)
+        {
+            client.TriggerEvent(Shared.Events.ServerToClient.Chat.PushChatMessageUnfiltered, EscapeHTML($"{Shared.Data.Colors.COLOR_YELLOW}<!> {Shared.Data.Colors.COLOR_WHITE}{errorText}"));
+        }
+
+        internal static void SendCommandSuccessText(Client client, string errorText)
+        {
+            client.TriggerEvent(Shared.Events.ServerToClient.Chat.PushChatMessageUnfiltered, EscapeHTML($"{Shared.Data.Colors.COLOR_GREEN}<!> {Shared.Data.Colors.COLOR_WHITE}{errorText}"));
+        }
+
+        internal static void SendClientMessage(Client client, string message)
+        {
+            client.TriggerEvent(Shared.Events.ServerToClient.Chat.PushChatMessageUnfiltered, EscapeHTML(message));
         }
     }
 }

@@ -9,5 +9,8 @@
         public const string COLOR_GRAD4 = "!{#CBCCCE}";
         public const string COLOR_GRAD5 = "!{#BFC0C2}";
         public const string COLOR_BLACK = "!{#000000}";
+        public const string COLOR_YELLOW = "!{#FFFF00}";
+        public const string COLOR_GREEN = "!{#00FF00}";
+        public const string COLOR_RED = "!{#FF0000}";
     }
 }

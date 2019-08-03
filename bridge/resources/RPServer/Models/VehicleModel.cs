@@ -1,5 +1,4 @@
-﻿using System.Configuration.Internal;
-using Dapper.Contrib.Extensions;
+﻿using Dapper.Contrib.Extensions;
 using GTANetworkAPI;
 
 namespace RPServer.Models
@@ -8,9 +7,10 @@ namespace RPServer.Models
     internal class VehicleModel : Model<VehicleModel>
     {
         private string _plateText;
+
         public int OwnerID { get; set; }
 
-        public int Model { set; get; }
+        public uint Model { set; get; }
         public int PrimaryColor { set; get; }
         public int SecondaryColor { set; get; }
         public string PlateText
@@ -29,6 +29,7 @@ namespace RPServer.Models
         public VehicleModel(int ownerID)
         {
             OwnerID = ownerID;
+            PlateText = "STATIQUE";
         }
     }
 }

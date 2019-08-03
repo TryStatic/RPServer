@@ -24,6 +24,7 @@ namespace RPServerClient.Chat
 
             RAGE.Events.Add(Shared.Events.ServerToClient.Chat.SetChatDisplayStatus, OnSetChatDisplayStatus);
             RAGE.Events.Add(Shared.Events.ServerToClient.Chat.PushChatMessage, OnPushChatMessage);
+            RAGE.Events.Add(Shared.Events.ServerToClient.Chat.PushChatMessageUnfiltered, OnPushChatMessageUnfiltered);
         }
 
         private void OnSetChatDisplayStatus(object[] args)
@@ -43,7 +44,7 @@ namespace RPServerClient.Chat
             cancel.Cancel = true;
         }
 
-        private void OnPushChatMessage(object[] args)
+        private void OnPushChatMessage(object[] args) // (message, senderID, colorString)
         {
             if (args == null || args.Length < 3) return;
 
@@ -56,6 +57,14 @@ namespace RPServerClient.Chat
 
             finalMessage = ParseColors(finalMessage);
             PushToChatBox(finalMessage);
+        }
+
+        private void OnPushChatMessageUnfiltered(object[] args) // (message)
+        {
+            if (args == null || args.Length < 1) return;
+            var message = args[0].ToString();
+            message = ParseColors(message);
+            PushToChatBox(message);
         }
 
         public void PushToChatBox(string message)
