@@ -8,7 +8,7 @@ namespace RPServer.Controllers.EventHandlers
     internal class PlayerDisconnected : Script
     {
         [ServerEvent(Event.PlayerDisconnected)]
-        public void OnPlayerDisconnected(Client client, DisconnectionType type, string reason)
+        public async void OnPlayerDisconnected(Client client, DisconnectionType type, string reason)
         {
             var str = client.IsLoggedIn(true) ? $"Registered (user: {client.GetAccount().Username}, " : "Player (";
             switch (type)
@@ -28,19 +28,12 @@ namespace RPServer.Controllers.EventHandlers
                 var accData = client.GetAccount();
                 var chData = client.GetActiveChar();
 
-                TaskManager.Run(client, async () =>
-                {
-                    await accData.UpdateAsync();
-                    if (chData != null) await chData.SaveAllData();
-                }, force: true);
+                await accData.UpdateAsync();
+                if (chData != null) await chData.SaveAllData();
 
                 client.ResetActiveChar();
                 client.Logout();
             }
-
-            // Reset the action queue for that client
-            client.ResetActionQueueTimer();
-
         }
     }
 }

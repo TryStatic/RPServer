@@ -11,7 +11,6 @@ namespace RPServer.Controllers.EventHandlers
         [ServerEvent(Event.PlayerConnected)]
         public void OnPlayerConnected(Client client)
         {
-            client.InitActionQueue();
             client.Logout();
             client.ResetActiveChar();
 

@@ -62,40 +62,5 @@ namespace RPServer.InternalAPI.Extensions
             client.SetSharedData(Shared.Data.Keys.ActiveCharID, -1);
         }
 
-        // TaskManager
-        internal static bool IsRunningTask(this Client player)
-        {
-            if (player == null) return false;
-            if (!player.HasData(DataKey.CanRunTask)) player.SetRunningTaskState(true);
-            return (bool)player.GetData(DataKey.CanRunTask);
-        }
-        internal static void SetRunningTaskState(this Client player, bool state)
-        {
-            if (player != null) player.SetData(DataKey.CanRunTask, state);
-        }
-        internal static void InitActionQueue(this Client player)
-        {
-            if (player == null) return;
-
-            player.SetData(DataKey.ActionQueue, new ConcurrentQueue<Action>());
-            player.SetData(DataKey.ActionQueueTimer, new Timer(TaskManager.OnHandleDequeue, player, 0, 200));
-        }
-        internal static ConcurrentQueue<Action> GetActionQueue(this Client player)
-        {
-            if (player == null) return null;
-            if (!player.HasData(DataKey.ActionQueue)) throw new Exception("Tried to access ActionQueue before initiliaztion.");
-            return player.GetData(DataKey.ActionQueue);
-        }
-        internal static Timer GetActionQueueTimer(this Client player)
-        {
-            if (player == null) return null;
-            if (!player.HasData(DataKey.ActionQueueTimer)) throw new Exception("Tried to access ActionQueueTimer before initiliaztion.");
-            return player.GetData(DataKey.ActionQueueTimer);
-        }
-        internal static void ResetActionQueueTimer(this Client player)
-        {
-            var timer = player.GetActionQueueTimer();
-            timer.Dispose();
-        }
     }
 }
