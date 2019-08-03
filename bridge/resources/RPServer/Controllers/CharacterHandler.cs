@@ -16,10 +16,20 @@ using static RPServer.Controllers.Util.DataValidator;
 namespace RPServer.Controllers
 {
     public delegate void OnCharacterSpawnDelegate(object source, EventArgs e);
+    public delegate void OnCharacterDespawnDelegate(object source, EventArgs e);
 
     internal class CharacterHandler : Script
     {
         public static event OnCharacterSpawnDelegate CharacterSpawn;
+        public static event OnCharacterSpawnDelegate CharacterDespawn;
+
+        public CharacterHandler()
+        {
+            AuthenticationHandler.PlayerLogin += OnPlayerLogin;
+            CharacterHandler.CharacterSpawn += OnCharacterSpawn;
+            CharacterHandler.CharacterDespawn += OnCharacterDespawn;
+        }
+
         [Command(CmdStrings.CMD_ChangeChar)]
         public void CMD_ChangeChar(Client client)
         { // Temporary (?)
@@ -28,10 +38,8 @@ namespace RPServer.Controllers
                 client.SendChatMessage("You are not spawned yet.");
                 return;
             }
-
-            var ch = client.GetActiveChar();
-            ch?.SaveAllData();
-            client.ResetActiveChar();
+            
+            CharacterDespawn?.Invoke(client, EventArgs.Empty);
 
             InitCharacterSelection(client);
         }
@@ -103,11 +111,9 @@ namespace RPServer.Controllers
             client.SendChatMessage($"Alias set.");
         }
 
-        public CharacterHandler()
-        {
-            AuthenticationHandler.PlayerLogin += OnPlayerLogin;
-            CharacterHandler.CharacterSpawn += OnCharacterSpawn;
-        }
+        [ServerEvent(Event.PlayerDisconnected)]
+        public void OnPlayerDisconnected(Client client, DisconnectionType type, string reason) => CharacterDespawn?.Invoke(client, EventArgs.Empty);
+
 
         [RemoteEvent(Events.ClientToServer.Character.ApplyCharacterEditAnimation)]
         public void ClientEvent_ApplyCharacterEditAnimation(Client client) => client.PlayAnimation("missbigscore2aleadinout@ig_7_p2@bankman@", "leadout_waiting_loop", 1);
@@ -268,7 +274,7 @@ namespace RPServer.Controllers
 
             InitCharacterSelection(client);
         }
-        private static async void OnCharacterSpawn(object source, EventArgs e)
+        private static void OnCharacterSpawn(object source, EventArgs e)
         {
             // Load Character Data
             var client = source as Client;
@@ -277,8 +283,18 @@ namespace RPServer.Controllers
             var chData = client.GetActiveChar();
             if (chData == null) return;
 
-            // TODO: This needs to be moved out of here before the player spawns eventually
-            await chData.ReadAllData();
+            ChatHandler.SendClientMessage(client, "[DEBUG]: Started Loading Character Data.");
+            chData.ReadAllData().RunSynchronously();
+            ChatHandler.SendClientMessage(client, "[DEBUG]: Finished Loading Character Data. Spawning you into the world...");
+        }
+
+        private void OnCharacterDespawn(object source, EventArgs e)
+        {
+            var client = source as Client;
+
+            var ch = client.GetActiveChar();
+            ch?.SaveAllData();
+            client.ResetActiveChar();
         }
 
         private static async void InitCharacterSelection(Client client)
