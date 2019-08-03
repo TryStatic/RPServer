@@ -284,7 +284,7 @@ namespace RPServer.Controllers
             if (chData == null) return;
 
             ChatHandler.SendClientMessage(client, "[DEBUG]: Started Loading Character Data.");
-            chData.ReadAllData().RunSynchronously();
+            chData.ReadAllData().GetAwaiter().GetResult();
             ChatHandler.SendClientMessage(client, "[DEBUG]: Finished Loading Character Data. Spawning you into the world...");
         }
 
