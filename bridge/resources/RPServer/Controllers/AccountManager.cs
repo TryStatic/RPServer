@@ -67,14 +67,9 @@ namespace RPServer.Controllers
                 return;
             }
 
-            var acc = player.GetAccount();
+            await LogoutAccount(player);
 
-            await acc.UpdateAsync();
-            var ch = player.GetActiveChar();
-            if (ch != null) await ch.UpdateAsync();
-            player.Logout();
             player.SendChatMessage("Bye!");
-            SetLoginState(player, true);
         }
 
 
@@ -418,6 +413,24 @@ namespace RPServer.Controllers
             client.Login(fetchedAcc);
             await fetchedAcc.UpdateAsync();
         }
+
+        public static async Task LogoutAccount(Client client)
+        {
+            var acc = client.GetAccount();
+            if (acc != null)
+            {
+                await acc.UpdateAsync();
+                var ch = client.GetActiveChar();
+                if (ch != null)
+                {
+                    await ch.SaveAllData();
+                    client.ResetActiveChar();
+                }
+                client.Logout();
+                SetLoginState(client, true);
+            }
+        }
+
         public static void SetLoginState(Client client, bool state)
         {
             if (!state)

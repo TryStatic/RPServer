@@ -25,14 +25,7 @@ namespace RPServer.Controllers.EventHandlers
 
             if (client.IsLoggedIn())
             {
-                var accData = client.GetAccount();
-                var chData = client.GetActiveChar();
-
-                await accData.UpdateAsync();
-                if (chData != null) await chData.SaveAllData();
-
-                client.ResetActiveChar();
-                client.Logout();
+                await AccountManager.LogoutAccount(client);
             }
         }
     }
