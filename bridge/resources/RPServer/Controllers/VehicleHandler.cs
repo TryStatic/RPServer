@@ -104,12 +104,7 @@ namespace RPServer.Controllers
                         ChatHandler.SendCommandErrorText(client, "You are not in any vehicle.");
                         return;
                     }
-                    var vehData = (VehicleModel)pv.GetData("SERVER_VEHICLE_DATA");
-
-                    var serverData = vehData == null ? "That vehicle has no server-side data." : $"\tSqlID: {vehData.ID} | OwnerSQLID: {vehData.OwnerID}";
-                    ChatHandler.SendCommandErrorText(client, serverData);
-                    ChatHandler.SendCommandErrorText(client, $"{pv.DisplayName} | HP: {pv.Health} | Locked: {pv.Locked} | Plate: {pv.NumberPlate} | PlateStyle: {pv.NumberPlateStyle}");
-
+                    DisplayVehicleStats(client, pv);
                     break;
                 case "spawn":
                     if (arguments.Length < 2)
@@ -129,24 +124,7 @@ namespace RPServer.Controllers
                         return;
                     }
 
-                    var vehToSpawn = client.GetActiveChar().Vehicles.FirstOrDefault(v => v.ID == vehSpawnID);
-
-                    if (vehToSpawn == null)
-                    {
-                        ChatHandler.SendCommandErrorText(client, "Couldn't find that vehicle");
-                        return;
-                    }
-
-                    if (vehToSpawn.VehEntity != null)
-                    {
-                        ChatHandler.SendCommandErrorText(client, "That vehicle is already spawned.");
-                        return;
-                    }
-                    vehToSpawn.VehEntity = NAPI.Vehicle.CreateVehicle(vehToSpawn.Model, client.Position.Around(3), 0, vehToSpawn.PrimaryColor, vehToSpawn.SecondaryColor);
-                    vehToSpawn.VehEntity.NumberPlate = vehToSpawn.PlateText;
-                    vehToSpawn.VehEntity.NumberPlateStyle = vehToSpawn.PlateStyle;
-                    vehToSpawn.VehEntity.SetData("SERVER_VEHICLE_DATA", vehToSpawn);
-                    ChatHandler.SendCommandSuccessText(client, "Vehicle spawned.");
+                    SpawnVehicle(client, vehSpawnID);
                     break;
                 case "despawn":
                     if (arguments.Length < 2)
@@ -165,23 +143,7 @@ namespace RPServer.Controllers
                         ChatHandler.SendCommandUsageText(client, "/v(ehicle) despawn [vehicleID]");
                         return;
                     }
-                    var vehToDespawn = client.GetActiveChar().Vehicles.FirstOrDefault(v => v.ID == vehDespawnID);
-
-                    if (vehToDespawn == null)
-                    {
-                        ChatHandler.SendCommandErrorText(client, "Couldn't find that vehicle");
-                        return;
-                    }
-
-                    if (vehToDespawn.VehEntity == null)
-                    {
-                        ChatHandler.SendCommandErrorText(client, "That vehicle is not spawned.");
-                        return;
-                    }
-
-                    vehToDespawn.VehEntity.Delete();
-                    vehToDespawn.VehEntity = null;
-                    ChatHandler.SendCommandSuccessText(client, "Vehicle spawned.");
+                    DespawnVehicle(client, vehDespawnID);
                     break;
                 case "delete":
                     if (arguments.Length < 2)
@@ -200,30 +162,89 @@ namespace RPServer.Controllers
                         ChatHandler.SendCommandUsageText(client, "/v(ehicle) delete [vehicleID]");
                         return;
                     }
-                    var vehToDelete = client.GetActiveChar().Vehicles.FirstOrDefault(v => v.ID == vehDelID);
-
-                    if (vehToDelete == null)
-                    {
-                        ChatHandler.SendCommandErrorText(client, "Couldn't find that vehicle.");
-                        return;
-                    }
-
-                    if (vehToDelete.VehEntity != null)
-                    {
-                        vehToDelete.VehEntity.Delete();
-                        vehToDelete.VehEntity = null;
-                    }
-
-                    client.GetActiveChar().Vehicles.Remove(vehToDelete);
-                    await vehToDelete.DeleteAsync();
-                    await DeleteVehicleAsync(client.GetActiveChar(), vehToDelete);
-
-                    ChatHandler.SendCommandSuccessText(client, "Vehicle Deleted");
+                    await DeleteVehicle(client, vehDelID);
                     break;
                 default:
                     ChatHandler.SendCommandUsageText(client, "/v(ehicle) [create/list/stats/spawn/despawn/delete]");
                     break;
             }
+        }
+
+        private async Task DeleteVehicle(Client client, int vehicleSqlID)
+        {
+            var vehToDelete = client.GetActiveChar().Vehicles.FirstOrDefault(v => v.ID == vehicleSqlID);
+
+            if (vehToDelete == null)
+            {
+                ChatHandler.SendCommandErrorText(client, "Couldn't find that vehicle.");
+                return;
+            }
+
+            if (vehToDelete.VehEntity != null)
+            {
+                vehToDelete.VehEntity.Delete();
+                vehToDelete.VehEntity = null;
+            }
+
+            client.GetActiveChar().Vehicles.Remove(vehToDelete);
+            await vehToDelete.DeleteAsync();
+            await DeleteVehicleAsync(client.GetActiveChar(), vehToDelete);
+
+            ChatHandler.SendCommandSuccessText(client, "Vehicle Deleted");
+        }
+
+        private void DespawnVehicle(Client client, int vehicleSqlID)
+        {
+            var vehToDespawn = client.GetActiveChar().Vehicles.FirstOrDefault(v => v.ID == vehicleSqlID);
+
+            if (vehToDespawn == null)
+            {
+                ChatHandler.SendCommandErrorText(client, "Couldn't find that vehicle");
+                return;
+            }
+
+            if (vehToDespawn.VehEntity == null)
+            {
+                ChatHandler.SendCommandErrorText(client, "That vehicle is not spawned.");
+                return;
+            }
+
+            vehToDespawn.VehEntity.Delete();
+            vehToDespawn.VehEntity = null;
+            ChatHandler.SendCommandSuccessText(client, "Vehicle depawned.");
+        }
+
+        private void SpawnVehicle(Client client, int vehicleSqlID)
+        {
+            var vehToSpawn = client.GetActiveChar().Vehicles.FirstOrDefault(v => v.ID == vehicleSqlID);
+
+            if (vehToSpawn == null)
+            {
+                ChatHandler.SendCommandErrorText(client, "That vehicle id doesn't exist or you don't own it.");
+                return;
+            }
+
+            if (vehToSpawn.VehEntity != null)
+            {
+                ChatHandler.SendCommandErrorText(client, "That vehicle is already spawned.");
+                return;
+            }
+
+            vehToSpawn.VehEntity = NAPI.Vehicle.CreateVehicle(vehToSpawn.Model, client.Position.Around(3), 0, vehToSpawn.PrimaryColor, vehToSpawn.SecondaryColor);
+            vehToSpawn.VehEntity.NumberPlate = vehToSpawn.PlateText;
+            vehToSpawn.VehEntity.NumberPlateStyle = vehToSpawn.PlateStyle;
+            vehToSpawn.VehEntity.SetData("SERVER_VEHICLE_DATA", vehToSpawn);
+            ChatHandler.SendCommandSuccessText(client, "Vehicle spawned.");
+        }
+
+        private void DisplayVehicleStats(Client client, Vehicle pv)
+        {
+            var vehData = (VehicleModel)pv.GetData("SERVER_VEHICLE_DATA");
+
+            var serverData = vehData == null ? "That vehicle has no server-side data." : $"\tSqlID: {vehData.ID} | OwnerSQLID: {vehData.OwnerID}";
+            ChatHandler.SendClientMessage(client, serverData);
+            ChatHandler.SendClientMessage(client, $"EntityID: {pv.Handle} | {pv.DisplayName} | HP: {pv.Health} | Locked: {pv.Locked} | Plate: {pv.NumberPlate} | PlateStyle: {pv.NumberPlateStyle}");
+            ChatHandler.SendClientMessage(client, "------------------------");
         }
 
         private void DisplayVehicles(Client client, HashSet<VehicleModel> vehicles)
