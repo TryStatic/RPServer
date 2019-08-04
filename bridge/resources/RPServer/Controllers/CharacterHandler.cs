@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
+using System.Threading;
 using GTANetworkAPI;
 using Newtonsoft.Json;
 using RPServer.Controllers.Util;
@@ -283,18 +283,42 @@ namespace RPServer.Controllers
             var chData = client.GetActiveChar();
             if (chData == null) return;
 
-            ChatHandler.SendClientMessage(client, "[DEBUG]: Started Loading Character Data.");
             chData.ReadAllData().GetAwaiter().GetResult();
-            ChatHandler.SendClientMessage(client, "[DEBUG]: Finished Loading Character Data. Spawning you into the world...");
+            var _saveAccountDataTimer = new Timer(OnSaveAccountData, client, 0, 1000 * 60 * 5);
+            client.SetData("SAVE_CHAR_DATA_TIMER", _saveAccountDataTimer);
+        }
+
+        private static async void OnSaveAccountData(object state)
+        {
+            var client = state as Client;
+#if DEBUG
+            ChatHandler.SendClientMessage(client, "!{#FF0000}[DEBUG-SaveCharDataTimer]: !{#FFFFFF}Saving Character Data.");
+#endif
+            await client.GetActiveChar().SaveAllData();
         }
 
         private void OnCharacterDespawn(object source, EventArgs e)
         {
             var client = source as Client;
+            if(client == null) return;
 
+#if DEBUG
+            ChatHandler.SendClientMessage(client, "!{#FF0000}[DEBUG-OnCharDespawn]: !{#FFFFFF}Saving CharData.");
+#endif
             var ch = client.GetActiveChar();
             ch?.SaveAllData();
             client.ResetActiveChar();
+
+#if DEBUG
+            ChatHandler.SendClientMessage(client, "!{#FF0000}[DEBUG-OnCharDespawn]: !{#FFFFFF}Disposing character save timer.");
+            Console.WriteLine("Disposed");
+#endif
+            Timer timer = client.GetData("SAVE_CHAR_DATA_TIMER");
+            if (timer != null)
+            {
+                timer.Dispose();
+                client.ResetData("SAVE_CHAR_DATA_TIMER");
+            }
         }
 
         private static async void InitCharacterSelection(Client client)
