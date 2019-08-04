@@ -281,8 +281,8 @@ namespace RPServer.Controllers
             if (chData == null) return;
 
             chData.ReadAllData().GetAwaiter().GetResult();
-            var _saveAccountDataTimer = new Timer(OnSaveAccountData, client, 0, 1000 * 60 * 5);
-            client.SetData("SAVE_CHAR_DATA_TIMER", _saveAccountDataTimer);
+            var saveDataTimer = new Timer(OnSaveData, client, 1000 * 60 * 5, 1000 * 60 * 5);
+            client.SetData("SAVE_DATA_TIMER", saveDataTimer);
         }
 
         private void OnCharacterDespawn(object source, EventArgs e)
@@ -305,21 +305,22 @@ namespace RPServer.Controllers
 #if DEBUG
             ChatHandler.SendClientMessage(client, "!{#FF0000}[DEBUG-OnCharDespawn]: !{#FFFFFF}Disposing character save timer.");
 #endif
-            Timer timer = client.GetData("SAVE_CHAR_DATA_TIMER");
+            Timer timer = client.GetData("SAVE_DATA_TIMER");
             if (timer != null)
             {
                 timer.Dispose();
-                client.ResetData("SAVE_CHAR_DATA_TIMER");
+                client.ResetData("SAVE_DATA_TIMER");
             }
         }
 
-        private static async void OnSaveAccountData(object state)
+        private static async void OnSaveData(object state)
         {
             var client = state as Client;
 #if DEBUG
             ChatHandler.SendClientMessage(client, "!{#FF0000}[DEBUG-SaveCharDataTimer]: !{#FFFFFF}Saving Character Data.");
 #endif
             await client.GetActiveChar().SaveAllData();
+            await client.GetAccount().UpdateAsync();
         }
 
         private static async void InitCharacterSelection(Client client)
