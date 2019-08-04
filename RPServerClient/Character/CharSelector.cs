@@ -77,13 +77,13 @@ namespace RPServerClient.Character
         {
             _charList = null;
             Player.LocalPlayer.FreezePosition(false);
-            Events.CallLocal(Shared.Events.ServerToClient.Chat.SetChatDisplayStatus, true);
             RAGE.Game.Ui.DisplayHud(true);
             RAGE.Game.Ui.DisplayRadar(true);
             _disableControls = false;
             _camera.SetActive(false);
             _camera.Destroy();
             _camera = null;
+            RAGE.Chat.Show(true);
             CharacterSpawn?.Invoke(Player.LocalPlayer, EventArgs.Empty);
         }
 

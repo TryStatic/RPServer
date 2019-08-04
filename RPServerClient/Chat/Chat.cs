@@ -22,16 +22,8 @@ namespace RPServerClient.Chat
 
             RAGE.Events.OnPlayerChat += OnPlayerChat;
 
-            RAGE.Events.Add(Shared.Events.ServerToClient.Chat.SetChatDisplayStatus, OnSetChatDisplayStatus);
             RAGE.Events.Add(Shared.Events.ServerToClient.Chat.PushChatMessage, OnPushChatMessage);
             RAGE.Events.Add(Shared.Events.ServerToClient.Chat.PushChatMessageUnfiltered, OnPushChatMessageUnfiltered);
-        }
-
-        private void OnSetChatDisplayStatus(object[] args)
-        {
-            if (args[0] == null) return;
-            var state = (bool)args[0];
-            ChatBrowser.ExecuteJs(state ? "setEnabled(true);" : "setEnabled(false);");
         }
 
         private void OnPlayerChat(string text, Events.CancelEventArgs cancel)

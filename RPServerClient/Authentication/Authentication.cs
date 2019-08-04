@@ -201,11 +201,11 @@ namespace RPServerClient.Authentication
                 BrowserHandler.CreateBrowser("package://CEF/auth/login.html");
                 RAGE.Game.Graphics.TransitionToBlurred(200);
                 Player.LocalPlayer.FreezePosition(true);
-                Events.CallLocal(Shared.Events.ServerToClient.Chat.SetChatDisplayStatus, false);
                 RAGE.Game.Ui.DisplayHud(false);
                 RAGE.Game.Ui.DisplayRadar(false);
                 Camera = new CamHandler();
                 Camera.SetPos(LoginCamPos, LoginCamPointAt, true);
+                RAGE.Chat.Show(false);
             }
             else
             {

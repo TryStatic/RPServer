@@ -15,13 +15,5 @@ namespace RPServerClient.Client
         public static bool HasActiveChar => Player.LocalPlayer.GetSharedData(Keys.ActiveCharID) != null && (int) Player.LocalPlayer.GetSharedData(Keys.ActiveCharID) > 0;
         public static int GetActiveCharID => Player.LocalPlayer.GetSharedData(Keys.ActiveCharID) == null ? -1 : (int) Player.LocalPlayer.GetSharedData(Keys.ActiveCharID);
 
-        public static bool IsAltTabbed
-        {
-            get
-            {
-                if (RAGE.Game.Ui.IsPauseMenuActive()) return true;
-                return false;
-            }
-        }
     }
 }
