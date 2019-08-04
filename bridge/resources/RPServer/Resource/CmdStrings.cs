@@ -11,6 +11,7 @@ namespace RPServer.Resource
         // Character
         public const string CMD_ChangeChar = "changechar";
         public const string CMD_Alias = "alias";
+        public const string CMD_Stats = "stats";
 
         // Server
         public const string CMD_Shutdown = "shutdown";

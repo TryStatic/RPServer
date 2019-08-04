@@ -30,6 +30,15 @@ namespace RPServer.Controllers
             CharacterHandler.CharacterDespawn += OnCharacterDespawn;
         }
 
+        [Command(CmdStrings.CMD_Stats)]
+        public void CMD_Stats(Client client)
+        {
+            var accdata = client.GetAccount();
+            var chdata = client.GetActiveChar();
+            ChatHandler.SendClientMessage(client, $"Username: {accdata.Username} | ActiveChar: {chdata.CharacterName} | Email: {accdata.EmailAddress} | AdminLevel: {accdata.AdminLevel} | 2FAbyEmail: {accdata.HasEnabledTwoStepByEmail} | 2FAbyGA: {accdata.Is2FAbyGAEnabled()}");
+            ChatHandler.SendClientMessage(client, $"Creation: {accdata.CreationDate:MM/dd/yyyy} | LastLogin: {accdata.LastLoginDate:MM/dd/yyyy} | Nickname: {accdata.ForumName} | ForumName: {accdata.ForumName} | LastIP: {accdata.LastIP}");
+        }
+
         [Command(CmdStrings.CMD_ChangeChar)]
         public void CMD_ChangeChar(Client client)
         { // Temporary (?)
