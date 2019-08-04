@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using GTANetworkAPI;
@@ -9,6 +10,7 @@ using RPServer.InternalAPI;
 using RPServer.InternalAPI.Extensions;
 using RPServer.Models;
 using RPServer.Resource;
+using RPServer.Util;
 using Shared.Data;
 using Events = Shared.Events;
 using static RPServer.Controllers.Util.DataValidator;
@@ -35,8 +37,14 @@ namespace RPServer.Controllers
         {
             var accdata = client.GetAccount();
             var chdata = client.GetActiveChar();
-            ChatHandler.SendClientMessage(client, $"Username: {accdata.Username} | ActiveChar: {chdata.CharacterName} | Email: {accdata.EmailAddress} | AdminLevel: {accdata.AdminLevel} | 2FAbyEmail: {accdata.HasEnabledTwoStepByEmail} | 2FAbyGA: {accdata.Is2FAbyGAEnabled()}");
-            ChatHandler.SendClientMessage(client, $"Creation: {accdata.CreationDate:MM/dd/yyyy} | LastLogin: {accdata.LastLoginDate:MM/dd/yyyy} | Nickname: {accdata.ForumName} | ForumName: {accdata.ForumName} | LastIP: {accdata.LastIP}");
+            var timeplayed = TimeSpan.FromMinutes(chdata.MinutesPlayed);
+            ChatHandler.SendClientMessage(client, $"\t<!S>---[{DateTime.Now:D}]---");
+            ChatHandler.SendClientMessage(client, $"\t<!S>Username: {accdata.Username} | ActiveChar: {chdata.CharacterName} | Email: {accdata.EmailAddress} | AdminLevel: {accdata.AdminLevel}");
+            ChatHandler.SendClientMessage(client, $"\t<!S>2FAbyEmail: { accdata.HasEnabledTwoStepByEmail} | 2FAbyGoogleAuth: { accdata.Is2FAbyGAEnabled()} | LastIP: {accdata.LastIP}");
+            ChatHandler.SendClientMessage(client, $"\t<!S>Nickname: {accdata.ForumName} | ForumName: {accdata.ForumName} | TimePlayed: {timeplayed.Hours}h:{timeplayed.Minutes}m");
+            ChatHandler.SendClientMessage(client, $"\t<!S>Creation: {accdata.CreationDate:MM/dd/yyyy} | LastLogin: {accdata.LastLoginDate:MM/dd/yyyy}");
+            ChatHandler.SendClientMessage(client, $"\t<!S>-----------------------------------------------------------------------");
+
         }
 
         [Command(CmdStrings.CMD_ChangeChar)]
@@ -290,8 +298,10 @@ namespace RPServer.Controllers
             if (chData == null) return;
 
             chData.ReadAllData().GetAwaiter().GetResult();
-            var saveDataTimer = new Timer(OnSaveData, client, 1000 * 60 * 5, 1000 * 60 * 5);
+            var saveDataTimer = new Timer(OnMinuteSpent, client, 1000 * 60 * 5, 1000 * 60 * 5); // 5 minutes
+            var MinutesPlayedTimer = new Timer(OnSaveData, client, 1000 * 60, 1000 * 60); // 1 minute
             client.SetData("SAVE_DATA_TIMER", saveDataTimer);
+            client.SetData("MINUTES_PLAYED_TIMER", MinutesPlayedTimer);
         }
 
         private void OnCharacterDespawn(object source, EventArgs e)
@@ -304,30 +314,60 @@ namespace RPServer.Controllers
 
         public static void DespawnCharacter(Client client)
         {
-#if DEBUG
-            ChatHandler.SendClientMessage(client, "!{#FF0000}[DEBUG-OnCharDespawn]: !{#FFFFFF}Saving CharData.");
-#endif
             var ch = client.GetActiveChar();
             ch?.SaveAllData();
             client.ResetActiveChar();
 
 #if DEBUG
-            ChatHandler.SendClientMessage(client, "!{#FF0000}[DEBUG-OnCharDespawn]: !{#FFFFFF}Disposing character save timer.");
+            ChatHandler.SendClientMessage(client, "!{#FF0000}[DEBUG-OnCharDespawn]: !{#FFFFFF}Disposing character timers.");
 #endif
-            Timer timer = client.GetData("SAVE_DATA_TIMER");
-            if (timer != null)
+            Timer saveDataTimer = client.GetData("SAVE_DATA_TIMER");
+            Timer minutesPlayedTimer = client.GetData("MINUTES_PLAYED_TIMER");
+
+            if (saveDataTimer != null)
             {
-                timer.Dispose();
+                saveDataTimer.Dispose();
                 client.ResetData("SAVE_DATA_TIMER");
             }
+
+            if (minutesPlayedTimer != null)
+            {
+                minutesPlayedTimer.Dispose();
+                client.ResetData("MINUTES_PLAYED_TIMER");
+            }
+
+        }
+
+        private static void OnMinuteSpent(object state)
+        {
+            var client = state as Client;
+            if (client == null) return;
+
+            if (!client.IsLoggedIn() || !client.HasActiveChar())
+            {
+                Logger.GetInstance().ServerError("OnMinuteSpent called w/o an active char.");
+                return;
+            }
+            var chData = client.GetActiveChar();
+
+            chData.MinutesPlayed++;
+
+            if (chData.MinutesPlayed % 60 == 0)
+            {
+                ChatHandler.SendClientMessage(client, "Payday!");
+            }
+
         }
 
         private static async void OnSaveData(object state)
         {
             var client = state as Client;
-#if DEBUG
-            ChatHandler.SendClientMessage(client, "!{#FF0000}[DEBUG-SaveCharDataTimer]: !{#FFFFFF}Saving Character Data.");
-#endif
+
+            if (!client.IsLoggedIn() || !client.HasActiveChar())
+            {
+                Logger.GetInstance().ServerError("OnSaveData called w/o an active char.");
+                return;
+            }
             await client.GetActiveChar().SaveAllData();
             await client.GetAccount().UpdateAsync();
         }

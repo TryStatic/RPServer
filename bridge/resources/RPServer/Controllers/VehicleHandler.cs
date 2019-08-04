@@ -243,7 +243,7 @@ namespace RPServer.Controllers
 
             var serverData = vehData == null ? "That vehicle has no server-side data." : $"\tSqlID: {vehData.ID} | OwnerSQLID: {vehData.OwnerID}";
             ChatHandler.SendClientMessage(client, serverData);
-            ChatHandler.SendClientMessage(client, $"EntityID: {pv.Handle} | {pv.DisplayName} | HP: {pv.Health} | Locked: {pv.Locked} | Plate: {pv.NumberPlate} | PlateStyle: {pv.NumberPlateStyle}");
+            ChatHandler.SendClientMessage(client, $"VehEntityID: {pv.Handle} | {pv.DisplayName} | HP: {pv.Health} | Locked: {pv.Locked} | Plate: {pv.NumberPlate} | PlateStyle: {pv.NumberPlateStyle}");
             ChatHandler.SendClientMessage(client, "------------------------");
         }
 

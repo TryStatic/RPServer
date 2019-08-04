@@ -11,6 +11,7 @@ namespace RPServer.Models
     {
         public int CharOwnerID { set; get; }
         public string CharacterName { set; get; }
+        public int MinutesPlayed { set; get; }
 
         public AppearanceModel Appearance;
         public HashSet<Alias> Aliases;
