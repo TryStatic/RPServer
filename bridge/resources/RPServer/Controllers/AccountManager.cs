@@ -159,7 +159,7 @@ namespace RPServer.Controllers
                 return;
             }
 
-            await LoginAccount(fetchedAcc, client);
+            await LoginAccount(client, fetchedAcc);
 
             if (!fetchedAcc.HasVerifiedEmail())
             {
@@ -424,6 +424,7 @@ namespace RPServer.Controllers
                 if (ch != null)
                 {
                     await ch.SaveAllData();
+                    CharacterHandler.DespawnCharacter(client);
                     client.ResetActiveChar();
                 }
                 client.Logout();
