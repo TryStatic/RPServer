@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using RAGE.Elements;
 using RPServerClient.Character.Util;
+using RPServerClient.Client;
 using Events = RAGE.Events;
 
 namespace RPServerClient.Character
@@ -57,6 +58,8 @@ namespace RPServerClient.Character
 
         private void Tick(List<Events.TickNametagData> nametags)
         {
+            if (!Globals.IsAccountLoggedIn || !Globals.HasActiveChar) return;
+
             foreach (var alias in ClientAlises)
             {
                 if(Player.LocalPlayer.Position.DistanceToSquared(alias.Player.Position) < AliasDisplayDistance) continue;
