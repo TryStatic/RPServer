@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO.Pipes;
@@ -20,7 +20,6 @@ namespace RPServerClient.Chat
         private static readonly HashSet<Player> Listeners = new HashSet<Player>();
 
         private static long _latestProcess;
-        private static bool _justPressedN;
 
         public Voice()
         {
@@ -41,21 +40,13 @@ namespace RPServerClient.Chat
                 UIText.Draw("Chatting", new Point((int)(0.75f * ScreenRes.UIStandardResX), (int)(0.95f * ScreenRes.UIStandardResY)), 0.4f, Color.Green, Font.Monospace, true);
             }
 
-            if (RAGE.Input.IsDown((int) Shared.Enums.KeyCodes.VK_N))
+            if (Input.IsDown((int) Shared.Enums.KeyCodes.VK_N))
             {
-                if (!_justPressedN)
-                {
-                    RAGE.Voice.Muted = false;
-                    _justPressedN = true;
-                }
+                if (RAGE.Voice.Muted) RAGE.Voice.Muted = false;
             }
             else
             {
-                if (_justPressedN)
-                {
-                    RAGE.Voice.Muted = true;
-                    _justPressedN = false;
-                }
+                if (!RAGE.Voice.Muted) RAGE.Voice.Muted = true;
             }
 
             long currentTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
