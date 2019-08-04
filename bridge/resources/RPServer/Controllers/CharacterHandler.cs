@@ -25,7 +25,7 @@ namespace RPServer.Controllers
 
         public CharacterHandler()
         {
-            AuthenticationHandler.PlayerLogin += OnPlayerLogin;
+            AccountManager.PlayerLogin += OnPlayerLogin;
             CharacterHandler.CharacterSpawn += OnCharacterSpawn;
             CharacterHandler.CharacterDespawn += OnCharacterDespawn;
         }

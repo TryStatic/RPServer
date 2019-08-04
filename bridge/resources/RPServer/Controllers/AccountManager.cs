@@ -13,13 +13,13 @@ namespace RPServer.Controllers
 {
     public delegate void OnPlayerLoginDelegate(object source, EventArgs e);
 
-    internal class AuthenticationHandler : Script
+    internal class AccountManager : Script
     {
         public static event OnPlayerLoginDelegate PlayerLogin;
 
-        public AuthenticationHandler()
+        public AccountManager()
         {
-            AuthenticationHandler.PlayerLogin += OnPlayerLogin;
+            AccountManager.PlayerLogin += OnPlayerLogin;
         }
 
         [Command(CmdStrings.CMD_ToggleTwoFactorEmail)]
