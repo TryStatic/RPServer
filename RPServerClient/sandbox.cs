@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Threading;
+using System.Threading.Tasks;
 using RAGE;
 using RAGE.NUI;
 using RAGE.Ui;
@@ -32,6 +34,7 @@ namespace RPServerClient
             }
 
             Events.Tick += Tick;
+            //Events.Tick += ProcessWaypointTeleport;
 
             // FlyScript
             Events.Add("ToggleFlyMode", OnToggleFlyMode);
@@ -42,6 +45,7 @@ namespace RPServerClient
             Events.Add("testclothes", TestClothes);
             Events.Add("test", test);
             Events.Add("NotifyClient", NotifyClient);
+            //Events.Add("gotowaypoint", GotoWaypoint);
 
 
             // Boost
@@ -106,6 +110,50 @@ namespace RPServerClient
 
         }
 
+        private void GotoWaypoint(object[] args)
+        {
+            var waypointCoords = Helper.GetWaypointCoords();
+            if (waypointCoords == null)
+            {
+                RAGE.Chat.Output("No waypoint set");
+                return;
+            }
+
+            var oldPos = Player.LocalPlayer.Position;
+            var groundZ = 0.0f;
+            var worked = RAGE.Game.Misc.GetGroundZFor3dCoord(waypointCoords.X, waypointCoords.Y, 900.0f, ref groundZ, false);
+            if (worked)
+            {
+                Player.LocalPlayer.Position = new Vector3(waypointCoords.X, waypointCoords.Y, groundZ);
+                RAGE.Chat.Output("Teleported.");
+            }
+            else
+            {
+                Player.LocalPlayer.Position = waypointCoords;
+                Player.LocalPlayer.FreezePosition(true);
+
+                Task.Delay(1500).ContinueWith(task =>
+                {
+
+                    for (var i = 1; i <= 60; i++)
+                    {
+                        RAGE.Chat.Output(i.ToString());
+                        worked = RAGE.Game.Misc.GetGroundZFor3dCoord(waypointCoords.X, waypointCoords.Y, 25 * i, ref groundZ, false);
+                        if (!worked) continue;
+                        RAGE.Chat.Output("Found groundZ=" + groundZ);
+                        Vector3 newPos = new Vector3(waypointCoords.X, waypointCoords.Y, groundZ + 1);
+                        Player.LocalPlayer.Position = newPos;
+                        break;
+                    }
+                    if (!worked)
+                    {
+                        Player.LocalPlayer.Position = oldPos;
+                    }
+                    Player.LocalPlayer.FreezePosition(false);
+                });
+            }
+        }
+
         private void NotifyClient(object[] args)
         {
             if(args == null || args.Length < 1) return;
@@ -120,7 +168,7 @@ namespace RPServerClient
 
         private void test(object[] args)
         {
-            Events.CallRemote(Shared.Events.ClientToServer.Character.RequestAliasInfo, Player.LocalPlayer.RemoteId);
+
         }
 
         private void TestClothes(object[] args)
@@ -137,12 +185,6 @@ namespace RPServerClient
 
         private void Tick(List<Events.TickNametagData> nametags)
         {
-
-            KeyManager.KeyBind(KeyCodes.VK_CONTROL ,KeyCodes.VK_G, () =>
-            {
-                RAGE.Chat.Output($"{ScreenRes.ClientResX} {ScreenRes.ClientResY}");
-                RAGE.Chat.Output(Cursor.Position.X / ScreenRes.ClientResX + " " + Cursor.Position.Y / ScreenRes.ClientResY);
-            });
             _clothespool?.ProcessMenus();
         }
 
