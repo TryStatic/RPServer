@@ -404,7 +404,7 @@ namespace RPServer.Controllers
             player.TriggerEvent(Events.ServerToClient.Authentication.ShowQRCodeEnabled);
         }
 
-        private static async Task LoginAccount(AccountModel fetchedAcc, Client client)
+        private static async Task LoginAccount(Client client, AccountModel fetchedAcc)
         {
             fetchedAcc.LastHWID = client.Serial;
             fetchedAcc.LastIP = client.Address;
@@ -450,7 +450,7 @@ namespace RPServer.Controllers
             client.SendChatMessage(AccountStrings.SuccessLogin);
             if (client.GetAccount().IsAdmin())
             {
-                
+                ChatHandler.SendClientMessage(client, $"{Shared.Data.Colors.COLOR_RED}<!> {Shared.Data.Colors.COLOR_WHITE}You have logged in as a level {client.GetAccount().AdminLevel} admin.");
             }
             client.SendChatMessage("SANDBOX TEST COMMANDS: /sandboxcmds");
         }
