@@ -183,16 +183,8 @@ namespace RPServerClient
             RAGE.Chat.Output(vect.ToString());
         }
 
-        private bool toggle = false;
         private void Tick(List<Events.TickNametagData> nametags)
         {
-            KeyManager.KeyBind(KeyCodes.VK_M, () =>
-            {
-                RAGE.Chat.Show(toggle);
-
-                toggle = !toggle;
-            });
-
             _clothespool?.ProcessMenus();
         }
 
