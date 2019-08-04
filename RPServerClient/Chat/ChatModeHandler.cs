@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using RAGE;
 using RPServerClient.Character;
 using RPServerClient.Chat.Util;
+using RPServerClient.Client;
 using RPServerClient.Util;
 
 namespace RPServerClient.Chat
@@ -32,6 +33,8 @@ namespace RPServerClient.Chat
 
         private void Tick(List<Events.TickNametagData> nametags)
         {
+            if (!Globals.IsAccountLoggedIn || !Globals.HasActiveChar || Chat.IsChatInputActive) return;
+
             KeyManager.KeyBind(Shared.Enums.KeyCodes.VK_CONTROL, Shared.Enums.KeyCodes.VK_B, () =>
             {
                     var chatmode = RAGE.Elements.Player.LocalPlayer.GetData<ChatMode>(LocalDataKeys.CurrentChatMode);
