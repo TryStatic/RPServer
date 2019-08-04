@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO.Pipes;
@@ -32,7 +32,13 @@ namespace RPServerClient.Chat
         
         private void Tick(List<Events.TickNametagData> nametags)
         {
-            if(!Globals.IsAccountLoggedIn || !Globals.HasActiveChar) return;
+            if (!Globals.IsAccountLoggedIn || !Globals.HasActiveChar) return;
+
+            if (Chat.IsChatInputActive)
+            {
+                if (!RAGE.Voice.Muted) RAGE.Voice.Muted = true;
+                return;
+            }
 
             if (RAGE.Input.IsDown((int)Shared.Enums.KeyCodes.VK_N))
             {
