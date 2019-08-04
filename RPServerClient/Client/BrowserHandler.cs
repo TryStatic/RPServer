@@ -101,6 +101,8 @@ namespace RPServerClient.Client
 
         private void Tick(List<Events.TickNametagData> nametags)
         {
+            if(Chat.Chat.IsChatInputActive) return;
+
             KeyManager.KeyBind(Shared.Enums.KeyCodes.VK_F2, () => Cursor.Visible = !Cursor.Visible);
         }
     }
