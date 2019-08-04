@@ -4,6 +4,7 @@ using RAGE;
 using RAGE.Ui;
 using RPServerClient.Character;
 using RPServerClient.Chat.Util;
+using RPServerClient.Client;
 using RPServerClient.Util;
 using Player = RAGE.Elements.Player;
 
@@ -12,6 +13,7 @@ namespace RPServerClient.Chat
     internal class Chat : RAGE.Events.Script
     {
         public static HtmlWindow ChatBrowser;
+        public static bool IsChatInputActive;
 
         public Chat()
         {
@@ -24,6 +26,15 @@ namespace RPServerClient.Chat
 
             RAGE.Events.Add(Shared.Events.ServerToClient.Chat.PushChatMessage, OnPushChatMessage);
             RAGE.Events.Add(Shared.Events.ServerToClient.Chat.PushChatMessageUnfiltered, OnPushChatMessageUnfiltered);
+
+            RAGE.Events.Add("changeChatState", OnChangeChatState); // Triggered directly by chat.js
+        }
+
+        private void OnChangeChatState(object[] args)
+        {
+            if(args == null || args.Length < 1) return;
+            var state = (bool) args[0];
+            IsChatInputActive = state;
         }
 
         private void OnPlayerChat(string text, Events.CancelEventArgs cancel)
