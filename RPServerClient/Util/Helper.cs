@@ -28,6 +28,12 @@ namespace RPServerClient.Util
             return new Vector3(q.X, q.Y, q.Z);
         }
 
+        internal static Vector3 GetWaypointCoords()
+        {
+            var waypointBlipID = RAGE.Game.Ui.GetFirstBlipInfoId(8);
+            return waypointBlipID != 0 ? RAGE.Game.Ui.GetBlipInfoIdCoord(waypointBlipID) : null;
+        }
+
         public static T Next<T>(this T src) where T : struct
         {
             if (!typeof(T).IsEnum) throw new ArgumentException($"Argument {typeof(T).FullName} is not an Enum");
