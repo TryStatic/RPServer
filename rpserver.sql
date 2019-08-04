@@ -11,7 +11,7 @@
  Target Server Version : 80016
  File Encoding         : 65001
 
- Date: 02/08/2019 19:46:31
+ Date: 04/08/2019 21:59:29
 */
 
 SET NAMES utf8mb4;
@@ -163,6 +163,7 @@ CREATE TABLE `characters`  (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `CharOwnerID` int(11) NOT NULL,
   `CharacterName` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `MinutesPlayed` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`ID`) USING BTREE,
   UNIQUE INDEX `name_UNIQUE`(`CharacterName`) USING BTREE,
   INDEX `fkey_idx`(`CharOwnerID`) USING BTREE,
@@ -191,15 +192,15 @@ DROP TABLE IF EXISTS `vehicles`;
 CREATE TABLE `vehicles`  (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `OwnerID` int(11) NOT NULL,
-  `Model` int(11) NOT NULL,
-  `PrimaryColor` int(11) NOT NULL,
-  `SecondaryColor` int(11) NOT NULL,
+  `Model` int(11) UNSIGNED NOT NULL,
+  `PrimaryColor` int(11) NULL DEFAULT NULL,
+  `SecondaryColor` int(11) NULL DEFAULT NULL,
   `PlateText` varchar(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL DEFAULT 'STATIQUE',
-  `PlateStyle` tinyint(4) NOT NULL,
+  `PlateStyle` tinyint(4) NULL DEFAULT NULL,
   PRIMARY KEY (`ID`) USING BTREE,
   INDEX `fkey_vehicle_to_charid_idx`(`OwnerID`) USING BTREE,
   CONSTRAINT `fkey_vehicle_to_charid` FOREIGN KEY (`OwnerID`) REFERENCES `characters` (`ID`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 25 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 52 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for world
