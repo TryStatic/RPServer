@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using GTANetworkAPI;
 using RPServer.InternalAPI.Extensions;
+using RPServer.Resource;
 using RPServer.Util;
 using RPServerClient.Chat.Util;
 
@@ -13,6 +14,65 @@ namespace RPServer.Controllers
         private const float NormalChatMaxDistance = 10f;
         private const float ShoutChatMaxDistance = 20f;
 
+        [Command(CmdStrings.CMD_B, GreedyArg = true)]
+        public void CMD_B(Client client, string message = "")
+        {
+            if (string.IsNullOrEmpty(message))
+            {
+                SendCommandUsageText(client, "/b [Local OOC]");
+                return;
+            }
+            message = EscapeHTML(message);
+            message = RemoveColors(message);
+
+            foreach (var p in NAPI.Pools.GetAllPlayers())
+            {
+                if (client.Position.DistanceToSquared(p.Position) > NormalChatMaxDistance) continue;
+
+                var color = GetLocalChatMessageColor(client, p, NormalChatMaxDistance);
+                NAPI.ClientEvent.TriggerClientEvent(p, Shared.Events.ServerToClient.Chat.PushChatMessage, $": (( {message} ))", client.Value, color);
+            }
+        }
+
+        [Command(CmdStrings.CMD_Me, GreedyArg = true)]
+        public void CMD_Me(Client client, string message = "")
+        {
+            if (string.IsNullOrEmpty(message))
+            {
+                SendCommandUsageText(client, "/me [action]");
+                return;
+            }
+            message = EscapeHTML(message);
+            message = RemoveColors(message);
+            if (message[message.Length - 1] != '.') message += ".";
+
+            foreach (var p in NAPI.Pools.GetAllPlayers())
+            {
+                if (client.Position.DistanceToSquared(p.Position) > NormalChatMaxDistance) continue;
+
+                NAPI.ClientEvent.TriggerClientEvent(p, Shared.Events.ServerToClient.Chat.PushActionMessage, message, client.Value, Shared.Data.Colors.COLOR_PURPLE);
+            }
+        }
+
+        [Command(CmdStrings.CMD_Do, GreedyArg = true)]
+        public void CMD_Do(Client client, string message = "")
+        {
+            if (string.IsNullOrEmpty(message))
+            {
+                SendCommandUsageText(client, "/do [description]");
+                return;
+            }
+            message = EscapeHTML(message);
+            message = RemoveColors(message);
+            if (message[message.Length - 1] != '.') message += ".";
+
+            foreach (var p in NAPI.Pools.GetAllPlayers())
+            {
+                if (client.Position.DistanceToSquared(p.Position) > NormalChatMaxDistance) continue;
+
+                NAPI.ClientEvent.TriggerClientEvent(p, Shared.Events.ServerToClient.Chat.PushDescriptionMessage, message, client.Value, Shared.Data.Colors.COLOR_PURPLE);
+            }
+        }
 
         [RemoteEvent(Shared.Events.ClientToServer.Chat.SubmitChatMessage)]
         public void OnSubmitChatMessage(Client client, string playerText, int chatModeAsInt)
@@ -35,7 +95,7 @@ namespace RPServer.Controllers
                         if (playerText[playerText.Length - 1] != '.') playerText += ".";
 
                         textColor = GetLocalChatMessageColor(client, p, NormalChatMaxDistance);
-                        NAPI.ClientEvent.TriggerClientEvent(p, Shared.Events.ServerToClient.Chat.PushChatMessage, $"says: {playerText}", client.Value, textColor);
+                        NAPI.ClientEvent.TriggerClientEvent(p, Shared.Events.ServerToClient.Chat.PushChatMessage, $" says: {playerText}", client.Value, textColor);
                         break;
                     case ChatMode.Shout:
                         if (client.Position.DistanceToSquared(p.Position) > ShoutChatMaxDistance) continue;
@@ -44,7 +104,7 @@ namespace RPServer.Controllers
                         if (playerText[playerText.Length - 1] != '!') playerText += "!";
 
                         textColor = GetLocalChatMessageColor(client, p, ShoutChatMaxDistance);
-                        NAPI.ClientEvent.TriggerClientEvent(p, Shared.Events.ServerToClient.Chat.PushChatMessage, $"shouts: {playerText}", client.Value, textColor);
+                        NAPI.ClientEvent.TriggerClientEvent(p, Shared.Events.ServerToClient.Chat.PushChatMessage, $" shouts: {playerText}", client.Value, textColor);
                         break;
                     default:
                         NAPI.Util.ConsoleOutput("Error OnSubmitChatMessage while switching though chatmodes.");

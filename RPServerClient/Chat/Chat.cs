@@ -25,6 +25,8 @@ namespace RPServerClient.Chat
             RAGE.Events.OnPlayerChat += OnPlayerChat;
 
             RAGE.Events.Add(Shared.Events.ServerToClient.Chat.PushChatMessage, OnPushChatMessage);
+            RAGE.Events.Add(Shared.Events.ServerToClient.Chat.PushActionMessage, OnPushActionMessage);
+            RAGE.Events.Add(Shared.Events.ServerToClient.Chat.PushDescriptionMessage, OnPushDescriptionMessage);
             RAGE.Events.Add(Shared.Events.ServerToClient.Chat.PushChatMessageUnfiltered, OnPushChatMessageUnfiltered);
 
             RAGE.Events.Add("changeChatState", OnChangeChatState); // Triggered directly by chat.js
@@ -56,11 +58,42 @@ namespace RPServerClient.Chat
             var color = args[2].ToString(); // The color of the message
 
             var senderName = GetSenderName(senderID); // The sender name for THIS client
-            var finalMessage = $"{color}{senderName} {message}";
+            var finalMessage = $"{color}{senderName}{message}";
 
             finalMessage = ParseColors(finalMessage);
             PushToChatBox(finalMessage);
         }
+
+        private void OnPushActionMessage(object[] args) // (message, senderID, colorString)
+        {
+            if (args == null || args.Length < 3) return;
+
+            var message = args[0].ToString(); // The actual message (colors removed/html escaped)
+            var senderID = int.Parse(args[1].ToString()); // The ID of the sender
+            var color = args[2].ToString(); // The color of the message
+
+            var senderName = GetSenderName(senderID); // The sender name for THIS client
+            var finalMessage = $"{color}* {senderName} {message}";
+
+            finalMessage = ParseColors(finalMessage);
+            PushToChatBox(finalMessage);
+        }
+
+        private void OnPushDescriptionMessage(object[] args) // (message, senderID, colorString)
+        {
+            if (args == null || args.Length < 3) return;
+
+            var message = args[0].ToString(); // The actual message (colors removed/html escaped)
+            var senderID = int.Parse(args[1].ToString()); // The ID of the sender
+            var color = args[2].ToString(); // The color of the message
+
+            var senderName = GetSenderName(senderID); // The sender name for THIS client
+            var finalMessage = $"{color}* {message} (( {senderName} ))";
+
+            finalMessage = ParseColors(finalMessage);
+            PushToChatBox(finalMessage);
+        }
+
 
         private void OnPushChatMessageUnfiltered(object[] args) // (message)
         {

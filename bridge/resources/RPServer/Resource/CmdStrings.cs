@@ -24,6 +24,10 @@ namespace RPServer.Resource
         public const string SUBCMD_Vehicle_Delete = "delete";
         public const string CMD_Vehicle_HelpText = "/v(ehicle) [create/list/stats/spawn/despawn/delete]";
 
+        // Chat
+        public const string CMD_B = "b";
+        public const string CMD_Me = "me";
+        public const string CMD_Do = "do";
 
         // Server
         public const string CMD_Shutdown = "shutdown";

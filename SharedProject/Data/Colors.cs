@@ -1,4 +1,5 @@
-﻿namespace Shared.Data
+﻿// ReSharper disable InconsistentNaming
+namespace Shared.Data
 {
     public class Colors
     {
@@ -12,5 +13,6 @@
         public const string COLOR_YELLOW = "!{#FFFF00}";
         public const string COLOR_GREEN = "!{#00FF00}";
         public const string COLOR_RED = "!{#FF0000}";
+        public const string COLOR_PURPLE = "!{#C2A2DA}";
     }
 }
