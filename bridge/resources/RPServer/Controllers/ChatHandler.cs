@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using GTANetworkAPI;
@@ -11,6 +11,7 @@ namespace RPServer.Controllers
 {
     internal class ChatHandler : Script
     {
+        private const float LowChatMaxDistance = 5f;
         private const float NormalChatMaxDistance = 10f;
         private const float ShoutChatMaxDistance = 20f;
 
@@ -88,6 +89,8 @@ namespace RPServer.Controllers
                 string textColor;
                 switch (chatMode)
                 {
+                    case ChatMode.Low:
+                        break;
                     case ChatMode.Normal:
                         if (client.Position.DistanceToSquared(p.Position) > NormalChatMaxDistance) continue;
 

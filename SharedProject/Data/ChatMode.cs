@@ -2,6 +2,7 @@
 {
     internal enum ChatMode
     {
+        Low,
         Normal,
         Shout
     }
