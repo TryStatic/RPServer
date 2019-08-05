@@ -90,6 +90,13 @@ namespace RPServer.Controllers
                 switch (chatMode)
                 {
                     case ChatMode.Low:
+                        if (client.Position.DistanceToSquared(p.Position) > LowChatMaxDistance) continue;
+
+                        // Add a full stop at the end of the message if needed
+                        if (playerText[playerText.Length - 1] != '.') playerText += ".";
+
+                        textColor = GetLocalChatMessageColor(client, p, LowChatMaxDistance);
+                        NAPI.ClientEvent.TriggerClientEvent(p, Shared.Events.ServerToClient.Chat.PushChatMessage, $" says: {playerText}", client.Value, textColor + "[Low] ");
                         break;
                     case ChatMode.Normal:
                         if (client.Position.DistanceToSquared(p.Position) > NormalChatMaxDistance) continue;

@@ -55,10 +55,10 @@ namespace RPServerClient.Chat
 
             var message = args[0].ToString(); // The actual message (colors removed/html escaped)
             var senderID = int.Parse(args[1].ToString()); // The ID of the sender
-            var color = args[2].ToString(); // The color of the message
+            var prefix = args[2].ToString(); // The color of the message
 
             var senderName = GetSenderName(senderID); // The sender name for THIS client
-            var finalMessage = $"{color}{senderName}{message}";
+            var finalMessage = $"{prefix}{senderName}{message}";
 
             finalMessage = ParseColors(finalMessage);
             PushToChatBox(finalMessage);
@@ -70,10 +70,10 @@ namespace RPServerClient.Chat
 
             var message = args[0].ToString(); // The actual message (colors removed/html escaped)
             var senderID = int.Parse(args[1].ToString()); // The ID of the sender
-            var color = args[2].ToString(); // The color of the message
+            var prefix = args[2].ToString(); // The color of the message
 
             var senderName = GetSenderName(senderID); // The sender name for THIS client
-            var finalMessage = $"{color}* {senderName} {message}";
+            var finalMessage = $"{prefix}* {senderName} {message}";
 
             finalMessage = ParseColors(finalMessage);
             PushToChatBox(finalMessage);
@@ -85,10 +85,10 @@ namespace RPServerClient.Chat
 
             var message = args[0].ToString(); // The actual message (colors removed/html escaped)
             var senderID = int.Parse(args[1].ToString()); // The ID of the sender
-            var color = args[2].ToString(); // The color of the message
+            var prefix = args[2].ToString(); // The color of the message
 
             var senderName = GetSenderName(senderID); // The sender name for THIS client
-            var finalMessage = $"{color}* {message} (( {senderName} ))";
+            var finalMessage = $"{prefix}* {message} (( {senderName} ))";
 
             finalMessage = ParseColors(finalMessage);
             PushToChatBox(finalMessage);
