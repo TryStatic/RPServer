@@ -91,7 +91,6 @@ namespace RPServer.Controllers
             if (!otherClient.HasActiveChar())
             {
                 ChatHandler.SendCommandErrorText(client, "That player is not spawned.");
-                client.SendChatMessage("That player is not spawned.");
                 return;
             }
 
@@ -329,8 +328,8 @@ namespace RPServer.Controllers
 #if DEBUG
             ChatHandler.SendClientMessage(client, "!{#FF0000}[DEBUG-OnCharDespawn]: !{#FFFFFF}Disposing character timers.");
 #endif
-            Timer saveDataTimer = client.GetData("SAVE_DATA_TIMER");
-            Timer minutesPlayedTimer = client.GetData("MINUTES_PLAYED_TIMER");
+            Timer saveDataTimer = client.GetData(DataKey.TimerPlayerSaveData);
+            Timer minutesPlayedTimer = client.GetData(DataKey.TimerPlayerMinuteSpent);
 
             if (saveDataTimer != null)
             {
