@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using GTANetworkMethods;
 using RPServer.Controllers.Util;
 using RPServer.InternalAPI.Extensions;
+using RPServer.Resource;
 using RPServer.Util;
 using static Shared.Data.Colors;
 using Task = System.Threading.Tasks.Task;
@@ -23,37 +24,20 @@ namespace RPServer.Controllers
             CharacterHandler.CharacterSpawn += OnCharacterSpawn;
         }
 
-        private void OnCharacterSpawn(object source, EventArgs e)
-        {
-            var client = source as Client;
-
-            foreach (var veh in NAPI.Pools.GetAllVehicles())
-            {
-                if(!veh.HasData("SERVER_VEHICLE_DATA")) continue;
-                var spawnedVehData = (VehicleModel)veh.GetData("SERVER_VEHICLE_DATA");
-                foreach (var vehData in client.GetActiveChar().Vehicles)
-                {
-                    if (vehData != spawnedVehData) continue;
-                    vehData.VehEntity = veh;
-                    break;
-                }
-            }
-        }
-
-        [Command("vehicle", Alias = "v", GreedyArg = true)]
+        [Command(CmdStrings.CMD_Vehicle, Alias = CmdStrings.CMD_Vehicle_Alias, GreedyArg = true)]
         public async void CMD_Vehicle(Client client, string args = "")
         {
             if (!client.IsLoggedIn() || !client.HasActiveChar()) return;
 
             if (args.Trim().Length <= 0)
             {
-                ChatHandler.SendCommandUsageText(client, "/v(ehicle) [create/list/stats/spawn/despawn/delete]");
+                ChatHandler.SendCommandUsageText(client, CmdStrings.CMD_Vehicle_HelpText);
                 return;
             }
             string[] arguments = args.Split(' ');
             switch (arguments[0].ToLower())
             {
-                case "create":
+                case CmdStrings.SUBCMD_Vehicle_Create:
                     if (arguments.Length < 2)
                     {
                         ChatHandler.SendCommandUsageText(client, "/v(ehicle) create [model]");
@@ -94,10 +78,10 @@ namespace RPServer.Controllers
                     await CreateVehicleAsync(client.GetActiveChar(), modelID);
                     ChatHandler.SendCommandSuccessText(client, "Vehicle Created!");
                     break;
-                case "list":
+                case CmdStrings.SUBCMD_Vehicle_List:
                     DisplayVehicles(client, client.GetActiveChar().Vehicles);
                     break;
-                case "stats":
+                case CmdStrings.SUBCMD_Vehicle_Stats:
                     var pv = client.Vehicle;
                     if (pv == null)
                     {
@@ -106,7 +90,7 @@ namespace RPServer.Controllers
                     }
                     DisplayVehicleStats(client, pv);
                     break;
-                case "spawn":
+                case CmdStrings.SUBCMD_Vehicle_Spawn:
                     if (arguments.Length < 2)
                     {
                         DisplayVehicles(client, client.GetActiveChar().Vehicles);
@@ -126,7 +110,7 @@ namespace RPServer.Controllers
 
                     SpawnVehicle(client, vehSpawnID);
                     break;
-                case "despawn":
+                case CmdStrings.SUBCMD_Vehicle_Despawn:
                     if (arguments.Length < 2)
                     {
                         DisplayVehicles(client, client.GetActiveChar().Vehicles);
@@ -145,7 +129,7 @@ namespace RPServer.Controllers
                     }
                     DespawnVehicle(client, vehDespawnID);
                     break;
-                case "delete":
+                case CmdStrings.SUBCMD_Vehicle_Delete:
                     if (arguments.Length < 2)
                     {
                         DisplayVehicles(client, client.GetActiveChar().Vehicles);
@@ -165,8 +149,25 @@ namespace RPServer.Controllers
                     await DeleteVehicle(client, vehDelID);
                     break;
                 default:
-                    ChatHandler.SendCommandUsageText(client, "/v(ehicle) [create/list/stats/spawn/despawn/delete]");
+                    ChatHandler.SendCommandUsageText(client, CmdStrings.CMD_Vehicle_HelpText);
                     break;
+            }
+        }
+
+        private void OnCharacterSpawn(object source, EventArgs e)
+        {
+            var client = source as Client;
+
+            foreach (var veh in NAPI.Pools.GetAllVehicles())
+            {
+                if (!veh.HasData("SERVER_VEHICLE_DATA")) continue;
+                var spawnedVehData = (VehicleModel)veh.GetData("SERVER_VEHICLE_DATA");
+                foreach (var vehData in client.GetActiveChar().Vehicles)
+                {
+                    if (vehData != spawnedVehData) continue;
+                    vehData.VehEntity = veh;
+                    break;
+                }
             }
         }
 
@@ -233,7 +234,7 @@ namespace RPServer.Controllers
             vehToSpawn.VehEntity = NAPI.Vehicle.CreateVehicle(vehToSpawn.Model, client.Position.Around(3), 0, vehToSpawn.PrimaryColor, vehToSpawn.SecondaryColor);
             vehToSpawn.VehEntity.NumberPlate = vehToSpawn.PlateText;
             vehToSpawn.VehEntity.NumberPlateStyle = vehToSpawn.PlateStyle;
-            vehToSpawn.VehEntity.SetData("SERVER_VEHICLE_DATA", vehToSpawn);
+            vehToSpawn.VehEntity.SetData(DataKey.ServerVehicleData, vehToSpawn);
             ChatHandler.SendCommandSuccessText(client, "Vehicle spawned.");
         }
 

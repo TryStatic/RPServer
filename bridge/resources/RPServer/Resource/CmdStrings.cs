@@ -13,6 +13,18 @@ namespace RPServer.Resource
         public const string CMD_Alias = "alias";
         public const string CMD_Stats = "stats";
 
+        // Vehicle
+        public const string CMD_Vehicle = "vehicle";
+        public const string CMD_Vehicle_Alias = "v";
+        public const string SUBCMD_Vehicle_Create = "create";
+        public const string SUBCMD_Vehicle_List = "list";
+        public const string SUBCMD_Vehicle_Stats = "stats";
+        public const string SUBCMD_Vehicle_Spawn = "spawn";
+        public const string SUBCMD_Vehicle_Despawn = "despawn";
+        public const string SUBCMD_Vehicle_Delete = "delete";
+        public const string CMD_Vehicle_HelpText = "/v(ehicle) [create/list/stats/spawn/despawn/delete]";
+
+
         // Server
         public const string CMD_Shutdown = "shutdown";
     }

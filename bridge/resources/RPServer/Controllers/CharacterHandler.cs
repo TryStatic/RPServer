@@ -300,8 +300,8 @@ namespace RPServer.Controllers
             chData.ReadAllData().GetAwaiter().GetResult();
             var saveDataTimer = new Timer(OnMinuteSpent, client, 1000 * 60 * 5, 1000 * 60 * 5); // 5 minutes
             var MinutesPlayedTimer = new Timer(OnSaveData, client, 1000 * 60, 1000 * 60); // 1 minute
-            client.SetData("SAVE_DATA_TIMER", saveDataTimer);
-            client.SetData("MINUTES_PLAYED_TIMER", MinutesPlayedTimer);
+            client.SetData(DataKey.TimerPlayerSaveData, saveDataTimer);
+            client.SetData(DataKey.TimerPlayerMinuteSpent, MinutesPlayedTimer);
         }
 
         private void OnCharacterDespawn(object source, EventArgs e)
@@ -327,13 +327,13 @@ namespace RPServer.Controllers
             if (saveDataTimer != null)
             {
                 saveDataTimer.Dispose();
-                client.ResetData("SAVE_DATA_TIMER");
+                client.ResetData(DataKey.TimerPlayerSaveData);
             }
 
             if (minutesPlayedTimer != null)
             {
                 minutesPlayedTimer.Dispose();
-                client.ResetData("MINUTES_PLAYED_TIMER");
+                client.ResetData(DataKey.TimerPlayerMinuteSpent);
             }
 
         }
