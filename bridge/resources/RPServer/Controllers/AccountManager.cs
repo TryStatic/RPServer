@@ -434,12 +434,12 @@ namespace RPServer.Controllers
 
         public static void SetLoginState(Client client, bool state)
         {
+            client.TriggerEvent(Events.ServerToClient.Authentication.SetLoginScreen, state);
             if (!state)
             {
                 // This part gets triggered only once per successful login
                 PlayerLogin?.Invoke(client, EventArgs.Empty);
             }
-            client.TriggerEvent(Events.ServerToClient.Authentication.SetLoginScreen, state);
         }
 
         private void OnPlayerLogin(object source, EventArgs e)
