@@ -19,10 +19,6 @@ namespace RPServer.Game
         [ServerEvent(Event.ResourceStart)]
         public async void OnResourceStart()
         {
-            var ci = new CultureInfo("en-US");
-            Thread.CurrentThread.CurrentCulture = ci;
-            Thread.CurrentThread.CurrentUICulture = ci;
-
             Console.ForegroundColor = ConsoleColor.White;
             Console.BackgroundColor = ConsoleColor.Blue;
             Console.WriteLine($"\n\n---------------------------- STARTING {Globals.SERVER_NAME} ({Globals.VERSION}) ----------------------------");
