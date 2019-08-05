@@ -10,6 +10,12 @@ namespace RPServer.Controllers.Util
         public CommandParser(string commandText)
         {
             _tokens = new Queue<string>();
+            ParseCommandText(commandText);
+        }
+
+        private void ParseCommandText(string commandText)
+        {
+            if(string.IsNullOrWhiteSpace(commandText)) return;
 
             var trimmed = commandText.Trim();
             var arguments = trimmed.Split(' ');
