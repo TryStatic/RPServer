@@ -305,8 +305,8 @@ namespace RPServer.Controllers
             if (chData == null) return;
 
             chData.ReadAllData().GetAwaiter().GetResult();
-            var saveDataTimer = new Timer(OnMinuteSpent, client, 1000 * 60 * 5, 1000 * 60 * 5); // 5 minutes
-            var MinutesPlayedTimer = new Timer(OnSaveData, client, 1000 * 60, 1000 * 60); // 1 minute
+            var saveDataTimer = new Timer(OnSaveData, client, 1000 * 60 * 5, 1000 * 60 * 5); // 5 minutes
+            var MinutesPlayedTimer = new Timer(OnMinuteSpent, client, 1000 * 60, 1000 * 60); // 1 minute
             client.SetData(DataKey.TimerPlayerSaveData, saveDataTimer);
             client.SetData(DataKey.TimerPlayerMinuteSpent, MinutesPlayedTimer);
         }
