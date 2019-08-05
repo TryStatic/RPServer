@@ -28,6 +28,8 @@ namespace RPServer.Resource
         public const string CMD_B = "b";
         public const string CMD_Me = "me";
         public const string CMD_Do = "do";
+        public const string CMD_OOC = "ooc";
+        public const string CMD_OOC_Alias = "o";
 
         // Server
         public const string CMD_Shutdown = "shutdown";

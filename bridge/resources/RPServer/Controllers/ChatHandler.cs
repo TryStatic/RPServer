@@ -11,6 +11,22 @@ namespace RPServer.Controllers
 {
     internal class ChatHandler : Script
     {
+        [Command(CmdStrings.CMD_OOC, Alias = CmdStrings.CMD_OOC_Alias, GreedyArg = true)]
+        public void CMD_OOC(Client client, string message = "")
+        {
+            if (string.IsNullOrEmpty(message))
+            {
+                SendCommandUsageText(client, "/o [Global OOC]");
+                return;
+            }
+            message = EscapeHTML(message);
+            message = RemoveColors(message);
+
+            var playerName = string.IsNullOrEmpty(client.GetAccount().NickName) ? client.GetActiveChar().CharacterName : client.GetAccount().NickName;
+
+            NAPI.ClientEvent.TriggerClientEventForAll(Shared.Events.ServerToClient.Chat.PushChatMessageUnfiltered, $"{Colors.COLOR_LIGHTBLUE}(( [O] {playerName}: {message} ))");
+        }
+
         [Command(CmdStrings.CMD_B, GreedyArg = true)]
         public void CMD_B(Client client, string message = "")
         {
