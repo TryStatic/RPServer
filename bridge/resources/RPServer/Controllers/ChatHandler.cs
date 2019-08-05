@@ -88,9 +88,9 @@ namespace RPServer.Controllers
             client.TriggerEvent(Shared.Events.ServerToClient.Chat.PushChatMessageUnfiltered, EscapeHTML($"{Shared.Data.Colors.COLOR_YELLOW}<!> {Shared.Data.Colors.COLOR_WHITE}{errorText}"));
         }
 
-        internal static void SendCommandSuccessText(Client client, string errorText)
+        internal static void SendCommandSuccessText(Client client, string text)
         {
-            client.TriggerEvent(Shared.Events.ServerToClient.Chat.PushChatMessageUnfiltered, EscapeHTML($"{Shared.Data.Colors.COLOR_GREEN}<!> {Shared.Data.Colors.COLOR_WHITE}{errorText}"));
+            client.TriggerEvent(Shared.Events.ServerToClient.Chat.PushChatMessageUnfiltered, EscapeHTML($"{Shared.Data.Colors.COLOR_GREEN}<!> {Shared.Data.Colors.COLOR_WHITE}{text}"));
         }
 
         internal static void SendClientMessage(Client client, string message)

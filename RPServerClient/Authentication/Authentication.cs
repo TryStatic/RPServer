@@ -9,7 +9,7 @@ namespace RPServerClient.Authentication
 {
     internal class Authentication : Events.Script
     {
-        public static CamHandler Camera;
+        private static CamHandler _camera;
 
         private static readonly Vector3 LoginCamPos = new Vector3(148.88035583496094f, -1407.726318359375f, 156.79771423339844f);
         private static readonly Vector3 LoginCamPointAt = new Vector3(126.11740112304688f, -772.676025390625f, 155.15695190429688f);
@@ -203,17 +203,17 @@ namespace RPServerClient.Authentication
                 Player.LocalPlayer.FreezePosition(true);
                 RAGE.Game.Ui.DisplayHud(false);
                 RAGE.Game.Ui.DisplayRadar(false);
-                Camera = new CamHandler();
-                Camera.SetPos(LoginCamPos, LoginCamPointAt, true);
+                _camera = new CamHandler();
+                _camera.SetPos(LoginCamPos, LoginCamPointAt, true);
                 RAGE.Chat.Show(false);
             }
             else
             {
                 BrowserHandler.DestroyBrowser(null);
                 RAGE.Game.Graphics.TransitionFromBlurred(200);
-                Camera.SetActive(false);
-                Camera.Destroy();
-                Camera = null;
+                _camera.SetActive(false);
+                _camera.Destroy();
+                _camera = null;
             }
         }
     }

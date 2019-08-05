@@ -55,11 +55,11 @@ namespace RPServerClient.Character
 
         private void OnInitCharSelector(object[] args)
         {
-            _camera = new CamHandler();
             var player = Player.LocalPlayer;
             player.FreezePosition(true);
             UnStageModel(player);
             _disableControls = true;
+            _camera = new CamHandler();
             _camera.SetPos(Helper.GetPosInFrontOfVector3(_displayPosition, _displayHeading, 1.5f), _displayPosition, true);
             CharacterDespawn?.Invoke(Player.LocalPlayer, EventArgs.Empty);
         }
