@@ -43,6 +43,9 @@ namespace RPServer.Models
 
         public async Task SaveAllData()
         {
+#if DEBUG
+            Logger.GetInstance().ServerInfo("Saving All Character data.");
+#endif
             // This Character Instance
             await UpdateAsync(this);
             // One to One Relationships

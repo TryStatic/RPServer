@@ -421,12 +421,7 @@ namespace RPServer.Controllers
             {
                 await acc.UpdateAsync();
                 var ch = client.GetActiveChar();
-                if (ch != null)
-                {
-                    await ch.SaveAllData();
-                    CharacterHandler.DespawnCharacter(client);
-                    client.ResetActiveChar();
-                }
+                if (ch != null) CharacterHandler.DespawnCharacter(client);
                 client.Logout();
                 SetLoginState(client, true);
             }
