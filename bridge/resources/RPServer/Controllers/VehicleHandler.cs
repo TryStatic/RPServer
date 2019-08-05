@@ -162,8 +162,8 @@ namespace RPServer.Controllers
 
             foreach (var veh in NAPI.Pools.GetAllVehicles())
             {
-                if (!veh.HasData("SERVER_VEHICLE_DATA")) continue;
-                var spawnedVehData = (VehicleModel)veh.GetData("SERVER_VEHICLE_DATA");
+                if (!veh.HasData(DataKey.ServerVehicleData)) continue;
+                var spawnedVehData = (VehicleModel)veh.GetData(DataKey.ServerVehicleData);
                 foreach (var vehData in client.GetActiveChar().Vehicles)
                 {
                     if (vehData != spawnedVehData) continue;
@@ -242,7 +242,7 @@ namespace RPServer.Controllers
 
         private void DisplayVehicleStats(Client client, Vehicle pv)
         {
-            var vehData = (VehicleModel)pv.GetData("SERVER_VEHICLE_DATA");
+            var vehData = (VehicleModel)pv.GetData(DataKey.ServerVehicleData);
 
             var serverData = vehData == null ? "That vehicle has no server-side data." : $"\tSqlID: {vehData.ID} | OwnerSQLID: {vehData.OwnerID}";
             ChatHandler.SendClientMessage(client, serverData);

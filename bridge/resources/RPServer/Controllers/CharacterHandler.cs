@@ -311,7 +311,7 @@ namespace RPServer.Controllers
             client.SetData(DataKey.TimerPlayerMinuteSpent, MinutesPlayedTimer);
         }
 
-        private void OnCharacterDespawn(object source, EventArgs e)
+        private static void OnCharacterDespawn(object source, EventArgs e)
         {
             var client = source as Client;
             if (client == null) return;
