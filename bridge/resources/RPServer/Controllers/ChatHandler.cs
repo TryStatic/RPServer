@@ -11,10 +11,6 @@ namespace RPServer.Controllers
 {
     internal class ChatHandler : Script
     {
-        private const float LowChatMaxDistance = 5f;
-        private const float NormalChatMaxDistance = 10f;
-        private const float ShoutChatMaxDistance = 20f;
-
         [Command(CmdStrings.CMD_B, GreedyArg = true)]
         public void CMD_B(Client client, string message = "")
         {
@@ -28,9 +24,9 @@ namespace RPServer.Controllers
 
             foreach (var p in NAPI.Pools.GetAllPlayers())
             {
-                if (client.Position.DistanceToSquared(p.Position) > NormalChatMaxDistance) continue;
+                if (client.Position.DistanceToSquared(p.Position) > Chat.NormalChatMaxDistance) continue;
 
-                var color = GetLocalChatMessageColor(client, p, NormalChatMaxDistance);
+                var color = GetLocalChatMessageColor(client, p, Chat.NormalChatMaxDistance);
                 NAPI.ClientEvent.TriggerClientEvent(p, Shared.Events.ServerToClient.Chat.PushChatMessage, $": (( {message} ))", client.Value, color);
             }
         }
@@ -49,7 +45,7 @@ namespace RPServer.Controllers
 
             foreach (var p in NAPI.Pools.GetAllPlayers())
             {
-                if (client.Position.DistanceToSquared(p.Position) > NormalChatMaxDistance) continue;
+                if (client.Position.DistanceToSquared(p.Position) > Chat.NormalChatMaxDistance) continue;
 
                 NAPI.ClientEvent.TriggerClientEvent(p, Shared.Events.ServerToClient.Chat.PushActionMessage, message, client.Value, Colors.COLOR_PURPLE);
             }
@@ -69,7 +65,7 @@ namespace RPServer.Controllers
 
             foreach (var p in NAPI.Pools.GetAllPlayers())
             {
-                if (client.Position.DistanceToSquared(p.Position) > NormalChatMaxDistance) continue;
+                if (client.Position.DistanceToSquared(p.Position) > Chat.NormalChatMaxDistance) continue;
 
                 NAPI.ClientEvent.TriggerClientEvent(p, Shared.Events.ServerToClient.Chat.PushDescriptionMessage, message, client.Value, Colors.COLOR_PURPLE);
             }
@@ -90,30 +86,30 @@ namespace RPServer.Controllers
                 switch (chatMode)
                 {
                     case ChatMode.Low:
-                        if (client.Position.DistanceToSquared(p.Position) > LowChatMaxDistance) continue;
+                        if (client.Position.DistanceToSquared(p.Position) > Chat.LowChatMaxDistance) continue;
 
                         // Add a full stop at the end of the message if needed
                         if (playerText[playerText.Length - 1] != '.') playerText += ".";
 
-                        textColor = GetLocalChatMessageColor(client, p, LowChatMaxDistance);
+                        textColor = GetLocalChatMessageColor(client, p, Chat.LowChatMaxDistance);
                         NAPI.ClientEvent.TriggerClientEvent(p, Shared.Events.ServerToClient.Chat.PushChatMessage, $" says: {playerText}", client.Value, textColor + "[Low] ");
                         break;
                     case ChatMode.Normal:
-                        if (client.Position.DistanceToSquared(p.Position) > NormalChatMaxDistance) continue;
+                        if (client.Position.DistanceToSquared(p.Position) > Chat.NormalChatMaxDistance) continue;
 
                         // Add a full stop at the end of the message if needed
                         if (playerText[playerText.Length - 1] != '.') playerText += ".";
 
-                        textColor = GetLocalChatMessageColor(client, p, NormalChatMaxDistance);
+                        textColor = GetLocalChatMessageColor(client, p, Chat.NormalChatMaxDistance);
                         NAPI.ClientEvent.TriggerClientEvent(p, Shared.Events.ServerToClient.Chat.PushChatMessage, $" says: {playerText}", client.Value, textColor);
                         break;
                     case ChatMode.Shout:
-                        if (client.Position.DistanceToSquared(p.Position) > ShoutChatMaxDistance) continue;
+                        if (client.Position.DistanceToSquared(p.Position) > Chat.ShoutChatMaxDistance) continue;
 
                         // Add an exclamation mark at the end of the message if needed
                         if (playerText[playerText.Length - 1] != '!') playerText += "!";
 
-                        textColor = GetLocalChatMessageColor(client, p, ShoutChatMaxDistance);
+                        textColor = GetLocalChatMessageColor(client, p, Chat.ShoutChatMaxDistance);
                         NAPI.ClientEvent.TriggerClientEvent(p, Shared.Events.ServerToClient.Chat.PushChatMessage, $" shouts: {playerText}", client.Value, textColor);
                         break;
                     default:

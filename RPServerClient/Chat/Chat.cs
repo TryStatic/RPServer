@@ -4,7 +4,6 @@ using RAGE;
 using RAGE.Ui;
 using RPServerClient.Character;
 using RPServerClient.Chat.Util;
-using RPServerClient.Client;
 using RPServerClient.Util;
 using Player = RAGE.Elements.Player;
 
