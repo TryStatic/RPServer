@@ -1,11 +1,11 @@
 using System;
-using System.Linq;
 using System.Text.RegularExpressions;
 using GTANetworkAPI;
 using RPServer.InternalAPI.Extensions;
 using RPServer.Resource;
 using RPServer.Util;
 using RPServerClient.Chat.Util;
+using Shared.Data;
 
 namespace RPServer.Controllers
 {
@@ -51,7 +51,7 @@ namespace RPServer.Controllers
             {
                 if (client.Position.DistanceToSquared(p.Position) > NormalChatMaxDistance) continue;
 
-                NAPI.ClientEvent.TriggerClientEvent(p, Shared.Events.ServerToClient.Chat.PushActionMessage, message, client.Value, Shared.Data.Colors.COLOR_PURPLE);
+                NAPI.ClientEvent.TriggerClientEvent(p, Shared.Events.ServerToClient.Chat.PushActionMessage, message, client.Value, Colors.COLOR_PURPLE);
             }
         }
 
@@ -71,7 +71,7 @@ namespace RPServer.Controllers
             {
                 if (client.Position.DistanceToSquared(p.Position) > NormalChatMaxDistance) continue;
 
-                NAPI.ClientEvent.TriggerClientEvent(p, Shared.Events.ServerToClient.Chat.PushDescriptionMessage, message, client.Value, Shared.Data.Colors.COLOR_PURPLE);
+                NAPI.ClientEvent.TriggerClientEvent(p, Shared.Events.ServerToClient.Chat.PushDescriptionMessage, message, client.Value, Colors.COLOR_PURPLE);
             }
         }
 
@@ -80,7 +80,7 @@ namespace RPServer.Controllers
         {
             if (!client.IsLoggedIn() || !client.HasActiveChar()) return;
 
-            ChatMode chatMode = (ChatMode)chatModeAsInt;
+            var chatMode = (ChatMode)chatModeAsInt;
             playerText = EscapeHTML(playerText);
             playerText = RemoveColors(playerText);
 
