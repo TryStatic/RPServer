@@ -64,6 +64,7 @@ namespace RPServerClient.Chat
                 foreach (var p in Entities.Players.All)
                 {
                     if(!p.Exists) continue;
+                    if(p == Player.LocalPlayer) continue;
 
                     var dist = Player.LocalPlayer.Position.DistanceToSquared(p.Position);
                     if (dist < MaxDistance)
