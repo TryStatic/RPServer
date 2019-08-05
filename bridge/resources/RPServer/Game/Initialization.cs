@@ -34,7 +34,7 @@ namespace RPServer.Game
             NAPI.Server.SetAutoRespawnAfterDeath(false);
             NAPI.Server.SetDefaultSpawnLocation(DefaultSpawnPos);
             NAPI.Server.SetGlobalServerChat(false);
-
+            NAPI.Server.SetCommandErrorMessage($"<span style=\'color: #ff6666;\'>Error: </span><span style=\'color: #e3e3e3;\'>We couldn't find that command. Use /helpme if you need further assistance.</span>");
             // Initialize the Logger 
             Logger.GetInstance();
 
