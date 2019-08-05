@@ -5,6 +5,7 @@ using System.IO.Pipes;
 using RAGE;
 using RAGE.Elements;
 using RAGE.Game;
+using RPServerClient.Chat.Util;
 using RPServerClient.Client;
 using RPServerClient.Util;
 using Font = RAGE.Game.Font;
@@ -14,7 +15,6 @@ namespace RPServerClient.Chat
 {
     internal class Voice : Events.Script
     {
-        private const float MaxDistance = 50.0f;
         private const long VoiceRefreshRateInMS = 250;
 
         private static readonly HashSet<Player> Listeners = new HashSet<Player>();
@@ -59,6 +59,25 @@ namespace RPServerClient.Chat
             if (currentTime - _latestProcess > VoiceRefreshRateInMS)
             {
                 _latestProcess = currentTime;
+                var maxDistance = Shared.Data.Chat.NormalChatMaxDistance;
+
+
+                var chatmode = Player.LocalPlayer.GetData<ChatMode>(LocalDataKeys.CurrentChatMode);
+                switch (chatmode)
+                {
+                    case ChatMode.Low:
+                        maxDistance = Shared.Data.Chat.LowChatMaxDistance;
+                        break;
+                    case ChatMode.Normal:
+                        maxDistance = Shared.Data.Chat.NormalChatMaxDistance;
+                        break;
+                    case ChatMode.Shout:
+                        maxDistance = Shared.Data.Chat.ShoutChatMaxDistance;
+                        break;
+                    default:
+                        RAGE.Chat.Output("There was an error while selecting chatmode.");
+                        break;
+                }
 
                 // Add new people
                 foreach (var p in Entities.Players.All)
@@ -67,7 +86,7 @@ namespace RPServerClient.Chat
                     if(p == Player.LocalPlayer) continue;
 
                     var dist = Player.LocalPlayer.Position.DistanceToSquared(p.Position);
-                    if (dist < MaxDistance)
+                    if (dist < maxDistance)
                     {
                         var added = Listeners.Add(p);
                         if (added)
@@ -84,7 +103,7 @@ namespace RPServerClient.Chat
                     if (p.Handle != 0)
                     {
                         var dist = Player.LocalPlayer.Position.DistanceToSquared(p.Position);
-                        if (dist > MaxDistance)
+                        if (dist > maxDistance)
                         {
                             var removed = Listeners.Remove(p);
                             if (removed)
@@ -95,7 +114,7 @@ namespace RPServerClient.Chat
                         }
                         else
                         {
-                            p.VoiceVolume = 1.0f - (dist / MaxDistance);
+                            p.VoiceVolume = 1.0f - (dist / maxDistance);
                         }
                     }
                     else
