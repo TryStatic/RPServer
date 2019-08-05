@@ -159,7 +159,7 @@ namespace RPServer.Models
                 }
                 else
                 {
-                    await DeleteAlias(aliases.First(r => r.Equals(dbRec)));
+                    await DeleteAlias(dbRec);
                 }
             }
 
