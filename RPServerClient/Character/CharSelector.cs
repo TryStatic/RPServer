@@ -21,12 +21,6 @@ namespace RPServerClient.Character
         public static event OnCharacterSpawnDelegate CharacterSpawn;
         public static event OnCharacterDespawnDelegate CharacterDespawn;
 
-        public static int ScreenX = 0;
-        public static int ScreenY = 0;
-
-        public static int ScreenResX = 0;
-        public static int ScreenResY = 0;
-
         private readonly Vector3 _displayPosition = new Vector3(-169.3321f, 482.2647f, 133.8789f);
         private readonly float _displayHeading = 282.6658f;
         private readonly Vector3 _hiddenPosition = new Vector3(-163.4660f, 483.5910f, 134.5571f);
@@ -37,14 +31,11 @@ namespace RPServerClient.Character
 
         public static CamHandler _camera;
 
-        private bool _disableControls = false;
+        private bool _disableControls;
 
 
         public CharSelector()
         {
-            RAGE.Game.Graphics.GetScreenResolution(ref ScreenResX, ref ScreenResY);
-            RAGE.Game.Graphics.GetActiveScreenResolution(ref ScreenX, ref ScreenY);
-
             Events.Tick += Render;
 
             Events.Add(Shared.Events.ServerToClient.Character.InitCharSelector, OnInitCharSelector);
