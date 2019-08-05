@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using GTANetworkAPI;
@@ -21,16 +24,22 @@ namespace RPServer
         {
         }
 
-
-        [Command("sandboxcmds")]
-        public void Cmds(Client player)
+        [Command("allcmds", GreedyArg = true)]
+        public void CMD_AllCmds(Client client)
         {
-            player.SendChatMessage("/logout /toggletwofactorga /toggletwofactoremail");
-            player.SendChatMessage("/veh /ecc /heal /hmc /time /weather /getping /onlineppl /givegun");
-            player.SendChatMessage("/setskin /setnick /togflymode /getcamcords /spawnme /playanimation /stopani");
-            player.SendChatMessage("/loadipl /removeipl /resetipls /gotopos /getpos /fd");
-            player.SendChatMessage("/changechar /addx /addy /addz /getfowardpos /testclothes");
-            player.SendChatMessage("/createmarker /createtextlabel, /createblip /gotowp");
+            string cmdList = "";
+            var list = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).SelectMany(x =>
+                    x.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+                        .Where(ifo => ifo.CustomAttributes.Any(att => att.AttributeType == typeof(CommandAttribute))))
+                .ToList();
+
+            foreach (var element in list)
+            {
+                var customAttribute = element.GetCustomAttribute<CommandAttribute>();
+                var cmd = customAttribute.CommandString;
+                cmdList += $"{cmd}, ";
+            }
+            ChatHandler.SendClientMessage(client, cmdList);
         }
 
         [Command("setforumname")]

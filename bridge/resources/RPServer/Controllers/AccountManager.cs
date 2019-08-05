@@ -448,7 +448,7 @@ namespace RPServer.Controllers
             {
                 ChatHandler.SendClientMessage(client, $"{Shared.Data.Colors.COLOR_RED}<!> {Shared.Data.Colors.COLOR_WHITE}You have logged in as a level {client.GetAccount().AdminLevel} admin.");
             }
-            client.SendChatMessage("SANDBOX TEST COMMANDS: /sandboxcmds");
+            client.SendChatMessage("All commands: /allcmds <-- WARNING: this uses reflection to get all cmds which is really slow and hangs the server. Takes ~10secs to execute.");
         }
 
         private static bool IsAccountAlreadyLoggedIn(AccountModel account)
