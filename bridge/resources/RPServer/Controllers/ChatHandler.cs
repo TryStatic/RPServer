@@ -108,7 +108,7 @@ namespace RPServer.Controllers
                         if (playerText[playerText.Length - 1] != '.') playerText += ".";
 
                         textColor = GetLocalChatMessageColor(client, p, Chat.LowChatMaxDistance);
-                        NAPI.ClientEvent.TriggerClientEvent(p, Shared.Events.ServerToClient.Chat.PushChatMessage, $" says: {playerText}", client.Value, textColor + "[Low] ");
+                        NAPI.ClientEvent.TriggerClientEvent(p, Shared.Events.ServerToClient.Chat.PushChatMessage, $" says: {playerText}", client.Value, $"{Colors.COLOR_GRAD3}[Low]{textColor} ");
                         break;
                     case ChatMode.Normal:
                         if (client.Position.DistanceToSquared(p.Position) > Chat.NormalChatMaxDistance) continue;
