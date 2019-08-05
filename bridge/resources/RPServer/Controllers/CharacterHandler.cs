@@ -32,8 +32,8 @@ namespace RPServer.Controllers
             CharacterHandler.CharacterDespawn += OnCharacterDespawn;
         }
 
-        [Command(CmdStrings.CMD_Stats)]
-        public void CMD_Stats(Client client)
+        [Command(CmdStrings.CMD_Stats, GreedyArg = true)]
+        public void CMD_Stats(Client client, string args = "")
         {
             var accdata = client.GetAccount();
             var chdata = client.GetActiveChar();
@@ -62,35 +62,35 @@ namespace RPServer.Controllers
         }
         
         [Command(CmdStrings.CMD_Alias, GreedyArg = true)]
-        public void CMD_Alias(Client client, string identifier, string aliasText = "")
+        public void CMD_Alias(Client client, string args = "")
         {
-            if (!client.IsLoggedIn())
+            var cmdParser = new CommandParser(args);
+
+            if(!client.IsLoggedIn() || !client.HasActiveChar()) return;
+
+            if (!cmdParser.HasNextToken())
             {
-                client.SendChatMessage("You are not logged in.");
+                ChatHandler.SendCommandUsageText(client, "/alias [PartOfName/ID] [optional: AliasText]");
                 return;
             }
 
-            if (!client.HasActiveChar())
-            {
-                client.SendChatMessage("You are not properly spawned.");
-                return;
-            }
-
+            var identifier = cmdParser.GetNextToken();
             var otherClient = ClientMethods.FindClient(identifier);
             if (otherClient == null)
             {
-                client.SendChatMessage("Invalid Player Identifier.");
+                ChatHandler.SendCommandErrorText(client, "Couldn't find that player.");
                 return;
             }
 
             if (!otherClient.IsLoggedIn())
             {
-                client.SendChatMessage("That player is not logged in.");
+                ChatHandler.SendCommandErrorText(client, "That player is not logged in");
                 return;
             }
 
             if (!otherClient.HasActiveChar())
             {
+                ChatHandler.SendCommandErrorText(client, "That player is not spawned.");
                 client.SendChatMessage("That player is not spawned.");
                 return;
             }
@@ -100,32 +100,40 @@ namespace RPServer.Controllers
             var chData = client.GetActiveChar();
             var chOtherData = otherClient.GetActiveChar();
 
-            if (aliasText == "")
+            if (!cmdParser.HasNextToken())
             {
                 var alias = chData.Aliases.FirstOrDefault(i => i.CharID == chData.ID && i.AliasedID == chOtherData.ID);
                 if (alias == null)
                 {
-                    client.SendChatMessage("No Alias set for that player.");
+                    ChatHandler.SendCommandErrorText(client, "You haven't set an alias for that player.");
                     return;
                 }
                 chData.Aliases.Remove(alias);
                 ClientEvent_RequestAliasInfo(client, otherClient.Value);
-                client.SendChatMessage("Alias removed.");
+                ChatHandler.SendCommandSuccessText(client, "Alias removed.");
                 return;
-            }
-
-            var exist = chData.Aliases.FirstOrDefault(i => i.CharID == chData.ID && i.AliasedID == chOtherData.ID);
-            if (exist != null)
-            {
-                exist.AliasName = aliasText;
             }
             else
             {
-                chData.Aliases.Add(new Alias(chData, chOtherData, aliasText));
-            }
+                var aliasText = cmdParser.GetNextToken();
+                if (aliasText.Length > 20)
+                {
+                    ChatHandler.SendCommandErrorText(client, "Alias text is too long. (max: 20chars)");
+                    return;
+                }
+                var exist = chData.Aliases.FirstOrDefault(i => i.CharID == chData.ID && i.AliasedID == chOtherData.ID);
+                if (exist != null)
+                {
+                    exist.AliasName = aliasText;
+                }
+                else
+                {
+                    chData.Aliases.Add(new Alias(chData, chOtherData, aliasText));
+                }
 
-            ClientEvent_RequestAliasInfo(client, otherClient.Value);
-            client.SendChatMessage($"Alias set.");
+                ClientEvent_RequestAliasInfo(client, otherClient.Value);
+                ChatHandler.SendCommandSuccessText(client, "Alias set.");
+            }
         }
 
         [RemoteEvent(Events.ClientToServer.Character.ApplyCharacterEditAnimation)]
