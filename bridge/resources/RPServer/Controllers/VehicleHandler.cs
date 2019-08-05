@@ -29,21 +29,23 @@ namespace RPServer.Controllers
         {
             if (!client.IsLoggedIn() || !client.HasActiveChar()) return;
 
-            if (args.Trim().Length <= 0)
+            var cmdParser = new CommandParser(args);
+            if (!cmdParser.HasNextToken())
             {
                 ChatHandler.SendCommandUsageText(client, CmdStrings.CMD_Vehicle_HelpText);
                 return;
             }
-            string[] arguments = args.Split(' ');
-            switch (arguments[0].ToLower())
+            switch (cmdParser.GetNextToken())
             {
                 case CmdStrings.SUBCMD_Vehicle_Create:
-                    if (arguments.Length < 2)
+                    if (!cmdParser.HasNextToken())
                     {
                         ChatHandler.SendCommandUsageText(client, "/v(ehicle) create [model]");
                         return;
                     }
-                    var vehicleModel = arguments[1].ToLower();
+
+                    var vehicleModel = cmdParser.GetNextToken();
+
                     uint modelID;
                     if (DataValidator.IsDigitsOnly(vehicleModel))
                     {
@@ -91,7 +93,7 @@ namespace RPServer.Controllers
                     DisplayVehicleStats(client, pv);
                     break;
                 case CmdStrings.SUBCMD_Vehicle_Spawn:
-                    if (arguments.Length < 2)
+                    if (!cmdParser.HasNextToken())
                     {
                         DisplayVehicles(client, client.GetActiveChar().Vehicles);
                         ChatHandler.SendCommandUsageText(client, "/v(ehicle) spawn [vehicleID]");
@@ -100,7 +102,7 @@ namespace RPServer.Controllers
                     int vehSpawnID;
                     try
                     {
-                        vehSpawnID = int.Parse(arguments[1]);
+                        vehSpawnID = int.Parse(cmdParser.GetNextToken());
                     }
                     catch (Exception)
                     {
@@ -111,7 +113,7 @@ namespace RPServer.Controllers
                     SpawnVehicle(client, vehSpawnID);
                     break;
                 case CmdStrings.SUBCMD_Vehicle_Despawn:
-                    if (arguments.Length < 2)
+                    if (!cmdParser.HasNextToken())
                     {
                         DisplayVehicles(client, client.GetActiveChar().Vehicles);
                         ChatHandler.SendCommandUsageText(client, "/v(ehicle) spawn [vehicleID]");
@@ -120,7 +122,7 @@ namespace RPServer.Controllers
                     int vehDespawnID;
                     try
                     {
-                        vehDespawnID = int.Parse(arguments[1]);
+                        vehDespawnID = int.Parse(cmdParser.GetNextToken());
                     }
                     catch (Exception)
                     {
@@ -130,7 +132,7 @@ namespace RPServer.Controllers
                     DespawnVehicle(client, vehDespawnID);
                     break;
                 case CmdStrings.SUBCMD_Vehicle_Delete:
-                    if (arguments.Length < 2)
+                    if (!cmdParser.HasNextToken())
                     {
                         DisplayVehicles(client, client.GetActiveChar().Vehicles);
                         ChatHandler.SendCommandUsageText(client, "/v(ehicle) spawn [vehicleID]");
@@ -139,7 +141,7 @@ namespace RPServer.Controllers
                     int vehDelID;
                     try
                     {
-                        vehDelID = int.Parse(arguments[1]);
+                        vehDelID = int.Parse(cmdParser.GetNextToken());
                     }
                     catch (Exception)
                     {
