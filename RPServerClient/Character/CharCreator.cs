@@ -53,7 +53,8 @@ namespace RPServerClient.Character
             ResetAppearance(Player.LocalPlayer);
             BrowserHandler.CreateBrowser("package://CEF/char/charcreator.html");
             _camera = new CamHandler();
-            _camera.SetPos(Helper.GetPosInFrontOfVector3(_displayPos.GetVector3Part(), _displayPos.W, 1.5f), _displayPos.GetVector3Part(), true);
+            _camera.SetPos(Helper.GetPosInFrontOfVector3(_displayPos.GetVector3Part(), _displayPos.W, 1.5f), _displayPos.GetVector3Part());
+            _camera.SetActive(true, true, 3000);
         }
 
         private void OnQuitCharCreation(object[] args)

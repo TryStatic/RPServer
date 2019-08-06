@@ -60,7 +60,8 @@ namespace RPServerClient.Character
             UnStageModel(player);
             _disableControls = true;
             _camera = new CamHandler();
-            _camera.SetPos(Helper.GetPosInFrontOfVector3(_displayPosition, _displayHeading, 1.5f), _displayPosition, true);
+            _camera.SetPos(Helper.GetPosInFrontOfVector3(_displayPosition, _displayHeading, 1.5f), _displayPosition);
+            _camera.SetActive(true, true, 3000);
             CharacterDespawn?.Invoke(Player.LocalPlayer, EventArgs.Empty);
         }
 
@@ -129,6 +130,9 @@ namespace RPServerClient.Character
             {
                 if (item == createCharItem)
                 {
+                    _camera.SetActive(false);
+                    _camera.Destroy();
+                    _camera = null;
                     Events.CallLocal("createchar");
                     _charMenu.CloseAllMenus();
                     return;
