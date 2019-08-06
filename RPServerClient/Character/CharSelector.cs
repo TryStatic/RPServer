@@ -75,7 +75,6 @@ namespace RPServerClient.Character
             _camera.Destroy();
             _camera = null;
             RAGE.Chat.Show(true);
-            CharacterSpawn?.Invoke(Player.LocalPlayer, EventArgs.Empty);
         }
 
         private void SpawnChar(object[] args)
@@ -83,8 +82,9 @@ namespace RPServerClient.Character
             if(_selectedCharId < 0) return;
             if(!IsOwnChar(_selectedCharId)) return;
             Events.CallRemote(Shared.Events.ClientToServer.Character.SubmitSpawnCharacter, _selectedCharId);
+            CharacterSpawn?.Invoke(Player.LocalPlayer, EventArgs.Empty);
         }
-        
+
         private void SelectChar(object[] args)
         {
             if(args == null || args.Length < 1) return;
