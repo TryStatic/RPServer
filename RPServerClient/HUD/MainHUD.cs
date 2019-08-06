@@ -12,9 +12,14 @@ namespace RPServerClient.HUD
 {
     internal class MainHud : Events.Script
     {
+        private string _zoneName = "";
+        private string _crossingRoad = "";
+        private string _streetName = "";
+        private string _headingStr = "";
+        private int _lastUpdated = 0;
+
         public MainHud()
         {
-
             Events.Tick += Tick;
         }
 
@@ -35,44 +40,47 @@ namespace RPServerClient.HUD
 
                 var pos = Player.LocalPlayer.Position;
 
-                // Get Zone
-                var zone = Zone.GetNameOfZone(pos.X, pos.Y, pos.Z);
-                var zoneName = Ui.GetLabelText(zone);
-
-                // Get StreetNames
-                int streetNameId = 0;
-                int crossingRoadId = 0;
-                Pathfind.GetStreetNameAtCoord(pos.X, pos.Y, pos.Z, ref streetNameId, ref crossingRoadId);
-                var streetName = Ui.GetStreetNameFromHashKey((uint)streetNameId);
-                var crossingRoad = Ui.GetStreetNameFromHashKey((uint)crossingRoadId);
-
-                // Get Direction
-                var heading = Player.LocalPlayer.GetHeading();
-                var directionNumba = (int)(heading / 45.0f);
-                var headingStr = "";
-                switch (directionNumba)
+                if (_lastUpdated < RAGE.Game.Misc.GetGameTimer())
                 {
-                    case 0: headingStr = "N"; break;
-                    case 1: headingStr = "NW"; break;
-                    case 2: headingStr = "W"; break;
-                    case 3: headingStr = "SW"; break;
-                    case 4: headingStr = "S"; break;
-                    case 5: headingStr = "SE"; break;
-                    case 6: headingStr = "E"; break;
-                    case 7: headingStr = "NE"; break;
-                }
+                    _lastUpdated = RAGE.Game.Misc.GetGameTimer() + 750;
+                    // Get Zone
+                    var zone = Zone.GetNameOfZone(pos.X, pos.Y, pos.Z);
+                    _zoneName = Ui.GetLabelText(zone);
 
+                    // Get StreetNames
+                    int streetNameId = 0;
+                    int crossingRoadId = 0;
+                    Pathfind.GetStreetNameAtCoord(pos.X, pos.Y, pos.Z, ref streetNameId, ref crossingRoadId);
+                    _streetName = Ui.GetStreetNameFromHashKey((uint)streetNameId);
+                    _crossingRoad = Ui.GetStreetNameFromHashKey((uint)crossingRoadId);
+
+                    // Get Direction
+                    var heading = Player.LocalPlayer.GetHeading();
+                    var directionNumba = (int)(heading / 45.0f);
+                    switch (directionNumba)
+                    {
+                        case 0: _headingStr = "N"; break;
+                        case 1: _headingStr = "NW"; break;
+                        case 2: _headingStr = "W"; break;
+                        case 3: _headingStr = "SW"; break;
+                        case 4: _headingStr = "S"; break;
+                        case 5: _headingStr = "SE"; break;
+                        case 6: _headingStr = "E"; break;
+                        case 7: _headingStr = "NE"; break;
+                    }
+                }
                 // Draw Zone and StreetNames and Heading (direction)
                 var point1 = new Point((int)(ScreenRes.UIStandardResX * 0.18f), (int)(ScreenRes.UIStandardResY * 0.85f));
                 var point2 = new Point((int)(ScreenRes.UIStandardResX * 0.18f), (int)(ScreenRes.UIStandardResY * 0.87f));
                 var point3 = new Point((int)(ScreenRes.UIStandardResX * 0.18f), (int)(ScreenRes.UIStandardResY * 0.89f));
                 RAGE.Game.Ui.SetTextOutline();
-                RAGE.Game.UIText.Draw("~c~Zone:~s~ " + zoneName, point1, 0.4f, Color.White, Font.ChaletComprimeCologne, false);
+                RAGE.Game.UIText.Draw("~c~Zone:~s~ " + _zoneName, point1, 0.4f, Color.White, Font.ChaletComprimeCologne, false);
                 RAGE.Game.Ui.SetTextOutline();
-                RAGE.Game.UIText.Draw(string.IsNullOrEmpty(crossingRoad) ? $"~c~Street:~w~ {streetName}" : $"~c~INTXN of ~w~{streetName} ~c~and~s~ {crossingRoad}",
+                RAGE.Game.UIText.Draw(string.IsNullOrEmpty(_crossingRoad) ? $"~c~Street:~w~ {_streetName}" : $"~c~INTXN of ~w~{_streetName} ~c~and~s~ {_crossingRoad}",
                     point2, 0.4f, Color.BurlyWood, Font.ChaletComprimeCologne, false);
                 RAGE.Game.Ui.SetTextOutline();
-                RAGE.Game.UIText.Draw($"~c~Direction: ~w~{headingStr}~s~ ", point3, 0.4f, Color.White, Font.ChaletComprimeCologne, false);
+                RAGE.Game.UIText.Draw($"~c~Direction: ~w~{_headingStr}~s~ ", point3, 0.4f, Color.White, Font.ChaletComprimeCologne, false);
+
 
             }
         }
