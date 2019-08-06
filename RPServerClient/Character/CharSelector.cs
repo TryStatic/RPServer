@@ -20,10 +20,10 @@ namespace RPServerClient.Character
     {
         public static event OnCharacterSpawnDelegate CharacterSpawn;
         public static event OnCharacterDespawnDelegate CharacterDespawn;
-
-        private readonly Vector3 _displayPosition = new Vector3(-169.3321f, 482.2647f, 133.8789f);
-        private readonly float _displayHeading = 282.6658f;
-        private readonly Vector3 _hiddenPosition = new Vector3(-163.4660f, 483.5910f, 134.5571f);
+        //  
+        private readonly Vector3 _displayPosition = new Vector3(-438.8815f, 1074.186f, 352.3494f);
+        private readonly float _displayHeading = 347.3495f;
+        private readonly Vector3 _hiddenPosition = new Vector3(-439.2427f, 1086.262f, 350.5516f);
 
         private int _selectedCharId = -1;
         private List<CharDisplay> _charList = new List<CharDisplay>();
