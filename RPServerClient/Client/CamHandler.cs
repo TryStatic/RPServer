@@ -1,4 +1,5 @@
-﻿using RPServerClient.Client.Util;
+﻿using RAGE.Elements;
+using RPServerClient.Client.Util;
 using RPServerClient.Util;
 using Player = RAGE.Elements.Player;
 using Vector3 = RAGE.Vector3;
@@ -43,10 +44,11 @@ namespace RPServerClient.Client
             if (setActive) SetActive(true);
         }
 
-        public void SetActive(bool state)
+        public void SetActive(bool state, bool easeTransition = false, int easeTimeInMs = 0)
         {
+            if (easeTimeInMs < 0) easeTimeInMs = 0;
             RAGE.Game.Cam.SetCamActive(CameraID, state);
-            RAGE.Game.Cam.RenderScriptCams(state, false, 0, true, true, 0);
+            RAGE.Game.Cam.RenderScriptCams(state, easeTransition, easeTimeInMs, true, true, 0);
         }
 
         public void Destroy()
