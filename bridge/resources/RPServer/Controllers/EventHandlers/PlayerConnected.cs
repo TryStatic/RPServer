@@ -28,8 +28,6 @@ namespace RPServer.Controllers.EventHandlers
             client.SetSharedData(Shared.Data.Keys.ServerVersion, $"{Game.Globals.SERVER_NAME}-{Game.Globals.VERSION}");
             client.SetSharedData(Shared.Data.Keys.AccountLoggedIn, false);
             client.SetSharedData(Shared.Data.Keys.ActiveCharID, -1);
-
-            client.TriggerEvent(Shared.Events.ServerToClient.HUD.UpdateStaticHudValues);
         }
     }
 }

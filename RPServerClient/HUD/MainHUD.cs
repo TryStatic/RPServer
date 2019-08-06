@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Drawing;
 using RAGE;
 using RAGE.Game;
@@ -12,25 +12,18 @@ namespace RPServerClient.HUD
 {
     internal class MainHud : Events.Script
     {
-        public string ServerVersion { get; set; }
         public MainHud()
         {
 
             Events.Tick += Tick;
-            Events.Add(Shared.Events.ServerToClient.HUD.UpdateStaticHudValues, UpdateStaticHUDValues);
-        }
-
-        private void UpdateStaticHUDValues(object[] args)
-        {
-            ServerVersion = (string)Player.LocalPlayer.GetSharedData(Shared.Data.Keys.ServerVersion);
         }
 
         private void Tick(List<Events.TickNametagData> nametags)
         {
-            if (ServerVersion != null || !string.IsNullOrWhiteSpace(ServerVersion))
+            if (Globals.ServerVersion != null)
             {
                 RAGE.Game.Ui.SetTextOutline();
-                RAGE.Game.UIText.Draw(ServerVersion, new Point(ScreenRes.UIStandardResX / 2, ScreenRes.UIStandardResY - (int)(ScreenRes.UIStandardResY * 0.03)), 0.35f, Color.White, RAGE.Game.Font.ChaletLondon, true);
+                RAGE.Game.UIText.Draw(Globals.ServerVersion, new Point(ScreenRes.UIStandardResX / 2, ScreenRes.UIStandardResY - (int)(ScreenRes.UIStandardResY * 0.03)), 0.35f, Color.White, RAGE.Game.Font.ChaletLondon, true);
             }
 
             if (Globals.IsAccountLoggedIn && Globals.HasActiveChar)
