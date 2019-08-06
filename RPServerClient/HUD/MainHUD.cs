@@ -48,7 +48,6 @@ namespace RPServerClient.HUD
 
                 // Get Direction
                 var heading = Player.LocalPlayer.GetHeading();
-                var test = 360.0f / 8.0f;
                 var directionNumba = (int)(heading / 45.0f);
                 var headingStr = "";
                 switch (directionNumba)
