@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using GTANetworkAPI;
@@ -8,30 +8,34 @@ namespace RPServer.Models.Inventory
 {
     internal class ItemTemplate
     {
-        public static List<ItemTemplate> AllItems;
+        private static List<ItemTemplate> AllItems;
 
-        public string Name { set; get; }
-        public string Desc { set; get; }
+        public int ItemID { set; get; }
+        public string Name { set; get; } = "";
+        public string Desc { set; get; } = "";
 
         public static void LoadAllItems()
         {
             if (AllItems != null)
             {
-                Logger.GetInstance().ServerError("Item templates are already loaded.");
+                Logger.GetInstance().ServerError("Item template list is already loaded.");
                 return;
             }
 
+            Logger.GetInstance().ServerInfo("Initializing Items Template List.");
             AllItems = new List<ItemTemplate>
             {
                 new ItemTemplate()
                 {
-                    Name = "Dice",
-                    Desc = "An ordinary dice.",
+                    ItemID = 1,
+                    Name = "Cash",
+                    Desc = "",
                 },
                 new ItemTemplate()
                 {
-                    Name = "Test",
-                    Desc = "A Test Item",
+                    ItemID = 2,
+                    Name = "Dice",
+                    Desc = "An ordinary dice.",
                 }
             };
         }

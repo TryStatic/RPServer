@@ -7,6 +7,7 @@ using RPServer.Controllers.Util;
 using RPServer.Database;
 using RPServer.Email;
 using RPServer.Models;
+using RPServer.Models.Inventory;
 using RPServer.Util;
 
 namespace RPServer.Game
@@ -63,6 +64,9 @@ namespace RPServer.Game
 
             // Initialize ValidVehicleIDs
             DataValidator.InitializeValidVehicleModelIDs();
+
+            // Populate Item Template List
+            ItemTemplate.LoadAllItems();
         }
 
         public static void OnServerShutdown()
