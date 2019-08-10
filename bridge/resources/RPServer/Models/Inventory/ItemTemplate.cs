@@ -8,6 +8,7 @@ namespace RPServer.Models.Inventory
         private static List<ItemTemplate> AllItems;
 
         public int ItemID { set; get; }
+        public ItemType Type { get; set; } = ItemType.General;
         public string Name { set; get; } = "";
         public string Desc { set; get; } = "";
 
@@ -25,12 +26,14 @@ namespace RPServer.Models.Inventory
                 new ItemTemplate()
                 {
                     ItemID = 1,
-                    Name = "Cash",
-                    Desc = "",
+                    Type = ItemType.Currency,
+                    Name = "USD",
+                    Desc = "Moneys",
                 },
                 new ItemTemplate()
                 {
                     ItemID = 2,
+                    Type = ItemType.General,
                     Name = "Dice",
                     Desc = "An ordinary dice.",
                 }
@@ -50,5 +53,11 @@ namespace RPServer.Models.Inventory
         public static bool operator ==(ItemTemplate left, ItemTemplate right) => Equals(left, right);
         public static bool operator !=(ItemTemplate left, ItemTemplate right) => !Equals(left, right);
         #endregion
+
+        internal enum ItemType
+        {
+            General,
+            Currency
+        }
     }
 }
