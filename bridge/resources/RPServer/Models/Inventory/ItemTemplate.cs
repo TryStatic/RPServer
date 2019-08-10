@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using GTANetworkAPI;
+﻿using System.Collections.Generic;
 using RPServer.Util;
 
 namespace RPServer.Models.Inventory
@@ -39,5 +36,19 @@ namespace RPServer.Models.Inventory
                 }
             };
         }
+
+        #region Generated
+        protected bool Equals(ItemTemplate other) => ItemID == other.ItemID;
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((ItemTemplate) obj);
+        }
+        public override int GetHashCode() => ItemID;
+        public static bool operator ==(ItemTemplate left, ItemTemplate right) => Equals(left, right);
+        public static bool operator !=(ItemTemplate left, ItemTemplate right) => !Equals(left, right);
+        #endregion
     }
 }
