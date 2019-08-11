@@ -91,7 +91,7 @@ namespace RPServer.Models.Inventory
             {
                 try
                 {
-                    var result = await dbConn.QueryAsync(query, new { containerid = (int)ContainerType.DroppedItems });
+                    var result = await dbConn.QueryAsync(query, new { containerid = (int)ContainerType.WorldInventory });
                     var itemList = new HashSet<ItemModel>();
                     foreach (var i in result) itemList.Add(new ItemModel()
                     {
@@ -112,10 +112,10 @@ namespace RPServer.Models.Inventory
 
         private enum ContainerType
         {
-            CharacterInventory,
-            VehicleTrunk,
-            VehicleGlovebox,
-            DroppedItems
+            CharacterInventory, // 0
+            VehicleTrunk, // 1
+            VehicleGlovebox, // 2
+            WorldInventory // 3 - Dropped Items
         }
 
         internal enum VehicleContainer
