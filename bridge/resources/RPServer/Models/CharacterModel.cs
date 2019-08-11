@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper.Contrib.Extensions;
+using RPServer.Models.Inventory;
 using RPServer.Util;
 
 namespace RPServer.Models
@@ -16,6 +17,7 @@ namespace RPServer.Models
         public AppearanceModel Appearance;
         public HashSet<Alias> Aliases;
         public HashSet<VehicleModel> Vehicles;
+        public InventoryModel Inventory;
 
         public CharacterModel()
         {
@@ -63,6 +65,7 @@ namespace RPServer.Models
             Appearance = (await AppearanceModel.ReadByKeyAsync(() => AppearanceModel.Mock.CharacterID, this.ID)).FirstOrDefault();
             Aliases = await Alias.ReadAllByChar(this);
             Vehicles = (await VehicleModel.ReadByKeyAsync(() => VehicleModel.Mock.OwnerID, ID)).ToHashSet();
+            Inventory = await InventoryModel.LoadInventoryAsync(this);
         }
     }
 }

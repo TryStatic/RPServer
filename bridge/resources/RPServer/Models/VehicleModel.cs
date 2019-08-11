@@ -1,5 +1,6 @@
 ﻿using Dapper.Contrib.Extensions;
 using GTANetworkAPI;
+using RPServer.Models.Inventory;
 
 namespace RPServer.Models
 {
@@ -19,6 +20,9 @@ namespace RPServer.Models
             get => _plateText;
         }
         public short PlateStyle { set; get; }
+
+        public InventoryModel Trunk;
+        public InventoryModel Glovebox;
 
         public Vehicle VehEntity = null;
 

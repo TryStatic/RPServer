@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Dapper.Contrib.Extensions;
+using RPServer.Controllers;
+using RPServer.Models.Inventory;
+using RPServer.Util;
 
 namespace RPServer.Models
 {
@@ -9,9 +12,21 @@ namespace RPServer.Models
     {
         public DateTime ServerTime { get; set; }
 
+        public InventoryModel Inventory;
+
         public WorldModel() { }
 
         public static async Task<WorldModel> GetWorldData() => await ReadAsync(0);
         public static async Task SaveWorldData(WorldModel world) => await UpdateAsync(world);
+
+        public static async Task LoadWorldData()
+        {
+            Logger.GetInstance().ServerInfo("Loading World Settings.");
+            var worldData = await WorldModel.GetWorldData();
+            WorldHandler.CurrentTime = worldData.ServerTime;
+
+            Logger.GetInstance().ServerInfo("Loading World Dropped Items.");
+            worldData.Inventory = await InventoryModel.LoadWorldInventoryAsync();
+        }
     }
 }

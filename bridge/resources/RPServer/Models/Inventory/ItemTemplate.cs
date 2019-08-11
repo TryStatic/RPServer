@@ -1,63 +1,92 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.Common;
+using System.Threading.Tasks;
+using Dapper;
+using Dapper.Contrib.Extensions;
+using GTANetworkAPI;
+using RPServer.Controllers;
+using RPServer.Database;
 using RPServer.Util;
 
 namespace RPServer.Models.Inventory
 {
-    internal class ItemTemplate
+    [Table("itemstemplate")]
+    internal class ItemTemplate : Model<ItemTemplate>
     {
-        private static List<ItemTemplate> AllItems;
+        // id
+        public string Name { set; get; }
+        public string Desc { set; get; }
+        public int Type { get; set; }
+        public Action<Client> Action;
 
-        public int ItemID { set; get; }
-        public ItemType Type { get; set; } = ItemType.General;
-        public string Name { set; get; } = "";
-        public string Desc { set; get; } = "";
+        public static HashSet<ItemTemplate> ItemsTemplate;
 
-        public static void LoadAllItems()
+        public static async Task LoadItemTemplates()
         {
-            if (AllItems != null)
+            if (ItemsTemplate != null)
             {
-                Logger.GetInstance().ServerError("Item template list is already loaded.");
+                Logger.GetInstance().ServerError("Items template has already been initiated.");
                 return;
             }
 
-            Logger.GetInstance().ServerInfo("Initializing Items Template List.");
-            AllItems = new List<ItemTemplate>
+            Logger.GetInstance().ServerInfo("Loading Item Templates from the database.");
+
+            ItemsTemplate = new HashSet<ItemTemplate>();
+
+            const string query = "SELECT * FROM itemstemplate";
+
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
-                new ItemTemplate()
+                try
                 {
-                    ItemID = 1,
-                    Type = ItemType.Currency,
-                    Name = "USD",
-                    Desc = "Moneys",
-                },
-                new ItemTemplate()
-                {
-                    ItemID = 2,
-                    Type = ItemType.General,
-                    Name = "Dice",
-                    Desc = "An ordinary dice.",
+                    var result = await dbConn.QueryAsync<ItemTemplate>(query);
+                    ItemsTemplate = new HashSet<ItemTemplate>();
+                    foreach (var i in result)
+                    {
+                        var newItemTemplate = new ItemTemplate
+                        {
+                            ID = i.ID,
+                            Name = i.Name,
+                            Desc = i.Desc,
+                            Type = i.Type,
+                            Action = GetItemAction(i.ID)
+                        };
+                        ItemsTemplate.Add(newItemTemplate);
+                    }
                 }
-            };
+                catch (DbException ex)
+                {
+                    DbConnectionProvider.HandleDbException(ex);
+                }
+            }
         }
 
-        #region Generated
-        protected bool Equals(ItemTemplate other) => ItemID == other.ItemID;
-        public override bool Equals(object obj)
+        public ItemType GetItemType() => Enum.Parse<ItemType>(Type.ToString());
+
+        #region ItemAcions
+        private static Action<Client> GetItemAction(int id)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((ItemTemplate) obj);
+            switch (id)
+            {
+                case 2: // Dice
+                    return DiceRollAction;
+                default:
+                    return null;
+            }
         }
-        public override int GetHashCode() => ItemID;
-        public static bool operator ==(ItemTemplate left, ItemTemplate right) => Equals(left, right);
-        public static bool operator !=(ItemTemplate left, ItemTemplate right) => !Equals(left, right);
+
+        private static void DiceRollAction(Client client)
+        {
+            if(client == null) return;
+            ChatHandler.SendClientMessage(client, $"You rolled {RandomGenerator.GetInstance().Next(0,7)}");
+        }
         #endregion
+    }
 
-        internal enum ItemType
-        {
-            General,
-            Currency
-        }
+    internal enum ItemType
+    {
+        General, // 0
+        Currency // 1
     }
 }

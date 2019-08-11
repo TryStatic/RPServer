@@ -1,8 +1,6 @@
 using System;
-using System.Globalization;
 using System.Threading;
 using GTANetworkAPI;
-using RPServer.Controllers;
 using RPServer.Controllers.Util;
 using RPServer.Database;
 using RPServer.Email;
@@ -18,7 +16,7 @@ namespace RPServer.Game
         private static Timer _expiredEmailTokensTimer;
 
         [ServerEvent(Event.ResourceStart)]
-        public async void OnResourceStart()
+        public void OnResourceStart()
         {
             Console.ForegroundColor = ConsoleColor.White;
             Console.BackgroundColor = ConsoleColor.Blue;
@@ -32,6 +30,10 @@ namespace RPServer.Game
             NAPI.Server.SetDefaultSpawnLocation(DefaultSpawnPos);
             NAPI.Server.SetGlobalServerChat(false);
             NAPI.Server.SetCommandErrorMessage($"<span style=\'color: #ff6666;\'>Error: </span><span style=\'color: #e3e3e3;\'>We couldn't find that command. Use /helpme if you need further assistance.</span>");
+
+            // Resets
+            NAPI.World.ResetIplList();
+
             // Initialize the Logger 
             Logger.GetInstance();
 
@@ -47,7 +49,7 @@ namespace RPServer.Game
             DbConnectionProvider.ConnectionString = dbConnectionStringBuilder.ConnectionString;
 
             // Test SQL Connection
-            await DbConnectionProvider.TestConnection();
+            DbConnectionProvider.TestConnection().GetAwaiter().GetResult();
 
             // Get SMTP Settings (meta.xml)
             EmailSender.SmtpHost = NAPI.Resource.GetSetting<string>(this, "SMTP_HOST");
@@ -57,16 +59,14 @@ namespace RPServer.Game
             // Have expired tokens get removed once per hour
             _expiredEmailTokensTimer = new Timer(OnRemoveExpiredEmailTokens, null, 1, 1000 * 60 * 60);
 
-            // Read Sever World Settings from Database
-            var worldData = await WorldModel.GetWorldData();
-            WorldHandler.CurrentTime = worldData.ServerTime;
-            NAPI.World.ResetIplList();
-
             // Initialize ValidVehicleIDs
             DataValidator.InitializeValidVehicleModelIDs();
 
             // Populate Item Template List
-            ItemTemplate.LoadAllItems();
+            ItemTemplate.LoadItemTemplates().GetAwaiter().GetResult();
+
+            // Read Sever World Settings from Database
+            WorldModel.LoadWorldData().GetAwaiter().GetResult();
         }
 
         public static void OnServerShutdown()

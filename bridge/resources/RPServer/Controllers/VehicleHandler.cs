@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using GTANetworkMethods;
 using RPServer.Controllers.Util;
 using RPServer.InternalAPI.Extensions;
+using RPServer.Models.Inventory;
 using RPServer.Resource;
 using RPServer.Util;
 using static Shared.Data.Colors;
@@ -198,45 +199,65 @@ namespace RPServer.Controllers
 
         private void DespawnVehicle(Client client, int vehicleSqlID)
         {
+            // Find teh vehicle
             var vehToDespawn = client.GetActiveChar().Vehicles.FirstOrDefault(v => v.ID == vehicleSqlID);
 
+            // Exists?
             if (vehToDespawn == null)
             {
                 ChatHandler.SendCommandErrorText(client, "Couldn't find that vehicle");
                 return;
             }
 
+            // Is it spawned? (ie. has an entity attached on it?)
             if (vehToDespawn.VehEntity == null)
             {
                 ChatHandler.SendCommandErrorText(client, "That vehicle is not spawned.");
                 return;
             }
 
+            // Delete the entity
             vehToDespawn.VehEntity.Delete();
+
+            // Set the ref to null
             vehToDespawn.VehEntity = null;
+
             ChatHandler.SendCommandSuccessText(client, "Vehicle depawned.");
         }
 
         private void SpawnVehicle(Client client, int vehicleSqlID)
         {
+            // Find the vehicle in the database
             var vehToSpawn = client.GetActiveChar().Vehicles.FirstOrDefault(v => v.ID == vehicleSqlID);
 
+            // Exists?
             if (vehToSpawn == null)
             {
                 ChatHandler.SendCommandErrorText(client, "That vehicle id doesn't exist or you don't own it.");
                 return;
             }
 
+            // Is it spawned already?
             if (vehToSpawn.VehEntity != null)
             {
                 ChatHandler.SendCommandErrorText(client, "That vehicle is already spawned.");
                 return;
             }
 
+            // Load inventory stuff
+            vehToSpawn.Trunk = InventoryModel.LoadInventoryAsync(vehToSpawn, ItemModel.VehicleContainer.Trunk).GetAwaiter().GetResult();
+            vehToSpawn.Glovebox = InventoryModel.LoadInventoryAsync(vehToSpawn, ItemModel.VehicleContainer.Glovebox).GetAwaiter().GetResult();
+
+            // Create the entity
             vehToSpawn.VehEntity = NAPI.Vehicle.CreateVehicle(vehToSpawn.Model, client.Position.Around(3), 0, vehToSpawn.PrimaryColor, vehToSpawn.SecondaryColor);
+
+            // Set entity related stuff
             vehToSpawn.VehEntity.NumberPlate = vehToSpawn.PlateText;
             vehToSpawn.VehEntity.NumberPlateStyle = vehToSpawn.PlateStyle;
+
+            // Attach our vehicle instance on the entity
             vehToSpawn.VehEntity.SetData(DataKey.ServerVehicleData, vehToSpawn);
+
             ChatHandler.SendCommandSuccessText(client, "Vehicle spawned.");
         }
 
