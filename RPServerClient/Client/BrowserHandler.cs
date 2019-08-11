@@ -4,21 +4,22 @@ using System.Linq;
 using RAGE;
 using RAGE.Ui;
 using RPServerClient.Util;
+using Shared.Enums;
 
 namespace RPServerClient.Client
 {
-    internal class BrowserHandler : RAGE.Events.Script
+    internal class BrowserHandler : Events.Script
     {
         private static object[] _parameters;
         public static HtmlWindow BrowserHtmlWindow;
 
         public BrowserHandler()
         {
-            RAGE.Events.Add("createBrowser", CreateBrowser);
-            RAGE.Events.Add("executeFunction", ExecuteFunction);
-            RAGE.Events.Add("destroyBrowser", DestroyBrowser);
-            RAGE.Events.OnBrowserCreated += OnBrowserCreated;
-            RAGE.Events.Tick += Tick;
+            Events.Add("createBrowser", CreateBrowser);
+            Events.Add("executeFunction", ExecuteFunction);
+            Events.Add("destroyBrowser", DestroyBrowser);
+            Events.OnBrowserCreated += OnBrowserCreated;
+            Events.Tick += Tick;
         }
 
         public static void CreateBrowser(object[] args)
@@ -36,18 +37,15 @@ namespace RPServerClient.Client
         public static void CreateBrowser(string link)
         {
             if (string.IsNullOrWhiteSpace(link))
-            {
                 throw new Exception("CustomBrowser.CreateBrowser(string link) => Link is null or empty");
-            }
-            CreateBrowser(new object[]{link});
+            CreateBrowser(new object[] {link});
         }
 
         /// <summary>
-        /// Example: DisplayHi calls DisplayHi();
+        ///     Example: DisplayHi calls DisplayHi();
         /// </summary>
         public static void ExecuteFunction(string funcName)
         {
-
             if (string.IsNullOrWhiteSpace(funcName))
             {
                 RAGE.Chat.Output("[ExecuteFunction(string fn)]: fn null or empty or whitespace");
@@ -55,7 +53,6 @@ namespace RPServerClient.Client
             }
 
             BrowserHtmlWindow.ExecuteJs($"{funcName}();");
-
         }
 
         public static void ExecuteFunction(object[] args)
@@ -65,13 +62,11 @@ namespace RPServerClient.Client
 
             // Split the function and arguments
             var function = args[0].ToString();
-            object[] arguments = args.Skip(1).ToArray();
+            var arguments = args.Skip(1).ToArray();
 
-            foreach (object arg in arguments)
-            {
+            foreach (var arg in arguments)
                 // Append all the arguments
-                input += input.Length > 0 ? (", '" + arg + "'") : ("'" + arg + "'");
-            }
+                input += input.Length > 0 ? ", '" + arg + "'" : "'" + arg + "'";
             // Call the function with the parameters
             BrowserHtmlWindow.ExecuteJs($"{function}({input});");
         }
@@ -93,17 +88,15 @@ namespace RPServerClient.Client
             Cursor.Visible = true;
 
             if (_parameters != null && _parameters.Length > 0)
-            {
                 // Call the function passed as parameter
                 ExecuteFunction(_parameters);
-            }
         }
 
         private void Tick(List<Events.TickNametagData> nametags)
         {
-            if(Chat.Chat.IsChatInputActive) return;
+            if (Chat.Chat.IsChatInputActive) return;
 
-            KeyManager.KeyBind(Shared.Enums.KeyCodes.VK_F2, () => Cursor.Visible = !Cursor.Visible);
+            KeyManager.KeyBind(KeyCodes.VK_F2, () => Cursor.Visible = !Cursor.Visible);
         }
     }
 }

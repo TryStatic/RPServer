@@ -1,16 +1,17 @@
 using Multiplayer;
+using RAGE;
 using RAGE.Elements;
 using RPServerClient.Client;
 using RPServerClient.Util;
-using Events = RAGE.Events;
+using Shared.Enums;
 
 namespace RPServerClient.Character
 {
     internal class CharCreator : Events.Script
     {
+        private static CamHandler _camera;
         private readonly Quaternion _displayPos = new Quaternion(-169.3321f, 482.2647f, 133.8789f, 282.6658f);
         private readonly Quaternion _hiddenPos = new Quaternion(-163.4660f, 483.5910f, 134.5571f, 282.6658f);
-        private static CamHandler _camera;
 
         public CharCreator()
         {
@@ -36,24 +37,26 @@ namespace RPServerClient.Character
 
         private void OnSuccessCharCreation(object[] args)
         {
-            BrowserHandler.ExecuteFunction(new object[] { "ShowStep", "7" });
+            BrowserHandler.ExecuteFunction(new object[] {"ShowStep", "7"});
         }
 
         private void ResetCharCreation(object[] args)
         {
             ResetAppearance(Player.LocalPlayer);
-            BrowserHandler.ExecuteFunction(new object[] { "ShowStep", "1" });
-            if (args != null && args.Length > 0) DisplayError(new object[] { args[0].ToString() });
+            BrowserHandler.ExecuteFunction(new object[] {"ShowStep", "1"});
+            if (args != null && args.Length > 0) DisplayError(new object[] {args[0].ToString()});
         }
 
         #region InitilationDestruction
+
         private void OnInitCharCreator(object[] args)
         {
             UnStageModel(Player.LocalPlayer);
             ResetAppearance(Player.LocalPlayer);
             BrowserHandler.CreateBrowser("package://CEF/char/charcreator.html");
             _camera = new CamHandler();
-            _camera.SetPos(Helper.GetPosInFrontOfVector3(_displayPos.GetVector3Part(), _displayPos.W, 1.5f), _displayPos.GetVector3Part());
+            _camera.SetPos(Helper.GetPosInFrontOfVector3(_displayPos.GetVector3Part(), _displayPos.W, 1.5f),
+                _displayPos.GetVector3Part());
             _camera.SetActive(true, true, 3000);
         }
 
@@ -71,9 +74,11 @@ namespace RPServerClient.Character
             var dataAsJson = args[0].ToString();
             Events.CallRemote(Shared.Events.ClientToServer.Character.SubmitNewCharacter, dataAsJson);
         }
+
         #endregion
 
         #region LocalDisplayCustomization
+
         private void SubmitInitialCharData(object[] args)
         {
             if (args == null || args.Length < 3)
@@ -81,9 +86,9 @@ namespace RPServerClient.Character
 
             var firstname = args[0].ToString();
             var lastname = args[1].ToString();
-            var isMale = (bool)args[2];
+            var isMale = (bool) args[2];
 
-            Player.LocalPlayer.Model = isMale ? (uint)1885233650 : 2627665880;
+            Player.LocalPlayer.Model = isMale ? 1885233650 : 2627665880;
 
             Events.CallRemote(Shared.Events.ClientToServer.Character.SubmitInitialCharData, firstname, lastname);
         }
@@ -94,11 +99,12 @@ namespace RPServerClient.Character
             Events.CallRemote(Shared.Events.ClientToServer.Character.ApplyCharacterEditAnimation);
             BrowserHandler.ExecuteFunction("ShowNextStep");
 
-            _camera.PointAtBone(Player.LocalPlayer, Shared.Enums.Bone.IK_Head, Player.LocalPlayer.GetHeading(), 0.35f, true);
+            _camera.PointAtBone(Player.LocalPlayer, Bone.IK_Head, Player.LocalPlayer.GetHeading(), 0.35f, true);
 
             // Set naked
             if (Player.LocalPlayer.Model == 1885233650)
-            { // male
+            {
+                // male
                 Player.LocalPlayer.SetComponentVariation(1, 0, 0, 0);
                 Player.LocalPlayer.SetComponentVariation(3, 15, 0, 0);
                 Player.LocalPlayer.SetComponentVariation(4, 61, 0, 0);
@@ -107,29 +113,29 @@ namespace RPServerClient.Character
                 Player.LocalPlayer.SetComponentVariation(11, 14, 20, 0);
             }
             else
-            { // female
+            {
+                // female
                 Player.LocalPlayer.SetComponentVariation(3, 15, 0, 0);
                 Player.LocalPlayer.SetComponentVariation(4, 17, 0, 0);
                 Player.LocalPlayer.SetComponentVariation(6, 35, 0, 0);
                 Player.LocalPlayer.SetComponentVariation(8, 2, 0, 0);
                 Player.LocalPlayer.SetComponentVariation(11, 5, 4, 0);
             }
-
-
         }
 
         private void OnUpdateHeadBlend(object[] args)
         {
             if (args == null || args.Length < 6) return;
 
-            var shapeFirst = (int)args[0];
-            var shapeSecond = (int)args[1];
-            var skinFirst = (int)args[2];
-            var skinSecond = (int)args[3];
-            var shapeMix = (float)args[4];
-            var skinMix = (float)args[5];
+            var shapeFirst = (int) args[0];
+            var shapeSecond = (int) args[1];
+            var skinFirst = (int) args[2];
+            var skinSecond = (int) args[3];
+            var shapeMix = (float) args[4];
+            var skinMix = (float) args[5];
 
-            Player.LocalPlayer.SetHeadBlendData(shapeFirst, shapeSecond, skinFirst, skinSecond, 0, 0, shapeMix, skinMix, 0, false);
+            Player.LocalPlayer.SetHeadBlendData(shapeFirst, shapeSecond, skinFirst, skinSecond, 0, 0, shapeMix, skinMix,
+                0, false);
         }
 
         private void OnUpdateFaceFeature(object[] args)
@@ -143,11 +149,11 @@ namespace RPServerClient.Character
 
         private void OnUpdateExtras(object[] args)
         {
-            var Hairstyle = (int)args[0];
-            var HairColor = (int)args[1];
-            var HairHighlightColor = (int)args[2];
-            var HairStyleTexture = (int)args[3];
-            var EyeColor = (int)args[4];
+            var Hairstyle = (int) args[0];
+            var HairColor = (int) args[1];
+            var HairHighlightColor = (int) args[2];
+            var HairStyleTexture = (int) args[3];
+            var EyeColor = (int) args[4];
             Player.LocalPlayer.SetComponentVariation(2, Hairstyle, HairStyleTexture, 0);
             Player.LocalPlayer.SetHairColor(HairColor, HairHighlightColor);
             Player.LocalPlayer.SetEyeColor(EyeColor);
@@ -166,9 +172,11 @@ namespace RPServerClient.Character
                 Player.LocalPlayer.SetHeadOverlayColor(indx, 1, color, secColor);
             else if (indx == 5 || indx == 8) Player.LocalPlayer.SetHeadOverlayColor(indx, 2, color, secColor);
         }
+
         #endregion
 
         #region HelperMethods
+
         private void ResetAppearance(Player player)
         {
             player.SetHeadBlendData(0, 0, 0, 0, 0, 0, 0, 0, 0, false);
@@ -196,9 +204,9 @@ namespace RPServerClient.Character
 
             var msg = args[0] as string;
 
-            BrowserHandler.ExecuteFunction(new object[] { "showError", msg.Replace("'", @"\'") });
+            BrowserHandler.ExecuteFunction(new object[] {"showError", msg.Replace("'", @"\'")});
         }
+
         #endregion
     }
-
 }

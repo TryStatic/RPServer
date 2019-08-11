@@ -12,10 +12,21 @@ namespace RPServerClient.Client
         }
 
         #region SharedDataProps
-        public static bool IsAccountLoggedIn => Player.LocalPlayer.GetSharedData(Keys.AccountLoggedIn) != null && (bool) Player.LocalPlayer.GetSharedData(Keys.AccountLoggedIn);
-        public static bool HasActiveChar => Player.LocalPlayer.GetSharedData(Keys.ActiveCharID) != null && (int) Player.LocalPlayer.GetSharedData(Keys.ActiveCharID) > 0;
-        public static int GetActiveCharID => Player.LocalPlayer.GetSharedData(Keys.ActiveCharID) == null ? -1 : (int)Player.LocalPlayer.GetSharedData(Keys.ActiveCharID);
-        public static string ServerVersion => Player.LocalPlayer.GetSharedData(Keys.ServerVersion) == null ? null : (string)Player.LocalPlayer.GetSharedData(Keys.ServerVersion);
+
+        public static bool IsAccountLoggedIn => Player.LocalPlayer.GetSharedData(Keys.AccountLoggedIn) != null &&
+                                                (bool) Player.LocalPlayer.GetSharedData(Keys.AccountLoggedIn);
+
+        public static bool HasActiveChar => Player.LocalPlayer.GetSharedData(Keys.ActiveCharID) != null &&
+                                            (int) Player.LocalPlayer.GetSharedData(Keys.ActiveCharID) > 0;
+
+        public static int GetActiveCharID => Player.LocalPlayer.GetSharedData(Keys.ActiveCharID) == null
+            ? -1
+            : (int) Player.LocalPlayer.GetSharedData(Keys.ActiveCharID);
+
+        public static string ServerVersion => Player.LocalPlayer.GetSharedData(Keys.ServerVersion) == null
+            ? null
+            : (string) Player.LocalPlayer.GetSharedData(Keys.ServerVersion);
+
         #endregion
     }
 }

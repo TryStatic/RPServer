@@ -1,7 +1,7 @@
 ﻿using RAGE;
-using RAGE.Elements;
+using RAGE.Game;
 using RPServerClient.Client;
-using Events = RAGE.Events;
+using Player = RAGE.Elements.Player;
 
 // ReSharper disable CommentTypo
 
@@ -11,25 +11,32 @@ namespace RPServerClient.Authentication
     {
         private static CamHandler _camera;
 
-        private static readonly Vector3 LoginCamPos = new Vector3(148.88035583496094f, -1407.726318359375f, 156.79771423339844f);
-        private static readonly Vector3 LoginCamPointAt = new Vector3(126.11740112304688f, -772.676025390625f, 155.15695190429688f);
+        private static readonly Vector3 LoginCamPos =
+            new Vector3(148.88035583496094f, -1407.726318359375f, 156.79771423339844f);
+
+        private static readonly Vector3 LoginCamPointAt =
+            new Vector3(126.11740112304688f, -772.676025390625f, 155.15695190429688f);
 
         public Authentication()
         {
             #region SERVER_TO_CLIENT
+
             Events.Add(Shared.Events.ServerToClient.Authentication.SetLoginScreen, OnSetLoginScreen);
             Events.Add(Shared.Events.ServerToClient.Authentication.DisplayError, OnDisplayError);
             Events.Add(Shared.Events.ServerToClient.Authentication.RegistrationSuccess, OnRegistrationSuccess);
             Events.Add(Shared.Events.ServerToClient.Authentication.Show2FAbyEmailAddress, OnShow2FAbyEmailAddress);
             Events.Add(Shared.Events.ServerToClient.Authentication.Show2FAbyGoogleAuth, OnShow2FAbyGoogleAuth);
-            Events.Add(Shared.Events.ServerToClient.Authentication.ShowInitialEmailVerification, OnShowInitialEmailVerification);
+            Events.Add(Shared.Events.ServerToClient.Authentication.ShowInitialEmailVerification,
+                OnShowInitialEmailVerification);
             Events.Add(Shared.Events.ServerToClient.Authentication.ShowChangeEmailAddress, OnShowChangeEmailAddress);
             Events.Add(Shared.Events.ServerToClient.Authentication.ShowLoginPage, OnShowLoginPage);
             Events.Add(Shared.Events.ServerToClient.Authentication.ShowQRCode, OnShowQRCode);
             Events.Add(Shared.Events.ServerToClient.Authentication.ShowQRCodeEnabled, OnShowQRCodeEnabled);
+
             #endregion
 
             #region CEF_TO_CLIENT
+
             // From multiple pages
             Events.Add("onBackToLogin", OnBackToLogin);
             Events.Add("onResendMail", OnResendMail);
@@ -52,6 +59,7 @@ namespace RPServerClient.Authentication
             // From enabledgoogleauth.html
             Events.Add("onCloseWindow", OnCloseWindow);
             Events.Add("onSubmitEnableGoogleAuthCode", onSubmitEnableGoogleAuthCode);
+
             #endregion
         }
 
@@ -70,7 +78,7 @@ namespace RPServerClient.Authentication
             if (args[0] == null) return;
             var link = args[0].ToString();
             BrowserHandler.CreateBrowser("package://CEF/auth/enablegoogleauth.html");
-            BrowserHandler.ExecuteFunction(new object[] { "addImage", link });
+            BrowserHandler.ExecuteFunction(new object[] {"addImage", link});
         }
 
         private void OnShowLoginPage(object[] args)
@@ -86,37 +94,39 @@ namespace RPServerClient.Authentication
         private void OnShow2FAbyGoogleAuth(object[] args)
         {
             BrowserHandler.BrowserHtmlWindow.Url = "package://CEF/auth/verifygoogleauth.html";
-            if(args[0] != null) OnDisplayError(new[] { args[0] });
+            if (args[0] != null) OnDisplayError(new[] {args[0]});
         }
 
         private void OnShow2FAbyEmailAddress(object[] args)
         {
             BrowserHandler.BrowserHtmlWindow.Url = "package://CEF/auth/verifyemail.html";
-            if (args[0] != null) OnDisplayError(new[] { args[0] });
+            if (args[0] != null) OnDisplayError(new[] {args[0]});
         }
 
         private void OnShowChangeEmailAddress(object[] args)
         {
             BrowserHandler.BrowserHtmlWindow.Url = "package://CEF/auth/changemail.html";
-            if (args[0] != null) OnDisplayError(new[] { args[0] });
+            if (args[0] != null) OnDisplayError(new[] {args[0]});
         }
 
         private void OnRegistrationSuccess(object[] args)
         {
             BrowserHandler.BrowserHtmlWindow.Url = "package://CEF/auth/login.html";
-            if (args[0] != null) OnDisplaySuccess(new[] { args[0] });
+            if (args[0] != null) OnDisplaySuccess(new[] {args[0]});
         }
 
         private void onSubmitEnableGoogleAuthCode(object[] args)
         {
             BrowserHandler.ExecuteFunction("ShowLoading");
-            Events.CallRemote(Shared.Events.ClientToServer.Authentication.SubmitEnableGoogleAuthCode, args[0].ToString());
+            Events.CallRemote(Shared.Events.ClientToServer.Authentication.SubmitEnableGoogleAuthCode,
+                args[0].ToString());
         }
 
         private void OnSubmitNewEmail(object[] args)
         {
             BrowserHandler.ExecuteFunction("ShowLoading");
-            Events.CallRemote(Shared.Events.ClientToServer.Authentication.SubmitNewVerificationEmail, args[0].ToString());
+            Events.CallRemote(Shared.Events.ClientToServer.Authentication.SubmitNewVerificationEmail,
+                args[0].ToString());
         }
 
         private void OnSubmitFirstEmailToken(object[] args)
@@ -163,13 +173,15 @@ namespace RPServerClient.Authentication
         private void OnSubmitLogin(object[] args)
         {
             BrowserHandler.ExecuteFunction("ShowLoading");
-            Events.CallRemote(Shared.Events.ClientToServer.Authentication.SubmitLoginAccount, args[0].ToString(), args[1].ToString());
+            Events.CallRemote(Shared.Events.ClientToServer.Authentication.SubmitLoginAccount, args[0].ToString(),
+                args[1].ToString());
         }
 
         private void OnSubmitRegister(object[] args)
         {
             BrowserHandler.ExecuteFunction("ShowLoading");
-            Events.CallRemote(Shared.Events.ClientToServer.Authentication.SubmitRegisterAccount, args[0].ToString(), args[1].ToString(), args[2].ToString());
+            Events.CallRemote(Shared.Events.ClientToServer.Authentication.SubmitRegisterAccount, args[0].ToString(),
+                args[1].ToString(), args[2].ToString());
         }
 
         private void OnDisplayError(object[] args)
@@ -179,7 +191,7 @@ namespace RPServerClient.Authentication
             var msg = args[0] as string;
 
             BrowserHandler.ExecuteFunction("HideLoading");
-            BrowserHandler.ExecuteFunction(new object[] { "showError", msg.Replace("'", @"\'") });
+            BrowserHandler.ExecuteFunction(new object[] {"showError", msg.Replace("'", @"\'")});
         }
 
         private void OnDisplaySuccess(object[] args)
@@ -189,7 +201,7 @@ namespace RPServerClient.Authentication
             var msg = args[0] as string;
 
             BrowserHandler.ExecuteFunction("HideLoading");
-            BrowserHandler.ExecuteFunction(new object[] { "showSuccess", msg.Replace("'", @"\'") });
+            BrowserHandler.ExecuteFunction(new object[] {"showSuccess", msg.Replace("'", @"\'")});
         }
 
         private void OnSetLoginScreen(object[] args)
@@ -197,12 +209,13 @@ namespace RPServerClient.Authentication
             var state = (bool) args[0];
 
             if (state)
-            { // Enable
+            {
+                // Enable
                 BrowserHandler.CreateBrowser("package://CEF/auth/login.html");
-                RAGE.Game.Graphics.TransitionToBlurred(200);
+                Graphics.TransitionToBlurred(200);
                 Player.LocalPlayer.FreezePosition(true);
-                RAGE.Game.Ui.DisplayHud(false);
-                RAGE.Game.Ui.DisplayRadar(false);
+                Ui.DisplayHud(false);
+                Ui.DisplayRadar(false);
                 _camera = new CamHandler();
                 _camera.SetPos(LoginCamPos, LoginCamPointAt, true);
                 RAGE.Chat.Show(false);
@@ -210,7 +223,7 @@ namespace RPServerClient.Authentication
             else
             {
                 BrowserHandler.DestroyBrowser(null);
-                RAGE.Game.Graphics.TransitionFromBlurred(200);
+                Graphics.TransitionFromBlurred(200);
                 _camera.SetActive(false);
                 _camera.Destroy();
                 _camera = null;

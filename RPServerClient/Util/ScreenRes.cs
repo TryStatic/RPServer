@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Drawing;
+using RAGE.Game;
 
 namespace RPServerClient.Util
 {
     internal static class ScreenRes
     {
         public const int UIStandardResX = 1280;
-        public const int UIStandardResY =  720;
+        public const int UIStandardResY = 720;
 
         public static int ClientResX
         {
@@ -14,7 +15,7 @@ namespace RPServerClient.Util
             {
                 var screenX = 0;
                 var screenY = 0;
-                RAGE.Game.Graphics.GetActiveScreenResolution(ref screenX, ref screenY);
+                Graphics.GetActiveScreenResolution(ref screenX, ref screenY);
                 return screenX;
             }
         }
@@ -25,7 +26,7 @@ namespace RPServerClient.Util
             {
                 var screenX = 0;
                 var screenY = 0;
-                RAGE.Game.Graphics.GetActiveScreenResolution(ref screenX, ref screenY);
+                Graphics.GetActiveScreenResolution(ref screenX, ref screenY);
                 return screenY;
             }
         }
@@ -36,7 +37,7 @@ namespace RPServerClient.Util
             {
                 var pY = 0;
                 var pX = 0;
-                RAGE.Game.Graphics.GetActiveScreenResolution(ref pX, ref pY);
+                Graphics.GetActiveScreenResolution(ref pX, ref pY);
                 return new Point(pX, pY);
             }
         }

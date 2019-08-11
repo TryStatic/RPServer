@@ -1,8 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
+using RAGE;
 using RAGE.Elements;
+using RAGE.Game;
+using RAGE.NUI;
 using RPServerClient.Character.Util;
 using RPServerClient.Client;
-using Events = RAGE.Events;
+using Entity = RAGE.Elements.Entity;
+using Player = RAGE.Elements.Player;
 
 namespace RPServerClient.Character
 {
@@ -25,7 +30,7 @@ namespace RPServerClient.Character
             if (entity.Type != Type.Player) return;
             var p = (Player) entity;
 
-            if(!Client.Globals.IsAccountLoggedIn || !Client.Globals.HasActiveChar) return;
+            if (!Globals.IsAccountLoggedIn || !Globals.HasActiveChar) return;
 
             Events.CallRemote(Shared.Events.ClientToServer.Character.RequestAliasInfo, p.RemoteId);
         }
@@ -33,9 +38,9 @@ namespace RPServerClient.Character
         private void OnPlayerStreamOut(Entity entity)
         {
             if (entity.Type != Type.Player) return;
-            var p = (Player)entity;
+            var p = (Player) entity;
 
-            if (!Client.Globals.IsAccountLoggedIn || !Client.Globals.HasActiveChar) return;
+            if (!Globals.IsAccountLoggedIn || !Globals.HasActiveChar) return;
 
             ClientAlises.RemoveAll(al => al.Player == p);
         }
@@ -62,11 +67,14 @@ namespace RPServerClient.Character
 
             foreach (var alias in ClientAlises)
             {
-                if(Player.LocalPlayer.Position.DistanceToSquared(alias.Player.Position) < AliasDisplayDistance) continue;
+                if (Player.LocalPlayer.Position.DistanceToSquared(alias.Player.Position) <
+                    AliasDisplayDistance) continue;
 
-                RAGE.Game.Graphics.SetDrawOrigin(alias.Player.Position.X, alias.Player.Position.Y, alias.Player.Position.Z + 1f, 0);
-                RAGE.NUI.UIResText.Draw(alias.AliasText, 0, 0, RAGE.Game.Font.ChaletLondon, 0.3f, System.Drawing.Color.White, RAGE.NUI.UIResText.Alignment.Centered, false, false, 0);
-                RAGE.Game.Graphics.ClearDrawOrigin();
+                Graphics.SetDrawOrigin(alias.Player.Position.X, alias.Player.Position.Y, alias.Player.Position.Z + 1f,
+                    0);
+                UIResText.Draw(alias.AliasText, 0, 0, Font.ChaletLondon, 0.3f, Color.White,
+                    UIResText.Alignment.Centered, false, false, 0);
+                Graphics.ClearDrawOrigin();
             }
         }
     }

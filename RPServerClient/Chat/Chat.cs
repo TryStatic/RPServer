@@ -1,15 +1,14 @@
-using System;
 using System.Text.RegularExpressions;
 using RAGE;
+using RAGE.Elements;
 using RAGE.Ui;
 using RPServerClient.Character;
 using RPServerClient.Chat.Util;
 using RPServerClient.Util;
-using Player = RAGE.Elements.Player;
 
 namespace RPServerClient.Chat
 {
-    internal class Chat : RAGE.Events.Script
+    internal class Chat : Events.Script
     {
         public static HtmlWindow ChatBrowser;
         public static bool IsChatInputActive;
@@ -21,25 +20,26 @@ namespace RPServerClient.Chat
             ChatBrowser = new HtmlWindow("package://CEF/chat/index.html");
             ChatBrowser.MarkAsChat();
 
-            RAGE.Events.OnPlayerChat += OnPlayerChat;
+            Events.OnPlayerChat += OnPlayerChat;
 
-            RAGE.Events.Add(Shared.Events.ServerToClient.Chat.PushChatMessage, OnPushChatMessage);
-            RAGE.Events.Add(Shared.Events.ServerToClient.Chat.PushActionMessage, OnPushActionMessage);
-            RAGE.Events.Add(Shared.Events.ServerToClient.Chat.PushDescriptionMessage, OnPushDescriptionMessage);
-            RAGE.Events.Add(Shared.Events.ServerToClient.Chat.PushChatMessageUnfiltered, OnPushChatMessageUnfiltered);
+            Events.Add(Shared.Events.ServerToClient.Chat.PushChatMessage, OnPushChatMessage);
+            Events.Add(Shared.Events.ServerToClient.Chat.PushActionMessage, OnPushActionMessage);
+            Events.Add(Shared.Events.ServerToClient.Chat.PushDescriptionMessage, OnPushDescriptionMessage);
+            Events.Add(Shared.Events.ServerToClient.Chat.PushChatMessageUnfiltered, OnPushChatMessageUnfiltered);
 
-            RAGE.Events.Add("changeChatState", OnChangeChatState); // Triggered directly by chat.js
+            Events.Add("changeChatState", OnChangeChatState); // Triggered directly by chat.js
         }
 
         private void OnChangeChatState(object[] args)
         {
-            if(args == null || args.Length < 1) return;
+            if (args == null || args.Length < 1) return;
             var state = (bool) args[0];
             IsChatInputActive = state;
         }
 
         private void OnPlayerChat(string text, Events.CancelEventArgs cancel)
-        { // Chat
+        {
+            // Chat
 
             var chatmode = Player.LocalPlayer.GetData<ChatMode>(LocalDataKeys.CurrentChatMode);
 
@@ -115,10 +115,7 @@ namespace RPServerClient.Chat
 
             foreach (Match m in matches)
             {
-                if (m.Length != 10)
-                {
-                    return "";
-                }
+                if (m.Length != 10) return "";
 
                 var hexColor = m.Value.Remove(9).Remove(0, 2);
 
@@ -127,7 +124,8 @@ namespace RPServerClient.Chat
 
                 counter++;
             }
-            if (counter != 0) message = message.Insert(message.Length, $"</span>");
+
+            if (counter != 0) message = message.Insert(message.Length, "</span>");
             return message;
         }
 
@@ -139,21 +137,13 @@ namespace RPServerClient.Chat
         private string GetSenderName(int senderID)
         {
             if (Player.LocalPlayer.RemoteId == senderID)
-            { // this was send by this client
+                // this was send by this client
                 return $"{Player.LocalPlayer.Name}";
-            }
-            else
-            {
-                var alias = AliasManager.ClientAlises.Find(al => al.Player.RemoteId == senderID);
-                if (alias == null)
-                {
-                    return $"Stranger ({senderID})";
-                }
-                else
-                {
-                    return $"{alias.AliasText}";
-                }
-            }
+
+            var alias = AliasManager.ClientAlises.Find(al => al.Player.RemoteId == senderID);
+            if (alias == null)
+                return $"Stranger ({senderID})";
+            return $"{alias.AliasText}";
         }
     }
 }

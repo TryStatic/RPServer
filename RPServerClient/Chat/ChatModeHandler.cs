@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using RAGE;
+using RAGE.Elements;
 using RPServerClient.Character;
 using RPServerClient.Chat.Util;
 using RPServerClient.Client;
 using RPServerClient.Util;
+using Shared.Enums;
 
 namespace RPServerClient.Chat
 {
@@ -20,14 +22,14 @@ namespace RPServerClient.Chat
 
         private void OnCharacterSpawn(object source, EventArgs e)
         {
-            var player = source as RAGE.Elements.Player;
+            var player = source as Player;
 
             player?.SetData(LocalDataKeys.CurrentChatMode, ChatMode.Normal);
         }
 
         private void OnCharacterDespawn(object source, EventArgs e)
         {
-            var player = source as RAGE.Elements.Player;
+            var player = source as Player;
             player?.SetData(LocalDataKeys.CurrentChatMode, ChatMode.Normal);
         }
 
@@ -35,11 +37,11 @@ namespace RPServerClient.Chat
         {
             if (!Globals.IsAccountLoggedIn || !Globals.HasActiveChar || Chat.IsChatInputActive) return;
 
-            KeyManager.KeyBind(Shared.Enums.KeyCodes.VK_CONTROL, Shared.Enums.KeyCodes.VK_B, () =>
+            KeyManager.KeyBind(KeyCodes.VK_CONTROL, KeyCodes.VK_B, () =>
             {
-                    var chatmode = RAGE.Elements.Player.LocalPlayer.GetData<ChatMode>(LocalDataKeys.CurrentChatMode);
-                    chatmode = chatmode.Next();
-                    RAGE.Elements.Player.LocalPlayer.SetData(LocalDataKeys.CurrentChatMode, chatmode);
+                var chatmode = Player.LocalPlayer.GetData<ChatMode>(LocalDataKeys.CurrentChatMode);
+                chatmode = chatmode.Next();
+                Player.LocalPlayer.SetData(LocalDataKeys.CurrentChatMode, chatmode);
             });
         }
     }

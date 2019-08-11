@@ -1,15 +1,18 @@
-﻿namespace RPServerClient.Client
+﻿using RAGE;
+using Shared.Events.ClientToServer;
+
+namespace RPServerClient.Client
 {
-    internal class EventsHandler : RAGE.Events.Script
+    internal class EventsHandler : Events.Script
     {
         public EventsHandler()
         {
-            RAGE.Events.OnPlayerCommand += OnPlayerCommandEvent;
+            Events.OnPlayerCommand += OnPlayerCommandEvent;
         }
 
-        private void OnPlayerCommandEvent(string cmd, RAGE.Events.CancelEventArgs cancel)
+        private void OnPlayerCommandEvent(string cmd, Events.CancelEventArgs cancel)
         {
-            RAGE.Events.CallRemote(Shared.Events.ClientToServer.Command.SubmitPlayerCommand, cmd);
+            Events.CallRemote(Command.SubmitPlayerCommand, cmd);
         }
     }
 }
