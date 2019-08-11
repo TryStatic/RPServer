@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using RPServer.Util;
 
 namespace RPServer.Controllers.Util
 {
@@ -29,5 +31,21 @@ namespace RPServer.Controllers.Util
         public string GetNextToken() => _tokens.TryDequeue(out var text) ? text : null;
 
         public bool HasNextToken() => _tokens.Count > 0;
+        public bool HasNextToken(Type type)
+        {
+            if (!HasNextToken()) return false;
+
+            if (type == typeof(int))
+            {
+                var token = _tokens.Peek();
+                var isInt = int.TryParse(token, out var result);
+                return isInt;
+            }
+            else
+            {
+                Logger.GetInstance().ServerError("HasNextToken doesn't support " + type);
+                return false;
+            }
+        }
     }
 }

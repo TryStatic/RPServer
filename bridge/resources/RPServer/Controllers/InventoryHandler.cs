@@ -33,21 +33,12 @@ namespace RPServer.Controllers
             switch (cmdParser.GetNextToken())
             {
                 case CmdStrings.SUBCMD_Inventory_Use:
-                    if (!cmdParser.HasNextToken())
+                    if (!cmdParser.HasNextToken(typeof(int)))
                     {
                         ChatHandler.SendCommandUsageText(client, "/inv(entory) use [itemID]");
                         return;
                     }
-                    int itemUseID;
-                    try
-                    {
-                        itemUseID = int.Parse(cmdParser.GetNextToken());
-                    }
-                    catch (Exception)
-                    {
-                        ChatHandler.SendCommandUsageText(client, "/v(ehicle) despawn [vehicleID]");
-                        return;
-                    }
+                    var itemUseID = int.Parse(cmdParser.GetNextToken());
                     UseItem(client, itemUseID);
                     break;
                 case CmdStrings.SUBCMD_Inventory_Drop:
