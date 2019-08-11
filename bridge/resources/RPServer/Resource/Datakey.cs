@@ -8,6 +8,5 @@
 
         public const string TimerPlayerSaveData = "SAVE_PLAYER_DATA_TIMER";
         public const string TimerPlayerMinuteSpent = "PLAYER_MINUTE_SPENT_TIMER";
-
     }
 }

@@ -7,7 +7,7 @@
         Hair = 2,
         Torso = 3,
         Legs = 4,
-        BagsParachutes =5,
+        BagsParachutes = 5,
         Shoes = 6,
         Accessories = 7,
         Undershirts = 8,

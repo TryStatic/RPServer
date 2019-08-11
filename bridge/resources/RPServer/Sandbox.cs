@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
 using GTANetworkAPI;
 using RPServer.Controllers;
@@ -13,23 +11,18 @@ using RPServer.InternalAPI;
 using RPServer.InternalAPI.Extensions;
 using RPServer.Util;
 using Shared.Enums;
-using Entity = GTANetworkAPI.Entity;
-using Vehicle = GTANetworkAPI.Vehicle;
 
 namespace RPServer
 {
     internal class Sandbox : Script
     {
-        public Sandbox()
-        {
-        }
-
         [Command("allcmds", GreedyArg = true)]
         public void CMD_AllCmds(Client client)
         {
-            string cmdList = "";
+            var cmdList = "";
             var list = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).SelectMany(x =>
-                    x.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+                    x.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public |
+                                 BindingFlags.NonPublic)
                         .Where(ifo => ifo.CustomAttributes.Any(att => att.AttributeType == typeof(CommandAttribute))))
                 .ToList();
 
@@ -39,6 +32,7 @@ namespace RPServer
                 var cmd = customAttribute.CommandString;
                 cmdList += $"{cmd}, ";
             }
+
             ChatHandler.SendClientMessage(client, cmdList);
         }
 
@@ -65,7 +59,8 @@ namespace RPServer
         [Command("createmarker")]
         public void cmd_createmarker(Client client, uint type)
         {
-            NAPI.Marker.CreateMarker(type, client.Position, new Vector3(), new Vector3(), 1.0f, new Color(255, 0, 125), true, 0);
+            NAPI.Marker.CreateMarker(type, client.Position, new Vector3(), new Vector3(), 1.0f, new Color(255, 0, 125),
+                true, 0);
         }
 
         [Command("createtextlabel")]
@@ -89,32 +84,32 @@ namespace RPServer
         }
 
 
-
         [Command("testclothes")]
         public void cmdtestclothes(Client client)
         {
             client.TriggerEvent("testclothes");
-
         }
 
         [Command("addx")]
         public void addx(Client client)
         {
-            Vector3 pos = client.Position;
+            var pos = client.Position;
             pos.X += 2;
             client.Position = pos;
         }
+
         [Command("addy")]
         public void addy(Client client)
         {
-            Vector3 pos = client.Position;
+            var pos = client.Position;
             pos.Y += 2;
             client.Position = pos;
         }
+
         [Command("addz")]
         public void addz(Client client)
         {
-            Vector3 pos = client.Position;
+            var pos = client.Position;
             pos.Z += 2;
             client.Position = pos;
         }
@@ -148,7 +143,7 @@ namespace RPServer
         [Command("goto", GreedyArg = true)]
         public void CmdGoto(Client client, string trg)
         {
-            Client target = ClientMethods.FindClient(trg);
+            var target = ClientMethods.FindClient(trg);
 
             if (target == null)
                 return;
@@ -218,14 +213,13 @@ namespace RPServer
             if (matches.Count < 3) return;
 
             var newPos = new Vector3();
-            
+
 
             newPos.X = float.Parse(matches[0].Value, CultureInfo.InvariantCulture.NumberFormat);
             newPos.Y = float.Parse(matches[1].Value, CultureInfo.InvariantCulture.NumberFormat);
             newPos.Z = float.Parse(matches[2].Value, CultureInfo.InvariantCulture.NumberFormat);
 
             player.Position = newPos;
-
         }
 
 
@@ -257,6 +251,7 @@ namespace RPServer
                 player.SendChatMessage("Can't be empty");
                 return;
             }
+
             player.GetAccount().NickName = nick;
             player.SendChatMessage("You set your nick to: " + nick);
         }
@@ -281,10 +276,9 @@ namespace RPServer
         public void GiveGun(Client player, string weaponName, int ammo)
         {
             if (ammo <= 0) ammo = 1000;
-            WeaponHash wepHash = NAPI.Util.WeaponNameToModel(weaponName);
+            var wepHash = NAPI.Util.WeaponNameToModel(weaponName);
             player.GiveWeapon(wepHash, ammo);
             player.SendChatMessage($"Gave you gun {weaponName} with {ammo} ammo.");
-
         }
 
 
@@ -299,10 +293,12 @@ namespace RPServer
         {
             player.SendChatMessage("---[Online]---");
             foreach (var p in NAPI.Pools.GetAllPlayers())
-            {
-                if (!ClientExtensions.IsLoggedIn(p)) player.SendChatMessage($"[UNAUTHED]: Social: {p.SocialClubName}, ClientName: {p.Name}, Ping: {p.Ping}");
-                else player.SendChatMessage($"[{ClientExtensions.GetAccount(p).Username}]: Social: {p.SocialClubName}, ClientName: {p.Name}, Ping: {p.Ping}");
-            }
+                if (!p.IsLoggedIn())
+                    player.SendChatMessage(
+                        $"[UNAUTHED]: Social: {p.SocialClubName}, ClientName: {p.Name}, Ping: {p.Ping}");
+                else
+                    player.SendChatMessage(
+                        $"[{p.GetAccount().Username}]: Social: {p.SocialClubName}, ClientName: {p.Name}, Ping: {p.Ping}");
         }
 
         [Command("veh")]
@@ -319,7 +315,7 @@ namespace RPServer
 
             if (!vehicleName.StartsWith("0x"))
             {
-                VehicleHash vehHash = NAPI.Util.VehicleNameToModel(vehicleName);
+                var vehHash = NAPI.Util.VehicleNameToModel(vehicleName);
                 if (vehHash.ToString().Equals("0"))
                     return;
 
@@ -357,14 +353,14 @@ namespace RPServer
         public void ecc(Client player)
         {
             var vehicles = NAPI.Pools.GetAllVehicles();
-            Vector3 playerpos = player.Position;
+            var playerpos = player.Position;
             Vehicle closest = null;
-            float distance = 999999f;
+            var distance = 999999f;
 
 
             foreach (var v in vehicles)
             {
-                float cardist = v.Position.DistanceTo(playerpos);
+                var cardist = v.Position.DistanceTo(playerpos);
                 if (cardist < distance)
                 {
                     distance = cardist;
@@ -380,6 +376,7 @@ namespace RPServer
                     player.SendChatMessage("Someone else is driving the closest vehicle.");
                     return;
                 }
+
                 NAPI.Player.SetPlayerIntoVehicle(player, closest, -1);
             }
             else
@@ -400,11 +397,10 @@ namespace RPServer
         {
             if (player.IsInVehicle)
             {
-                Vehicle veh = player.Vehicle;
+                var veh = player.Vehicle;
                 veh.Health = 100.0f;
                 veh.Repair();
                 player.SendChatMessage("Your vehicle has been fixed.");
-
             }
         }
 
@@ -420,7 +416,6 @@ namespace RPServer
         public void cmdWeather(Client player, string weather)
         {
             NAPI.World.SetWeather(weather);
-
         }
     }
 }

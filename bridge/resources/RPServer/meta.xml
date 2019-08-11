@@ -1,20 +1,20 @@
 ﻿<meta>
-  <info name="RPServer" author="Static" type="gamemode"/>
+  <info name="RPServer" author="Static" type="gamemode" />
   <script src="bin/Debug/netcoreapp2.2/RPServer.dll" />
 
   <settings>
     <!-- Database Settings -->
-    <setting name="DB_HOST" value="localhost"/>
-    <setting name="DB_PORT" value="3306"/>
-    <setting name="DB_DATABASE" value="rpserver"/>
-    <setting name="DB_USERNAME" value="root"/>
-    <setting name="DB_PASSWORD" value="root"/>
-    <setting name="DB_PROVIDER" value="MySql.Data.MySqlClient"/>
+    <setting name="DB_HOST" value="localhost" />
+    <setting name="DB_PORT" value="3306" />
+    <setting name="DB_DATABASE" value="rpserver" />
+    <setting name="DB_USERNAME" value="root" />
+    <setting name="DB_PASSWORD" value="root" />
+    <setting name="DB_PROVIDER" value="MySql.Data.MySqlClient" />
 
     <!-- SMTP Settings -->
-    <setting name="SMTP_HOST" value="smtp.gmail.com"/>
-    <setting name="SMTP_PORT" value="25"/>
-    <setting name="SMTP_USERNAME" value="roleplaytestserver@gmail.com"/>
-    <setting name="SMTP_PASSWORD" value="asxetos123321123"/>
+    <setting name="SMTP_HOST" value="smtp.gmail.com" />
+    <setting name="SMTP_PORT" value="25" />
+    <setting name="SMTP_USERNAME" value="roleplaytestserver@gmail.com" />
+    <setting name="SMTP_PASSWORD" value="asxetos123321123" />
   </settings>
 </meta>

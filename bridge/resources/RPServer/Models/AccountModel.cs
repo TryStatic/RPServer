@@ -9,6 +9,24 @@ namespace RPServer.Models
     [Table("accounts")]
     internal class AccountModel : Model<AccountModel>
     {
+        public bool HasPassedTwoStepByEmail = false;
+
+
+        public bool HasPassedTwoStepByGA = false;
+        public byte[] TempTwoFactorGASharedKey = null;
+
+        public AccountModel()
+        {
+        }
+
+        public AccountModel(string username, byte[] hash, string regSocialClubName)
+        {
+            Username = username;
+            Hash = hash;
+            RegSocialClubName = regSocialClubName;
+            CreationDate = DateTime.Now;
+        }
+
         public string Username { get; set; }
         public string EmailAddress { get; set; }
         public byte[] Hash { get; set; }
@@ -25,59 +43,23 @@ namespace RPServer.Models
         public int LastSpawnedCharId { get; set; } = -1;
         public ushort AdminLevel { set; get; }
 
-
-        public bool HasPassedTwoStepByGA = false;
-        public bool HasPassedTwoStepByEmail = false;
-        public byte[] TempTwoFactorGASharedKey = null;
-
-        public AccountModel() { }
-
-        public AccountModel(string username, byte[] hash, string regSocialClubName)
-        {
-            Username = username;
-            Hash = hash;
-            RegSocialClubName = regSocialClubName;
-            CreationDate = DateTime.Now;
-        }
-
-        #region DATABASE
-        public static async Task CreateAsync(string username, string password, string regSocialClubName)
-        {
-            var hash = new PasswordHash(password).ToArray();
-            var newAcc = new AccountModel(username, hash, regSocialClubName);
-            await newAcc.CreateAsync();
-        }
-        public static async Task<AccountModel> FetchAsync(string username)
-        {
-            var result = await ReadByKeyAsync(() => AccountModel.Mock.Username, username);
-            return result.FirstOrDefault();
-        }
-        public static async Task<bool> ExistsAsync(string username)
-        {
-            var result = await ReadByKeyAsync(() => AccountModel.Mock.Username, username);
-            return result.FirstOrDefault() != null;
-        }
-        public static async Task<bool> AuthenticateAsync(string username, string password)
-        {
-            var acc = await FetchAsync(username);
-            return acc != null && new PasswordHash(acc.Hash).Verify(password);
-        }
-        public static async Task<bool> IsEmailTakenAsync(string emailAddress)
-        {
-            var accList = await ReadByKeyAsync(() => AccountModel.Mock.EmailAddress, emailAddress);
-            return accList.FirstOrDefault() != null;
-        }
-        #endregion
-
         public bool HasVerifiedEmail()
         {
             if (string.IsNullOrWhiteSpace(EmailAddress))
                 return false;
             return true;
-
         }
-        public bool Is2FAbyEmailEnabled() => HasEnabledTwoStepByEmail;
-        public bool Is2FAbyGAEnabled() => TwoFactorGASharedKey != null;
+
+        public bool Is2FAbyEmailEnabled()
+        {
+            return HasEnabledTwoStepByEmail;
+        }
+
+        public bool Is2FAbyGAEnabled()
+        {
+            return TwoFactorGASharedKey != null;
+        }
+
         public bool IsTwoFactorAuthenticated()
         {
             if (!Is2FAbyEmailEnabled()) return !Is2FAbyGAEnabled() || HasPassedTwoStepByGA;
@@ -85,6 +67,44 @@ namespace RPServer.Models
             return !Is2FAbyGAEnabled() || HasPassedTwoStepByGA;
         }
 
-        public bool IsAdmin() => AdminLevel > 0;
+        public bool IsAdmin()
+        {
+            return AdminLevel > 0;
+        }
+
+        #region DATABASE
+
+        public static async Task CreateAsync(string username, string password, string regSocialClubName)
+        {
+            var hash = new PasswordHash(password).ToArray();
+            var newAcc = new AccountModel(username, hash, regSocialClubName);
+            await newAcc.CreateAsync();
+        }
+
+        public static async Task<AccountModel> FetchAsync(string username)
+        {
+            var result = await ReadByKeyAsync(() => Mock.Username, username);
+            return result.FirstOrDefault();
+        }
+
+        public static async Task<bool> ExistsAsync(string username)
+        {
+            var result = await ReadByKeyAsync(() => Mock.Username, username);
+            return result.FirstOrDefault() != null;
+        }
+
+        public static async Task<bool> AuthenticateAsync(string username, string password)
+        {
+            var acc = await FetchAsync(username);
+            return acc != null && new PasswordHash(acc.Hash).Verify(password);
+        }
+
+        public static async Task<bool> IsEmailTakenAsync(string emailAddress)
+        {
+            var accList = await ReadByKeyAsync(() => Mock.EmailAddress, emailAddress);
+            return accList.FirstOrDefault() != null;
+        }
+
+        #endregion
     }
 }

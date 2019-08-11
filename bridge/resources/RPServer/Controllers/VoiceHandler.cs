@@ -1,12 +1,13 @@
 ﻿using GTANetworkAPI;
 using RPServer.InternalAPI;
 using RPServer.InternalAPI.Extensions;
+using Shared.Events.ClientToServer;
 
 namespace RPServer.Controllers
 {
     internal class VoiceHandler : Script
     {
-        [RemoteEvent(Shared.Events.ClientToServer.VoiceChat.SumbitAddVoiceListener)]
+        [RemoteEvent(VoiceChat.SumbitAddVoiceListener)]
         public void ClientEvent_SumbitAddVoiceListener(Client client, ushort remoteID)
         {
             if (!client.IsLoggedIn() || !client.HasActiveChar()) return;
@@ -15,14 +16,15 @@ namespace RPServer.Controllers
             client.EnableVoiceTo(playa);
             NAPI.Chat.SendChatMessageToAll($"[DEBUG-SERVER]: voice link ACTIVATED: {client.Name} <-> {playa.Name}");
         }
-        [RemoteEvent(Shared.Events.ClientToServer.VoiceChat.SumbitRemoveVoiceListener)]
+
+        [RemoteEvent(VoiceChat.SumbitRemoveVoiceListener)]
         public void ClientEvent_SumbitRemoveVoiceListener(Client client, ushort remoteID)
         {
             if (!client.IsLoggedIn() || !client.HasActiveChar()) return;
             var playa = ClientMethods.FindClientByPlayerID(remoteID);
             if (playa == null) return;
             client.DisableVoiceTo(playa);
-            NAPI.Chat.SendChatMessageToAll($"[DEBUG-SERVER]: voice link DE-ACTIVATED: {client.Name} <-> {playa.Name}"); 
+            NAPI.Chat.SendChatMessageToAll($"[DEBUG-SERVER]: voice link DE-ACTIVATED: {client.Name} <-> {playa.Name}");
         }
 
         [Command("enablev")]

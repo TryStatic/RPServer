@@ -9,7 +9,7 @@ namespace RPServer.InternalAPI.Extensions
             Vector3 position, float range, Font font, Color color, uint dimension = 0)
         {
             if (text == "" || range <= 0) return null;
-            return NAPI.TextLabel.CreateTextLabel(text, position, range, 0, (int)font, color, false, dimension);
+            return NAPI.TextLabel.CreateTextLabel(text, position, range, 0, (int) font, color, false, dimension);
         }
     }
 }

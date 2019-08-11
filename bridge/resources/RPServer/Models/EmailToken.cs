@@ -13,11 +13,6 @@ namespace RPServer.Models
     {
         public static int Length = GetTokenLength();
 
-        public AccountModel Account { get; set; }
-        public string Token { get; set; }
-        public string EmailAddress { get; set; }
-        public DateTime ExpiryDate { get; set; }
-
         private EmailToken(AccountModel account, string emailAddress)
         {
             Account = account;
@@ -34,10 +29,17 @@ namespace RPServer.Models
             ExpiryDate = expiryDate;
         }
 
+        public AccountModel Account { get; set; }
+        public string Token { get; set; }
+        public string EmailAddress { get; set; }
+        public DateTime ExpiryDate { get; set; }
+
         #region DATABASE
+
         public static async Task<bool> CreateAsync(AccountModel account, string emailAddress)
         {
-            const string query = "INSERT INTO emailtokens(accountID, token, expirydate, emailaddress) VALUES (@accountid, @token, @expirydate, @emailaddress)";
+            const string query =
+                "INSERT INTO emailtokens(accountID, token, expirydate, emailaddress) VALUES (@accountid, @token, @expirydate, @emailaddress)";
 
             if (await ExistsAsync(account)) await RemoveAsync(account);
 
@@ -53,7 +55,6 @@ namespace RPServer.Models
                         token = emailToken.Token,
                         emailaddress = emailToken.EmailAddress,
                         expirydate = emailToken.ExpiryDate
-
                     });
                     return true;
                 }
@@ -61,9 +62,11 @@ namespace RPServer.Models
                 {
                     DbConnectionProvider.HandleDbException(ex);
                 }
+
                 return false;
             }
         }
+
         public static async Task<bool> ExistsAsync(AccountModel account)
         {
             const string query = "SELECT accountID FROM emailtokens WHERE accountID = @accountid";
@@ -72,7 +75,7 @@ namespace RPServer.Models
             {
                 try
                 {
-                    var result = await dbConn.QueryAsync<int?>(query, new { accountid = account.ID });
+                    var result = await dbConn.QueryAsync<int?>(query, new {accountid = account.ID});
                     return result.Any();
                 }
                 catch (DbException ex)
@@ -80,18 +83,19 @@ namespace RPServer.Models
                     DbConnectionProvider.HandleDbException(ex);
                 }
             }
+
             throw new Exception("There was an error in [EmailToken.ExistsAsync]");
         }
+
         public static async Task<bool> IsEmailTakenAsync(string emailAddress)
         {
             const string query = "SELECT emailaddress FROM emailtokens WHERE emailaddress = @emailaddress";
 
             using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
-
                 try
                 {
-                    var result = await dbConn.QueryAsync(query, new { emailaddress = emailAddress });
+                    var result = await dbConn.QueryAsync(query, new {emailaddress = emailAddress});
                     return result.Any();
                 }
                 catch (DbException ex)
@@ -99,11 +103,14 @@ namespace RPServer.Models
                     DbConnectionProvider.HandleDbException(ex);
                 }
             }
+
             throw new Exception("There was an error in [EmailToken.IsEmailTakenAsync]");
         }
+
         public static async Task<EmailToken> FetchAsync(AccountModel account)
         {
-            const string query = "SELECT accountID, token, expirydate, emailaddress FROM emailtokens WHERE accountID = @accountid";
+            const string query =
+                "SELECT accountID, token, expirydate, emailaddress FROM emailtokens WHERE accountID = @accountid";
 
             if (!await ExistsAsync(account))
                 return null;
@@ -112,7 +119,7 @@ namespace RPServer.Models
             {
                 try
                 {
-                    var result = await dbConn.QueryAsync(query, new { accountid = account.ID } );
+                    var result = await dbConn.QueryAsync(query, new {accountid = account.ID});
                     var unwrapped = result.SingleOrDefault();
 
                     if (unwrapped == null) return null;
@@ -123,8 +130,10 @@ namespace RPServer.Models
                     DbConnectionProvider.HandleDbException(ex);
                 }
             }
+
             throw new Exception("Error in [EmailToken.FetchAsync]");
         }
+
         public static async Task<bool> ValidateAsync(AccountModel account, string token)
         {
             if (!await ExistsAsync(account))
@@ -133,16 +142,19 @@ namespace RPServer.Models
             var fetchedToken = await FetchAsync(account);
 
             if (fetchedToken.ExpiryDate < DateTime.Now)
-            { // Expired Token
+            {
+                // Expired Token
                 await RemoveAsync(account);
                 return false;
             }
-            if (fetchedToken.Token != token) 
+
+            if (fetchedToken.Token != token)
                 return false;
 
             await RemoveAsync(account);
             return true;
         }
+
         public async Task SaveAsync()
         {
             const string query = "UPDATE emailtokens " +
@@ -167,6 +179,7 @@ namespace RPServer.Models
                 }
             }
         }
+
         public static async Task RemoveExpiredCodesAsync()
         {
             const string query = "DELETE FROM emailtokens WHERE expirydate < @current";
@@ -175,7 +188,7 @@ namespace RPServer.Models
             {
                 try
                 {
-                    await dbConn.ExecuteAsync(query, new { current = DateTime.Now });
+                    await dbConn.ExecuteAsync(query, new {current = DateTime.Now});
                 }
                 catch (DbException ex)
                 {
@@ -183,6 +196,7 @@ namespace RPServer.Models
                 }
             }
         }
+
         private static async Task RemoveAsync(AccountModel account)
         {
             if (!await ExistsAsync(account)) return;
@@ -193,7 +207,7 @@ namespace RPServer.Models
             {
                 try
                 {
-                    await dbConn.ExecuteAsync(query, new {accountid = account.ID });
+                    await dbConn.ExecuteAsync(query, new {accountid = account.ID});
                 }
                 catch (DbException ex)
                 {
@@ -201,6 +215,7 @@ namespace RPServer.Models
                 }
             }
         }
+
         public static async Task ChangeEmailAsync(AccountModel account, string newEmailAddress)
         {
             var fetchedToken = await FetchAsync(account);
@@ -210,23 +225,27 @@ namespace RPServer.Models
             fetchedToken.ExpiryDate = DateTime.Now.AddDays(1);
             await fetchedToken.SaveAsync();
         }
+
         public static async Task SendEmail(AccountModel account)
         {
             var tok = await FetchAsync(account);
             await EmailSender.SendEmailVerificationCode(tok);
-
         }
+
         #endregion
 
         #region TokenCodeGeneration
+
         private static string GenerateNewToken()
         {
             return RandomGenerator.GetInstance().Next(100000, 1000000).ToString();
         }
+
         private static int GetTokenLength()
         {
             return 6;
         }
+
         #endregion
     }
 }

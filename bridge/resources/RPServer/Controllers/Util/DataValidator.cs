@@ -11,7 +11,10 @@ namespace RPServer.Controllers.Util
 {
     internal static class DataValidator
     {
-        public static HashSet<uint> ValidVehicleIDs;
+        public enum ValidationNumbers
+        {
+            VehicleModelID
+        }
 
         public enum ValidationStrings
         {
@@ -24,16 +27,14 @@ namespace RPServer.Controllers.Util
             CharLastName
         }
 
-        public enum ValidationNumbers
-        {
-            VehicleModelID
-        }
+        public static HashSet<uint> ValidVehicleIDs;
 
         public static bool ValidateString(ValidationStrings strings, string data)
         {
             switch (strings)
             {
-                case ValidationStrings.Username: // Username must be at least 4 chars (maybe add settings to tweak these later on)
+                case ValidationStrings.Username
+                    : // Username must be at least 4 chars (maybe add settings to tweak these later on)
                     if (string.IsNullOrWhiteSpace(data) || data.Length < 4) return false;
                     break;
                 case ValidationStrings.Password: // pass must be at least 4 chars
@@ -42,21 +43,25 @@ namespace RPServer.Controllers.Util
                 case ValidationStrings.EmailAddress: // Is actually an email address
                     if (string.IsNullOrWhiteSpace(data) || !data.IsValidEmail()) return false;
                     break;
-                case ValidationStrings.EmailVerificationCode: // Provided token's length must much whichever the length is on our side
+                case ValidationStrings.EmailVerificationCode
+                    : // Provided token's length must much whichever the length is on our side
                     if (string.IsNullOrWhiteSpace(data) || data.Length < EmailToken.Length) return false;
                     break;
                 case ValidationStrings.GoogleAuthenticatorCode:
                     if (string.IsNullOrWhiteSpace(data) || data.Length < 6 || !IsDigitsOnly(data)) return false;
                     break;
                 case ValidationStrings.CharFirstName:
-                    if (string.IsNullOrWhiteSpace(data) || data.Length < 2 || data.Length > 15 || !Regex.Match(data, @"[a-zA-Z]{1,15}").Success) return false;
+                    if (string.IsNullOrWhiteSpace(data) || data.Length < 2 || data.Length > 15 ||
+                        !Regex.Match(data, @"[a-zA-Z]{1,15}").Success) return false;
                     break;
                 case ValidationStrings.CharLastName:
-                    if (string.IsNullOrWhiteSpace(data) || data.Length < 2 || data.Length > 15 || !Regex.Match(data, @"[a-zA-Z]{1,15}").Success) return false;
+                    if (string.IsNullOrWhiteSpace(data) || data.Length < 2 || data.Length > 15 ||
+                        !Regex.Match(data, @"[a-zA-Z]{1,15}").Success) return false;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(strings), strings, null);
             }
+
             return true;
         }
 
@@ -70,11 +75,13 @@ namespace RPServer.Controllers.Util
                         Logger.GetInstance().ServerError("Tried to access ValidVehicleIDs HashSet before initialized.");
                         return false;
                     }
+
                     if (!ValidVehicleIDs.Contains(data)) return false;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(numbers), numbers, null);
             }
+
             return true;
         }
 
@@ -82,23 +89,23 @@ namespace RPServer.Controllers.Util
         {
             if (ValidVehicleIDs != null)
             {
-                Logger.GetInstance().ServerError("OrganizeValidVehicleIDs should only be called once when the server is initialized.");
+                Logger.GetInstance()
+                    .ServerError("OrganizeValidVehicleIDs should only be called once when the server is initialized.");
                 return;
             }
 
             Logger.GetInstance().ServerInfo("Initializing Valid Vehicle Model IDs from VehicleData.json");
             ValidVehicleIDs = new HashSet<uint>();
-            var vehData = JsonConvert.DeserializeObject<Dictionary<int, dynamic>>(File.ReadAllText(Globals.VehicleDataJsonFile));
-            foreach (var veh in vehData) ValidVehicleIDs.Add((uint)veh.Value.hash);
+            var vehData =
+                JsonConvert.DeserializeObject<Dictionary<int, dynamic>>(File.ReadAllText(Globals.VehicleDataJsonFile));
+            foreach (var veh in vehData) ValidVehicleIDs.Add((uint) veh.Value.hash);
         }
 
         public static bool IsDigitsOnly(string str)
         {
-            foreach (char c in str)
-            {
+            foreach (var c in str)
                 if (c < '0' || c > '9')
                     return false;
-            }
 
             return true;
         }

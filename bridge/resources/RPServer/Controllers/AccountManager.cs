@@ -1,13 +1,14 @@
 using System;
+using System.Threading.Tasks;
 using GTANetworkAPI;
 using RPServer.Controllers.Util;
 using RPServer.Game;
 using RPServer.InternalAPI.Extensions;
 using RPServer.Models;
 using RPServer.Resource;
+using Shared.Data;
+using Shared.Events.ServerToClient;
 using static RPServer.Controllers.Util.DataValidator;
-using Task = System.Threading.Tasks.Task;
-using Events = Shared.Events;
 
 namespace RPServer.Controllers
 {
@@ -15,12 +16,12 @@ namespace RPServer.Controllers
 
     internal class AccountManager : Script
     {
-        public static event OnPlayerLoginDelegate PlayerLogin;
-
         public AccountManager()
         {
-            AccountManager.PlayerLogin += OnPlayerLogin;
+            PlayerLogin += OnPlayerLogin;
         }
+
+        public static event OnPlayerLoginDelegate PlayerLogin;
 
         [Command(CmdStrings.CMD_ToggleTwoFactorEmail)]
         public void CMD_ToggleTwoFactorEmail(Client client)
@@ -43,7 +44,7 @@ namespace RPServer.Controllers
                 var key = GoogleAuthenticator.GenerateTwoFactorGASharedKey();
                 var link = GoogleAuthenticator.GetGQCodeImageLink(acc.Username, key, 150, 150);
 
-                client.TriggerEvent(Events.ServerToClient.Authentication.ShowQRCode, link);
+                client.TriggerEvent(Authentication.ShowQRCode, link);
                 if (acc.TempTwoFactorGASharedKey == null) acc.TempTwoFactorGASharedKey = new byte[50];
                 acc.TempTwoFactorGASharedKey = key;
                 acc.HasPassedTwoStepByGA = true;
@@ -55,7 +56,6 @@ namespace RPServer.Controllers
 
                 await acc.UpdateAsync();
             }
-
         }
 
         [Command(CmdStrings.CMD_Logout)]
@@ -73,43 +73,51 @@ namespace RPServer.Controllers
         }
 
 
-        [RemoteEvent(Events.ClientToServer.Authentication.SubmitRegisterAccount)]
-        public async void ClientEvent_OnSubmitRegisterAccount(Client client, string username, string emailAddress, string password)
+        [RemoteEvent(Shared.Events.ClientToServer.Authentication.SubmitRegisterAccount)]
+        public async void ClientEvent_OnSubmitRegisterAccount(Client client, string username, string emailAddress,
+            string password)
         {
             if (client.IsLoggedIn(true))
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorPlayerAlreadyLoggedIn);
+                client.TriggerEvent(Authentication.DisplayError, AccountStrings.ErrorPlayerAlreadyLoggedIn);
                 return;
             }
+
             if (!ValidateString(ValidationStrings.Username, username))
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorUsernameInvalid);
+                client.TriggerEvent(Authentication.DisplayError, AccountStrings.ErrorUsernameInvalid);
                 return;
             }
+
             if (!ValidateString(ValidationStrings.Password, password))
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorPasswordInvalid);
+                client.TriggerEvent(Authentication.DisplayError, AccountStrings.ErrorPasswordInvalid);
                 return;
             }
+
             if (!ValidateString(ValidationStrings.EmailAddress, emailAddress))
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorEmailInvalid);
+                client.TriggerEvent(Authentication.DisplayError, AccountStrings.ErrorEmailInvalid);
                 return;
             }
 
             if (await AccountModel.ExistsAsync(username))
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorUsernameTaken);
+                client.TriggerEvent(Authentication.DisplayError, AccountStrings.ErrorUsernameTaken);
                 return;
             }
+
             if (await AccountModel.IsEmailTakenAsync(emailAddress))
-            { // Another account with the that email address
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorEmailTaken);
+            {
+                // Another account with the that email address
+                client.TriggerEvent(Authentication.DisplayError, AccountStrings.ErrorEmailTaken);
                 return;
             }
+
             if (await EmailToken.IsEmailTakenAsync(emailAddress))
-            { // Another account in the list of email tokens with that address
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorEmailTokenAddressTaken);
+            {
+                // Another account in the list of email tokens with that address
+                client.TriggerEvent(Authentication.DisplayError, AccountStrings.ErrorEmailTokenAddressTaken);
                 return;
             }
 
@@ -118,36 +126,39 @@ namespace RPServer.Controllers
             await EmailToken.CreateAsync(newAcc, emailAddress);
             await EmailToken.SendEmail(newAcc);
 
-            client.TriggerEvent(Events.ServerToClient.Authentication.RegistrationSuccess, AccountStrings.SuccessRegistration);
+            client.TriggerEvent(Authentication.RegistrationSuccess, AccountStrings.SuccessRegistration);
         }
 
-        [RemoteEvent(Events.ClientToServer.Authentication.SubmitLoginAccount)]
+        [RemoteEvent(Shared.Events.ClientToServer.Authentication.SubmitLoginAccount)]
         public async void ClientEvent_OnSubmitLoginAccount(Client client, string username, string password)
         {
             if (client.IsLoggedIn(true))
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorPlayerAlreadyLoggedIn);
+                client.TriggerEvent(Authentication.DisplayError, AccountStrings.ErrorPlayerAlreadyLoggedIn);
                 return;
             }
+
             if (!ValidateString(ValidationStrings.Username, username))
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorUsernameInvalid);
+                client.TriggerEvent(Authentication.DisplayError, AccountStrings.ErrorUsernameInvalid);
                 return;
             }
+
             if (!ValidateString(ValidationStrings.Password, password))
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorPasswordInvalid);
+                client.TriggerEvent(Authentication.DisplayError, AccountStrings.ErrorPasswordInvalid);
                 return;
             }
 
             if (!await AccountModel.ExistsAsync(username))
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorUsernameNotExist);
+                client.TriggerEvent(Authentication.DisplayError, AccountStrings.ErrorUsernameNotExist);
                 return;
             }
+
             if (!await AccountModel.AuthenticateAsync(username, password))
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorInvalidCredentials);
+                client.TriggerEvent(Authentication.DisplayError, AccountStrings.ErrorInvalidCredentials);
                 return;
             }
 
@@ -155,7 +166,7 @@ namespace RPServer.Controllers
 
             if (IsAccountAlreadyLoggedIn(fetchedAcc))
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorAccountAlreadyLoggedIn);
+                client.TriggerEvent(Authentication.DisplayError, AccountStrings.ErrorAccountAlreadyLoggedIn);
                 return;
             }
 
@@ -163,54 +174,57 @@ namespace RPServer.Controllers
 
             if (!fetchedAcc.HasVerifiedEmail())
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.ShowInitialEmailVerification);
+                client.TriggerEvent(Authentication.ShowInitialEmailVerification);
                 return;
             }
+
             if (fetchedAcc.Is2FAbyEmailEnabled())
             {
                 fetchedAcc.HasPassedTwoStepByEmail = false;
                 await EmailToken.CreateAsync(fetchedAcc, fetchedAcc.EmailAddress);
                 await EmailToken.SendEmail(fetchedAcc);
-                client.TriggerEvent(Events.ServerToClient.Authentication.Show2FAbyEmailAddress);
+                client.TriggerEvent(Authentication.Show2FAbyEmailAddress);
                 return;
             }
+
             if (fetchedAcc.Is2FAbyGAEnabled())
             {
                 fetchedAcc.HasPassedTwoStepByGA = false;
-                client.TriggerEvent(Events.ServerToClient.Authentication.Show2FAbyGoogleAuth);
+                client.TriggerEvent(Authentication.Show2FAbyGoogleAuth);
                 return;
             }
 
             SetLoginState(client, false);
         }
 
-        [RemoteEvent(Events.ClientToServer.Authentication.SubmitEmailToken)]
+        [RemoteEvent(Shared.Events.ClientToServer.Authentication.SubmitEmailToken)]
         public async void ClientEvent_OnSubmitEmailToken(Client client, string token)
         {
             if (!client.IsLoggedIn(true))
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorPlayerNotLoggedIn);
+                client.TriggerEvent(Authentication.DisplayError, AccountStrings.ErrorPlayerNotLoggedIn);
                 return;
             }
 
             if (!ValidateString(ValidationStrings.EmailVerificationCode, token))
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorInvalidVerificationCode);
+                client.TriggerEvent(Authentication.DisplayError, AccountStrings.ErrorInvalidVerificationCode);
                 return;
             }
+
             var accData = client.GetAccount();
 
             if (!accData.HasVerifiedEmail()) return;
 
             if (!accData.Is2FAbyEmailEnabled())
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.TwoFactorByEmailIsNotEnabled);
+                client.TriggerEvent(Authentication.DisplayError, AccountStrings.TwoFactorByEmailIsNotEnabled);
                 return;
             }
 
             if (!await EmailToken.ValidateAsync(accData, token))
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorInvalidVerificationCode);
+                client.TriggerEvent(Authentication.DisplayError, AccountStrings.ErrorInvalidVerificationCode);
                 return;
             }
 
@@ -218,38 +232,43 @@ namespace RPServer.Controllers
 
             if (accData.Is2FAbyGAEnabled() && !accData.HasPassedTwoStepByGA)
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.Show2FAbyGoogleAuth, AccountStrings.VerifyTwoFactorByGA);
+                client.TriggerEvent(Authentication.Show2FAbyGoogleAuth, AccountStrings.VerifyTwoFactorByGA);
                 return;
             }
+
             SetLoginState(client, false);
         }
 
-        [RemoteEvent(Events.ClientToServer.Authentication.SubmitGoogleAuthCode)]
+        [RemoteEvent(Shared.Events.ClientToServer.Authentication.SubmitGoogleAuthCode)]
         public void ClientEvent_OnSubmitGoogleAuthCode(Client client, string token)
         {
             var accountData = client.GetAccount();
 
             if (!client.IsLoggedIn(true))
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorPlayerNotLoggedIn);
+                client.TriggerEvent(Authentication.DisplayError, AccountStrings.ErrorPlayerNotLoggedIn);
                 return;
             }
+
             if (!ValidateString(ValidationStrings.GoogleAuthenticatorCode, token))
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, "Must be 6 characters and only digits");
+                client.TriggerEvent(Authentication.DisplayError, "Must be 6 characters and only digits");
                 return;
             }
+
             if (!accountData.HasVerifiedEmail())
                 throw new Exception("Tried to verify Two-Step by GA when user has no email set"); // Dummy check
 
             if (!accountData.Is2FAbyGAEnabled())
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, "Two Step auth by GA is not enabled for this account.");
+                client.TriggerEvent(Authentication.DisplayError,
+                    "Two Step auth by GA is not enabled for this account.");
                 return;
             }
+
             if (GoogleAuthenticator.GeneratePin(accountData.TwoFactorGASharedKey) != token)
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, "Wrong 2FA code, try again");
+                client.TriggerEvent(Authentication.DisplayError, "Wrong 2FA code, try again");
                 return;
             }
 
@@ -257,29 +276,31 @@ namespace RPServer.Controllers
 
             if (accountData.Is2FAbyEmailEnabled() && !accountData.HasPassedTwoStepByEmail)
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.Show2FAbyEmailAddress);
+                client.TriggerEvent(Authentication.Show2FAbyEmailAddress);
                 return;
             }
 
             SetLoginState(client, false);
         }
 
-        [RemoteEvent(Events.ClientToServer.Authentication.SubmitFirstEmailToken)]
+        [RemoteEvent(Shared.Events.ClientToServer.Authentication.SubmitFirstEmailToken)]
         public async void ClientEvent_OnSubmitFirstEmailToken(Client client, string providedToken)
         {
             if (!client.IsLoggedIn(true))
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorPlayerNotLoggedIn);
+                client.TriggerEvent(Authentication.DisplayError, AccountStrings.ErrorPlayerNotLoggedIn);
                 return;
             }
+
             if (!ValidateString(ValidationStrings.EmailVerificationCode, providedToken))
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorInvalidVerificationCode);
+                client.TriggerEvent(Authentication.DisplayError, AccountStrings.ErrorInvalidVerificationCode);
                 return;
             }
+
             if (client.GetAccount().HasVerifiedEmail())
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorEmailAlreadyVerified);
+                client.TriggerEvent(Authentication.DisplayError, AccountStrings.ErrorEmailAlreadyVerified);
                 return;
             }
 
@@ -289,7 +310,7 @@ namespace RPServer.Controllers
 
             if (!await EmailToken.ValidateAsync(accData, providedToken))
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorInvalidVerificationCode);
+                client.TriggerEvent(Authentication.DisplayError, AccountStrings.ErrorInvalidVerificationCode);
                 return;
             }
 
@@ -300,35 +321,36 @@ namespace RPServer.Controllers
             SetLoginState(client, false);
         }
 
-        [RemoteEvent(Events.ClientToServer.Authentication.SubmitNewVerificationEmail)]
+        [RemoteEvent(Shared.Events.ClientToServer.Authentication.SubmitNewVerificationEmail)]
         public async void ClientEvent_OnSubmitNewVerificationEmail(Client client, string newEmail)
         {
             if (!client.IsLoggedIn(true))
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorPlayerNotLoggedIn);
+                client.TriggerEvent(Authentication.DisplayError, AccountStrings.ErrorPlayerNotLoggedIn);
                 return;
             }
 
             if (!ValidateString(ValidationStrings.EmailAddress, newEmail))
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorEmailInvalid);
+                client.TriggerEvent(Authentication.DisplayError, AccountStrings.ErrorEmailInvalid);
                 return;
             }
 
             if (client.GetAccount().HasVerifiedEmail())
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorEmailAlreadyVerified);
+                client.TriggerEvent(Authentication.DisplayError, AccountStrings.ErrorEmailAlreadyVerified);
                 return;
             }
 
             if (await AccountModel.IsEmailTakenAsync(newEmail))
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorEmailTaken);
+                client.TriggerEvent(Authentication.DisplayError, AccountStrings.ErrorEmailTaken);
                 return;
             }
+
             if (await EmailToken.IsEmailTakenAsync(newEmail))
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorEmailTokenAddressTaken);
+                client.TriggerEvent(Authentication.DisplayError, AccountStrings.ErrorEmailTokenAddressTaken);
                 return;
             }
 
@@ -339,47 +361,53 @@ namespace RPServer.Controllers
             {
                 if (accTok.EmailAddress == newEmail)
                 {
-                    client.TriggerEvent(Events.ServerToClient.Authentication.ShowChangeEmailAddress);
-                    client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorChangeVerificationEmailDuplicate);
+                    client.TriggerEvent(Authentication.ShowChangeEmailAddress);
+                    client.TriggerEvent(Authentication.DisplayError,
+                        AccountStrings.ErrorChangeVerificationEmailDuplicate);
                     return;
                 }
+
                 await EmailToken.ChangeEmailAsync(client.GetAccount(), newEmail);
                 await EmailToken.SendEmail(client.GetAccount());
             }
             else
-            { // Handles the case where there's no token entry in the database
+            {
+                // Handles the case where there's no token entry in the database
                 await EmailToken.CreateAsync(accData, newEmail);
                 await EmailToken.SendEmail(accData);
             }
-            client.TriggerEvent(Events.ServerToClient.Authentication.ShowInitialEmailVerification);
+
+            client.TriggerEvent(Authentication.ShowInitialEmailVerification);
             client.SendChatMessage(AccountStrings.SuccessChangeVerificationEmailAddress);
         }
 
-        [RemoteEvent(Events.ClientToServer.Authentication.SubmitResendEmail)]
+        [RemoteEvent(Shared.Events.ClientToServer.Authentication.SubmitResendEmail)]
         public async void ClientEvent_OnSubmitResendEmail(Client client)
         {
             if (!client.IsLoggedIn(true))
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, AccountStrings.ErrorPlayerNotLoggedIn);
+                client.TriggerEvent(Authentication.DisplayError, AccountStrings.ErrorPlayerNotLoggedIn);
                 return;
             }
+
             if (!await EmailToken.ExistsAsync(client.GetAccount()))
             {
-                client.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, "Error No Token for that Account");
+                client.TriggerEvent(Authentication.DisplayError, "Error No Token for that Account");
                 return;
             }
+
             await EmailToken.SendEmail(client.GetAccount());
             client.SendChatMessage(AccountStrings.SuccessResendVerificationEmail);
         }
 
-        [RemoteEvent(Events.ClientToServer.Authentication.SubmitBackToLogin)]
+        [RemoteEvent(Shared.Events.ClientToServer.Authentication.SubmitBackToLogin)]
         public void ClientEvent_OnSubmitBackToLogin(Client player)
         {
             if (player.IsLoggedIn(true)) player.Logout();
-            player.TriggerEvent(Events.ServerToClient.Authentication.ShowLoginPage);
+            player.TriggerEvent(Authentication.ShowLoginPage);
         }
 
-        [RemoteEvent(Events.ClientToServer.Authentication.SubmitEnableGoogleAuthCode)]
+        [RemoteEvent(Shared.Events.ClientToServer.Authentication.SubmitEnableGoogleAuthCode)]
         public async void ClientEvent_OnSubmitEnableGoogleAuthCode(Client player, string code)
         {
             if (!player.IsLoggedIn(true)) return;
@@ -388,20 +416,20 @@ namespace RPServer.Controllers
 
             if (!ValidateString(ValidationStrings.GoogleAuthenticatorCode, code))
             {
-                player.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, "Must be 6 characters and only digits");
+                player.TriggerEvent(Authentication.DisplayError, "Must be 6 characters and only digits");
                 return;
             }
 
             if (GoogleAuthenticator.GeneratePin(acc.TempTwoFactorGASharedKey) != code)
             {
-                player.TriggerEvent(Events.ServerToClient.Authentication.DisplayError, "Wrong code try again");
+                player.TriggerEvent(Authentication.DisplayError, "Wrong code try again");
                 return;
             }
 
             acc.TwoFactorGASharedKey = acc.TempTwoFactorGASharedKey;
 
             await acc.UpdateAsync();
-            player.TriggerEvent(Events.ServerToClient.Authentication.ShowQRCodeEnabled);
+            player.TriggerEvent(Authentication.ShowQRCodeEnabled);
         }
 
         private static async Task LoginAccount(Client client, AccountModel fetchedAcc)
@@ -429,26 +457,24 @@ namespace RPServer.Controllers
 
         public static void SetLoginState(Client client, bool state)
         {
-            client.TriggerEvent(Events.ServerToClient.Authentication.SetLoginScreen, state);
+            client.TriggerEvent(Authentication.SetLoginScreen, state);
             if (!state)
-            {
                 // This part gets triggered only once per successful login
                 PlayerLogin?.Invoke(client, EventArgs.Empty);
-            }
         }
 
         private void OnPlayerLogin(object source, EventArgs e)
         {
             var client = source as Client;
-            if(client == null) return;
+            if (client == null) return;
 
             NAPI.Player.SpawnPlayer(client, Initialization.DefaultSpawnPos);
             client.SendChatMessage(AccountStrings.SuccessLogin);
             if (client.GetAccount().IsAdmin())
-            {
-                ChatHandler.SendClientMessage(client, $"{Shared.Data.Colors.COLOR_RED}<!> {Shared.Data.Colors.COLOR_WHITE}You have logged in as a level {client.GetAccount().AdminLevel} admin.");
-            }
-            client.SendChatMessage("All commands: /allcmds <-- WARNING: this uses reflection to get all cmds which is really slow and hangs the server. Takes ~10secs to execute.");
+                ChatHandler.SendClientMessage(client,
+                    $"{Colors.COLOR_RED}<!> {Colors.COLOR_WHITE}You have logged in as a level {client.GetAccount().AdminLevel} admin.");
+            client.SendChatMessage(
+                "All commands: /allcmds <-- WARNING: this uses reflection to get all cmds which is really slow and hangs the server. Takes ~10secs to execute.");
         }
 
         private static bool IsAccountAlreadyLoggedIn(AccountModel account)
@@ -459,6 +485,7 @@ namespace RPServer.Controllers
                 if (p.GetAccount() != account) continue;
                 return true;
             }
+
             return false;
         }
     }

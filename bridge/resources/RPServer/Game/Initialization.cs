@@ -12,7 +12,9 @@ namespace RPServer.Game
 {
     internal class Initialization : Script
     {
-        public static readonly Vector3 DefaultSpawnPos = new Vector3(-782.1527709960938f, 19.77294921875f, 41.93227767944336f);
+        public static readonly Vector3 DefaultSpawnPos =
+            new Vector3(-782.1527709960938f, 19.77294921875f, 41.93227767944336f);
+
         private static Timer _expiredEmailTokensTimer;
 
         [ServerEvent(Event.ResourceStart)]
@@ -20,7 +22,8 @@ namespace RPServer.Game
         {
             Console.ForegroundColor = ConsoleColor.White;
             Console.BackgroundColor = ConsoleColor.Blue;
-            Console.WriteLine($"\n\n---------------------------- STARTING {Globals.SERVER_NAME} ({Globals.VERSION}) ----------------------------");
+            Console.WriteLine(
+                $"\n\n---------------------------- STARTING {Globals.SERVER_NAME} ({Globals.VERSION}) ----------------------------");
             Console.ResetColor();
             Console.WriteLine();
 
@@ -29,7 +32,8 @@ namespace RPServer.Game
             NAPI.Server.SetAutoRespawnAfterDeath(false);
             NAPI.Server.SetDefaultSpawnLocation(DefaultSpawnPos);
             NAPI.Server.SetGlobalServerChat(false);
-            NAPI.Server.SetCommandErrorMessage($"<span style=\'color: #ff6666;\'>Error: </span><span style=\'color: #e3e3e3;\'>We couldn't find that command. Use /helpme if you need further assistance.</span>");
+            NAPI.Server.SetCommandErrorMessage(
+                "<span style='color: #ff6666;'>Error: </span><span style='color: #e3e3e3;'>We couldn't find that command. Use /helpme if you need further assistance.</span>");
 
             // Resets
             NAPI.World.ResetIplList();

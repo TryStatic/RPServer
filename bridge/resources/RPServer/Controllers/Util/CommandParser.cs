@@ -1,6 +1,6 @@
-﻿using RPServer.Util;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using RPServer.Util;
 
 namespace RPServer.Controllers.Util
 {
@@ -21,15 +21,19 @@ namespace RPServer.Controllers.Util
             var trimmed = commandText.Trim();
             var arguments = trimmed.Split(' ');
 
-            foreach (var arg in arguments)
-            {
-                _tokens.Enqueue(arg.ToLower());
-            }
+            foreach (var arg in arguments) _tokens.Enqueue(arg.ToLower());
         }
 
-        public string GetNextToken() => _tokens.TryDequeue(out var text) ? text : null;
+        public string GetNextToken()
+        {
+            return _tokens.TryDequeue(out var text) ? text : null;
+        }
 
-        public bool HasNextToken() => _tokens.Count > 0;
+        public bool HasNextToken()
+        {
+            return _tokens.Count > 0;
+        }
+
         public bool HasNextToken(Type type)
         {
             if (!HasNextToken()) return false;

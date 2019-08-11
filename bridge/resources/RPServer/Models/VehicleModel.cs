@@ -8,21 +8,9 @@ namespace RPServer.Models
     internal class VehicleModel : Model<VehicleModel>
     {
         private string _plateText;
-
-        public int OwnerID { get; set; }
-
-        public uint Model { set; get; }
-        public int PrimaryColor { set; get; }
-        public int SecondaryColor { set; get; }
-        public string PlateText
-        {
-            set => _plateText = value.Length <= 8 ? value : value.Remove(8); // Can't display more than 8 chars
-            get => _plateText;
-        }
-        public short PlateStyle { set; get; }
+        public InventoryModel Glovebox;
 
         public InventoryModel Trunk;
-        public InventoryModel Glovebox;
 
         public Vehicle VehEntity = null;
 
@@ -35,5 +23,19 @@ namespace RPServer.Models
             OwnerID = ownerID;
             PlateText = "STATIQUE";
         }
+
+        public int OwnerID { get; set; }
+
+        public uint Model { set; get; }
+        public int PrimaryColor { set; get; }
+        public int SecondaryColor { set; get; }
+
+        public string PlateText
+        {
+            set => _plateText = value.Length <= 8 ? value : value.Remove(8); // Can't display more than 8 chars
+            get => _plateText;
+        }
+
+        public short PlateStyle { set; get; }
     }
 }

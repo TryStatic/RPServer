@@ -1,20 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using System.Threading;
-using GTANetworkAPI;
-using RPServer.Models;
 using System.Threading.Tasks;
-using GTANetworkMethods;
+using GTANetworkAPI;
 using RPServer.Controllers.Util;
 using RPServer.InternalAPI.Extensions;
+using RPServer.Models;
 using RPServer.Models.Inventory;
 using RPServer.Resource;
 using RPServer.Util;
 using static Shared.Data.Colors;
-using Task = System.Threading.Tasks.Task;
-using Vehicle = GTANetworkAPI.Vehicle;
 
 namespace RPServer.Controllers
 {
@@ -36,6 +31,7 @@ namespace RPServer.Controllers
                 ChatHandler.SendCommandUsageText(client, CmdStrings.CMD_Vehicle_HelpText);
                 return;
             }
+
             switch (cmdParser.GetNextToken())
             {
                 case CmdStrings.SUBCMD_Vehicle_Create:
@@ -55,7 +51,6 @@ namespace RPServer.Controllers
                     else
                     {
                         if (vehicleModel.StartsWith("0x"))
-                        {
                             try
                             {
                                 modelID = Convert.ToUInt32(vehicleModel, 16);
@@ -65,11 +60,8 @@ namespace RPServer.Controllers
                                 ChatHandler.SendCommandErrorText(client, "This is not a valid vehicle model.");
                                 return;
                             }
-                        }
                         else
-                        {
-                            modelID = (uint)NAPI.Util.VehicleNameToModel(vehicleModel);
-                        }
+                            modelID = (uint) NAPI.Util.VehicleNameToModel(vehicleModel);
                     }
 
                     if (!DataValidator.ValidatePositiveNumber(DataValidator.ValidationNumbers.VehicleModelID, modelID))
@@ -91,6 +83,7 @@ namespace RPServer.Controllers
                         ChatHandler.SendCommandErrorText(client, "You are not in any vehicle.");
                         return;
                     }
+
                     DisplayVehicleStats(client, pv);
                     break;
                 case CmdStrings.SUBCMD_Vehicle_Spawn:
@@ -100,6 +93,7 @@ namespace RPServer.Controllers
                         ChatHandler.SendCommandUsageText(client, "/v(ehicle) spawn [vehicleID]");
                         return;
                     }
+
                     int vehSpawnID;
                     try
                     {
@@ -120,6 +114,7 @@ namespace RPServer.Controllers
                         ChatHandler.SendCommandUsageText(client, "/v(ehicle) spawn [vehicleID]");
                         return;
                     }
+
                     int vehDespawnID;
                     try
                     {
@@ -130,6 +125,7 @@ namespace RPServer.Controllers
                         ChatHandler.SendCommandUsageText(client, "/v(ehicle) despawn [vehicleID]");
                         return;
                     }
+
                     DespawnVehicle(client, vehDespawnID);
                     break;
                 case CmdStrings.SUBCMD_Vehicle_Delete:
@@ -139,6 +135,7 @@ namespace RPServer.Controllers
                         ChatHandler.SendCommandUsageText(client, "/v(ehicle) spawn [vehicleID]");
                         return;
                     }
+
                     int vehDelID;
                     try
                     {
@@ -149,6 +146,7 @@ namespace RPServer.Controllers
                         ChatHandler.SendCommandUsageText(client, "/v(ehicle) delete [vehicleID]");
                         return;
                     }
+
                     await DeleteVehicle(client, vehDelID);
                     break;
                 default:
@@ -164,7 +162,7 @@ namespace RPServer.Controllers
             foreach (var veh in NAPI.Pools.GetAllVehicles())
             {
                 if (!veh.HasData(DataKey.ServerVehicleData)) continue;
-                var spawnedVehData = (VehicleModel)veh.GetData(DataKey.ServerVehicleData);
+                var spawnedVehData = (VehicleModel) veh.GetData(DataKey.ServerVehicleData);
                 foreach (var vehData in client.GetActiveChar().Vehicles)
                 {
                     if (vehData != spawnedVehData) continue;
@@ -245,11 +243,14 @@ namespace RPServer.Controllers
             }
 
             // Load inventory stuff
-            vehToSpawn.Trunk = InventoryModel.LoadInventoryAsync(vehToSpawn, ItemModel.VehicleContainer.Trunk).GetAwaiter().GetResult();
-            vehToSpawn.Glovebox = InventoryModel.LoadInventoryAsync(vehToSpawn, ItemModel.VehicleContainer.Glovebox).GetAwaiter().GetResult();
+            vehToSpawn.Trunk = InventoryModel.LoadInventoryAsync(vehToSpawn, ItemModel.VehicleContainer.Trunk)
+                .GetAwaiter().GetResult();
+            vehToSpawn.Glovebox = InventoryModel.LoadInventoryAsync(vehToSpawn, ItemModel.VehicleContainer.Glovebox)
+                .GetAwaiter().GetResult();
 
             // Create the entity
-            vehToSpawn.VehEntity = NAPI.Vehicle.CreateVehicle(vehToSpawn.Model, client.Position.Around(3), 0, vehToSpawn.PrimaryColor, vehToSpawn.SecondaryColor);
+            vehToSpawn.VehEntity = NAPI.Vehicle.CreateVehicle(vehToSpawn.Model, client.Position.Around(3), 0,
+                vehToSpawn.PrimaryColor, vehToSpawn.SecondaryColor);
 
             // Set entity related stuff
             vehToSpawn.VehEntity.NumberPlate = vehToSpawn.PlateText;
@@ -263,11 +264,14 @@ namespace RPServer.Controllers
 
         private void DisplayVehicleStats(Client client, Vehicle pv)
         {
-            var vehData = (VehicleModel)pv.GetData(DataKey.ServerVehicleData);
+            var vehData = (VehicleModel) pv.GetData(DataKey.ServerVehicleData);
 
-            var serverData = vehData == null ? "That vehicle has no server-side data." : $"\tSqlID: {vehData.ID} | OwnerSQLID: {vehData.OwnerID}";
+            var serverData = vehData == null
+                ? "That vehicle has no server-side data."
+                : $"\tSqlID: {vehData.ID} | OwnerSQLID: {vehData.OwnerID}";
             ChatHandler.SendClientMessage(client, serverData);
-            ChatHandler.SendClientMessage(client, $"VehEntityID: {pv.Handle} | {pv.DisplayName} | HP: {pv.Health} | Locked: {pv.Locked} | Plate: {pv.NumberPlate} | PlateStyle: {pv.NumberPlateStyle}");
+            ChatHandler.SendClientMessage(client,
+                $"VehEntityID: {pv.Handle} | {pv.DisplayName} | HP: {pv.Health} | Locked: {pv.Locked} | Plate: {pv.NumberPlate} | PlateStyle: {pv.NumberPlateStyle}");
             ChatHandler.SendClientMessage(client, "------------------------");
         }
 
@@ -283,8 +287,12 @@ namespace RPServer.Controllers
                 foreach (var v in client.GetActiveChar().Vehicles)
                 {
                     var spawned = v.VehEntity != null;
-                    if (spawned) ChatHandler.SendClientMessage(client, $"\t{COLOR_GRAD3}SqlID: {COLOR_WHITE}{v.ID}{COLOR_GRAD3} | Model: {COLOR_WHITE}{v.Model}{COLOR_GRAD3} | Spawned: {COLOR_GREEN}Yes");
-                    else ChatHandler.SendClientMessage(client, $"\t{COLOR_GRAD3}SqlID: {COLOR_WHITE}{v.ID}{COLOR_GRAD3} | Model: {COLOR_WHITE}{v.Model}{COLOR_GRAD3} | Spawned: {COLOR_RED}No");
+                    if (spawned)
+                        ChatHandler.SendClientMessage(client,
+                            $"\t{COLOR_GRAD3}SqlID: {COLOR_WHITE}{v.ID}{COLOR_GRAD3} | Model: {COLOR_WHITE}{v.Model}{COLOR_GRAD3} | Spawned: {COLOR_GREEN}Yes");
+                    else
+                        ChatHandler.SendClientMessage(client,
+                            $"\t{COLOR_GRAD3}SqlID: {COLOR_WHITE}{v.ID}{COLOR_GRAD3} | Model: {COLOR_WHITE}{v.Model}{COLOR_GRAD3} | Spawned: {COLOR_RED}No");
                 }
             }
         }
@@ -297,7 +305,8 @@ namespace RPServer.Controllers
 
         public static async Task<int> CreateVehicleAsync(CharacterModel owner, uint model)
         {
-            if(owner == null) throw new Exception("CreateVehicleAsync in VehicleHandler was passed a null ChatacterModel owner.");
+            if (owner == null)
+                throw new Exception("CreateVehicleAsync in VehicleHandler was passed a null ChatacterModel owner.");
             var newVeh = new VehicleModel(owner.ID)
             {
                 Model = model,
@@ -316,26 +325,30 @@ namespace RPServer.Controllers
             while (iterations < 10)
             {
                 iterations++;
-                int index1 = RandomGenerator.GetInstance().Next(7, 10);
-                int index2 = RandomGenerator.GetInstance().Next('A', 'Z'+1);
+                var index1 = RandomGenerator.GetInstance().Next(7, 10);
+                var index2 = RandomGenerator.GetInstance().Next('A', 'Z' + 1);
                 if (index2 == 'O') index2 += 1;
-                int index3 = RandomGenerator.GetInstance().Next('A', 'Z'+1);
+                var index3 = RandomGenerator.GetInstance().Next('A', 'Z' + 1);
                 if (index3 == 'O') index3 -= 1;
-                int index4 = RandomGenerator.GetInstance().Next('A', 'Z'+1);
+                var index4 = RandomGenerator.GetInstance().Next('A', 'Z' + 1);
                 if (index4 == 'O')
                 {
                     if (RandomGenerator.GetInstance().Next(0, 2) % 2 == 0) index4 += 1;
                     else index4 -= 1;
                 }
-                int index5 = RandomGenerator.GetInstance().Next(0, 10);
-                int index6 = RandomGenerator.GetInstance().Next(0, 10);
-                int index7 = RandomGenerator.GetInstance().Next(0, 10);
-                newPlate = $"{index1}{(char)index2}{(char)index3}{(char)index4}{index5}{index6}{index7}";
+
+                var index5 = RandomGenerator.GetInstance().Next(0, 10);
+                var index6 = RandomGenerator.GetInstance().Next(0, 10);
+                var index7 = RandomGenerator.GetInstance().Next(0, 10);
+                newPlate = $"{index1}{(char) index2}{(char) index3}{(char) index4}{index5}{index6}{index7}";
 
                 var exist = await VehicleModel.ReadByKeyAsync(() => VehicleModel.Mock.PlateText, newPlate);
                 if (!exist.Any() || iterations == 10)
                 {
-                    if (iterations == 10) Logger.GetInstance().ServerError($"GenerateLicensePlate ran too many times. Forcing duplicate. (Plate: {newPlate})"); // After doomsday maybe this will run
+                    if (iterations == 10)
+                        Logger.GetInstance()
+                            .ServerError(
+                                $"GenerateLicensePlate ran too many times. Forcing duplicate. (Plate: {newPlate})"); // After doomsday maybe this will run
                     break;
                 }
             }

@@ -9,11 +9,6 @@ namespace RPServer.Controllers
 {
     internal class InventoryHandler : Script
     {
-        public InventoryHandler()
-        {
-
-        }
-
         [Command(CmdStrings.CMD_Inventory, Alias = CmdStrings.CMD_Inventory_Alias, GreedyArg = true)]
         public void CMD_Inventory(Client client, string args = "")
         {
@@ -83,6 +78,7 @@ namespace RPServer.Controllers
                         ChatHandler.SendCommandUsageText(client, "/inv(entory) give PartOfName/PlayerID [ItemID]");
                         return;
                     }
+
                     var giveToken = cmdParser.GetNextToken();
                     var giveItemID = int.Parse(giveToken);
 
@@ -104,7 +100,6 @@ namespace RPServer.Controllers
                     var otherInv = client.GetActiveChar().Inventory;
 
 
-
                     break;
                 case CmdStrings.SUBCMD_Inventory_Drop: // drop
                     break;
@@ -113,9 +108,7 @@ namespace RPServer.Controllers
                 default:
                     ChatHandler.SendCommandUsageText(client, CmdStrings.CMD_Inventory_HelpText);
                     break;
-
             }
-
         }
 
 
@@ -128,8 +121,10 @@ namespace RPServer.Controllers
             foreach (var item in inventory.Items)
             {
                 var itemInfo = ItemTemplate.GetTemplate(item.ItemID);
-                ChatHandler.SendClientMessage(client, $"ItemID: {item.ItemID} => {itemInfo.Name}, {itemInfo.Desc}, {itemInfo.GetItemType().ToString()}, {item.Amount}");
+                ChatHandler.SendClientMessage(client,
+                    $"ItemID: {item.ItemID} => {itemInfo.Name}, {itemInfo.Desc}, {itemInfo.GetItemType().ToString()}, {item.Amount}");
             }
+
             ChatHandler.SendClientMessage(client, "-----------------------------------");
         }
     }

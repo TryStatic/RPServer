@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.Common;
 using System.Threading.Tasks;
 using Dapper;
@@ -10,10 +9,10 @@ namespace RPServer.Models.Inventory
 {
     internal class ItemModel
     {
+        public int Amount;
+        public int ContainerID; // Key 3
         public int ItemID; // key 1
         public int OwnerID; // key 2
-        public int ContainerID; // Key 3
-        public int Amount;
 
         public static async Task<HashSet<ItemModel>> LoadInventoryItems(CharacterModel character)
         {
@@ -23,26 +22,30 @@ namespace RPServer.Models.Inventory
             {
                 try
                 {
-                    var result = await dbConn.QueryAsync(query, new { ownerid = character.ID, containerid = (int)ContainerType.CharacterInventory });
+                    var result = await dbConn.QueryAsync(query,
+                        new {ownerid = character.ID, containerid = (int) ContainerType.CharacterInventory});
                     var itemList = new HashSet<ItemModel>();
-                    foreach (var i in result) itemList.Add(new ItemModel()
-                    {
-                        ItemID = i.ItemID,
-                        OwnerID = i.OwnerID,
-                        ContainerID = i.ContainerID,
-                        Amount = i.Amount
-                    });
+                    foreach (var i in result)
+                        itemList.Add(new ItemModel
+                        {
+                            ItemID = i.ItemID,
+                            OwnerID = i.OwnerID,
+                            ContainerID = i.ContainerID,
+                            Amount = i.Amount
+                        });
                     return itemList;
                 }
                 catch (DbException ex)
                 {
                     DbConnectionProvider.HandleDbException(ex);
                 }
+
                 return null;
             }
         }
 
-        public static async Task<HashSet<ItemModel>> LoadInventoryItems(VehicleModel vehicle, VehicleContainer container)
+        public static async Task<HashSet<ItemModel>> LoadInventoryItems(VehicleModel vehicle,
+            VehicleContainer container)
         {
             const string query = "SELECT * FROM items WHERE OwnerID = ownerid AND ContainerID = containerid";
 
@@ -64,21 +67,24 @@ namespace RPServer.Models.Inventory
             {
                 try
                 {
-                    var result = await dbConn.QueryAsync(query, new { ownerid = vehicle.ID, containerid = (int)actualContainer });
+                    var result = await dbConn.QueryAsync(query,
+                        new {ownerid = vehicle.ID, containerid = (int) actualContainer});
                     var itemList = new HashSet<ItemModel>();
-                    foreach (var i in result) itemList.Add(new ItemModel()
-                    {
-                        ItemID = i.ItemID,
-                        OwnerID = i.OwnerID,
-                        ContainerID = i.ContainerID,
-                        Amount = i.Amount
-                    });
+                    foreach (var i in result)
+                        itemList.Add(new ItemModel
+                        {
+                            ItemID = i.ItemID,
+                            OwnerID = i.OwnerID,
+                            ContainerID = i.ContainerID,
+                            Amount = i.Amount
+                        });
                     return itemList;
                 }
                 catch (DbException ex)
                 {
                     DbConnectionProvider.HandleDbException(ex);
                 }
+
                 return null;
             }
         }
@@ -91,21 +97,23 @@ namespace RPServer.Models.Inventory
             {
                 try
                 {
-                    var result = await dbConn.QueryAsync(query, new { containerid = (int)ContainerType.WorldInventory });
+                    var result = await dbConn.QueryAsync(query, new {containerid = (int) ContainerType.WorldInventory});
                     var itemList = new HashSet<ItemModel>();
-                    foreach (var i in result) itemList.Add(new ItemModel()
-                    {
-                        ItemID = i.ItemID,
-                        OwnerID = i.OwnerID,
-                        ContainerID = i.ContainerID,
-                        Amount = i.Amount
-                    });
+                    foreach (var i in result)
+                        itemList.Add(new ItemModel
+                        {
+                            ItemID = i.ItemID,
+                            OwnerID = i.OwnerID,
+                            ContainerID = i.ContainerID,
+                            Amount = i.Amount
+                        });
                     return itemList;
                 }
                 catch (DbException ex)
                 {
                     DbConnectionProvider.HandleDbException(ex);
                 }
+
                 return null;
             }
         }
@@ -123,7 +131,5 @@ namespace RPServer.Models.Inventory
             Trunk,
             Glovebox
         }
-
-
     }
 }

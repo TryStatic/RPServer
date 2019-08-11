@@ -11,28 +11,29 @@ namespace RPServer.Controllers.Util
     {
         private const int IntervalLength = 30;
         private const int PinLength = 6;
-        private static readonly int PinModulo = (int)Math.Pow(10, PinLength);
+        private static readonly int PinModulo = (int) Math.Pow(10, PinLength);
 
         /// <summary>
-        ///   Number of intervals that have elapsed.
+        ///     Number of intervals that have elapsed.
         /// </summary>
         private static long CurrentInterval
         {
             get
             {
-                var elapsedSeconds = (long)Math.Floor((DateTime.UtcNow - DateTime.UnixEpoch).TotalSeconds);
+                var elapsedSeconds = (long) Math.Floor((DateTime.UtcNow - DateTime.UnixEpoch).TotalSeconds);
 
                 return elapsedSeconds / IntervalLength;
             }
         }
 
         /// <summary>
-        ///   Generates a QR code bitmap for provisioning.
+        ///     Generates a QR code bitmap for provisioning.
         /// </summary>
         public static string GetGQCodeImageLink(string username, byte[] key, int width, int height)
         {
             var keyString = Encoder.Base32Encode(key);
-            var provisionUrl = Encoder.UrlEncode($"otpauth://totp/{username}?secret={keyString}&issuer={Globals.SERVER_NAME}");
+            var provisionUrl =
+                Encoder.UrlEncode($"otpauth://totp/{username}?secret={keyString}&issuer={Globals.SERVER_NAME}");
 
             var chartUrl = $"https://chart.apis.google.com/chart?cht=qr&chs={width}x{height}&chl={provisionUrl}";
             return chartUrl;
@@ -48,7 +49,7 @@ namespace RPServer.Controllers.Util
         }
 
         /// <summary>
-        ///   Generates a pin for the given key.
+        ///     Generates a pin for the given key.
         /// </summary>
         public static string GeneratePin(byte[] key)
         {
@@ -56,19 +57,17 @@ namespace RPServer.Controllers.Util
         }
 
         /// <summary>
-        ///   Generates a pin by hashing a key and counter.
+        ///     Generates a pin by hashing a key and counter.
         /// </summary>
-        static string GeneratePin(byte[] key, long counter)
+        private static string GeneratePin(byte[] key, long counter)
         {
             const int sizeOfInt32 = 4;
 
             var counterBytes = BitConverter.GetBytes(counter);
 
             if (BitConverter.IsLittleEndian)
-            {
                 //spec requires bytes in big-endian order
                 Array.Reverse(counterBytes);
-            }
 
             var hash = new HMACSHA1(key).ComputeHash(counterBytes);
             var offset = hash[hash.Length - 1] & 0xF;
@@ -77,10 +76,8 @@ namespace RPServer.Controllers.Util
             Buffer.BlockCopy(hash, offset, selectedBytes, 0, sizeOfInt32);
 
             if (BitConverter.IsLittleEndian)
-            {
                 //spec interprets bytes in big-endian order
                 Array.Reverse(selectedBytes);
-            }
 
             var selectedInteger = BitConverter.ToInt32(selectedBytes, 0);
 
@@ -92,12 +89,13 @@ namespace RPServer.Controllers.Util
 
             return pin.ToString(CultureInfo.InvariantCulture).PadLeft(PinLength, '0');
         }
+
         #region Nested type: Encoder
 
         private static class Encoder
         {
             /// <summary>
-            ///   Url Encoding (with upper-case hexadecimal per OATH specification)
+            ///     Url Encoding (with upper-case hexadecimal per OATH specification)
             /// </summary>
             public static string UrlEncode(string value)
             {
@@ -106,7 +104,6 @@ namespace RPServer.Controllers.Util
                 var builder = new StringBuilder();
 
                 foreach (var symbol in value)
-                {
                     if (urlEncodeAlphabet.IndexOf(symbol) != -1)
                     {
                         builder.Append(symbol);
@@ -114,14 +111,14 @@ namespace RPServer.Controllers.Util
                     else
                     {
                         builder.Append('%');
-                        builder.Append(((int)symbol).ToString("X2"));
+                        builder.Append(((int) symbol).ToString("X2"));
                     }
-                }
+
                 return builder.ToString();
             }
 
             /// <summary>
-            ///   Base-32 Encoding
+            ///     Base-32 Encoding
             /// </summary>
             public static string Base32Encode(byte[] data)
             {
@@ -138,18 +135,14 @@ namespace RPServer.Controllers.Util
                     int digit;
 
                     //Is the current digit going to span a byte boundary?
-                    if (index > (inByteSize - outByteSize))
+                    if (index > inByteSize - outByteSize)
                     {
                         int nextByte;
 
-                        if ((i + 1) < data.Length)
-                        {
+                        if (i + 1 < data.Length)
                             nextByte = data[i + 1];
-                        }
                         else
-                        {
                             nextByte = 0;
-                        }
 
                         digit = currentByte & (0xFF >> index);
                         index = (index + outByteSize) % inByteSize;
@@ -162,10 +155,7 @@ namespace RPServer.Controllers.Util
                         digit = (currentByte >> (inByteSize - (index + outByteSize))) & 0x1F;
                         index = (index + outByteSize) % inByteSize;
 
-                        if (index == 0)
-                        {
-                            i++;
-                        }
+                        if (index == 0) i++;
                     }
 
                     builder.Append(base32Alphabet[digit]);

@@ -10,6 +10,7 @@ namespace RPServer.Util
         private static RandomGenerator _randomGenerator;
         private readonly RNGCryptoServiceProvider _csp;
         private Stack<int> UniqueRandomPool;
+
         private RandomGenerator()
         {
             _csp = new RNGCryptoServiceProvider();
@@ -17,7 +18,7 @@ namespace RPServer.Util
         }
 
         /// <summary>
-        /// After ~9000 generations it re-initializes which means you can get dupes
+        ///     After ~9000 generations it re-initializes which means you can get dupes
         /// </summary>
         private void InitUniqueRandPool()
         {
@@ -29,6 +30,7 @@ namespace RPServer.Util
                 nums[randomIndex] = nums[i];
                 nums[i] = temp;
             }
+
             UniqueRandomPool = new Stack<int>(nums);
         }
 
@@ -37,20 +39,21 @@ namespace RPServer.Util
             if (minValue >= maxExclusiveValue)
                 throw new ArgumentOutOfRangeException();
 
-            long diff = (long)maxExclusiveValue - minValue;
-            long upperBound = uint.MaxValue / diff * diff;
+            var diff = (long) maxExclusiveValue - minValue;
+            var upperBound = uint.MaxValue / diff * diff;
 
             uint ui;
             do
             {
                 ui = GetRandomUInt();
             } while (ui >= upperBound);
-            return (int)(minValue + (ui % diff));
+
+            return (int) (minValue + ui % diff);
         }
 
         public int UniqueNext()
         {
-            if(UniqueRandomPool.Count == 0) InitUniqueRandPool();
+            if (UniqueRandomPool.Count == 0) InitUniqueRandPool();
             return UniqueRandomPool.Pop();
         }
 
@@ -59,13 +62,17 @@ namespace RPServer.Util
             var randomBytes = GenerateRandomBytes(sizeof(uint));
             return BitConverter.ToUInt32(randomBytes, 0);
         }
+
         public byte[] GenerateRandomBytes(int bytesNumber)
         {
-            byte[] buffer = new byte[bytesNumber];
+            var buffer = new byte[bytesNumber];
             _csp.GetBytes(buffer);
             return buffer;
         }
 
-        public static RandomGenerator GetInstance() => _randomGenerator ?? (_randomGenerator = new RandomGenerator());
+        public static RandomGenerator GetInstance()
+        {
+            return _randomGenerator ?? (_randomGenerator = new RandomGenerator());
+        }
     }
 }

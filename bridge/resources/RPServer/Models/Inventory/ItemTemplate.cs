@@ -1,28 +1,29 @@
-﻿using Dapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.Common;
+using System.Linq;
+using System.Threading.Tasks;
+using Dapper;
 using Dapper.Contrib.Extensions;
 using GTANetworkAPI;
 using RPServer.Controllers;
 using RPServer.Database;
 using RPServer.Util;
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace RPServer.Models.Inventory
 {
     [Table("itemstemplate")]
     internal class ItemTemplate : Model<ItemTemplate>
     {
+        public static HashSet<ItemTemplate> ItemTemplatesList;
+
+        public Action<Client> SelfAction;
+
         // id
         public string Name { set; get; }
         public string Desc { set; get; }
         public int Type { get; set; }
         public bool Tradeable { get; set; }
-        public Action<Client> SelfAction;
-
-        public static HashSet<ItemTemplate> ItemTemplatesList;
 
         public static async Task LoadItemTemplates()
         {
@@ -64,18 +65,27 @@ namespace RPServer.Models.Inventory
             }
         }
 
-        public static bool IsValidItemTemplateID(int itemTemplateID) => ItemTemplatesList.FirstOrDefault(it => it.ID == itemTemplateID) != null;
+        public static bool IsValidItemTemplateID(int itemTemplateID)
+        {
+            return ItemTemplatesList.FirstOrDefault(it => it.ID == itemTemplateID) != null;
+        }
 
         public static ItemTemplate GetTemplate(int itemID)
         {
             var itemTemplate = ItemTemplatesList.FirstOrDefault(it => it.ID == itemID);
-            if (itemTemplate == null) Logger.GetInstance().ServerError("ItemTemplate.GetTemplate was not passed a valid template ID, returning null.");
+            if (itemTemplate == null)
+                Logger.GetInstance()
+                    .ServerError("ItemTemplate.GetTemplate was not passed a valid template ID, returning null.");
             return itemTemplate;
         }
 
-        public ItemType GetItemType() => (ItemType)Type;
+        public ItemType GetItemType()
+        {
+            return (ItemType) Type;
+        }
 
         #region ItemAcions
+
         private static Action<Client> GetItemAction(int id)
         {
             switch (id)
@@ -92,6 +102,7 @@ namespace RPServer.Models.Inventory
             if (client == null) return;
             ChatHandler.SendClientMessage(client, $"You rolled {RandomGenerator.GetInstance().Next(0, 7)}");
         }
+
         #endregion
     }
 

@@ -10,18 +10,47 @@ using RPServer.Database;
 
 namespace RPServer.Models
 {
-    internal abstract class Model<T> where T: Model<T>, new()
+    internal abstract class Model<T> where T : Model<T>, new()
     {
         // ReSharper disable once StaticMemberInGenericType
         private static int _tempID = -1;
         public static T Mock = new T();
 
-        [Key]
-        public int ID { get; set; }
+        protected Model()
+        {
+            ID = _tempID--;
+        }
 
-        protected Model() => ID = _tempID--;
+        [Key] public int ID { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            return !ReferenceEquals(null, obj) &&
+                   (ReferenceEquals(this, obj) || obj.GetType() == GetType() && Equals((Model<T>) obj));
+        }
+
+        protected bool Equals(Model<T> other)
+        {
+            return ID == other.ID;
+        }
+
+        public override int GetHashCode()
+        {
+            return ID;
+        }
+
+        public static bool operator ==(Model<T> left, Model<T> right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(Model<T> left, Model<T> right)
+        {
+            return !Equals(left, right);
+        }
 
         #region CRUD
+
         public static async Task<int> CreateAsync(T newEntry)
         {
             using (var dbConn = DbConnectionProvider.CreateDbConnection())
@@ -38,10 +67,11 @@ namespace RPServer.Models
                 return -1;
             }
         }
+
         public async Task<int> CreateAsync()
         {
             var sqlID = await CreateAsync(this as T);
-            this.ID = sqlID;
+            ID = sqlID;
             return sqlID;
         }
 
@@ -61,9 +91,10 @@ namespace RPServer.Models
                 return null;
             }
         }
+
         public static async Task<IEnumerable<T>> ReadByKeyAsync<TC>(Expression<Func<TC>> expression, object searchKey)
         {
-            var tAttribute = (TableAttribute)typeof(T).GetCustomAttributes(typeof(TableAttribute), true)[0];
+            var tAttribute = (TableAttribute) typeof(T).GetCustomAttributes(typeof(TableAttribute), true)[0];
             var tableName = tAttribute.Name;
             if (tableName == null) return null;
 
@@ -79,22 +110,24 @@ namespace RPServer.Models
             {
                 try
                 {
-                    return await dbConn.QueryAsync<T>(query, new { value = searchKey });
+                    return await dbConn.QueryAsync<T>(query, new {value = searchKey});
                 }
                 catch (DbException ex)
                 {
                     DbConnectionProvider.HandleDbException(ex);
                 }
             }
+
             return null;
         }
+
         public static async Task<bool> ExistsAsync(int sqlID)
         {
             using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    return (await dbConn.GetAsync<T>(sqlID)) != null;
+                    return await dbConn.GetAsync<T>(sqlID) != null;
                 }
                 catch (DbException ex)
                 {
@@ -121,14 +154,19 @@ namespace RPServer.Models
                 return false;
             }
         }
-        public async Task<bool> UpdateAsync() => await UpdateAsync(this as T);
-        public static async Task UpdateAllByKeyAsync<TC>(Expression<Func<TC>> expression, object searchKey, HashSet<T> dataref)
+
+        public async Task<bool> UpdateAsync()
+        {
+            return await UpdateAsync(this as T);
+        }
+
+        public static async Task UpdateAllByKeyAsync<TC>(Expression<Func<TC>> expression, object searchKey,
+            HashSet<T> dataref)
         {
             var dbRecords = (await ReadByKeyAsync(expression, searchKey)).ToHashSet();
             var data = dataref.ToHashSet();
 
             foreach (var dbRec in dbRecords)
-            {
                 if (data.Contains(dbRec))
                 {
                     await UpdateAsync(dbRec);
@@ -138,12 +176,8 @@ namespace RPServer.Models
                 {
                     await DeleteAsync(dbRec);
                 }
-            }
 
-            foreach (var i in data)
-            {
-                await CreateAsync(i);
-            }
+            foreach (var i in data) await CreateAsync(i);
 
             dataref = (await ReadByKeyAsync(expression, searchKey)).ToHashSet();
         }
@@ -164,13 +198,12 @@ namespace RPServer.Models
                 return false;
             }
         }
-        public async Task<bool> DeleteAsync() => await DeleteAsync(this as T);
-        #endregion
 
-        public override bool Equals(object obj) => !ReferenceEquals(null, obj) && (ReferenceEquals(this, obj) || obj.GetType() == this.GetType() && Equals((Model<T>) obj));
-        protected bool Equals(Model<T> other) => ID == other.ID;
-        public override int GetHashCode() => ID;
-        public static bool operator ==(Model<T> left, Model<T> right) => Equals(left, right);
-        public static bool operator !=(Model<T> left, Model<T> right) => !Equals(left, right);
+        public async Task<bool> DeleteAsync()
+        {
+            return await DeleteAsync(this as T);
+        }
+
+        #endregion
     }
 }

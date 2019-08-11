@@ -12,166 +12,35 @@ namespace RPServer.Models
         private bool _isMale;
         private ulong _skinModel;
 
-        public int CharacterID { set; get; }
-
-        #region HEADBLEND_DATA
-        public ulong SkinModel
-        {
-            set
-            {
-                if (value == (ulong)PedHash.FreemodeMale01) _isMale = true;
-                if (value == (ulong)PedHash.FreemodeFemale01) _isMale = false;
-                _skinModel = value;
-            }
-            get => _skinModel;
-        }
-        public bool IsMale
-        {
-            set
-            {
-                if (SkinModel == (ulong)PedHash.FreemodeMale01) _isMale = true;
-                else if (SkinModel == (ulong)PedHash.FreemodeFemale01) _isMale = false;
-                else _isMale = value;
-            }
-            get
-            {
-                if (SkinModel == (ulong)PedHash.FreemodeMale01)
-                    return true;
-                if (SkinModel == (ulong)PedHash.FreemodeFemale01)
-                    return false;
-                return _isMale;
-            }
-        }
-        public byte ShapeFirstID { get; set; }
-        public byte ShapeSecondID { get; set; }
-        public byte SkinSecondID { get; set; }
-        public float ShapeMix { get; set; }
-        public float SkinMix { get; set; }
-
-        private const byte ShapeThirdID = 0;
-        private const byte SkinThirdID = 0;
-        private const float ThirdMix = 0.0f;
-        private const bool IsParent = false;
-        #endregion
-
-        #region HEAD_OVERLAY
-        public byte Blemishes { set; get; }
-        public byte FacialHair { set; get; }
-        public byte Eyebrows { set; get; }
-        public byte Ageing { set; get; }
-        public byte Makeup { set; get; }
-        public byte Blush { set; get; }
-        public byte Complexion { set; get; }
-        public byte SunDamage { set; get; }
-        public byte Lipstick { set; get; }
-        public byte Freckles { set; get; }
-        public byte ChestHair { set; get; }
-        public byte BodyBlemishes { set; get; }
-        public byte AdditionalBodyBlemishes { set; get; }
-
-        public float BlemishesOpacity { set; get; }
-        public float FacialHairOpacity { set; get; }
-        public float EyebrowsOpacity { set; get; }
-        public float AgeingOpacity { set; get; }
-        public float MakeupOpacity { set; get; }
-        public float BlushOpacity { set; get; }
-        public float ComplexionOpacity { set; get; }
-        public float SunDamageOpacity { set; get; }
-        public float LipstickOpacity { set; get; }
-        public float FrecklesOpacity { set; get; }
-        public float ChestHairOpacity { set; get; }
-        public float BodyBlemishesOpacity { set; get; }
-        public float AdditionalBodyBlemishesOpacity { set; get; }
-
-        public byte BlemishesColor { set; get; }
-        public byte FacialHairColor { set; get; }
-        public byte EyebrowsColor { set; get; }
-        public byte AgeingColor { set; get; }
-        public byte MakeupColor { set; get; }
-        public byte BlushColor { set; get; }
-        public byte ComplexionColor { set; get; }
-        public byte SunDamageColor { set; get; }
-        public byte LipstickColor { set; get; }
-        public byte FrecklesColor { set; get; }
-        public byte ChestHairColor { set; get; }
-        public byte BodyBlemishesColor { set; get; }
-        public byte AdditionalBodyBlemishesColor { set; get; }
-
-        public byte BlemishesSecColor { set; get; }
-        public byte FacialHairSecColor { set; get; }
-        public byte EyebrowsSecColor { set; get; }
-        public byte AgeingSecColor { set; get; }
-        public byte MakeupSecColor { set; get; }
-        public byte BlushSecColor { set; get; }
-        public byte ComplexionSecColor { set; get; }
-        public byte SunDamageSecColor { set; get; }
-        public byte LipstickSecColor { set; get; }
-        public byte FrecklesSecColor { set; get; }
-        public byte ChestHairSecColor { set; get; }
-        public byte BodyBlemishesSecColor { set; get; }
-        public byte AdditionalBodyBlemishesSecColor { set; get; }
-        #endregion
-
-        #region FACE_FEATURES
-        public float NoseWidth { get; set; }
-        public float NoseHeight { get; set; }
-        public float NoseLength { get; set; }
-        public float NoseBridge { get; set; }
-        public float NoseTip { get; set; }
-        public float NoseBridgeShift { get; set; }
-        public float BrowHeight { get; set; }
-        public float BrowWidth { get; set; }
-        public float CheekboneHeight { get; set; }
-        public float CheekboneWidth { get; set; }
-        public float CheeksWidth { get; set; }
-        public float Eyes { get; set; }
-        public float Lips { get; set; }
-        public float JawWidth { get; set; }
-        public float JawHeight { get; set; }
-        public float ChinLength { get; set; }
-        public float ChinPosition { get; set; }
-        public float ChinWidth { get; set; }
-        public float ChinShape { get; set; }
-        public float NeckWidth { get; set; }
-        #endregion
-
-        #region EXTRA
-
-        public byte HairStyle { get; set; }
-        public byte HairColor { set; get; } // 0 .. 63
-        public byte HairHighlightColor { set; get; } // 0 .. 63
-        public byte HairStyleTexture { get; set; }
-        public byte EyeColor { set; get; } // 0 .. 31
-
-        #endregion
-
         public AppearanceModel()
         {
-
         }
 
         /// <summary>
-        /// Use to create new appearance for a character
+        ///     Use to create new appearance for a character
         /// </summary>
         /// <param name="ped"></param>
         /// <param name="character"></param>
         public AppearanceModel(PedHash ped, CharacterModel character)
         {
-            SkinModel = (ulong)ped;
+            SkinModel = (ulong) ped;
             CharacterID = character.ID;
         }
 
+        public int CharacterID { set; get; }
+
         public void Apply(Client client)
         {
-            if (SkinModel != (ulong)PedHash.FreemodeMale01 && SkinModel != (ulong)PedHash.FreemodeFemale01) return;
+            if (SkinModel != (ulong) PedHash.FreemodeMale01 && SkinModel != (ulong) PedHash.FreemodeFemale01) return;
 
-            client.SetCustomization(IsMale, GetHeadBlend(), EyeColor, HairColor, HairHighlightColor, GetFaceFeatures(), GetHeadOverlay(), new Decoration[0]);
-            client.SetClothes((int)ClothesSlotID.Hair, HairStyle, HairStyleTexture);
+            client.SetCustomization(IsMale, GetHeadBlend(), EyeColor, HairColor, HairHighlightColor, GetFaceFeatures(),
+                GetHeadOverlay(), new Decoration[0]);
+            client.SetClothes((int) ClothesSlotID.Hair, HairStyle, HairStyleTexture);
         }
 
         public HeadBlend GetHeadBlend()
         {
-            var blend = new HeadBlend()
+            var blend = new HeadBlend
             {
                 ShapeFirst = ShapeFirstID,
                 ShapeMix = ShapeMix,
@@ -185,13 +54,14 @@ namespace RPServer.Models
             };
             return blend;
         }
+
         public Dictionary<int, HeadOverlay> GetHeadOverlay()
         {
             var dict = new Dictionary<int, HeadOverlay>
             {
                 {
                     (int) HeadOverlayID.Blemishes,
-                    new HeadOverlay()
+                    new HeadOverlay
                     {
                         Index = Blemishes,
                         Opacity = BlemishesOpacity,
@@ -201,7 +71,7 @@ namespace RPServer.Models
                 },
                 {
                     (int) HeadOverlayID.FacialHair,
-                    new HeadOverlay()
+                    new HeadOverlay
                     {
                         Index = FacialHair,
                         Opacity = FacialHairOpacity,
@@ -211,7 +81,7 @@ namespace RPServer.Models
                 },
                 {
                     (int) HeadOverlayID.Eyebrows,
-                    new HeadOverlay()
+                    new HeadOverlay
                     {
                         Index = Eyebrows,
                         Opacity = EyebrowsOpacity,
@@ -221,7 +91,7 @@ namespace RPServer.Models
                 },
                 {
                     (int) HeadOverlayID.Ageing,
-                    new HeadOverlay()
+                    new HeadOverlay
                     {
                         Index = Ageing,
                         Opacity = AgeingOpacity,
@@ -231,7 +101,7 @@ namespace RPServer.Models
                 },
                 {
                     (int) HeadOverlayID.Makeup,
-                    new HeadOverlay()
+                    new HeadOverlay
                     {
                         Index = Makeup,
                         Opacity = MakeupOpacity,
@@ -241,7 +111,7 @@ namespace RPServer.Models
                 },
                 {
                     (int) HeadOverlayID.Blush,
-                    new HeadOverlay()
+                    new HeadOverlay
                     {
                         Index = Blush,
                         Opacity = BlushOpacity,
@@ -251,7 +121,7 @@ namespace RPServer.Models
                 },
                 {
                     (int) HeadOverlayID.Complexion,
-                    new HeadOverlay()
+                    new HeadOverlay
                     {
                         Index = Complexion,
                         Opacity = ComplexionOpacity,
@@ -261,7 +131,7 @@ namespace RPServer.Models
                 },
                 {
                     (int) HeadOverlayID.SunDamage,
-                    new HeadOverlay()
+                    new HeadOverlay
                     {
                         Index = SunDamage,
                         Opacity = SunDamageOpacity,
@@ -271,7 +141,7 @@ namespace RPServer.Models
                 },
                 {
                     (int) HeadOverlayID.Lipstick,
-                    new HeadOverlay()
+                    new HeadOverlay
                     {
                         Index = Lipstick,
                         Opacity = LipstickOpacity,
@@ -281,7 +151,7 @@ namespace RPServer.Models
                 },
                 {
                     (int) HeadOverlayID.Freckles,
-                    new HeadOverlay()
+                    new HeadOverlay
                     {
                         Index = Freckles,
                         Opacity = FrecklesOpacity,
@@ -291,7 +161,7 @@ namespace RPServer.Models
                 },
                 {
                     (int) HeadOverlayID.ChestHair,
-                    new HeadOverlay()
+                    new HeadOverlay
                     {
                         Index = ChestHair,
                         Opacity = ChestHairOpacity,
@@ -301,7 +171,7 @@ namespace RPServer.Models
                 },
                 {
                     (int) HeadOverlayID.BodyBlemishes,
-                    new HeadOverlay()
+                    new HeadOverlay
                     {
                         Index = BodyBlemishes,
                         Opacity = BodyBlemishesOpacity,
@@ -311,7 +181,7 @@ namespace RPServer.Models
                 },
                 {
                     (int) HeadOverlayID.AdditionalBodyBlemishes,
-                    new HeadOverlay()
+                    new HeadOverlay
                     {
                         Index = AdditionalBodyBlemishes,
                         Opacity = AdditionalBodyBlemishesOpacity,
@@ -319,13 +189,13 @@ namespace RPServer.Models
                         SecondaryColor = AdditionalBodyBlemishesSecColor
                     }
                 }
-
             };
             return dict;
         }
+
         public float[] GetFaceFeatures()
         {
-            var arr = new float[]
+            var arr = new[]
             {
                 NoseWidth,
                 NoseHeight,
@@ -450,5 +320,144 @@ namespace RPServer.Models
             HairStyleTexture = (byte) jsonData.HairStyleTexture;
             EyeColor = (byte) jsonData.EyeColor;
         }
+
+        #region HEADBLEND_DATA
+
+        public ulong SkinModel
+        {
+            set
+            {
+                if (value == (ulong) PedHash.FreemodeMale01) _isMale = true;
+                if (value == (ulong) PedHash.FreemodeFemale01) _isMale = false;
+                _skinModel = value;
+            }
+            get => _skinModel;
+        }
+
+        public bool IsMale
+        {
+            set
+            {
+                if (SkinModel == (ulong) PedHash.FreemodeMale01) _isMale = true;
+                else if (SkinModel == (ulong) PedHash.FreemodeFemale01) _isMale = false;
+                else _isMale = value;
+            }
+            get
+            {
+                if (SkinModel == (ulong) PedHash.FreemodeMale01)
+                    return true;
+                if (SkinModel == (ulong) PedHash.FreemodeFemale01)
+                    return false;
+                return _isMale;
+            }
+        }
+
+        public byte ShapeFirstID { get; set; }
+        public byte ShapeSecondID { get; set; }
+        public byte SkinSecondID { get; set; }
+        public float ShapeMix { get; set; }
+        public float SkinMix { get; set; }
+
+        private const byte ShapeThirdID = 0;
+        private const byte SkinThirdID = 0;
+        private const float ThirdMix = 0.0f;
+        private const bool IsParent = false;
+
+        #endregion
+
+        #region HEAD_OVERLAY
+
+        public byte Blemishes { set; get; }
+        public byte FacialHair { set; get; }
+        public byte Eyebrows { set; get; }
+        public byte Ageing { set; get; }
+        public byte Makeup { set; get; }
+        public byte Blush { set; get; }
+        public byte Complexion { set; get; }
+        public byte SunDamage { set; get; }
+        public byte Lipstick { set; get; }
+        public byte Freckles { set; get; }
+        public byte ChestHair { set; get; }
+        public byte BodyBlemishes { set; get; }
+        public byte AdditionalBodyBlemishes { set; get; }
+
+        public float BlemishesOpacity { set; get; }
+        public float FacialHairOpacity { set; get; }
+        public float EyebrowsOpacity { set; get; }
+        public float AgeingOpacity { set; get; }
+        public float MakeupOpacity { set; get; }
+        public float BlushOpacity { set; get; }
+        public float ComplexionOpacity { set; get; }
+        public float SunDamageOpacity { set; get; }
+        public float LipstickOpacity { set; get; }
+        public float FrecklesOpacity { set; get; }
+        public float ChestHairOpacity { set; get; }
+        public float BodyBlemishesOpacity { set; get; }
+        public float AdditionalBodyBlemishesOpacity { set; get; }
+
+        public byte BlemishesColor { set; get; }
+        public byte FacialHairColor { set; get; }
+        public byte EyebrowsColor { set; get; }
+        public byte AgeingColor { set; get; }
+        public byte MakeupColor { set; get; }
+        public byte BlushColor { set; get; }
+        public byte ComplexionColor { set; get; }
+        public byte SunDamageColor { set; get; }
+        public byte LipstickColor { set; get; }
+        public byte FrecklesColor { set; get; }
+        public byte ChestHairColor { set; get; }
+        public byte BodyBlemishesColor { set; get; }
+        public byte AdditionalBodyBlemishesColor { set; get; }
+
+        public byte BlemishesSecColor { set; get; }
+        public byte FacialHairSecColor { set; get; }
+        public byte EyebrowsSecColor { set; get; }
+        public byte AgeingSecColor { set; get; }
+        public byte MakeupSecColor { set; get; }
+        public byte BlushSecColor { set; get; }
+        public byte ComplexionSecColor { set; get; }
+        public byte SunDamageSecColor { set; get; }
+        public byte LipstickSecColor { set; get; }
+        public byte FrecklesSecColor { set; get; }
+        public byte ChestHairSecColor { set; get; }
+        public byte BodyBlemishesSecColor { set; get; }
+        public byte AdditionalBodyBlemishesSecColor { set; get; }
+
+        #endregion
+
+        #region FACE_FEATURES
+
+        public float NoseWidth { get; set; }
+        public float NoseHeight { get; set; }
+        public float NoseLength { get; set; }
+        public float NoseBridge { get; set; }
+        public float NoseTip { get; set; }
+        public float NoseBridgeShift { get; set; }
+        public float BrowHeight { get; set; }
+        public float BrowWidth { get; set; }
+        public float CheekboneHeight { get; set; }
+        public float CheekboneWidth { get; set; }
+        public float CheeksWidth { get; set; }
+        public float Eyes { get; set; }
+        public float Lips { get; set; }
+        public float JawWidth { get; set; }
+        public float JawHeight { get; set; }
+        public float ChinLength { get; set; }
+        public float ChinPosition { get; set; }
+        public float ChinWidth { get; set; }
+        public float ChinShape { get; set; }
+        public float NeckWidth { get; set; }
+
+        #endregion
+
+        #region EXTRA
+
+        public byte HairStyle { get; set; }
+        public byte HairColor { set; get; } // 0 .. 63
+        public byte HairHighlightColor { set; get; } // 0 .. 63
+        public byte HairStyleTexture { get; set; }
+        public byte EyeColor { set; get; } // 0 .. 31
+
+        #endregion
     }
 }

@@ -10,35 +10,32 @@ namespace RPServer.Models
     [Table("characters")]
     internal class CharacterModel : Model<CharacterModel>
     {
+        public HashSet<Alias> Aliases;
+
+        public AppearanceModel Appearance;
+        public InventoryModel Inventory;
+        public HashSet<VehicleModel> Vehicles;
+
         public int CharOwnerID { set; get; }
         public string CharacterName { set; get; }
         public int MinutesPlayed { set; get; }
 
-        public AppearanceModel Appearance;
-        public HashSet<Alias> Aliases;
-        public HashSet<VehicleModel> Vehicles;
-        public InventoryModel Inventory;
-
-        public CharacterModel()
-        {
-            
-        }
-
         /// <summary>
-        /// Use to create new character
+        ///     Use to create new character
         /// </summary>
         public static async Task CreateNewAsync(AccountModel charOwner, string newCharName)
         {
-            var newChar = new CharacterModel()
+            var newChar = new CharacterModel
             {
                 CharOwnerID = charOwner.ID,
                 CharacterName = newCharName
             };
             await newChar.CreateAsync();
         }
+
         public static async Task<List<CharacterModel>> FetchAllAsync(AccountModel account)
         {
-            var result = await ReadByKeyAsync(() => CharacterModel.Mock.CharOwnerID, account.ID);
+            var result = await ReadByKeyAsync(() => Mock.CharOwnerID, account.ID);
             var charsData = result.ToList();
             return charsData;
         }
@@ -57,12 +54,14 @@ namespace RPServer.Models
             // Other
             await Alias.UpdateAllByChar(Aliases, this);
         }
+
         public async Task ReadAllData()
         {
 #if DEBUG
             Logger.GetInstance().ServerInfo($"Reading All Character data for character {CharacterName}");
 #endif
-            Appearance = (await AppearanceModel.ReadByKeyAsync(() => AppearanceModel.Mock.CharacterID, this.ID)).FirstOrDefault();
+            Appearance = (await AppearanceModel.ReadByKeyAsync(() => AppearanceModel.Mock.CharacterID, ID))
+                .FirstOrDefault();
             Aliases = await Alias.ReadAllByChar(this);
             Vehicles = (await VehicleModel.ReadByKeyAsync(() => VehicleModel.Mock.OwnerID, ID)).ToHashSet();
             Inventory = await InventoryModel.LoadInventoryAsync(this);

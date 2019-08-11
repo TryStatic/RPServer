@@ -1,4 +1,5 @@
 ﻿// ReSharper disable InconsistentNaming
+
 namespace RPServer.Resource
 {
     public static class CmdStrings

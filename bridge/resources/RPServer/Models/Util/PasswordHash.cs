@@ -8,12 +8,9 @@ namespace RPServer.Models.Util
         private const int SaltSize = 20;
         private const int HashSize = 30;
         private const int HashIter = 10000;
-
-        private readonly byte[] _salt;
         private readonly byte[] _hash;
 
-        public byte[] Salt => (byte[])_salt.Clone();
-        public byte[] Hash => (byte[])_hash.Clone();
+        private readonly byte[] _salt;
 
         public PasswordHash(string password)
         {
@@ -34,9 +31,12 @@ namespace RPServer.Models.Util
             Array.Copy(hash, 0, _hash = new byte[HashSize], 0, HashSize);
         }
 
+        public byte[] Salt => (byte[]) _salt.Clone();
+        public byte[] Hash => (byte[]) _hash.Clone();
+
         public byte[] ToArray()
         {
-            byte[] hashBytes = new byte[SaltSize + HashSize];
+            var hashBytes = new byte[SaltSize + HashSize];
             Array.Copy(_salt, 0, hashBytes, 0, SaltSize);
             Array.Copy(_hash, 0, hashBytes, SaltSize, HashSize);
             return hashBytes;
@@ -44,8 +44,8 @@ namespace RPServer.Models.Util
 
         public bool Verify(string password)
         {
-            byte[] test = new Rfc2898DeriveBytes(password, _salt, HashIter).GetBytes(HashSize);
-            for (int i = 0; i < HashSize; i++)
+            var test = new Rfc2898DeriveBytes(password, _salt, HashIter).GetBytes(HashSize);
+            for (var i = 0; i < HashSize; i++)
                 if (test[i] != _hash[i])
                     return false;
             return true;
