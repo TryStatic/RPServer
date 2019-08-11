@@ -1,7 +1,6 @@
-﻿using System;
+﻿using RPServer.Util;
+using System;
 using System.Collections.Generic;
-using System.Globalization;
-using RPServer.Util;
 
 namespace RPServer.Controllers.Util
 {
@@ -17,7 +16,7 @@ namespace RPServer.Controllers.Util
 
         private void ParseCommandText(string commandText)
         {
-            if(string.IsNullOrWhiteSpace(commandText)) return;
+            if (string.IsNullOrWhiteSpace(commandText)) return;
 
             var trimmed = commandText.Trim();
             var arguments = trimmed.Split(' ');
@@ -41,11 +40,9 @@ namespace RPServer.Controllers.Util
                 var isInt = int.TryParse(token, out var result);
                 return isInt;
             }
-            else
-            {
-                Logger.GetInstance().ServerError("HasNextToken doesn't support " + type);
-                return false;
-            }
+
+            Logger.GetInstance().ServerError("HasNextToken doesn't support " + type);
+            return false;
         }
     }
 }

@@ -1,11 +1,9 @@
-﻿using System;
-using System.Linq;
-using GTANetworkAPI;
+﻿using GTANetworkAPI;
 using RPServer.Controllers.Util;
+using RPServer.InternalAPI;
 using RPServer.InternalAPI.Extensions;
 using RPServer.Models.Inventory;
 using RPServer.Resource;
-using static Shared.Data.Colors;
 
 namespace RPServer.Controllers
 {
@@ -13,7 +11,7 @@ namespace RPServer.Controllers
     {
         public InventoryHandler()
         {
-            
+
         }
 
         [Command(CmdStrings.CMD_Inventory, Alias = CmdStrings.CMD_Inventory_Alias, GreedyArg = true)]
@@ -25,23 +23,92 @@ namespace RPServer.Controllers
 
             if (!cmdParser.HasNextToken())
             {
-                InventoryHandler.DisplayInventory(client);
                 ChatHandler.SendCommandUsageText(client, CmdStrings.CMD_Inventory_HelpText);
                 return;
             }
 
             switch (cmdParser.GetNextToken())
             {
+                case "list": // list
+                    DisplayInventoryItems(client, client.GetActiveChar().Inventory);
+                    break;
                 case CmdStrings.SUBCMD_Inventory_Use:
                     if (!cmdParser.HasNextToken(typeof(int)))
                     {
                         ChatHandler.SendCommandUsageText(client, "/inv(entory) use [itemID]");
                         return;
                     }
-                    var itemUseID = int.Parse(cmdParser.GetNextToken());
-                    UseItem(client, itemUseID);
+
+                    var useToken = cmdParser.GetNextToken();
+                    var useItemID = int.Parse(useToken);
+
+                    if (!ItemTemplate.IsValidItemTemplateID(useItemID))
+                    {
+                        ChatHandler.SendCommandErrorText(client, "This is not a valid itemID.");
+                        return;
+                    }
+
+                    var template = ItemTemplate.GetTemplate(useItemID);
+                    if (template.SelfAction == null)
+                    {
+                        ChatHandler.SendCommandErrorText(client, "This is not a usable item.");
+                        return;
+                    }
+
+                    template.SelfAction.Invoke(client);
+
                     break;
-                case CmdStrings.SUBCMD_Inventory_Drop:
+                case "give": // give
+                    if (!cmdParser.HasNextToken())
+                    {
+                        ChatHandler.SendCommandUsageText(client, "/inv(entory) give [PartOfName/PlayerID] [ItemID]");
+                        return;
+                    }
+
+                    var otherClient = ClientMethods.FindClient(cmdParser.GetNextToken());
+                    if (otherClient == null)
+                    {
+                        ChatHandler.SendCommandErrorText(client, "We couldn't find that player.");
+                        return;
+                    }
+
+                    if (!client.IsLoggedIn() || !client.HasActiveChar())
+                    {
+                        ChatHandler.SendCommandErrorText(client, "That player is not logged in.");
+                        return;
+                    }
+
+                    if (!cmdParser.HasNextToken(typeof(int)))
+                    {
+                        ChatHandler.SendCommandUsageText(client, "/inv(entory) give PartOfName/PlayerID [ItemID]");
+                        return;
+                    }
+                    var giveToken = cmdParser.GetNextToken();
+                    var giveItemID = int.Parse(giveToken);
+
+                    if (!ItemTemplate.IsValidItemTemplateID(giveItemID))
+                    {
+                        ChatHandler.SendCommandErrorText(client, "This is not a valid itemID.");
+                        return;
+                    }
+
+                    var giveTemplate = ItemTemplate.GetTemplate(giveItemID);
+
+                    if (!giveTemplate.Tradeable)
+                    {
+                        ChatHandler.SendCommandErrorText(client, "That item cannot be traded.");
+                        return;
+                    }
+
+                    var playerInv = client.GetActiveChar().Inventory;
+                    var otherInv = client.GetActiveChar().Inventory;
+
+
+
+                    break;
+                case CmdStrings.SUBCMD_Inventory_Drop: // drop
+                    break;
+                case "destroy": // destroy
                     break;
                 default:
                     ChatHandler.SendCommandUsageText(client, CmdStrings.CMD_Inventory_HelpText);
@@ -51,35 +118,19 @@ namespace RPServer.Controllers
 
         }
 
-        private void UseItem(Client client, int itemID)
-        {
-            var plInvData = client.GetActiveChar().Inventory;
-            var item = plInvData.Items.FirstOrDefault(i => i.ItemID == itemID);
-            var itemTemplate = ItemTemplate.ItemsTemplate.First(j => j.ID == item.ItemID);
-            if (itemTemplate.Action == null)
-            {
-                ChatHandler.SendCommandErrorText(client, "That item is not usable.");
-                return;
-            }
-            itemTemplate.Action.Invoke(client);
-        }
 
-        private static void DisplayInventory(Client client)
+        /// <summary>
+        /// </summary>
+        /// <param name="client">The Client to display the items</param>
+        /// <param name="inventory">The actual inventory.</param>
+        private static void DisplayInventoryItems(Client client, InventoryModel inventory)
         {
-
-            if (client.GetActiveChar().Inventory.Items.Count == 0)
+            foreach (var item in inventory.Items)
             {
-                ChatHandler.SendClientMessage(client, "!{#D4D4D4}Your inventory is empty.");
+                var itemInfo = ItemTemplate.GetTemplate(item.ItemID);
+                ChatHandler.SendClientMessage(client, $"ItemID: {item.ItemID} => {itemInfo.Name}, {itemInfo.Desc}, {itemInfo.GetItemType().ToString()}, {item.Amount}");
             }
-            else
-            {
-                ChatHandler.SendClientMessage(client, "!{#D4D4D4}Your owned items:");
-                foreach (var i in client.GetActiveChar().Inventory.Items)
-                {
-                    var item = ItemTemplate.ItemsTemplate.First(t => t.ID == i.ItemID);
-                    ChatHandler.SendClientMessage(client, $"\t{COLOR_GRAD3}ID: {i.ItemID}{COLOR_GRAD3} | {COLOR_GRAD3}Item: {item.Name}{COLOR_GRAD3} | Description: {COLOR_WHITE}{item.Desc}{COLOR_GRAD3} | Amount: {COLOR_WHITE}{i.Amount}");
-                }
-            }
+            ChatHandler.SendClientMessage(client, "-----------------------------------");
         }
     }
 }
