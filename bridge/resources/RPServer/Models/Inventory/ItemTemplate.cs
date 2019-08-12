@@ -8,6 +8,7 @@ using Dapper.Contrib.Extensions;
 using GTANetworkAPI;
 using RPServer.Controllers;
 using RPServer.Database;
+using RPServer.InternalAPI.Extensions;
 using RPServer.Util;
 
 namespace RPServer.Models.Inventory
@@ -95,8 +96,25 @@ namespace RPServer.Models.Inventory
             {
                 case 2: // Dice
                     return DiceRollAction;
+                case 3: // Scratchcard
+                    return ScratchcardAction;
                 default:
                     return null;
+            }
+        }
+
+        private static async void ScratchcardAction(Client client)
+        {
+            if (client == null) return;
+            var random = RandomGenerator.GetInstance().Next(0, 2);
+            if (random == 0)
+            {
+                ChatHandler.SendClientMessage(client, $"You win $500.");
+                await client.GetActiveChar().Inventory.SpawnItem(client.GetActiveChar(), 1, 500);
+            }
+            else
+            {
+                ChatHandler.SendClientMessage(client, $"Sorry loser.. better luck next time..");
             }
         }
 
