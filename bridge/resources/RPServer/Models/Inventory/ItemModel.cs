@@ -14,6 +14,19 @@ namespace RPServer.Models.Inventory
         public int ItemID; // key 1
         public int OwnerID; // key 2
 
+        public ItemModel()
+        {
+
+        }
+
+        public ItemModel(int itemID, int ownerID, ContainerType container, int amount = 1)
+        {
+            ItemID = itemID;
+            OwnerID = ownerID;
+            ContainerID = (int) container;
+            Amount = amount;
+        }
+
         public static async Task<HashSet<ItemModel>> LoadInventoryItems(CharacterModel character)
         {
             const string query = "SELECT * FROM items WHERE OwnerID = ownerid AND ContainerID = containerid";
@@ -118,7 +131,7 @@ namespace RPServer.Models.Inventory
             }
         }
 
-        private enum ContainerType
+        public enum ContainerType
         {
             CharacterInventory, // 0
             VehicleTrunk, // 1
@@ -130,6 +143,66 @@ namespace RPServer.Models.Inventory
         {
             Trunk,
             Glovebox
+        }
+
+        public async Task Delete()
+        {
+            const string query = "DELETE FROM items WHERE ItemID = itemid AND OwnerID = ownerid AND ContainerID = containerid";
+
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
+            {
+                try
+                {
+                    await dbConn.ExecuteAsync(query, new { itemid = ItemID, ownerid = OwnerID, containerid = ContainerID });
+                }
+                catch (DbException ex)
+                {
+                    DbConnectionProvider.HandleDbException(ex);
+                }
+            }
+        }
+
+        public async Task Update()
+        {
+            const string query = "UPDATE items " +
+                                 " SET Amount = newAmount " +
+                                 " WHERE ItemID = itemid AND OwnerID = ownerid AND ContainerID = containerid";
+
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
+            {
+                try
+                {
+                    await dbConn.ExecuteAsync(query, new { itemid = ItemID, ownerid = OwnerID, containerid = ContainerID, newAmount = Amount });
+                }
+                catch (DbException ex)
+                {
+                    DbConnectionProvider.HandleDbException(ex);
+                }
+            }
+        }
+
+        public async Task Create()
+        {
+            const string query =
+                "INSERT INTO items(ItemID, OwnerID, ContainerID, Amount) VALUES (itemid, ownerid, containerid, amount)";
+
+            using (var dbConn = DbConnectionProvider.CreateDbConnection())
+            {
+                try
+                {
+                    await dbConn.ExecuteAsync(query, new
+                    {
+                        itemid = this.ItemID,
+                        ownerid = this.OwnerID,
+                        containerid = this.ContainerID,
+                        amount = this.Amount
+                    });
+                }
+                catch (DbException ex)
+                {
+                    DbConnectionProvider.HandleDbException(ex);
+                }
+            }
         }
     }
 }

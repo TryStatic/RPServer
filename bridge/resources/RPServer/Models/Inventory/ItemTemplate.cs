@@ -24,6 +24,7 @@ namespace RPServer.Models.Inventory
         public string Desc { set; get; }
         public int Type { get; set; }
         public bool Tradeable { get; set; }
+        public bool DestroyOnUse { get; set; }
 
         public static async Task LoadItemTemplates()
         {
