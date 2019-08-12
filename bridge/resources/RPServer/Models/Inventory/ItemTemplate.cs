@@ -54,6 +54,8 @@ namespace RPServer.Models.Inventory
                             Name = i.Name,
                             Desc = i.Desc,
                             Type = i.Type,
+                            Tradeable = i.Tradeable,
+                            DestroyOnUse = i.DestroyOnUse,
                             SelfAction = GetItemAction(i.ID)
                         };
                         ItemTemplatesList.Add(newItemTemplate);

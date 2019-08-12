@@ -71,10 +71,12 @@ namespace RPServer.Models.Inventory
 
             if (item.Amount < instances) {
                 Logger.GetInstance().ServerError("Tried to delete more instances of a specific item than it currently has, deleting item completely.");
+                _items.Remove(item);
                 await item.Delete();
             }
             else if(item.Amount == instances)
             {
+                _items.Remove(item);
                 await item.Delete();
             }
             else

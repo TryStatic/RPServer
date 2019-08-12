@@ -81,11 +81,11 @@ namespace RPServer.Controllers
                         return;
                     }
 
-                    if (client == otherClient)
+                    /*if (client == otherClient)
                     {
                         ChatHandler.SendCommandErrorText(client, "You can't use this command to yourself.");
                         return;
-                    }
+                    }*/
 
                     if (!client.IsLoggedIn() || !client.HasActiveChar())
                     {
@@ -120,7 +120,6 @@ namespace RPServer.Controllers
                     if (cmdParser.HasNextToken(typeof(int)))
                     {
                         amount = int.Parse(cmdParser.GetNextToken());
-                        return;
                     }
 
                     if (amount <= 0)
@@ -155,6 +154,9 @@ namespace RPServer.Controllers
 
                     await playerInv.DestroyItem(giveItemID, amount);
                     await otherInv.SpawnItem(otherClient.GetActiveChar(), giveItemID, amount);
+
+                    ChatHandler.SendCommandSuccessText(client, $"You have given ({amount}) {giveItemTemplate.Name} to {otherClient.Name}.");
+                    ChatHandler.SendCommandSuccessText(client, $"You were given ({amount}) {giveItemTemplate.Name} from {client.Name}.");
                     break;
                 case CmdStrings.SUBCMD_Inventory_Drop: // drop
                     break;

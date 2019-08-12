@@ -29,7 +29,7 @@ namespace RPServer.Models.Inventory
 
         public static async Task<HashSet<ItemModel>> LoadInventoryItems(CharacterModel character)
         {
-            const string query = "SELECT * FROM items WHERE OwnerID = ownerid AND ContainerID = containerid";
+            const string query = "SELECT * FROM items WHERE OwnerID = @ownerid AND ContainerID = @containerid";
 
             using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
@@ -60,7 +60,7 @@ namespace RPServer.Models.Inventory
         public static async Task<HashSet<ItemModel>> LoadInventoryItems(VehicleModel vehicle,
             VehicleContainer container)
         {
-            const string query = "SELECT * FROM items WHERE OwnerID = ownerid AND ContainerID = containerid";
+            const string query = "SELECT * FROM items WHERE OwnerID = @ownerid AND ContainerID = @containerid";
 
             ContainerType actualContainer;
             switch (container)
@@ -104,7 +104,7 @@ namespace RPServer.Models.Inventory
 
         public static async Task<HashSet<ItemModel>> LoadWorldItems()
         {
-            const string query = "SELECT * FROM items WHERE ContainerID = containerid";
+            const string query = "SELECT * FROM items WHERE ContainerID = @containerid";
 
             using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
@@ -147,7 +147,7 @@ namespace RPServer.Models.Inventory
 
         public async Task Delete()
         {
-            const string query = "DELETE FROM items WHERE ItemID = itemid AND OwnerID = ownerid AND ContainerID = containerid";
+            const string query = "DELETE FROM items WHERE ItemID = @itemid AND OwnerID = @ownerid AND ContainerID = @containerid";
 
             using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
@@ -165,14 +165,14 @@ namespace RPServer.Models.Inventory
         public async Task Update()
         {
             const string query = "UPDATE items " +
-                                 " SET Amount = newAmount " +
-                                 " WHERE ItemID = itemid AND OwnerID = ownerid AND ContainerID = containerid";
+                                 " SET Amount = @amount " +
+                                 " WHERE ItemID = @itemid AND OwnerID = @ownerid AND ContainerID = @containerid";
 
             using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    await dbConn.ExecuteAsync(query, new { itemid = ItemID, ownerid = OwnerID, containerid = ContainerID, newAmount = Amount });
+                    await dbConn.ExecuteAsync(query, new { itemid = ItemID, ownerid = OwnerID, containerid = ContainerID, amount = Amount });
                 }
                 catch (DbException ex)
                 {
@@ -184,7 +184,7 @@ namespace RPServer.Models.Inventory
         public async Task Create()
         {
             const string query =
-                "INSERT INTO items(ItemID, OwnerID, ContainerID, Amount) VALUES (itemid, ownerid, containerid, amount)";
+                "INSERT INTO items(ItemID, OwnerID, ContainerID, Amount) VALUES (@itemid, @ownerid, @containerid, @amount)";
 
             using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
