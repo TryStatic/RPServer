@@ -2,8 +2,8 @@
 {
     public static class Chat
     {
-        public const float LowChatMaxDistance = 5f;
-        public const float NormalChatMaxDistance = 10f;
-        public const float ShoutChatMaxDistance = 20f;
+        public const float LowChatMaxDistance = 10f;
+        public const float NormalChatMaxDistance = 50f;
+        public const float ShoutChatMaxDistance = 130f;
     }
 }
