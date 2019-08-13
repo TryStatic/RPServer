@@ -98,12 +98,12 @@ namespace RPServerClient.HUD
                 var point3 = new Point((int) (ScreenRes.UIStandardResX * 0.18f),
                     (int) (ScreenRes.UIStandardResY * 0.89f));
                 Ui.SetTextOutline();
-                UIText.Draw("~c~Zone:~s~ " + _zoneName, point1, 0.4f, Color.White, Font.ChaletComprimeCologne, false);
+                UIText.Draw("~c~Area:~s~ " + _zoneName, point1, 0.4f, Color.White, Font.ChaletComprimeCologne, false);
                 Ui.SetTextOutline();
                 UIText.Draw(
                     string.IsNullOrEmpty(_crossingRoad)
                         ? $"~c~Street:~w~ {_streetName}"
-                        : $"~c~INTXN of ~w~{_streetName} ~c~and~s~ {_crossingRoad}",
+                        : $"~c~Street:~w~{_streetName}~c~/~s~{_crossingRoad}",
                     point2, 0.4f, Color.BurlyWood, Font.ChaletComprimeCologne, false);
                 Ui.SetTextOutline();
                 UIText.Draw($"~c~Direction: ~w~{_headingStr}~s~ ", point3, 0.4f, Color.White,
