@@ -14,12 +14,6 @@ namespace RPServer.Resource
         public const string CMD_Alias = "alias";
         public const string CMD_Stats = "stats";
 
-        public const string CMD_Inventory = "inventory";
-        public const string CMD_Inventory_Alias = "inv";
-        public const string SUBCMD_Inventory_Use = "use";
-        public const string SUBCMD_Inventory_Drop = "drop";
-        public const string CMD_Inventory_HelpText = "/inv(entory) [list/use/give/drop/destroy]";
-
         // Vehicle
         public const string CMD_Vehicle = "vehicle";
         public const string CMD_Vehicle_Alias = "v";
