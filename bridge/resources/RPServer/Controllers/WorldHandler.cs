@@ -3,12 +3,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using GTANetworkAPI;
 using RPServer.Models;
+using RPServer.Models.Inventory;
 using RPServer.Util;
 
 namespace RPServer.Controllers
 {
     internal class WorldHandler : Script
     {
+        public static InventoryModel Inventory;
+
         private static Timer _updateTimeTimer;
         private static Timer _saveWorldDataTimer;
 

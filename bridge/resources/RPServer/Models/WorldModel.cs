@@ -10,7 +10,6 @@ namespace RPServer.Models
     [Table("world")]
     internal class WorldModel : Model<WorldModel>
     {
-        public InventoryModel Inventory;
 
         public DateTime ServerTime { get; set; }
 
@@ -31,7 +30,7 @@ namespace RPServer.Models
             WorldHandler.CurrentTime = worldData.ServerTime;
 
             Logger.GetInstance().ServerInfo("Loading World Dropped Items.");
-            worldData.Inventory = await InventoryModel.LoadWorldInventoryAsync();
+            WorldHandler.Inventory = await InventoryModel.LoadWorldInventoryAsync();
         }
     }
 }

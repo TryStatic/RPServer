@@ -23,6 +23,7 @@ namespace RPServer.Models.Inventory
         // id
         public string Name { set; get; }
         public string Desc { set; get; }
+        public uint ObjectID { set; get; }
         public int Type { get; set; }
         public bool Tradeable { get; set; }
         public bool DestroyOnUse { get; set; }
@@ -37,8 +38,6 @@ namespace RPServer.Models.Inventory
 
             Logger.GetInstance().ServerInfo("Loading Item Templates from the database.");
 
-            ItemTemplatesList = new HashSet<ItemTemplate>();
-
             const string query = "SELECT * FROM itemstemplate";
 
             using (var dbConn = DbConnectionProvider.CreateDbConnection())
@@ -46,21 +45,8 @@ namespace RPServer.Models.Inventory
                 try
                 {
                     var result = await dbConn.QueryAsync<ItemTemplate>(query);
-                    ItemTemplatesList = new HashSet<ItemTemplate>();
-                    foreach (var i in result)
-                    {
-                        var newItemTemplate = new ItemTemplate
-                        {
-                            ID = i.ID,
-                            Name = i.Name,
-                            Desc = i.Desc,
-                            Type = i.Type,
-                            Tradeable = i.Tradeable,
-                            DestroyOnUse = i.DestroyOnUse,
-                            SelfAction = GetItemAction(i.ID)
-                        };
-                        ItemTemplatesList.Add(newItemTemplate);
-                    }
+                    ItemTemplatesList = result.ToHashSet();
+                    foreach (var i in ItemTemplatesList) i.SelfAction = GetItemAction(i.ID);
                 }
                 catch (DbException ex)
                 {

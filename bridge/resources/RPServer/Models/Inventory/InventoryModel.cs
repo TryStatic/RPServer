@@ -1,16 +1,15 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GTANetworkAPI;
-using RPServer.InternalAPI.Extensions;
+using RPServer.Controllers;
 using RPServer.Util;
 
 namespace RPServer.Models.Inventory
 {
     internal class InventoryModel
     {
-        private HashSet<ItemModel> _items;
+        private readonly HashSet<ItemModel> _items;
 
         private InventoryModel(HashSet<ItemModel> invItems)
         {
@@ -89,6 +88,24 @@ namespace RPServer.Models.Inventory
         public bool CanAddItem(int giveItemID, int amount)
         {
             return true;
+        }
+
+        public async Task SpawnDroppedItem(int itemID, int dropamount, Vector3 pos, Vector3 rot, uint dimension)
+        {
+            ItemModel.LastDroppedItemID -= 1;
+            var newDropItem = new ItemModel(itemID, ItemModel.LastDroppedItemID, ItemModel.ContainerType.WorldInventory, dropamount) {Dimension = dimension};
+            
+            var template = ItemTemplate.GetTemplate(itemID);
+
+            var itemPos = new Vector3(pos.X, pos.Y, pos.Z);
+            var itemRot = new Vector3(rot.X, rot.Y, rot.Z);
+
+            newDropItem.EntityID = NAPI.Object.CreateObject(template.ObjectID, itemPos, itemRot, 255, newDropItem.Dimension);
+            itemPos.Z += 0.2f;
+            newDropItem.TextLabel = NAPI.TextLabel.CreateTextLabel($"{template.Name} ({newDropItem.Amount})", itemPos, 5.0f, 0.5f, (int)Shared.Enums.Font.ChaletLondon, new Color(255, 255, 255), false, newDropItem.Dimension);
+
+            WorldHandler.Inventory._items.Add(newDropItem);
+            await newDropItem.Create();
         }
     }
 }

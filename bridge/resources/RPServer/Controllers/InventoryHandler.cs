@@ -1,10 +1,12 @@
 ﻿using System.Linq;
+using System.Numerics;
 using GTANetworkAPI;
 using RPServer.Controllers.Util;
 using RPServer.InternalAPI;
 using RPServer.InternalAPI.Extensions;
 using RPServer.Models.Inventory;
 using RPServer.Resource;
+using Vector3 = System.Numerics.Vector3;
 
 namespace RPServer.Controllers
 {
@@ -159,6 +161,45 @@ namespace RPServer.Controllers
                     ChatHandler.SendCommandSuccessText(client, $"You were given ({amount}) {giveItemTemplate.Name} from {client.Name}.");
                     break;
                 case CmdStrings.SUBCMD_Inventory_Drop: // drop
+                    if (!cmdParser.HasNextToken(typeof(int)))
+                    {
+                        ChatHandler.SendCommandUsageText(client, "/inv(entory) drop [itemID] [Amount]");
+                        return;
+                    }
+
+                    var itemID = int.Parse(cmdParser.GetNextToken());
+
+                    if (!ItemTemplate.IsValidItemTemplateID(itemID))
+                    {
+                        ChatHandler.SendCommandErrorText(client, "This is not a valid itemID.");
+                        return;
+                    }
+                    
+                    var templ = ItemTemplate.GetTemplate(itemID);
+
+                    if (false) // Droppable check
+                    {
+                        ChatHandler.SendCommandErrorText(client, "That item cannot be dropped.");
+                        return;
+                    }
+
+                    if (!cmdParser.HasNextToken(typeof(int)))
+                    {
+                        ChatHandler.SendCommandUsageText(client, "/inv(entory) drop itemID [Amount]");
+                        return;
+                    }
+
+                    var dropamount = int.Parse(cmdParser.GetNextToken());
+
+                    var plInv = client.GetActiveChar().Inventory;
+                    if (!plInv.HasItem(itemID, dropamount))
+                    {
+                        ChatHandler.SendCommandErrorText(client, "You don't have that item or that amount.");
+                        return;
+                    }
+
+                    await plInv.DestroyItem(itemID, dropamount);
+                    await WorldHandler.Inventory.SpawnDroppedItem(itemID, dropamount, client.Position, new GTANetworkAPI.Vector3(), client.Dimension);
                     break;
                 case "destroy": // destroy
                     break;

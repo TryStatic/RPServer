@@ -1,22 +1,36 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Threading.Tasks;
 using Dapper;
+using GTANetworkAPI;
 using RPServer.Database;
 using RPServer.Util;
+using Object = GTANetworkAPI.Object;
 
 namespace RPServer.Models.Inventory
 {
     internal class ItemModel
     {
-        public int Amount;
-        public int ContainerID; // Key 3
-        public int ItemID; // key 1
-        public int OwnerID; // key 2
+        public static int LastDroppedItemID;
+
+        public int ContainerID { set; get; } // Key 3
+        public int ItemID { set; get; } // key 1
+        public int OwnerID { set; get; } // key 2
+        public int Amount { set; get; }
+        public uint Dimension { set; get; }
+        public float PosX { set; get; }
+        public float PosY { set; get; }
+        public float PosZ { set; get; }
+        public float RotX { set; get; }
+        public float RotY { set; get; }
+        public float RotZ { set; get; }
+
+        public Object EntityID;
+        public TextLabel TextLabel;
 
         public ItemModel()
         {
-
         }
 
         public ItemModel(int itemID, int ownerID, ContainerType container, int amount = 1)
@@ -25,6 +39,7 @@ namespace RPServer.Models.Inventory
             OwnerID = ownerID;
             ContainerID = (int) container;
             Amount = amount;
+
         }
 
         public static async Task<HashSet<ItemModel>> LoadInventoryItems(CharacterModel character)
@@ -35,17 +50,28 @@ namespace RPServer.Models.Inventory
             {
                 try
                 {
-                    var result = await dbConn.QueryAsync(query,
-                        new {ownerid = character.ID, containerid = (int) ContainerType.CharacterInventory});
+                    var result = await dbConn.QueryAsync(query, new {ownerid = character.ID, containerid = (int) ContainerType.CharacterInventory});
                     var itemList = new HashSet<ItemModel>();
+
                     foreach (var i in result)
+                    {
                         itemList.Add(new ItemModel
                         {
                             ItemID = i.ItemID,
                             OwnerID = i.OwnerID,
                             ContainerID = i.ContainerID,
-                            Amount = i.Amount
+                            Amount = i.Amount,
+                            Dimension = i.Dimension,
+                            PosX = i.PosX,
+                            PosY = i.PosY,
+                            PosZ = i.PosZ,
+                            RotX = i.RotX,
+                            RotY = i.RotY,
+                            RotZ = i.RotZ
                         });
+                    }
+
+
                     return itemList;
                 }
                 catch (DbException ex)
@@ -113,13 +139,38 @@ namespace RPServer.Models.Inventory
                     var result = await dbConn.QueryAsync(query, new {containerid = (int) ContainerType.WorldInventory});
                     var itemList = new HashSet<ItemModel>();
                     foreach (var i in result)
-                        itemList.Add(new ItemModel
+                    {
+                        var newItem = new ItemModel
                         {
                             ItemID = i.ItemID,
                             OwnerID = i.OwnerID,
                             ContainerID = i.ContainerID,
-                            Amount = i.Amount
-                        });
+                            Amount = i.Amount,
+                            Dimension = i.Dimension,
+                            PosX = i.PosX,
+                            PosY = i.PosY,
+                            PosZ = i.PosZ,
+                            RotX = i.RotX,
+                            RotY = i.RotY,
+                            RotZ = i.RotZ
+                        };
+
+                        if ((int) ContainerType.WorldInventory == newItem.ContainerID)
+                        {
+                            LastDroppedItemID = Math.Min(LastDroppedItemID, newItem.OwnerID);
+
+                            var template = ItemTemplate.GetTemplate(newItem.ItemID);
+
+                            var itemPos = new Vector3(newItem.PosX, newItem.PosY, newItem.PosZ);
+                            var itemRot = new Vector3(newItem.RotX, newItem.RotY, newItem.RotZ);
+                            newItem.EntityID = NAPI.Object.CreateObject(template.ObjectID, itemPos, itemRot, 255, newItem.Dimension);
+                            itemPos.Z += 0.2f;
+                            newItem.TextLabel = NAPI.TextLabel.CreateTextLabel($"{template.Name} ({newItem.Amount})", itemPos, 5.0f, 0.5f, (int)Shared.Enums.Font.ChaletLondon, new Color(255, 255, 255), false, newItem.Dimension);
+                        }
+
+                        itemList.Add(newItem);
+                    }
+
                     return itemList;
                 }
                 catch (DbException ex)
