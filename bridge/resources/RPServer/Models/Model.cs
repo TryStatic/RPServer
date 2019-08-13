@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
@@ -178,8 +178,6 @@ namespace RPServer.Models
                 }
 
             foreach (var i in data) await CreateAsync(i);
-
-            dataref = (await ReadByKeyAsync(expression, searchKey)).ToHashSet();
         }
 
         public static async Task<bool> DeleteAsync(T entry)
