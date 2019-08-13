@@ -83,6 +83,11 @@ namespace RPServer
             NAPI.Blip.CreateBlip(sprite, client.Position, 1.0f, 0, text, 255, 0F, false, 0, 0);
         }
 
+        [Command("createobject")]
+        public void cmd_createtextlabel(Client client, uint objectid)
+        {
+            NAPI.Object.CreateObject(objectid, client.Position, client.Rotation, 255, 0);
+        }
 
         [Command("testclothes")]
         public void cmdtestclothes(Client client)
