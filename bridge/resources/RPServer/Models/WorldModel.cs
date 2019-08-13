@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Dapper.Contrib.Extensions;
 using RPServer.Controllers;
-using RPServer.Models.Inventory;
 using RPServer.Util;
 
 namespace RPServer.Models
@@ -28,9 +27,6 @@ namespace RPServer.Models
             Logger.GetInstance().ServerInfo("Loading World Settings.");
             var worldData = await GetWorldData();
             WorldHandler.CurrentTime = worldData.ServerTime;
-
-            Logger.GetInstance().ServerInfo("Loading World Dropped Items.");
-            WorldHandler.Inventory = await InventoryModel.LoadWorldInventoryAsync();
         }
     }
 }

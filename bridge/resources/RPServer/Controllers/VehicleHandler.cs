@@ -6,7 +6,6 @@ using GTANetworkAPI;
 using RPServer.Controllers.Util;
 using RPServer.InternalAPI.Extensions;
 using RPServer.Models;
-using RPServer.Models.Inventory;
 using RPServer.Resource;
 using RPServer.Util;
 using static Shared.Data.Colors;
@@ -241,12 +240,6 @@ namespace RPServer.Controllers
                 ChatHandler.SendCommandErrorText(client, "That vehicle is already spawned.");
                 return;
             }
-
-            // Load inventory stuff
-            vehToSpawn.Trunk = InventoryModel.LoadInventoryAsync(vehToSpawn, ItemModel.VehicleContainer.Trunk)
-                .GetAwaiter().GetResult();
-            vehToSpawn.Glovebox = InventoryModel.LoadInventoryAsync(vehToSpawn, ItemModel.VehicleContainer.Glovebox)
-                .GetAwaiter().GetResult();
 
             // Create the entity
             vehToSpawn.VehEntity = NAPI.Vehicle.CreateVehicle(vehToSpawn.Model, client.Position.Around(3), 0,

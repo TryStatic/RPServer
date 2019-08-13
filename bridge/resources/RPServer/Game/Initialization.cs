@@ -5,7 +5,6 @@ using RPServer.Controllers.Util;
 using RPServer.Database;
 using RPServer.Email;
 using RPServer.Models;
-using RPServer.Models.Inventory;
 using RPServer.Util;
 
 namespace RPServer.Game
@@ -65,9 +64,6 @@ namespace RPServer.Game
 
             // Initialize ValidVehicleIDs
             DataValidator.InitializeValidVehicleModelIDs();
-
-            // Populate Item Template List
-            ItemTemplate.LoadItemTemplates().GetAwaiter().GetResult();
 
             // Read Sever World Settings from Database
             WorldModel.LoadWorldData().GetAwaiter().GetResult();

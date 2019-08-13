@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper.Contrib.Extensions;
-using RPServer.Models.Inventory;
 using RPServer.Util;
 
 namespace RPServer.Models
@@ -13,7 +12,6 @@ namespace RPServer.Models
         public HashSet<Alias> Aliases;
 
         public AppearanceModel Appearance;
-        public InventoryModel Inventory;
         public HashSet<VehicleModel> Vehicles;
 
         public int CharOwnerID { set; get; }
@@ -64,7 +62,6 @@ namespace RPServer.Models
                 .FirstOrDefault();
             Aliases = await Alias.ReadAllByChar(this);
             Vehicles = (await VehicleModel.ReadByKeyAsync(() => VehicleModel.Mock.OwnerID, ID)).ToHashSet();
-            Inventory = await InventoryModel.LoadInventoryAsync(this);
         }
     }
 }
