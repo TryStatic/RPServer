@@ -15,11 +15,9 @@
         <div id="displayerror-box" style="margin-top: 5px; overflow-wrap: break-word; display:none;">
             <span id="displayerror-text" style="color: red">{errormsg}</span>
         </div>
-        <form>
+        <form class="form">
             <div class="input">
-                <div class="input-addon2">
-                    <i class="material-icons">face</i>
-                </div>
+                <div class="input-addon2"><em class="material-icons loginlogos">face</em></div>
                 <input id="username" placeholder="Username" type="text" required class="validate" autocomplete="off"
                     minlength="5">
             </div>
@@ -36,17 +34,16 @@
 
             <div class="remember-me">
             </div>
-
+            <input type="submit" value="Login" />
             <div class="forgot-password">
                 <a href="#">Forgot your password? (Not impl. yet)</a>
             </div>
-            <input type="submit" value="Login" />
         </form>
 
         <div class="register">
-            <i class="material-icons lock">account_circle</i><br>Don't have an account yet? <a
-                href="register.html"><button id="register-link">Register</button></a>
-        </div><img src="agglika.png"></img>
+            Don't have an account yet? <br><a
+                href="register.html"><button class="ui-button">Register</button></a>
+        </div><br><img src="agglika.png"></img>
     </div>
 
     <div id="container-register" class="loading" style="display: none">
