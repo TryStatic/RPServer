@@ -41,7 +41,7 @@ namespace RPServer.Models
         public async Task SaveAllData()
         {
 #if DEBUG
-            Logger.GetInstance().ServerInfo($"Saving All Character data for character {CharacterName}");
+            Logger.GetInstance().ServerInfo($"Saving All Character data for  character {CharacterName} (accountID: {CharOwnerID})");
 #endif
             // This Character Instance
             await UpdateAsync(this);
@@ -56,7 +56,7 @@ namespace RPServer.Models
         public async Task ReadAllData()
         {
 #if DEBUG
-            Logger.GetInstance().ServerInfo($"Reading All Character data for character {CharacterName}");
+            Logger.GetInstance().ServerInfo($"Reading All Character data for character {CharacterName} (accountID: {CharOwnerID})");
 #endif
             Appearance = (await AppearanceModel.ReadByKeyAsync(() => AppearanceModel.Mock.CharacterID, ID))
                 .FirstOrDefault();

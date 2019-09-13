@@ -15,7 +15,7 @@ namespace RPServer.Controllers.EventHandlers
         public void ClientEvent_OnPlayerCommand(Client client, string cmd)
         {
             // Log the command
-            Logger.GetInstance().CommandLog(client.IsLoggedIn() ? client.GetAccount().Username : "UNREGISTERED", cmd);
+            Logger.GetInstance().CommandLog(client.IsLoggedIn() ? $"{client.GetActiveChar().CharacterName} ({client.GetAccount().Username})" : "UNREGISTERED", cmd);
         }
     }
 }
