@@ -12,101 +12,110 @@
 <body>
   <div class="container-fuid creatorcontainer customscroll scrollbarstyle">
     <div class="innercontainer">
-      <h4 class="scrollhere title">Character Creation</h4>
-      <br />
-      <div id="errorchardata" class="alert alert-danger" role="alert">
-        <span id="errorchardatatext"></span>
-      </div>
-      <div id="step1">
+      <h4 class="scrollhere title"><em class="material-icons lock">wc</em>&nbsp;Character Creation</h4>
+		     <div id="step1">
         <form id="creation_part1">
-          <div class="form-group">
-            <p style="text-align: left;">Select your character's name: </p>
+          <div class="form-group"><br>
+			  <div id="chartext">Choose your Character's names.</div>
             <div class="input-group mb-3">
-              <input id="firstname" type="text" class="form-control" placeholder="Firstname" aria-label="Firstname"
+              <input id="firstname" type="text" class="form-control" placeholder="First Name" aria-label="Firstname"
                 aria-describedby="basic-addon1" required minlength="2" maxlength="15" pattern="[A-Za-z]+"
-                title="Invalid Format">
-              <input id="lastname" type="text" class="form-control" placeholder="Lastname" aria-label="Lastname"
+                title="Invalid Format"> &nbsp;
+              <input id="lastname" type="text" class="form-control" placeholder="Last Name" aria-label="Lastname"
                 aria-describedby="basic-addon1" required minlength="2" maxlength="15" pattern="[A-Za-z]+"
                 title="Invalid Format">
             </div>
+                  <div id="errorchardata" class="alert alert-danger" role="alert">
+        <span id="errorchardatatext"></span>
+      </div>
           </div>
-
+			<div id="chartext2">Choose your Character's gender.</div>
           <div class="form-group">
             <div class="form-check form-check-inline">
               <input class="form-check-input" type="radio" name="gender" id="inlineRadio1" value="male"
                 checked="checked">
-              <label class="form-check-label" for="inlineRadio1">Male</label>
+              <label class="form-check-label" for="inlineRadio1">&#9794; Male</label>
             </div>
             <div class="form-check form-check-inline">
               <input class="form-check-input" type="radio" name="gender" id="inlineRadio2" value="female">
-              <label class="form-check-label" for="inlineRadio2">Female</label>
+              <label class="form-check-label" for="inlineRadio2">&#9792; Female </label>
             </div>
           </div>
-          <br />
-          <br />
-          <button type="submit" class="btn btn-info">Next</button>
-          <br /><br /><button type="submit" class="cancelbtn btn btn-danger">Exit</button>
+          
+          <button type="submit" class="advance btn btn-info">Next</button>
+         <button type="submit" class="exit cancelbtn btn btn-danger">Exit</button>
         </form>
       </div>
 
       <div id="step2" style="text-align: left;">
-
-        ShapeFirst:
+      <center>
+     <button class="cont"><em class="material-icons lock">rotate_left</em></button><button class="cont"><em class="material-icons lock">zoom_in</em></button><button class="cont"><em class="material-icons lock">zoom_out</em></button><button class="cont"><em class="material-icons lock">rotate_right</em></button></center>
+		  <div id="chartext3"><em class="material-icons lock">camera_front</em>Head Shapes</div>
+        - Primary Head Shape:
         <input id="ShapeFirst" type="range">
-        ShapeSecond:
+        - Secondary Head Shape:
         <input id="ShapeSecond" type="range">
-        SkinSecond:
+        - Head Shape Mix:
+        <input id="ShapeMix" type="range"><div id="chartext3"><em class="material-icons lock">monochrome_photos</em>Skin Styles</div>
+        - Skin Pigment:
         <input id="SkinSecond" type="range">
-        ShapeMix:
-        <input id="ShapeMix" type="range">
-        SkinMix:
+        - Skin Pigment Mix:
         <input id="SkinMix" type="range">
         <br />
         <div style="text-align:center;">
-          <button type="submit" class="backBtn btn btn-secondary">Back</button>
-          <button type="submit" class="nextStep btn btn-info">Next</button>
-          <br /><br /><button type="submit" class="cancelbtn btn btn-danger">Exit</button>
+          <button type="submit" class="back backBtn btn btn-secondary">Back</button>
+          <button type="submit" class="advance nextStep btn btn-info">Next</button>
+          <button type="submit" class="cancelbtn btn btn-danger exit">Exit</button>
         </div>
       </div>
 
       <div id="step3" style="text-align: left;">
+      <center>
+     <button class="cont"><em class="material-icons lock">rotate_left</em></button><button class="cont"><em class="material-icons lock">zoom_in</em></button><button class="cont"><em class="material-icons lock">zoom_out</em></button><button class="cont"><em class="material-icons lock">rotate_right</em></button></center>
+       <div id="chartext3"><em class="material-icons lock">portrait</em>Facial Features</div>
         <span class="allfacefeatures"></span>
         <br />
         <div style="text-align:center;">
-          <button type="submit" class="backBtn btn btn-secondary">Back</button>
-          <button type="submit" class="nextStep btn btn-info">Next</button>
-          <br /><br /><button type="submit" class="cancelbtn btn btn-danger">Exit</button>
+          <button type="submit" class="back backBtn btn btn-secondary">Back</button>
+          <button type="submit" class="advance nextStep btn btn-info">Next</button>
+          <button type="submit" class="exit cancelbtn btn btn-danger">Exit</button>
         </div>
       </div>
-      <div id="step4" style="text-align: center;">
-        Hairstyle:
+      <div id="step4" style="text-align: left;">
+       <center>
+     <button class="cont"><em class="material-icons lock">rotate_left</em></button><button class="cont"><em class="material-icons lock">zoom_in</em></button><button class="cont"><em class="material-icons lock">zoom_out</em></button><button class="cont"><em class="material-icons lock">rotate_right</em></button></center>
+        <div id="chartext3"><em class="material-icons lock">remove_red_eye</em>Colours and Styles</div>
+        - Hairstyle:
         <input id="Hairstyle" type="range">
-        HairColor:
+        - HairColor:
         <input id="HairColor" type="range">
-        HairHighlightColor:
+        - HairHighlightColor:
         <input id="HairHighlightColor" type="range">
-        HairStyleTexture:
+        - HairStyleTexture:
         <input id="HairStyleTexture" type="range">
-        EyeColor:
+        - EyeColor:
         <input id="EyeColor" type="range">
         <br />
-        <button type="submit" class="backBtn btn btn-secondary">Back</button>
-        <button type="submit" class="nextStep btn btn-info">Next</button>
-        <br /><br /><button type="submit" class="cancelbtn btn btn-danger">Exit</button>
+        <button type="submit" class="back backBtn btn btn-secondary">Back</button>
+        <button type="submit" class="advance nextStep btn btn-info">Next</button>
+        <button type="submit" class="exit cancelbtn btn btn-danger">Exit</button>
       </div>
 
       <div id="step5" style="text-align: left;">
+      <center>
+     <button class="cont"><em class="material-icons lock">rotate_left</em></button><button class="cont"><em class="material-icons lock">zoom_in</em></button><button class="cont"><em class="material-icons lock">zoom_out</em></button><button class="cont"><em class="material-icons lock">rotate_right</em></button></center>
+       <div id="chartext3"><em class="material-icons lock">tag_faces</em>Facial Customisation</div>
         <span class="alloverlays"></span>
         <div style="text-align:center; margin-bottom: 30px;">
-          <button type="submit" class="backBtn btn btn-secondary">Back</button>
-          <button id="createchar" type="submit" class="btn btn-warning">Create</button>
-          <br /><br /><button type="submit" class="cancelbtn btn btn-danger">Exit</button>
+          <button type="submit" class="back backBtn btn btn-secondary">Back</button>
+          <button id="createchar" type="submit" class="advance btn btn-warning">Next</button>
+          <button type="submit" class="exit cancelbtn btn btn-danger">Exit</button>
         </div>
       </div>
 
       <div id="step6" style="text-align: center;">
         <br />
-        <p>Please wait while we are creating your character...</p>
+		  <p><div id="chartext">Please wait while we are creating your character...</div></p>
         <div id="circle">
           <div class="loader">
             <div class="loader">
