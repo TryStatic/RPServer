@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using RAGE;
 using RAGE.Game;
+using RAGE.NUI;
 using RPServerClient.Chat.Util;
 using RPServerClient.Client;
 using RPServerClient.Util;
@@ -11,12 +14,6 @@ namespace RPServerClient.HUD
 {
     internal class MainHud : Events.Script
     {
-        private string _crossingRoad = "";
-        private string _headingStr = "";
-        private int _lastUpdated;
-        private string _streetName = "";
-        private string _zoneName = "";
-
         public MainHud()
         {
             Events.Tick += Tick;
@@ -29,75 +26,94 @@ namespace RPServerClient.HUD
             if (Globals.IsAccountLoggedIn && Globals.HasActiveChar)
             {
                 DrawChatMode();
+                DrawCompass();
+                DrawStreets();
+
+            }
+        }
+
+        private static int _lastUpdated;
+        private static string _zoneName = "";
+        private static string _streetName = "";
+        private static string _crossingRoad = "";
+
+        private static void DrawStreets()
+        {
+            var pos = Player.LocalPlayer.Position;
+
+            if (_lastUpdated < Misc.GetGameTimer())
+            {
+                _lastUpdated = Misc.GetGameTimer() + 750;
+
+                // Get Zone
+                var zone = Zone.GetNameOfZone(pos.X, pos.Y, pos.Z);
+                _zoneName = Ui.GetLabelText(zone);
+
+                // Get StreetNames
+                var streetNameId = 0;
+                var crossingRoadId = 0;
+                Pathfind.GetStreetNameAtCoord(pos.X, pos.Y, pos.Z, ref streetNameId, ref crossingRoadId);
+                _streetName = Ui.GetStreetNameFromHashKey((uint)streetNameId);
+                _crossingRoad = Ui.GetStreetNameFromHashKey((uint)crossingRoadId);
+            }
+
+            Ui.SetTextOutline();
+            UIText.Draw($"{_zoneName}", new Point((int)(0.5f * ScreenRes.UIStandardResX), (int)(0.01f * ScreenRes.UIStandardResY)), 0.32f, Color.White, Font.ChaletLondon, true);
+            Ui.SetTextOutline();
+
+            var streets = "";
+            streets = _crossingRoad == "" ? $"{_streetName}" : $"{_streetName} & {_crossingRoad}";
+            UIText.Draw(streets, new Point((int)(0.5f * ScreenRes.UIStandardResX), (int)(0.033f * ScreenRes.UIStandardResY)), 0.29f, Color.White, Font.ChaletLondon, true);
+        }
+
+        private static void DrawCompass()
+        {
+            const float width = 0.25f;
+            const float fov = 180.0f;
+            const float ticksBetweenCardinals = 9.0f;
+
+            var PosX = 0.375f;
+            var posY = 0.07f;
+
+            var pxDegree = width / fov;
+
+            var camRot = Cam.GetGameplayCamRot(0);
+            var playerHeadingDegrees = 360.0f - (camRot.Z + 360.0f) % 360.0f;
+
+            var tickDegree = playerHeadingDegrees - fov / 2.0f;
+            var tickDegreeRem = ticksBetweenCardinals - tickDegree % ticksBetweenCardinals;
+            var tickPos = PosX + tickDegreeRem * pxDegree;
+
+            tickDegree += tickDegreeRem;
 
 
-                var pos = Player.LocalPlayer.Position;
-
-                if (_lastUpdated < Misc.GetGameTimer())
+            while (tickPos < PosX + width)
+            {
+                if (Math.Abs(tickDegree % 90.0f) < Math.E)
                 {
-                    _lastUpdated = Misc.GetGameTimer() + 750;
-                    // Get Zone
-                    var zone = Zone.GetNameOfZone(pos.X, pos.Y, pos.Z);
-                    _zoneName = Ui.GetLabelText(zone);
-
-                    // Get StreetNames
-                    var streetNameId = 0;
-                    var crossingRoadId = 0;
-                    Pathfind.GetStreetNameAtCoord(pos.X, pos.Y, pos.Z, ref streetNameId, ref crossingRoadId);
-                    _streetName = Ui.GetStreetNameFromHashKey((uint) streetNameId);
-                    _crossingRoad = Ui.GetStreetNameFromHashKey((uint) crossingRoadId);
-
-                    // Get Direction
-                    var heading = Player.LocalPlayer.GetHeading();
-                    var directionNumba = (int) (heading / 45.0f);
-                    switch (directionNumba)
-                    {
-                        case 0:
-                            _headingStr = "N";
-                            break;
-                        case 1:
-                            _headingStr = "NW";
-                            break;
-                        case 2:
-                            _headingStr = "W";
-                            break;
-                        case 3:
-                            _headingStr = "SW";
-                            break;
-                        case 4:
-                            _headingStr = "S";
-                            break;
-                        case 5:
-                            _headingStr = "SE";
-                            break;
-                        case 6:
-                            _headingStr = "E";
-                            break;
-                        case 7:
-                            _headingStr = "NE";
-                            break;
-                    }
+                    // Cardinal
+                    RAGE.Game.Graphics.DrawRect(tickPos, posY, 0.0015f, 0.01f, 255,255,255,255, 0);
+                    Ui.SetTextOutline();
+                    UIText.Draw(GetDirectionText(tickDegree), new Point((int) (tickPos * ScreenRes.UIStandardResX), (int) ((posY + 0.015f) * ScreenRes.UIStandardResY)), 0.25f, Color.White, Font.ChaletLondon, true);
+                }
+                else if (Math.Abs(tickDegree % 45.0f) < Math.E)
+                {
+                    // Intercardinal
+                    Graphics.DrawRect(tickPos, posY, 0.0015f, 0.005f, 255,255,255, 255, 0);
+                    Ui.SetTextOutline();
+                    UIText.Draw(GetDirectionText(tickDegree), new Point((int)(tickPos * ScreenRes.UIStandardResX), (int)((posY + 0.015f) * ScreenRes.UIStandardResY)), 0.2f, Color.White, Font.ChaletLondon, true);
+                }
+                else
+                {
+                    // Tick
+                    RAGE.Game.Graphics.DrawRect(tickPos, posY, 0.0015f, 0.002f, 255, 255, 255, 255, 0);
                 }
 
-                // Draw Zone and StreetNames and Heading (direction)
-                var point1 = new Point((int) (ScreenRes.UIStandardResX * 0.18f),
-                    (int) (ScreenRes.UIStandardResY * 0.85f));
-                var point2 = new Point((int) (ScreenRes.UIStandardResX * 0.18f),
-                    (int) (ScreenRes.UIStandardResY * 0.87f));
-                var point3 = new Point((int) (ScreenRes.UIStandardResX * 0.18f),
-                    (int) (ScreenRes.UIStandardResY * 0.89f));
-                Ui.SetTextOutline();
-                UIText.Draw("~c~Area:~s~ " + _zoneName, point1, 0.4f, Color.White, Font.ChaletComprimeCologne, false);
-                Ui.SetTextOutline();
-                UIText.Draw(
-                    string.IsNullOrEmpty(_crossingRoad)
-                        ? $"~c~Street:~w~ {_streetName}"
-                        : $"~c~Street:~w~{_streetName}~c~/~s~{_crossingRoad}",
-                    point2, 0.4f, Color.BurlyWood, Font.ChaletComprimeCologne, false);
-                Ui.SetTextOutline();
-                UIText.Draw($"~c~Direction: ~w~{_headingStr}~s~ ", point3, 0.4f, Color.White,
-                    Font.ChaletComprimeCologne, false);
+                tickDegree += ticksBetweenCardinals;
+                tickPos += pxDegree * ticksBetweenCardinals;
             }
+
+
         }
 
         private static void DrawChatMode()
@@ -112,5 +128,52 @@ namespace RPServerClient.HUD
             Ui.SetTextOutline();
             UIText.Draw(Globals.ServerVersion, new Point(ScreenRes.UIStandardResX / 2, ScreenRes.UIStandardResY - (int)(ScreenRes.UIStandardResY * 0.03)), 0.35f, Color.White, Font.ChaletLondon, true);
         }
+
+        private static string GetDirectionText(float degrees)
+        {
+            degrees %= 360.0f;
+
+            if (degrees >= 0.0f && degrees < 22.5f || degrees >= 337.5f)
+            {
+                return "N";
+            }
+
+            if (degrees >= 22.5 && degrees < 67.5f)
+            {
+                return "NE";
+            }
+
+            if (degrees >= 67.5f && degrees < 112.5f)
+            {
+                return "E";
+            }
+
+            if (degrees >= 112.5f && degrees < 157.5f)
+            {
+                return "SE";
+            }
+
+            if (degrees >= 157.5f && degrees < 202.5f)
+            {
+                return "S";
+            }
+
+            if (degrees >= 202.5f && degrees < 247.5f)
+            {
+                return "SW";
+            }
+
+            if (degrees >= 247.5f && degrees < 292.5f)
+            {
+                return "W";
+            }
+
+            if (degrees >= 292.5f && degrees < 337.5f)
+                return "NW";
+
+            return "NW";
+
+        }
+
     }
 }
