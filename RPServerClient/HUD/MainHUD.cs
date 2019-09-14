@@ -86,7 +86,6 @@ namespace RPServerClient.HUD
 
             tickDegree += tickDegreeRem;
 
-
             while (tickPos < PosX + width)
             {
                 if (Math.Abs(tickDegree % 90.0f) < Math.E)
@@ -106,7 +105,9 @@ namespace RPServerClient.HUD
                 else
                 {
                     // Tick
-                    RAGE.Game.Graphics.DrawRect(tickPos, posY, 0.0015f, 0.002f, 255, 255, 255, 255, 0);
+                    //RAGE.Game.Graphics.DrawRect(tickPos, posY, 0.0015f, 0.002f, 255, 255, 255, 255, 0);
+                    if(tickDegree >= 0) UIText.Draw($"{(int)(tickDegree %= 360.0f)}", new Point((int) (ScreenRes.UIStandardResX * tickPos), (int) (ScreenRes.UIStandardResY * posY)), 0.18f, Color.White, Font.ChaletLondon, true);
+                    else UIText.Draw($"{(int)(360.0f - Math.Abs(tickDegree %= 360.0f))}", new Point((int)(ScreenRes.UIStandardResX * tickPos), (int)(ScreenRes.UIStandardResY * posY)), 0.18f, Color.White, Font.ChaletLondon, true);
                 }
 
                 tickDegree += ticksBetweenCardinals;
