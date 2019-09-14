@@ -193,13 +193,17 @@ namespace RPServer.Controllers
 
         internal static void SendCommandSuccessText(Client client, string text)
         {
-            client.TriggerEvent(Chat.PushChatMessageUnfiltered,
-                EscapeHTML($"{Colors.COLOR_GREEN}<!> {Colors.COLOR_WHITE}{text}"));
+            client.TriggerEvent(Chat.PushChatMessageUnfiltered, EscapeHTML($"{Colors.COLOR_GREEN}<!> {Colors.COLOR_WHITE}{text}"));
         }
 
         internal static void SendClientMessage(Client client, string message)
         {
             client.TriggerEvent(Chat.PushChatMessageUnfiltered, EscapeHTML(message));
         }
+        internal static void SendClientMessageHTML(Client client, string message)
+        {
+            client.TriggerEvent(Chat.PushChatMessageUnfiltered, message);
+        }
+
     }
 }
