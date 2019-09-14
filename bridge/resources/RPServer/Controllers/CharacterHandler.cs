@@ -37,21 +37,32 @@ namespace RPServer.Controllers
         {
             var acc = client.GetAccount();
             var ch = client.GetActiveChar();
+
+            // Header
             var header = $"{Colors.COLOR_GRAD4}--------------------------------[{Colors.COLOR_ORANGE}{ch.CharacterName}{Colors.COLOR_GRAD4} ({Colors.COLOR_ORANGE}{acc.Username}{Colors.COLOR_GRAD4}) @ {Colors.COLOR_WHITE}{DateTime.Now:MM/dd/yyyy HH:mm:ss}{Colors.COLOR_GRAD4}]--------------------------------";
 
+            // Account Details
             var verifiedEmail = acc.HasVerifiedEmail() ? $"{Colors.COLOR_GREEN}Verified" : $"{Colors.COLOR_RED}Unverified";
             var nickName = string.IsNullOrEmpty(acc.NickName) ? $"{Colors.COLOR_WHITE}<i>None</i>" : $"{Colors.COLOR_WHITE}{acc.NickName}";
             var forumName = string.IsNullOrEmpty(acc.NickName) ? $"{Colors.COLOR_WHITE}<i>None</i>" : $"{Colors.COLOR_WHITE}{acc.ForumName}";
             var accdetails = $"{Colors.COLOR_GRAD4}Email: {Colors.COLOR_WHITE}{acc.EmailAddress}{Colors.COLOR_GRAD4} ({verifiedEmail}{Colors.COLOR_GRAD4}) | Nickname: {nickName}{Colors.COLOR_GRAD4} | Forumname: {forumName}";
 
+            // Security
             var twoFactorEmail = acc.Is2FAbyEmailEnabled() ? $"{Colors.COLOR_GREEN}Enabled" : $"{Colors.COLOR_RED}Disabled";
             var twoFactorGA = acc.Is2FAbyGAEnabled() ? $"{Colors.COLOR_GREEN}Enabled" : $"{Colors.COLOR_RED}Disabled";
             var twoFactorAuth = $"{Colors.COLOR_GRAD4}Two Factor Authentication: {Colors.COLOR_WHITE}By Email: {twoFactorEmail}{Colors.COLOR_GRAD4} | {Colors.COLOR_WHITE}By Google Authenticator App: {twoFactorGA}";
 
-            var timeplayed = TimeSpan.FromMinutes(ch.MinutesPlayed);
-            var nextPayday = 60 - timeplayed.Minutes;
-            var timing = $"{Colors.COLOR_GRAD4}Character Playtime: {Colors.COLOR_WHITE}{timeplayed.Hours}h:{timeplayed.Minutes}m{Colors.COLOR_GRAD4} | Next Payday in: {Colors.COLOR_WHITE}{nextPayday}m";
+            // Assets
+            var assets = $"{Colors.COLOR_GRAD4}Vehicles: [{Colors.COLOR_WHITE}{ch.Vehicles.Count}/X{Colors.COLOR_GRAD4}] | <i>Add Rest of Assets Information Summary</i>";
 
+            // Paycheck
+            var timeplayed = TimeSpan.FromMinutes(ch.MinutesPlayed);
+            var nextpaycheck = 60 - timeplayed.Minutes;
+            var timing = $"{Colors.COLOR_GRAD4}Character Playtime: {Colors.COLOR_WHITE}{timeplayed.Hours}h:{timeplayed.Minutes}m{Colors.COLOR_GRAD4} | Next PayCheck in: {Colors.COLOR_WHITE}{nextpaycheck}m";
+
+
+            
+            // Footer
             var footer = $"{Colors.COLOR_GRAD4}-----------------------> For more detailed information please use /stats expand <-----------------------";
 
             ChatHandler.SendClientMessageHTML(client, header);
@@ -60,7 +71,7 @@ namespace RPServer.Controllers
             ChatHandler.SendClientMessageHTML(client, $"{Colors.COLOR_GRAD5}<i>TODO: Add Summary of Financial Information for current character</i>");
             ChatHandler.SendClientMessageHTML(client, timing);
             ChatHandler.SendClientMessageHTML(client, $"{Colors.COLOR_GRAD5}<i>TODO: Add Job and Faction Information Summary</i>");
-            ChatHandler.SendClientMessageHTML(client, $"{Colors.COLOR_GRAD5}<i>TODO: Add Assets Information Summary</i>");
+            ChatHandler.SendClientMessageHTML(client, assets);
             ChatHandler.SendClientMessageHTML(client, footer);
 
             var cmdParser = new CommandParser(args);
