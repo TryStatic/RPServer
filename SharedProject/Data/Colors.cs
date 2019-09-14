@@ -16,5 +16,6 @@ namespace Shared.Data
         public const string COLOR_RED = "!{#FF0000}";
         public const string COLOR_PURPLE = "!{#C2A2DA}";
         public const string COLOR_LIGHTBLUE = "!{#33CCFF}";
+        public const string COLOR_ORANGE = "!{#FFA500}";
     }
 }
