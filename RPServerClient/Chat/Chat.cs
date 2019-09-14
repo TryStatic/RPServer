@@ -110,7 +110,7 @@ namespace RPServerClient.Chat
 
         private string ParseColors(string message)
         {
-            var matches = new Regex(@"(!{#[0-9A-F]{6}})+").Matches(message);
+            var matches = new Regex(@"(!{#[0-9A-F]{6}}){1}").Matches(message);
             var counter = 0;
 
             foreach (Match m in matches)
