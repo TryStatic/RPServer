@@ -35,20 +35,40 @@ namespace RPServer.Controllers
         [Command(CmdStrings.CMD_Stats, GreedyArg = true)]
         public void CMD_Stats(Client client, string args = "")
         {
-            var accdata = client.GetAccount();
-            var chdata = client.GetActiveChar();
-            var timeplayed = TimeSpan.FromMinutes(chdata.MinutesPlayed);
-            ChatHandler.SendClientMessage(client, $"\t<!S>---[{DateTime.Now:D}]---");
-            ChatHandler.SendClientMessage(client,
-                $"\t<!S>Username: {accdata.Username} | ActiveChar: {chdata.CharacterName} | Email: {accdata.EmailAddress} | AdminLevel: {accdata.AdminLevel}");
-            ChatHandler.SendClientMessage(client,
-                $"\t<!S>2FAbyEmail: {accdata.HasEnabledTwoStepByEmail} | 2FAbyGoogleAuth: {accdata.Is2FAbyGAEnabled()} | LastIP: {accdata.LastIP}");
-            ChatHandler.SendClientMessage(client,
-                $"\t<!S>Nickname: {accdata.ForumName} | ForumName: {accdata.ForumName} | TimePlayed: {timeplayed.Hours}h:{timeplayed.Minutes}m");
-            ChatHandler.SendClientMessage(client,
-                $"\t<!S>Creation: {accdata.CreationDate:MM/dd/yyyy} | LastLogin: {accdata.LastLoginDate:MM/dd/yyyy}");
-            ChatHandler.SendClientMessage(client,
-                "\t<!S>-----------------------------------------------------------------------");
+            var acc = client.GetAccount();
+            var ch = client.GetActiveChar();
+            var header = $"{Colors.COLOR_GRAD4}--------------------------------[{Colors.COLOR_ORANGE}{ch.CharacterName}{Colors.COLOR_GRAD4} ({Colors.COLOR_ORANGE}{acc.Username}{Colors.COLOR_GRAD4}) @ {Colors.COLOR_WHITE}{DateTime.Now:MM/dd/yyyy HH:mm:ss}{Colors.COLOR_GRAD4}]--------------------------------";
+
+            var verifiedEmail = acc.HasVerifiedEmail() ? $"{Colors.COLOR_GREEN}Verified" : $"{Colors.COLOR_RED}Unverified";
+            var nickName = string.IsNullOrEmpty(acc.NickName) ? $"{Colors.COLOR_WHITE}<i>None</i>" : $"{Colors.COLOR_WHITE}{acc.NickName}";
+            var forumName = string.IsNullOrEmpty(acc.NickName) ? $"{Colors.COLOR_WHITE}<i>None</i>" : $"{Colors.COLOR_WHITE}{acc.ForumName}";
+            var accdetails = $"{Colors.COLOR_GRAD4}Email: {Colors.COLOR_WHITE}{acc.EmailAddress}{Colors.COLOR_GRAD4} ({verifiedEmail}{Colors.COLOR_GRAD4}) | Nickname: {nickName}{Colors.COLOR_GRAD4} | Forumname: {forumName}";
+
+            var twoFactorEmail = acc.Is2FAbyEmailEnabled() ? $"{Colors.COLOR_GREEN}Enabled" : $"{Colors.COLOR_RED}Disabled";
+            var twoFactorGA = acc.Is2FAbyGAEnabled() ? $"{Colors.COLOR_GREEN}Enabled" : $"{Colors.COLOR_RED}Disabled";
+            var twoFactorAuth = $"{Colors.COLOR_GRAD4}Two Factor Authentication: {Colors.COLOR_WHITE}By Email: {twoFactorEmail}{Colors.COLOR_GRAD4} | {Colors.COLOR_WHITE}By Google Authenticator App: {twoFactorGA}";
+
+            var timeplayed = TimeSpan.FromMinutes(ch.MinutesPlayed);
+            var nextPayday = 60 - timeplayed.Minutes;
+            var timing = $"{Colors.COLOR_GRAD4}Character Playtime: {Colors.COLOR_WHITE}{timeplayed.Hours}h:{timeplayed.Minutes}m{Colors.COLOR_GRAD4} | Next Payday in: {Colors.COLOR_WHITE}{nextPayday}m";
+
+            var footer = $"{Colors.COLOR_GRAD4}-----------------------> For more detailed information please use /stats expand <-----------------------";
+
+            ChatHandler.SendClientMessageHTML(client, header);
+            ChatHandler.SendClientMessageHTML(client, accdetails);
+            ChatHandler.SendClientMessageHTML(client, twoFactorAuth);
+            ChatHandler.SendClientMessageHTML(client, $"{Colors.COLOR_GRAD5}<i>TODO: Add Summary of Financial Information for current character</i>");
+            ChatHandler.SendClientMessageHTML(client, timing);
+            ChatHandler.SendClientMessageHTML(client, $"{Colors.COLOR_GRAD5}<i>TODO: Add Job and Faction Information Summary</i>");
+            ChatHandler.SendClientMessageHTML(client, $"{Colors.COLOR_GRAD5}<i>TODO: Add Assets Information Summary</i>");
+            ChatHandler.SendClientMessageHTML(client, footer);
+
+            var cmdParser = new CommandParser(args);
+            if (cmdParser.HasNextToken() && cmdParser.GetNextToken() == "expand")
+            { // used /stats expand
+                ChatHandler.SendClientMessageHTML(client, "<i>TODO: Display CEF page with detailed account statistics.");
+            }
+
         }
 
         [Command(CmdStrings.CMD_ChangeChar)]
