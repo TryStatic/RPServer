@@ -35,6 +35,13 @@ namespace RPServer.Controllers
         [Command(CmdStrings.CMD_Stats, GreedyArg = true)]
         public void CMD_Stats(Client client, string args = "")
         {
+            var usedExpand = false;
+            var cmdParser = new CommandParser(args);
+            if (cmdParser.HasNextToken() && cmdParser.GetNextToken() == "expand")
+            { // used /stats expand
+                usedExpand = true;
+            }
+
             var acc = client.GetAccount();
             var ch = client.GetActiveChar();
 
@@ -60,10 +67,10 @@ namespace RPServer.Controllers
             var nextpaycheck = 60 - timeplayed.Minutes;
             var timing = $"{Colors.COLOR_GRAD4}Character Playtime: {Colors.COLOR_WHITE}{timeplayed.Hours}h:{timeplayed.Minutes}m{Colors.COLOR_GRAD4} | Next PayCheck in: {Colors.COLOR_WHITE}{nextpaycheck}m";
 
-
-            
             // Footer
-            var footer = $"{Colors.COLOR_GRAD4}-----------------------> For more detailed information please use /stats expand <-----------------------";
+            string footer;
+            if (!usedExpand) footer = $"{Colors.COLOR_GRAD4}-----------------------> For more detailed information please use /stats expand <-----------------------";
+            else footer = $"{Colors.COLOR_GRAD4}-------------------------------------------------------------------------------------------------------------------------------";
 
             ChatHandler.SendClientMessageHTML(client, header);
             ChatHandler.SendClientMessageHTML(client, accdetails);
@@ -74,10 +81,10 @@ namespace RPServer.Controllers
             ChatHandler.SendClientMessageHTML(client, assets);
             ChatHandler.SendClientMessageHTML(client, footer);
 
-            var cmdParser = new CommandParser(args);
-            if (cmdParser.HasNextToken() && cmdParser.GetNextToken() == "expand")
-            { // used /stats expand
+            if (usedExpand)
+            {
                 ChatHandler.SendClientMessageHTML(client, "<i>TODO: Display CEF page with detailed account statistics.");
+
             }
 
         }
