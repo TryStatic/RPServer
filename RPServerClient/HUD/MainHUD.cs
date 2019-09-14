@@ -24,23 +24,12 @@ namespace RPServerClient.HUD
 
         private void Tick(List<Events.TickNametagData> nametags)
         {
-            if (Globals.ServerVersion != null)
-            {
-                Ui.SetTextOutline();
-                UIText.Draw(Globals.ServerVersion,
-                    new Point(ScreenRes.UIStandardResX / 2,
-                        ScreenRes.UIStandardResY - (int) (ScreenRes.UIStandardResY * 0.03)), 0.35f, Color.White,
-                    Font.ChaletLondon, true);
-            }
+            if (Globals.ServerVersion != null) DrawServerVersion();
 
             if (Globals.IsAccountLoggedIn && Globals.HasActiveChar)
             {
-                // Chatmode
-                var mode = Player.LocalPlayer.GetData<ChatMode>(LocalDataKeys.CurrentChatMode);
-                Ui.SetTextOutline();
-                UIText.Draw(mode.ToString(),
-                    new Point((int) (0.03f * ScreenRes.UIStandardResX), (int) (0.26f * ScreenRes.UIStandardResY)), 0.4f,
-                    Color.White, Font.Monospace, true);
+                DrawChatMode();
+
 
                 var pos = Player.LocalPlayer.Position;
 
@@ -109,6 +98,19 @@ namespace RPServerClient.HUD
                 UIText.Draw($"~c~Direction: ~w~{_headingStr}~s~ ", point3, 0.4f, Color.White,
                     Font.ChaletComprimeCologne, false);
             }
+        }
+
+        private static void DrawChatMode()
+        {
+            var mode = Player.LocalPlayer.GetData<ChatMode>(LocalDataKeys.CurrentChatMode);
+            Ui.SetTextOutline();
+            UIText.Draw(mode.ToString(), new Point((int)(0.03f * ScreenRes.UIStandardResX), (int)(0.26f * ScreenRes.UIStandardResY)), 0.4f, Color.White, Font.Monospace, true);
+        }
+
+        private static void DrawServerVersion()
+        {
+            Ui.SetTextOutline();
+            UIText.Draw(Globals.ServerVersion, new Point(ScreenRes.UIStandardResX / 2, ScreenRes.UIStandardResY - (int)(ScreenRes.UIStandardResY * 0.03)), 0.35f, Color.White, Font.ChaletLondon, true);
         }
     }
 }
