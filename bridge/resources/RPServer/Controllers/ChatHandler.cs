@@ -25,12 +25,7 @@ namespace RPServer.Controllers
             message = EscapeHTML(message);
             message = RemoveColors(message);
 
-            var playerName = string.IsNullOrEmpty(client.GetAccount().NickName)
-                ? client.GetActiveChar().CharacterName
-                : client.GetAccount().NickName;
-
-            NAPI.ClientEvent.TriggerClientEventForAll(Chat.PushChatMessageUnfiltered,
-                $"{Colors.COLOR_LIGHTBLUE}(( [O] {playerName}: {message} ))");
+            SendGlobalOOCMesssage(client, message);
         }
 
         [Command(CmdStrings.CMD_B, GreedyArg = true)]
@@ -44,14 +39,7 @@ namespace RPServer.Controllers
 
             message = EscapeHTML(message);
             message = RemoveColors(message);
-
-            foreach (var p in NAPI.Pools.GetAllPlayers())
-            {
-                if (client.Position.DistanceToSquared(p.Position) > Shared.Data.Chat.NormalChatMaxDistance) continue;
-
-                var color = GetLocalChatMessageColor(client, p, Shared.Data.Chat.NormalChatMaxDistance);
-                NAPI.ClientEvent.TriggerClientEvent(p, Chat.PushChatMessage, $": (( {message} ))", client.Value, color);
-            }
+            SendLocalOOCMesssage(client, Shared.Data.Chat.NormalChatMaxDistance, message);
         }
 
         [Command(CmdStrings.CMD_Me, GreedyArg = true)]
@@ -62,18 +50,9 @@ namespace RPServer.Controllers
                 SendCommandUsageText(client, "/me [action]");
                 return;
             }
-
             message = EscapeHTML(message);
             message = RemoveColors(message);
-            if (message[message.Length - 1] != '.') message += ".";
-
-            foreach (var p in NAPI.Pools.GetAllPlayers())
-            {
-                if (client.Position.DistanceToSquared(p.Position) > Shared.Data.Chat.NormalChatMaxDistance) continue;
-
-                NAPI.ClientEvent.TriggerClientEvent(p, Chat.PushActionMessage, message, client.Value,
-                    Colors.COLOR_PURPLE);
-            }
+            SendActionMessage(client, Shared.Data.Chat.NormalChatMaxDistance, message);
         }
 
         [Command(CmdStrings.CMD_Do, GreedyArg = true)]
@@ -87,15 +66,7 @@ namespace RPServer.Controllers
 
             message = EscapeHTML(message);
             message = RemoveColors(message);
-            if (message[message.Length - 1] != '.') message += ".";
-
-            foreach (var p in NAPI.Pools.GetAllPlayers())
-            {
-                if (client.Position.DistanceToSquared(p.Position) > Shared.Data.Chat.NormalChatMaxDistance) continue;
-
-                NAPI.ClientEvent.TriggerClientEvent(p, Chat.PushDescriptionMessage, message, client.Value,
-                    Colors.COLOR_PURPLE);
-            }
+            SendDescriptionMessage(client, Shared.Data.Chat.NormalChatMaxDistance, message);
         }
 
         [RemoteEvent(Shared.Events.ClientToServer.Chat.SubmitChatMessage)]
@@ -205,5 +176,52 @@ namespace RPServer.Controllers
             client.TriggerEvent(Chat.PushChatMessageUnfiltered, message);
         }
 
+        /// <summary>
+        /// Sends a /me type of message
+        /// </summary>
+        /// <param name="client">The source (sender)</param>
+        /// <param name="distance">The distance</param>
+        /// <param name="message">The message</param>
+        public static void SendActionMessage(Client client, float distance, string message)
+        {
+            if (message[message.Length - 1] != '.') message += ".";
+            foreach (var p in NAPI.Pools.GetAllPlayers())
+            {
+                if (client.Position.DistanceToSquared(p.Position) > distance) continue;
+                NAPI.ClientEvent.TriggerClientEvent(p, Chat.PushActionMessage, message, client.Value, Colors.COLOR_PURPLE);
+            }
+        }
+
+        private void SendDescriptionMessage(Client client, float distance, string message)
+        {
+            if (message[message.Length - 1] != '.') message += ".";
+            foreach (var p in NAPI.Pools.GetAllPlayers())
+            {
+                if (client.Position.DistanceToSquared(p.Position) > distance) continue;
+
+                NAPI.ClientEvent.TriggerClientEvent(p, Chat.PushDescriptionMessage, message, client.Value, Colors.COLOR_PURPLE);
+            }
+        }
+
+        private void SendLocalOOCMesssage(Client client, float distance, string message)
+        {
+            foreach (var p in NAPI.Pools.GetAllPlayers())
+            {
+                if (client.Position.DistanceToSquared(p.Position) > Shared.Data.Chat.NormalChatMaxDistance) continue;
+
+                var color = GetLocalChatMessageColor(client, p, Shared.Data.Chat.NormalChatMaxDistance);
+                NAPI.ClientEvent.TriggerClientEvent(p, Chat.PushChatMessage, $": (( {message} ))", client.Value, color);
+            }
+        }
+
+        private void SendGlobalOOCMesssage(Client client, string message)
+        {
+            var playerName = string.IsNullOrEmpty(client.GetAccount().NickName)
+                ? client.GetActiveChar().CharacterName
+                : client.GetAccount().NickName;
+
+            NAPI.ClientEvent.TriggerClientEventForAll(Chat.PushChatMessageUnfiltered,
+                $"{Colors.COLOR_LIGHTBLUE}(( [O] {playerName}: {message} ))");
+        }
     }
 }
