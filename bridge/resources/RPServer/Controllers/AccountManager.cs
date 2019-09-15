@@ -59,7 +59,7 @@ namespace RPServer.Controllers
         }
 
         [Command(CmdStrings.CMD_Logout)]
-        public async void Cmd_Logout(Client player)
+        public async void CMD_Logout(Client player)
         {
             if (!player.IsLoggedIn())
             {
