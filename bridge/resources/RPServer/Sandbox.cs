@@ -48,6 +48,13 @@ namespace RPServer
             client.TriggerEvent("test");
         }
 
+        [Command("stats2")]
+        public void stats2(Client client)
+        {
+            ChatHandler.SendClientMessage(client, $"{client.Name} | {client.Address} | {client.Ping} | HP:{client.Health} | ARM:{client.Armor} | isDead:{client.Dead} |");
+            ChatHandler.SendClientMessage(client, $"{client.Nametag} | Collisionless: {client.Collisionless} | Dimension: {client.Dimension} | Alpha: {client.Transparency}");
+        }
+
 
         [Command("gotowp")]
         public void cmd_gotowaypoint(Client client)
