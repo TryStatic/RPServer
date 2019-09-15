@@ -1,5 +1,5 @@
 /*
- Navicat MySQL Data Transfer
+ Navicat Premium Data Transfer
 
  Source Server         : localhost_3306
  Source Server Type    : MySQL
@@ -11,7 +11,7 @@
  Target Server Version : 80016
  File Encoding         : 65001
 
- Date: 04/08/2019 21:59:29
+ Date: 15/09/2019 15:29:49
 */
 
 SET NAMES utf8mb4;
@@ -41,7 +41,7 @@ CREATE TABLE `accounts`  (
   PRIMARY KEY (`ID`) USING BTREE,
   UNIQUE INDEX `username_UNIQUE`(`Username`) USING BTREE,
   UNIQUE INDEX `emailaddress_UNIQUE`(`EmailAddress`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 244 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 245 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for aliases
@@ -153,7 +153,7 @@ CREATE TABLE `appearances`  (
   UNIQUE INDEX `CharacterID_UNIQUE`(`CharacterID`) USING BTREE,
   INDEX `fkey_char_to_appearance_idx`(`CharacterID`) USING BTREE,
   CONSTRAINT `fkey_char_to_appearance` FOREIGN KEY (`CharacterID`) REFERENCES `characters` (`ID`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for characters
@@ -164,11 +164,14 @@ CREATE TABLE `characters`  (
   `CharOwnerID` int(11) NOT NULL,
   `CharacterName` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `MinutesPlayed` int(11) NOT NULL DEFAULT 0,
+  `LastX` float NOT NULL,
+  `LastY` float NOT NULL,
+  `LastZ` float NOT NULL,
   PRIMARY KEY (`ID`) USING BTREE,
   UNIQUE INDEX `name_UNIQUE`(`CharacterName`) USING BTREE,
   INDEX `fkey_idx`(`CharOwnerID`) USING BTREE,
   CONSTRAINT `fkey_acc_to_char` FOREIGN KEY (`CharOwnerID`) REFERENCES `accounts` (`ID`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 28 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 29 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for emailtokens
@@ -200,7 +203,7 @@ CREATE TABLE `vehicles`  (
   PRIMARY KEY (`ID`) USING BTREE,
   INDEX `fkey_vehicle_to_charid_idx`(`OwnerID`) USING BTREE,
   CONSTRAINT `fkey_vehicle_to_charid` FOREIGN KEY (`OwnerID`) REFERENCES `characters` (`ID`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 52 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 55 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_520_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for world

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper.Contrib.Extensions;
+using GTANetworkAPI;
 using RPServer.Util;
 
 namespace RPServer.Models
@@ -9,14 +10,16 @@ namespace RPServer.Models
     [Table("characters")]
     internal class CharacterModel : Model<CharacterModel>
     {
-        public HashSet<Alias> Aliases;
-
         public AppearanceModel Appearance;
+        public HashSet<Alias> Aliases;
         public HashSet<VehicleModel> Vehicles;
 
         public int CharOwnerID { set; get; }
         public string CharacterName { set; get; }
         public int MinutesPlayed { set; get; }
+        public float LastX { set; get; }
+        public float LastY { set; get; }
+        public float LastZ { set; get; }
 
         /// <summary>
         ///     Use to create new character
@@ -38,11 +41,15 @@ namespace RPServer.Models
             return charsData;
         }
 
-        public async Task SaveAllData()
+        public async Task SaveAllData(Client client)
         {
 #if DEBUG
             Logger.GetInstance().ServerInfo($"Saving All Character data for  character {CharacterName} (accountID: {CharOwnerID})");
 #endif
+            LastX = client.Position.X;
+            LastY = client.Position.Y;
+            LastZ = client.Position.Z;
+
             // This Character Instance
             await UpdateAsync(this);
             // One to One Relationships

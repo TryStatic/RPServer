@@ -233,10 +233,10 @@ namespace RPServer.Controllers
             accData.LastSpawnedCharId = selectedCharId;
             client.Dimension = 0;
             client.Transparency = 255;
-            client.SendChatMessage("TODO: Teleport to last known position here");
-            client.Position = new Vector3(-173.1077, 434.9248, 111.0801); // dummy
             client.SetActiveChar(chData);
             client.Name = chData.CharacterName;
+            ChatHandler.SendClientMessage(client, "Teleporting you to your last known position.");
+            client.Position = new Vector3(chData.LastX, chData.LastY, chData.LastZ);
             client.TriggerEvent(Shared.Events.ServerToClient.Character.EndCharSelector);
 
             // Invoke Character Spawn Listeners
@@ -380,7 +380,7 @@ namespace RPServer.Controllers
         public static void DespawnCharacter(Client client)
         {
             var ch = client.GetActiveChar();
-            ch?.SaveAllData();
+            ch?.SaveAllData(client);
             client.ResetActiveChar();
 
 #if DEBUG
@@ -431,7 +431,7 @@ namespace RPServer.Controllers
                 return;
             }
 
-            await client.GetActiveChar().SaveAllData();
+            await client.GetActiveChar().SaveAllData(client);
             await client.GetAccount().UpdateAsync();
         }
 

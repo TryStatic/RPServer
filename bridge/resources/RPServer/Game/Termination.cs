@@ -29,7 +29,7 @@ namespace RPServer.Game
                 Logger.GetInstance().ServerInfo("[SHUTDOWN]: Started saving Accounts.");
                 p.GetAccount()?.UpdateAsync();
                 Logger.GetInstance().ServerInfo("[SHUTDOWN]: Started saving Characters.");
-                p.GetActiveChar()?.SaveAllData();
+                p.GetActiveChar()?.SaveAllData(p);
             }
         }
     }
