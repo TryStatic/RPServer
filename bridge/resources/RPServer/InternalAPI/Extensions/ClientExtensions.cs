@@ -13,12 +13,10 @@ namespace RPServer.InternalAPI.Extensions
             if (excludeTwoFactor) return player.HasData(DataKey.AccountData);
             return player.HasData(DataKey.AccountData) && player.GetAccount().IsTwoFactorAuthenticated();
         }
-
         internal static AccountModel GetAccount(this Client player)
         {
             return player.IsLoggedIn(true) ? (AccountModel) player.GetData(DataKey.AccountData) : null;
         }
-
         internal static bool Login(this Client player, AccountModel account)
         {
             if (player.IsLoggedIn(true)) return false;
@@ -26,7 +24,6 @@ namespace RPServer.InternalAPI.Extensions
             player.SetSharedData(Keys.AccountLoggedIn, true);
             return true;
         }
-
         internal static bool Logout(this Client player)
         {
             if (!player.IsLoggedIn(true)) return false;
@@ -41,13 +38,11 @@ namespace RPServer.InternalAPI.Extensions
             if (!client.HasData(DataKey.ActiveCharData)) return false;
             return (CharacterModel) client.GetData(DataKey.ActiveCharData) != null;
         }
-
         internal static CharacterModel GetActiveChar(this Client client)
         {
             if (!client.HasActiveChar()) return null;
             return (CharacterModel) client.GetData(DataKey.ActiveCharData);
         }
-
         internal static void SetActiveChar(this Client client, CharacterModel character)
         {
             if (character == null)
@@ -59,11 +54,17 @@ namespace RPServer.InternalAPI.Extensions
             client.SetData(DataKey.ActiveCharData, character);
             client.SetSharedData(Keys.ActiveCharID, character.ID);
         }
-
         internal static void ResetActiveChar(this Client client)
         {
             client.ResetData(DataKey.ActiveCharData);
             client.SetSharedData(Keys.ActiveCharID, -1);
+        }
+
+        // Other
+        internal static void AddHealth(this Client client, int amount)
+        {
+            if (client.Health + amount > 100) client.Health = 100;
+            else client.Health += amount;
         }
     }
 }
