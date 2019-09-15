@@ -27,10 +27,8 @@ namespace RPServer.Controllers
 
         public static async Task OnServerShutdown()
         {
-            Logger.GetInstance().ServerInfo("[SHUTDOWN]: Started saving World Data.");
             // Save World Data
             await SaveWorldData();
-            Logger.GetInstance().ServerInfo("[SHUTDOWN]: Finished saving World Data.");
             // Dispose Timers
             _updateTimeTimer.Dispose();
             _saveWorldDataTimer.Dispose();
@@ -44,6 +42,7 @@ namespace RPServer.Controllers
 
         private static async void OnSaveWorldData(object state)
         {
+            Logger.GetInstance().ServerInfo("Saving World Data.");
             await SaveWorldData();
         }
 

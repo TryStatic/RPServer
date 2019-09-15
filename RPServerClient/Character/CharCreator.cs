@@ -57,7 +57,7 @@ namespace RPServerClient.Character
             _camera = new CamHandler();
             _camera.SetPos(Helper.GetPosInFrontOfVector3(_displayPos.GetVector3Part(), _displayPos.W, 1.5f),
                 _displayPos.GetVector3Part());
-            _camera.SetActive(true, true, 3000);
+            _camera.SetActive(true);
         }
 
         private void OnQuitCharCreation(object[] args)

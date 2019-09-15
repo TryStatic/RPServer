@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Runtime.InteropServices;
 using RAGE;
 using RAGE.Game;
-using RAGE.NUI;
 using RPServerClient.Chat.Util;
 using RPServerClient.Client;
 using RPServerClient.Util;
@@ -58,7 +56,7 @@ namespace RPServerClient.HUD
             }
 
             Ui.SetTextOutline();
-            UIText.Draw($"{_zoneName}", new Point((int)(0.5f * ScreenRes.UIStandardResX), (int)(0.01f * ScreenRes.UIStandardResY)), 0.32f, Color.White, Font.ChaletLondon, true);
+            UIText.Draw($"{_zoneName}", new Point((int)(0.5f * ScreenRes.UIStandardResX), (int)(0.01f * ScreenRes.UIStandardResY)), 0.32f, Color.SandyBrown, Font.ChaletLondon, true);
             Ui.SetTextOutline();
 
             var streets = "";

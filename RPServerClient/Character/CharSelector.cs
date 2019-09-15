@@ -19,7 +19,7 @@ namespace RPServerClient.Character
 
     internal class CharSelector : Events.Script
     {
-        public static CamHandler _camera;
+        private static CamHandler _camera;
 
         private readonly float _displayHeading = 347.3495f;
 
@@ -64,7 +64,7 @@ namespace RPServerClient.Character
             _disableControls = true;
             _camera = new CamHandler();
             _camera.SetPos(Helper.GetPosInFrontOfVector3(_displayPosition, _displayHeading, 1.5f), _displayPosition);
-            _camera.SetActive(true, true, 3000);
+            _camera.SetActive(true);
             CharacterDespawn?.Invoke(Player.LocalPlayer, EventArgs.Empty);
         }
 
