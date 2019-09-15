@@ -15,7 +15,7 @@ namespace RPServer.Controllers
         public WorldHandler()
         {
             _updateTimeTimer = new Timer(OnUpdateTime, null, 0, 1000);
-            _saveWorldDataTimer = new Timer(OnSaveWorldData, null, 5000 * 60 * 5, 5000 * 60 * 5); // 5 minutes
+            _saveWorldDataTimer = new Timer(OnSaveWorldData, null, 1000 * 60 * 5, 1000 * 60 * 5); // 5 minutes
         }
 
         public static DateTime CurrentTime { set; get; }
