@@ -1,4 +1,6 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -16,23 +18,44 @@ namespace RPServer
 {
     internal class Sandbox : Script
     {
-        [Command("allcmds", GreedyArg = true)]
-        public void CMD_AllCmds(Client client)
+        public static List<string> AllCommands { private set; get; }
+
+        public static void LoadAllCommands()
         {
-            var cmdList = "";
-            var list = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).SelectMany(x =>
-                    x.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public |
-                                 BindingFlags.NonPublic)
-                        .Where(ifo => ifo.CustomAttributes.Any(att => att.AttributeType == typeof(CommandAttribute))))
+            Logger.GetInstance().ServerInfo("Fetching all registered commands.");
+            if(AllCommands != null) return;
+
+            AllCommands = new List<string>();
+
+            var list = AppDomain.CurrentDomain.GetAssemblies().
+                SelectMany(x => x.GetTypes())
+                .SelectMany(x => x.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public |BindingFlags.NonPublic)
+                    .Where(ifo => ifo.CustomAttributes.Any(att => att.AttributeType == typeof(CommandAttribute))))
                 .ToList();
 
             foreach (var element in list)
             {
                 var customAttribute = element.GetCustomAttribute<CommandAttribute>();
                 var cmd = customAttribute.CommandString;
-                cmdList += $"{cmd}, ";
+                AllCommands.Add(cmd);
             }
 
+
+        }
+
+        [Command("allcmds", GreedyArg = true)]
+        public void CMD_AllCmds(Client client)
+        {
+            if (AllCommands == null)
+            {
+                ChatHandler.SendClientMessage(client, "Commands listing is not loadded.");
+            }
+
+            var cmdList = "";
+            foreach (var cmd in AllCommands)
+            {
+                cmdList += $"{cmd}, ";
+            }
             ChatHandler.SendClientMessage(client, cmdList);
         }
 

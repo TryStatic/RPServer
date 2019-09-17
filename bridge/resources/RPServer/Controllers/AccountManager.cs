@@ -471,10 +471,7 @@ namespace RPServer.Controllers
             NAPI.Player.SpawnPlayer(client, Initialization.DefaultSpawnPos);
             client.SendChatMessage(AccountStrings.SuccessLogin);
             if (client.GetAccount().IsAdmin())
-                ChatHandler.SendClientMessage(client,
-                    $"{Colors.COLOR_RED}<!> {Colors.COLOR_WHITE}You have logged in as a level {client.GetAccount().AdminLevel} admin.");
-            client.SendChatMessage(
-                "All commands: /allcmds <-- WARNING: this uses reflection to get all cmds which is really slow and hangs the server. Takes ~10secs to execute.");
+                ChatHandler.SendClientMessage(client, $"{Colors.COLOR_RED}<!> {Colors.COLOR_WHITE}You have logged in as a level {client.GetAccount().AdminLevel} admin.");
         }
 
         private static bool IsAccountAlreadyLoggedIn(AccountModel account)
