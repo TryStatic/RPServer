@@ -69,6 +69,7 @@ namespace RPServer.Controllers
             SendDescriptionMessage(client, Shared.Data.Chat.NormalChatMaxDistance, message);
         }
 
+
         [RemoteEvent(Shared.Events.ClientToServer.Chat.SubmitChatMessage)]
         public void OnSubmitChatMessage(Client client, string playerText, int chatModeAsInt)
         {
@@ -84,7 +85,7 @@ namespace RPServer.Controllers
                 switch (chatMode)
                 {
                     case ChatMode.Low:
-                        if (client.Position.DistanceToSquared(p.Position) > Shared.Data.Chat.LowChatMaxDistance)
+                        if (client.Position.DistanceTo(p.Position) > Shared.Data.Chat.LowChatMaxDistance)
                             continue;
 
                         // Add a full stop at the end of the message if needed
@@ -95,7 +96,7 @@ namespace RPServer.Controllers
                             client.Value, $"{Colors.COLOR_GRAD3}[Low]{textColor} ");
                         break;
                     case ChatMode.Normal:
-                        if (client.Position.DistanceToSquared(p.Position) > Shared.Data.Chat.NormalChatMaxDistance)
+                        if (client.Position.DistanceTo(p.Position) > Shared.Data.Chat.NormalChatMaxDistance)
                             continue;
 
                         // Add a full stop at the end of the message if needed
@@ -106,7 +107,7 @@ namespace RPServer.Controllers
                             client.Value, textColor);
                         break;
                     case ChatMode.Shout:
-                        if (client.Position.DistanceToSquared(p.Position) > Shared.Data.Chat.ShoutChatMaxDistance)
+                        if (client.Position.DistanceTo(p.Position) > Shared.Data.Chat.ShoutChatMaxDistance)
                             continue;
 
                         // Add an exclamation mark at the end of the message if needed
@@ -125,9 +126,10 @@ namespace RPServer.Controllers
             Logger.GetInstance().ChatLog($"{client.GetActiveChar().CharacterName}: {playerText}");
         }
 
+
         private string GetLocalChatMessageColor(Client client, Client other, float maxDistance)
         {
-            var distance = client.Position.DistanceToSquared(other.Position);
+            var distance = client.Position.DistanceTo(other.Position);
 
             if (distance < maxDistance / 16) return Colors.COLOR_WHITE;
             if (distance < maxDistance / 8) return Colors.COLOR_GRAD1;
@@ -171,6 +173,7 @@ namespace RPServer.Controllers
         {
             client.TriggerEvent(Chat.PushChatMessageUnfiltered, EscapeHTML(message));
         }
+
         internal static void SendClientMessageHTML(Client client, string message)
         {
             client.TriggerEvent(Chat.PushChatMessageUnfiltered, message);
@@ -187,7 +190,7 @@ namespace RPServer.Controllers
             if (message[message.Length - 1] != '.') message += ".";
             foreach (var p in NAPI.Pools.GetAllPlayers())
             {
-                if (client.Position.DistanceToSquared(p.Position) > distance) continue;
+                if (client.Position.DistanceTo(p.Position) > distance) continue;
                 NAPI.ClientEvent.TriggerClientEvent(p, Chat.PushActionMessage, message, client.Value, Colors.COLOR_PURPLE);
             }
         }
@@ -197,7 +200,7 @@ namespace RPServer.Controllers
             if (message[message.Length - 1] != '.') message += ".";
             foreach (var p in NAPI.Pools.GetAllPlayers())
             {
-                if (client.Position.DistanceToSquared(p.Position) > distance) continue;
+                if (client.Position.DistanceTo(p.Position) > distance) continue;
 
                 NAPI.ClientEvent.TriggerClientEvent(p, Chat.PushDescriptionMessage, message, client.Value, Colors.COLOR_PURPLE);
             }
@@ -207,7 +210,7 @@ namespace RPServer.Controllers
         {
             foreach (var p in NAPI.Pools.GetAllPlayers())
             {
-                if (client.Position.DistanceToSquared(p.Position) > Shared.Data.Chat.NormalChatMaxDistance) continue;
+                if (client.Position.DistanceTo(p.Position) > Shared.Data.Chat.NormalChatMaxDistance) continue;
 
                 var color = GetLocalChatMessageColor(client, p, Shared.Data.Chat.NormalChatMaxDistance);
                 NAPI.ClientEvent.TriggerClientEvent(p, Chat.PushChatMessage, $": (( {message} ))", client.Value, color);

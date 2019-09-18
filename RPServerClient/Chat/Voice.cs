@@ -88,7 +88,7 @@ namespace RPServerClient.Chat
                     if (!p.Exists) continue;
                     if (p == Player.LocalPlayer) continue;
 
-                    var dist = Player.LocalPlayer.Position.DistanceToSquared(p.Position);
+                    var dist = Player.LocalPlayer.Position.DistanceTo(p.Position);
                     if (dist < maxDistance)
                     {
                         var added = Listeners.Add(p);
@@ -104,7 +104,7 @@ namespace RPServerClient.Chat
                 foreach (var p in Listeners)
                     if (p.Handle != 0)
                     {
-                        var dist = Player.LocalPlayer.Position.DistanceToSquared(p.Position);
+                        var dist = Player.LocalPlayer.Position.DistanceTo(p.Position);
                         if (dist > maxDistance)
                         {
                             var removed = Listeners.Remove(p);
