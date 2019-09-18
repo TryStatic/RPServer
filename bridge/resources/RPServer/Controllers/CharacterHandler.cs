@@ -175,12 +175,6 @@ namespace RPServer.Controllers
             }
         }
 
-        [RemoteEvent(Character.ApplyCharacterEditAnimation)]
-        public void ClientEvent_ApplyCharacterEditAnimation(Client client)
-        {
-            client.PlayAnimation("missbigscore2aleadinout@ig_7_p2@bankman@", "leadout_waiting_loop", 1);
-        }
-
         [RemoteEvent(Character.SubmitCharacterSelection)]
         public async void ClientEvent_SubmitCharacterSelection(Client client, int selectedCharId)
         {

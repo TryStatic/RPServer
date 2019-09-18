@@ -96,9 +96,8 @@ namespace RPServerClient.Character
         private void OnStartCustomization(object[] args)
         {
             StageModel(Player.LocalPlayer);
-            Events.CallRemote(Shared.Events.ClientToServer.Character.ApplyCharacterEditAnimation);
             BrowserHandler.ExecuteFunction("ShowNextStep");
-
+            // TODO: Apply Animation
             _camera.PointAtBone(Player.LocalPlayer, Bone.IK_Head, Player.LocalPlayer.GetHeading(), 0.35f, true);
 
             // Set naked
