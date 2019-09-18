@@ -95,7 +95,6 @@ namespace RPServerClient.Chat
                         if (added)
                         {
                             Events.CallRemote(VoiceChat.SumbitAddVoiceListener, p.RemoteId);
-                            RAGE.Chat.Output($"[DEBUG-CLIENT]: Setting {p.Name} as your voice listener.");
                         }
                     }
                 }
@@ -110,7 +109,6 @@ namespace RPServerClient.Chat
                             var removed = Listeners.Remove(p);
                             if (removed)
                             {
-                                RAGE.Chat.Output($"[DEBUG-CLIENT]: removing {p.Name} from your voice listeners.");
                                 Events.CallRemote(VoiceChat.SumbitRemoveVoiceListener, p.RemoteId);
                             }
                         }
