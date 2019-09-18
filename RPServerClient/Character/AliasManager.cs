@@ -13,7 +13,6 @@ namespace RPServerClient.Character
 {
     internal class AliasManager : Events.Script
     {
-        public const float AliasDisplayDistance = 10f;
         public static readonly List<Alias> ClientAlises = new List<Alias>();
 
         public AliasManager()
@@ -67,13 +66,10 @@ namespace RPServerClient.Character
 
             foreach (var alias in ClientAlises)
             {
-                if (Player.LocalPlayer.Position.DistanceToSquared(alias.Player.Position) <
-                    AliasDisplayDistance) continue;
+                if (Player.LocalPlayer.Position.DistanceTo(alias.Player.Position) < Shared.Data.Chat.NormalChatMaxDistance) continue;
 
-                Graphics.SetDrawOrigin(alias.Player.Position.X, alias.Player.Position.Y, alias.Player.Position.Z + 1f,
-                    0);
-                UIResText.Draw(alias.AliasText, 0, 0, Font.ChaletLondon, 0.3f, Color.White,
-                    UIResText.Alignment.Centered, false, false, 0);
+                Graphics.SetDrawOrigin(alias.Player.Position.X, alias.Player.Position.Y, alias.Player.Position.Z + 1f, 0);
+                UIResText.Draw(alias.AliasText, 0, 0, Font.ChaletLondon, 0.3f, Color.White, UIResText.Alignment.Centered, false, false, 0);
                 Graphics.ClearDrawOrigin();
             }
         }
