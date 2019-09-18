@@ -137,7 +137,11 @@ namespace RPServer.Controllers
                 return;
             }
 
-            // TODO: DISTANCE CHECK
+            if (client.Position.DistanceTo(otherClient.Position) > Shared.Data.Chat.NormalChatMaxDistance)
+            {
+                ChatHandler.SendCommandErrorText(client, "That player is too far away.");
+                return;
+            }
 
             var chData = client.GetActiveChar();
             var chOtherData = otherClient.GetActiveChar();
