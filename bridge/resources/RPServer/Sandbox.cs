@@ -1,10 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.Tracing;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
-using System.Text.RegularExpressions;
 using GTANetworkAPI;
 using RPServer.Controllers;
 using RPServer.Controllers.Util;
@@ -13,6 +6,12 @@ using RPServer.InternalAPI;
 using RPServer.InternalAPI.Extensions;
 using RPServer.Util;
 using Shared.Enums;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace RPServer
 {
@@ -51,12 +50,21 @@ namespace RPServer
                 ChatHandler.SendClientMessage(client, "Commands listing is not loadded.");
             }
 
-            var cmdList = "";
-            foreach (var cmd in AllCommands)
-            {
-                cmdList += $"{cmd}, ";
-            }
+            var cmdList = AllCommands.Aggregate("", (current, cmd) => current + $"{cmd}, ");
             ChatHandler.SendClientMessage(client, cmdList);
+        }
+
+        [Command("allcmds2", GreedyArg = true)]
+        public void CMD_AllCmds2(Client client)
+        {
+            var cmds = CommandHandler.GetAllCommands();
+
+            ChatHandler.SendClientMessage(client, "Listing all Registered Commands: ");
+            foreach (var cmd in cmds.OrderBy(key => key.CommandGroup))
+            {
+                if(string.IsNullOrEmpty(cmd.CommandTextAlias)) ChatHandler.SendClientMessage(client, $"=> CMD: /{cmd.CommandText,-20} | Admin Level: {cmd.AdminLevel,-3} | Group: {cmd.CommandGroup.ToString(),-10}");
+                else ChatHandler.SendClientMessage(client, $"=> CMD: /{cmd.CommandText, -20} (/{cmd.CommandTextAlias, -5}) | Admin Level: {cmd.AdminLevel, -3} | Group: {cmd.CommandGroup.ToString(), -10}");
+            }
         }
 
         [Command("setforumname")]

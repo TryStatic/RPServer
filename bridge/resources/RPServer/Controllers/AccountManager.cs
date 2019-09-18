@@ -23,20 +23,21 @@ namespace RPServer.Controllers
 
         public static event OnPlayerLoginDelegate PlayerLogin;
 
-        [Command(CmdStrings.CMD_ToggleTwoFactorEmail)]
+        [Command(CommandHandler.ToggleTwoFactorEmailText)]
         public void CMD_ToggleTwoFactorEmail(Client client)
         {
-            if (!client.IsLoggedIn()) return;
+            if (!CommandHandler.ToggleTwoFactorEmail.IsAuthorized(client)) return;
+
             var acc = client.GetAccount();
             acc.HasEnabledTwoStepByEmail = !acc.HasEnabledTwoStepByEmail;
             acc.HasPassedTwoStepByEmail = acc.HasEnabledTwoStepByEmail;
             client.SendChatMessage($"2FA by Email has been {acc.HasEnabledTwoStepByEmail}");
         }
 
-        [Command(CmdStrings.CMD_ToggleTwoFactorGA)]
+        [Command(CommandHandler.ToggleTwoFactorGAText)]
         public async void CMD_ToggleTwoFactorGA(Client client)
         {
-            if (!client.IsLoggedIn()) return;
+            if (!CommandHandler.ToggleTwoFactorGA.IsAuthorized(client)) return;
 
             var acc = client.GetAccount();
             if (!acc.Is2FAbyGAEnabled())
@@ -58,18 +59,13 @@ namespace RPServer.Controllers
             }
         }
 
-        [Command(CmdStrings.CMD_Logout)]
-        public async void CMD_Logout(Client player)
+        [Command(CommandHandler.LogoutText)]
+        public async void CMD_Logout(Client client)
         {
-            if (!player.IsLoggedIn())
-            {
-                player.SendChatMessage("You are not logged in.");
-                return;
-            }
+            if(!CommandHandler.Logout.IsAuthorized(client)) return;
 
-            await LogoutAccount(player);
-
-            player.SendChatMessage("Bye!");
+            await LogoutAccount(client);
+            ChatHandler.SendCommandSuccessText(client, "You have been logged out.");
         }
 
 

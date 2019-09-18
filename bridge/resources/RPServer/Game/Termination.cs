@@ -9,9 +9,11 @@ namespace RPServer.Game
 {
     internal class Termination : Script
     {
-        [Command(CmdStrings.CMD_Shutdown)]
+        [Command(CommandHandler.ShutdownText)]
         public async void CMD_Shutdown(Client client)
         {
+            if(!CommandHandler.Shutdown.IsAuthorized(client)) return;
+
             NAPI.Chat.SendChatMessageToAll("[SERVER]: Shutdown inititated, saving data...");
             Initialization.OnServerShutdown();
             Logger.GetInstance().ServerInfo("[SHUTDOWN]: Started saving World Data.");

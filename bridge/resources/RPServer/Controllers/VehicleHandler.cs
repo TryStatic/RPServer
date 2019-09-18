@@ -19,21 +19,21 @@ namespace RPServer.Controllers
             CharacterHandler.CharacterSpawn += OnCharacterSpawn;
         }
 
-        [Command(CmdStrings.CMD_Vehicle, Alias = CmdStrings.CMD_Vehicle_Alias, GreedyArg = true)]
+        [Command(CommandHandler.VehicleText, Alias = CommandHandler.VehicleTextAlias, GreedyArg = true)]
         public async void CMD_Vehicle(Client client, string args = "")
         {
-            if (!client.IsLoggedIn() || !client.HasActiveChar()) return;
+            if(!CommandHandler.Vehicle.IsAuthorized(client)) return;
 
             var cmdParser = new CommandParser(args);
             if (!cmdParser.HasNextToken())
             {
-                ChatHandler.SendCommandUsageText(client, CmdStrings.CMD_Vehicle_HelpText);
+                ChatHandler.SendCommandUsageText(client, "/v(ehicle) [create/list/stats/spawn/despawn/delete]");
                 return;
             }
 
             switch (cmdParser.GetNextToken())
             {
-                case CmdStrings.SUBCMD_Vehicle_Create:
+                case "create":
                     if (!cmdParser.HasNextToken())
                     {
                         ChatHandler.SendCommandUsageText(client, "/v(ehicle) create [model]");
@@ -72,10 +72,10 @@ namespace RPServer.Controllers
                     await CreateVehicleAsync(client.GetActiveChar(), modelID);
                     ChatHandler.SendCommandSuccessText(client, "Vehicle Created!");
                     break;
-                case CmdStrings.SUBCMD_Vehicle_List:
+                case "list":
                     DisplayVehicles(client, client.GetActiveChar().Vehicles);
                     break;
-                case CmdStrings.SUBCMD_Vehicle_Stats:
+                case "stats":
                     var pv = client.Vehicle;
                     if (pv == null)
                     {
@@ -85,7 +85,7 @@ namespace RPServer.Controllers
 
                     DisplayVehicleStats(client, pv);
                     break;
-                case CmdStrings.SUBCMD_Vehicle_Spawn:
+                case "spawn":
                     if (!cmdParser.HasNextToken())
                     {
                         DisplayVehicles(client, client.GetActiveChar().Vehicles);
@@ -106,7 +106,7 @@ namespace RPServer.Controllers
 
                     SpawnVehicle(client, vehSpawnID);
                     break;
-                case CmdStrings.SUBCMD_Vehicle_Despawn:
+                case "despawn":
                     if (!cmdParser.HasNextToken())
                     {
                         DisplayVehicles(client, client.GetActiveChar().Vehicles);
@@ -127,7 +127,7 @@ namespace RPServer.Controllers
 
                     DespawnVehicle(client, vehDespawnID);
                     break;
-                case CmdStrings.SUBCMD_Vehicle_Delete:
+                case "delete":
                     if (!cmdParser.HasNextToken())
                     {
                         DisplayVehicles(client, client.GetActiveChar().Vehicles);
@@ -149,7 +149,7 @@ namespace RPServer.Controllers
                     await DeleteVehicle(client, vehDelID);
                     break;
                 default:
-                    ChatHandler.SendCommandUsageText(client, CmdStrings.CMD_Vehicle_HelpText);
+                    ChatHandler.SendCommandUsageText(client, "/v(ehicle) [create/list/stats/spawn/despawn/delete]");
                     break;
             }
         }

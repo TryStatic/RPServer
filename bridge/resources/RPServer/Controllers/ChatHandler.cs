@@ -13,10 +13,12 @@ namespace RPServer.Controllers
 {
     internal class ChatHandler : Script
     {
-        [Command(CmdStrings.CMD_OOC, Alias = CmdStrings.CMD_OOC_Alias, GreedyArg = true)]
+        [Command(CommandHandler.Chat_OOC_Text, Alias = CommandHandler.Chat_OOC_Text_Alias, GreedyArg = true)]
         public void CMD_OOC(Client client, string message = "")
         {
-            if (string.IsNullOrEmpty(message))
+            if(!CommandHandler.Chat_OOC.IsAuthorized(client)) return;
+
+            if (message == "")
             {
                 SendCommandUsageText(client, "/o [Global OOC]");
                 return;
@@ -28,10 +30,12 @@ namespace RPServer.Controllers
             SendGlobalOOCMesssage(client, message);
         }
 
-        [Command(CmdStrings.CMD_B, GreedyArg = true)]
+        [Command(CommandHandler.Chat_B_Text, GreedyArg = true)]
         public void CMD_B(Client client, string message = "")
         {
-            if (string.IsNullOrEmpty(message))
+            if (!CommandHandler.Chat_B.IsAuthorized(client)) return;
+
+            if (message == "")
             {
                 SendCommandUsageText(client, "/b [Local OOC]");
                 return;
@@ -42,10 +46,12 @@ namespace RPServer.Controllers
             SendLocalOOCMesssage(client, Shared.Data.Chat.NormalChatMaxDistance, message);
         }
 
-        [Command(CmdStrings.CMD_Me, GreedyArg = true)]
+        [Command(CommandHandler.Chat_Me_Text, GreedyArg = true)]
         public void CMD_Me(Client client, string message = "")
         {
-            if (string.IsNullOrEmpty(message))
+            if (!CommandHandler.Chat_Me.IsAuthorized(client)) return;
+
+            if (message == "")
             {
                 SendCommandUsageText(client, "/me [action]");
                 return;
@@ -55,10 +61,12 @@ namespace RPServer.Controllers
             SendActionMessage(client, Shared.Data.Chat.NormalChatMaxDistance, message);
         }
 
-        [Command(CmdStrings.CMD_Do, GreedyArg = true)]
+        [Command(CommandHandler.Chat_Do_Text, GreedyArg = true)]
         public void CMD_Do(Client client, string message = "")
         {
-            if (string.IsNullOrEmpty(message))
+            if (!CommandHandler.Chat_Do.IsAuthorized(client)) return;
+
+            if (message == "")
             {
                 SendCommandUsageText(client, "/do [description]");
                 return;

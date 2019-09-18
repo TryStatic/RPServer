@@ -32,9 +32,11 @@ namespace RPServer.Controllers
         public static event OnCharacterSpawnDelegate CharacterSpawn;
         public static event OnCharacterSpawnDelegate CharacterDespawn;
 
-        [Command(CmdStrings.CMD_Stats, GreedyArg = true)]
+        [Command(CommandHandler.StatsText, GreedyArg = true)]
         public void CMD_Stats(Client client, string args = "")
         {
+            if(!CommandHandler.Stats.IsAuthorized(client)) return;
+
             var usedExpand = false;
             var cmdParser = new CommandParser(args);
             if (cmdParser.HasNextToken() && cmdParser.GetNextToken() == "expand")
@@ -86,30 +88,23 @@ namespace RPServer.Controllers
                 ChatHandler.SendClientMessageHTML(client, "<i>TODO: Display CEF page with detailed account statistics.");
 
             }
-
         }
 
-        [Command(CmdStrings.CMD_ChangeChar)]
+        [Command(CommandHandler.ChangeCharText)]
         public void CMD_ChangeChar(Client client)
         {
-            // Temporary (?)
-            if (!client.HasActiveChar())
-            {
-                client.SendChatMessage("You are not spawned yet.");
-                return;
-            }
+            if (!CommandHandler.ChangeChar.IsAuthorized(client)) return;
 
             CharacterDespawn?.Invoke(client, EventArgs.Empty);
-
             InitCharacterSelection(client);
         }
 
-        [Command(CmdStrings.CMD_Alias, GreedyArg = true)]
+        [Command(CommandHandler.AliasText, GreedyArg = true)]
         public void CMD_Alias(Client client, string args = "")
         {
-            var cmdParser = new CommandParser(args);
+            if (!CommandHandler.Alias.IsAuthorized(client)) return;
 
-            if (!client.IsLoggedIn() || !client.HasActiveChar()) return;
+            var cmdParser = new CommandParser(args);
 
             if (!cmdParser.HasNextToken())
             {
