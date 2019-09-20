@@ -466,8 +466,8 @@ namespace RPServer.Controllers
 
             NAPI.Player.SpawnPlayer(client, Initialization.DefaultSpawnPos);
             client.SendChatMessage(AccountStrings.SuccessLogin);
-            if (client.GetAccount().IsAdmin())
-                ChatHandler.SendClientMessage(client, $"{Colors.COLOR_RED}<!> {Colors.COLOR_WHITE}You have logged in as a level {client.GetAccount().AdminLevel} admin.");
+            if (client.GetAccount().IsAdmin()) ChatHandler.SendClientMessage(client, $"You have logged in as a level ({client.GetAccount().AdminLevel}) administrator.");
+
         }
 
         private static bool IsAccountAlreadyLoggedIn(AccountModel account)
