@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using GTANetworkAPI;
-using RPServer.Controllers;
-using RPServer.InternalAPI.Extensions;
 using RPServer.Util;
 
-namespace RPServer.Models.Inventory
+namespace RPServer.Models.Inventory.Templates
 {
     /// <summary>
     /// Basic Template to characterize the various items
@@ -89,72 +86,5 @@ namespace RPServer.Models.Inventory
             return !Equals(left, right);
         }
         #endregion
-    }
-
-    internal class StackableItemTemplate : ItemTemplate
-    {
-        private StackableItemTemplate(string itemName, string itemDesc) : base(itemName, itemDesc)
-        {
-        }
-
-        internal static void LoadTemplates()
-        {
-            if(Loaded) return;
-            var count = ItemTemplates.Count;
-
-            ItemTemplates.Add(new StackableItemTemplate("Money", "The standard currency."));
-            ItemTemplates.Add(new StackableItemTemplate("Note", "Some note."));
-
-            Logger.GetInstance().ServerInfo($"\t\tLoaded {ItemTemplates.Count - count} Stackable item Templates...");
-        }
-    }
-
-    internal class SingletonItemTemplate : ItemTemplate
-    {
-        private SingletonItemTemplate(string itemName, string itemDesc) : base(itemName, itemDesc)
-        {
-        }
-
-        internal static void LoadTemplates()
-        {
-            if (Loaded) return;
-            var count = ItemTemplates.Count;
-
-            ItemTemplates.Add(new SingletonItemTemplate("Teddy Bear", "Just a Teddy Bear"));
-            ItemTemplates.Add(new SingletonItemTemplate("Water Bottle", "A water bottle"));
-
-            Logger.GetInstance().ServerInfo($"\t\tLoaded {ItemTemplates.Count - count} Singleton item Templates...");
-        }
-    }
-
-    internal class MultitionItemTemplate : ItemTemplate
-    {
-        private MultitionItemTemplate(string itemName, string itemDesc) : base(itemName, itemDesc)
-        {
-        }
-
-        internal static void LoadTemplates()
-        {
-            if (Loaded) return;
-            var count = ItemTemplates.Count;
-
-            ItemTemplates.Add(new MultitionItemTemplate("Dice", "Just an ordinary Dice")
-            {
-                _itemAction = args => // (Client client)
-                {
-                    if (args == null || args.Length < 1) return;
-                    var client = args[0] as Client;
-
-                    if (client == null) return;
-                    if (!client.IsLoggedIn() || !client.HasActiveChar()) return;
-                    // TODO: Check whether the active character's inventory actually has the item they are trying to use.
-
-                    ChatHandler.SendActionMessage(client, Shared.Data.Chat.NormalChatMaxDistance, $"rolls a dice landing on {RandomGenerator.GetInstance().Next(0, 7)}");
-                }
-            });
-
-            Logger.GetInstance().ServerInfo($"\t\tLoaded {ItemTemplates.Count - count} Multition item Templates...");
-
-        }
     }
 }
