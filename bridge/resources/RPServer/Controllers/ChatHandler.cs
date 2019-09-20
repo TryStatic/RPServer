@@ -203,7 +203,7 @@ namespace RPServer.Controllers
             }
         }
 
-        private void SendDescriptionMessage(Client client, float distance, string message)
+        public void SendDescriptionMessage(Client client, float distance, string message)
         {
             if (message[message.Length - 1] != '.') message += ".";
             foreach (var p in NAPI.Pools.GetAllPlayers())
@@ -214,7 +214,7 @@ namespace RPServer.Controllers
             }
         }
 
-        private void SendLocalOOCMesssage(Client client, float distance, string message)
+        public void SendLocalOOCMesssage(Client client, float distance, string message)
         {
             foreach (var p in NAPI.Pools.GetAllPlayers())
             {
@@ -225,7 +225,7 @@ namespace RPServer.Controllers
             }
         }
 
-        private void SendGlobalOOCMesssage(Client client, string message)
+        public void SendGlobalOOCMesssage(Client client, string message)
         {
             var playerName = string.IsNullOrEmpty(client.GetAccount().NickName)
                 ? client.GetActiveChar().CharacterName
