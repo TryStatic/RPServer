@@ -8,15 +8,8 @@ namespace RPServer.Models.Inventory.Inventory
 {
     internal abstract class Inventory
     {
-        private protected Inventory()
-        {
-            _items = new HashSet<Item.Item>();
-        }
-
-
         #region ItemManagement
-        private readonly HashSet<Item.Item> _items;
-
+        private readonly HashSet<Item.Item> _items = new HashSet<Item.Item>();
 
         internal void AddItem(SingletonItemTemplate template)
         {
