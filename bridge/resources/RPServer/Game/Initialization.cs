@@ -69,6 +69,8 @@ namespace RPServer.Game
             // Read Sever World Settings from Database
             WorldModel.LoadWorldData().GetAwaiter().GetResult();
 
+            // Read the Item Templates for the inventory System
+            Models.Inventory.ItemTemplate.LoadItemTemplates();
 
 #if DEBUG
             // TODO: Temporary test method it uses reflection to load every single registered Command (takes too long)
