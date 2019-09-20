@@ -24,9 +24,10 @@ namespace RPServer.Models
 
         public static async Task LoadWorldData()
         {
-            Logger.GetInstance().ServerInfo("Loading World Settings.");
+            Logger.GetInstance().ServerInfo("Loading World Settings...");
             var worldData = await GetWorldData();
             WorldHandler.CurrentTime = worldData.ServerTime;
+            Logger.GetInstance().ServerInfo("\tLoaded World Settings.");
         }
     }
 }

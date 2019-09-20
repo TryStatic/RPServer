@@ -89,16 +89,15 @@ namespace RPServer.Controllers.Util
         {
             if (ValidVehicleIDs != null)
             {
-                Logger.GetInstance()
-                    .ServerError("OrganizeValidVehicleIDs should only be called once when the server is initialized.");
+                Logger.GetInstance().ServerError("OrganizeValidVehicleIDs should only be called once when the server is initialized.");
                 return;
             }
 
-            Logger.GetInstance().ServerInfo("Initializing Valid Vehicle Model IDs from VehicleData.json");
+            Logger.GetInstance().ServerInfo("Loading Valid Vehicle Model IDs from VehicleData.json...");
             ValidVehicleIDs = new HashSet<uint>();
-            var vehData =
-                JsonConvert.DeserializeObject<Dictionary<int, dynamic>>(File.ReadAllText(Globals.VehicleDataJsonFile));
+            var vehData =JsonConvert.DeserializeObject<Dictionary<int, dynamic>>(File.ReadAllText(Globals.VehicleDataJsonFile));
             foreach (var veh in vehData) ValidVehicleIDs.Add((uint) veh.Value.hash);
+            Logger.GetInstance().ServerInfo($"\tLoaded {vehData.Count} vehicle model IDs.");
         }
 
         public static bool IsDigitsOnly(string str)

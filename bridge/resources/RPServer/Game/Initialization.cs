@@ -77,7 +77,6 @@ namespace RPServer.Game
         private async void OnRemoveExpiredEmailTokens(object state)
         {
             await EmailToken.RemoveExpiredCodesAsync();
-            Logger.GetInstance().ServerInfo("Removing expired email verification tokens from the database.");
         }
     }
 }

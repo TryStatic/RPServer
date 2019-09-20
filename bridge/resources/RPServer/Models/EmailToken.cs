@@ -182,13 +182,16 @@ namespace RPServer.Models
 
         public static async Task RemoveExpiredCodesAsync()
         {
+            Logger.GetInstance().ServerInfo("Removing expired email verification tokens from the database...");
+
             const string query = "DELETE FROM emailtokens WHERE expirydate < @current";
 
             using (var dbConn = DbConnectionProvider.CreateDbConnection())
             {
                 try
                 {
-                    await dbConn.ExecuteAsync(query, new {current = DateTime.Now});
+                    var rows = await dbConn.ExecuteAsync(query, new {current = DateTime.Now});
+                    Logger.GetInstance().ServerInfo(rows > 0 ? $"\tRemoved {rows} exipired verification code(s) from the the database." : "\tThere were no expired verification codes in the database.");
                 }
                 catch (DbException ex)
                 {

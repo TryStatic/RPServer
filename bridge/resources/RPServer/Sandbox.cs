@@ -21,7 +21,7 @@ namespace RPServer
 
         public static void LoadAllCommands()
         {
-            Logger.GetInstance().ServerInfo("Fetching all registered commands.");
+            Logger.GetInstance().ServerInfo("[DEBUG]Cataloguing all registered server commands...");
             if(AllCommands != null) return;
 
             AllCommands = new List<string>();
@@ -38,7 +38,7 @@ namespace RPServer
                 var cmd = customAttribute.CommandString;
                 AllCommands.Add(cmd);
             }
-
+            Logger.GetInstance().ServerInfo($"\t[DEBUG]Recorded {AllCommands.Count} commands throughout the script.");
 
         }
 
