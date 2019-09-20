@@ -10,13 +10,13 @@ namespace RPServer.Models.Inventory.Item
         private static int _lastUnsavedID;
 
         public int ID { get; set; }
-        public Inventory Inventory { get; set; }
+        public Inventory.Inventory Inventory { get; set; }
         public ItemTemplate Template { get; set; }
 
         /// <summary>
         /// Use for spawning entirely new Stackable items
         /// </summary>
-        private protected Item(Inventory inventory, ItemTemplate template)
+        private protected Item(Inventory.Inventory inventory, ItemTemplate template)
         {
             ID = --_lastUnsavedID;
             Inventory = inventory;
@@ -26,7 +26,7 @@ namespace RPServer.Models.Inventory.Item
         /// <summary>
         /// Use when loading already saved Stackable items from the database
         /// </summary>
-        private protected Item(int id, Inventory inventory, ItemTemplate template)
+        private protected Item(int id, Inventory.Inventory inventory, ItemTemplate template)
         {
             ID = id;
             Inventory = inventory;

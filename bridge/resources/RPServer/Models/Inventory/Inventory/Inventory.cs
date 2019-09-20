@@ -4,8 +4,7 @@ using RPServer.Models.Inventory.Item;
 using RPServer.Models.Inventory.Template;
 using RPServer.Util;
 
-
-namespace RPServer.Models.Inventory
+namespace RPServer.Models.Inventory.Inventory
 {
     internal abstract class Inventory
     {

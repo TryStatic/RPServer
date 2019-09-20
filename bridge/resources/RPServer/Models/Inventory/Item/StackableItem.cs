@@ -6,13 +6,13 @@ namespace RPServer.Models.Inventory.Item
     {
         public uint Count { get; set; }
 
-        public StackableItem(Inventory inventory, StackableItemTemplate template, uint count) : base(inventory, template)
+        public StackableItem(Inventory.Inventory inventory, StackableItemTemplate template, uint count) : base(inventory, template)
         {
             if (count == 0) count = 1;
             Count = count;
         }
 
-        public StackableItem(int id, Inventory inventory, StackableItemTemplate template, uint count) : base(id, inventory, template)
+        public StackableItem(int id, Inventory.Inventory inventory, StackableItemTemplate template, uint count) : base(id, inventory, template)
         {
             if (count == 0) count = 1;
             Count = count;
