@@ -69,7 +69,11 @@ namespace RPServer.Game
             // Read Sever World Settings from Database
             WorldModel.LoadWorldData().GetAwaiter().GetResult();
 
+
+#if DEBUG
+            // TODO: Temporary test method it uses reflection to load every single registered Command (takes too long)
             Sandbox.LoadAllCommands();
+#endif
         }
 
         public static void OnServerShutdown()
