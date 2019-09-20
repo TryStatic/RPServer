@@ -3,7 +3,7 @@ using RPServer.Controllers;
 using RPServer.InternalAPI.Extensions;
 using RPServer.Util;
 
-namespace RPServer.Models.Inventory.Templates
+namespace RPServer.Models.Inventory.Template
 {
     internal class MultitionItemTemplate : ItemTemplate
     {
@@ -18,7 +18,7 @@ namespace RPServer.Models.Inventory.Templates
 
             ItemTemplates.Add(new MultitionItemTemplate("Dice", "Just an ordinary Dice")
             {
-                _itemAction = args => // (Client client)
+                ItemAction = args => // (Client client)
                 {
                     if (args == null || args.Length < 1) return;
                     var client = args[0] as Client;

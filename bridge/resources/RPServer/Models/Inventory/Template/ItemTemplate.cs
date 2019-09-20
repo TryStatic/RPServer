@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using RPServer.Util;
 
-namespace RPServer.Models.Inventory.Templates
+namespace RPServer.Models.Inventory.Template
 {
     /// <summary>
     /// Basic Template to characterize the various items
@@ -23,20 +23,26 @@ namespace RPServer.Models.Inventory.Templates
             ItemDesc = itemDesc;
         }
 
+        #region Fetching
         /// <summary>
         /// Searches for the corresponding ItemTemplate matching the specified template ID.
         /// </summary>
         /// <param name="id">The template ID</param>
         /// <returns>Either the ItemTemplate instance or null if not found</returns>
         public static ItemTemplate GetTemplate(uint id) => ItemTemplates.FirstOrDefault(it => it.ID == id);
+        /// <summary>
+        /// Retrieves all the available templates as a List
+        /// </summary>
+        /// <returns>All the templates</returns>
         public static List<ItemTemplate> GetTemplates() => ItemTemplates.ToList();
+        #endregion
 
         #region ItemAction
-        protected Action<object[]> _itemAction;
-        public bool IsUsable() => _itemAction != null;
+        protected Action<object[]> ItemAction;
+        public bool IsUsable() => ItemAction != null;
         public void InvokeAction(object[] args)
         {
-            if(IsUsable()) _itemAction.Invoke(args);
+            if(IsUsable()) ItemAction.Invoke(args);
         }
         #endregion
 

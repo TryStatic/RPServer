@@ -5,6 +5,8 @@ using RPServer.Controllers.Util;
 using RPServer.Database;
 using RPServer.Email;
 using RPServer.Models;
+using RPServer.Models.Inventory;
+using RPServer.Models.Inventory.Template;
 using RPServer.Util;
 
 namespace RPServer.Game
@@ -70,7 +72,7 @@ namespace RPServer.Game
             WorldModel.LoadWorldData().GetAwaiter().GetResult();
 
             // Read the Item Templates for the inventory System
-            Models.Inventory.ItemTemplate.LoadItemTemplates();
+            ItemTemplate.LoadItemTemplates();
 
 #if DEBUG
             // TODO: Temporary test method it uses reflection to load every single registered Command (takes too long)

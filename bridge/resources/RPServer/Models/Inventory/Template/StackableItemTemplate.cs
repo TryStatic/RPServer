@@ -1,6 +1,6 @@
 ﻿using RPServer.Util;
 
-namespace RPServer.Models.Inventory.Templates
+namespace RPServer.Models.Inventory.Template
 {
     internal class StackableItemTemplate : ItemTemplate
     {
