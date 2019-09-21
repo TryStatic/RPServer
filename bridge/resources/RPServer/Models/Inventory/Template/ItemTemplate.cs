@@ -49,7 +49,11 @@ namespace RPServer.Models.Inventory.Template
         #region ItemDropInfo
         protected DropInfo DropInfo;
         public bool IsDroppable => DropInfo != null;
-        public DropInfo GetDropInfo() => new DropInfo(DropInfo.ObjectID, DropInfo.DefaultRotation);
+        /// <summary>
+        /// Returns the ItemTemplate's DropInfo or null if the template doesn't have any.
+        /// </summary>
+        public DropInfo GetDropInfo() => IsDroppable ? new DropInfo(DropInfo.ObjectID, DropInfo.DefaultRotation): null;
+
         #endregion
 
         #region LoadingTemplates
