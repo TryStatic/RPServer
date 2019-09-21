@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using RPServer.Models.Inventory.Item;
 using RPServer.Models.Inventory.Template;
@@ -16,7 +16,7 @@ namespace RPServer.Models.Inventory.Inventory
         /// Spawns a new SingletonItem into this inventory.
         /// </summary>
         /// <returns>bool value related to the success or failure of the operation</returns>
-        internal bool SpawnItem(SingletonItemTemplate template) => _items.Add(new NonStackableItem(this, template) { Inventory = this });
+        internal bool SpawnItem(SingletonItemTemplate template) => !HasItem(template) && _items.Add(new NonStackableItem(this, template) {Inventory = this});
 
         /// <summary>
         /// Spawns a new MultitionItem into this inventory.
