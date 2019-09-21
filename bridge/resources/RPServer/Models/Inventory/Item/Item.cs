@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using RPServer.Models.Inventory.Template;
 using RPServer.Util;
@@ -11,9 +11,9 @@ namespace RPServer.Models.Inventory.Item
     {
         private static int _lastUnsavedID;
 
-        public int ID { get; set; }
+        public int ID { get; }
         public Inventory.Inventory Inventory { get; set; }
-        public ItemTemplate Template { get; set; }
+        public ItemTemplate Template { get; }
 
         /// <summary>
         /// Use for spawning entirely new Stackable items
