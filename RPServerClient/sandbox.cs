@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
 using RAGE;
 using RAGE.Game;
@@ -176,7 +177,19 @@ namespace RPServerClient
 
         private void Tick(List<Events.TickNametagData> nametags)
         {
+
             _clothespool?.ProcessMenus();
+
+
+            var bone = 0;
+            Player.LocalPlayer.GetLastDamageBone(ref bone);
+
+            if (bone != 0)
+            {
+                RAGE.Chat.Output($"Got hit at the: {((Shared.Enums.Bone)bone).ToString()}");
+                Player.LocalPlayer.ClearLastDamageBone();
+            }
+
         }
 
         private void TeleportInFront(object[] args)
