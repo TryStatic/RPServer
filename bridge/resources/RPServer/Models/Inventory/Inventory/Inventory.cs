@@ -44,9 +44,9 @@ namespace RPServer.Models.Inventory.Inventory
 
         internal void AddItem(Item.Item item)
         {
-            if (item.Inventory == this || item.Inventory == null)
+            if (item.Inventory == this)
             {
-                Logger.GetInstance().ServerError("Inventory Error: Found item with null inventory refrence");
+                Logger.GetInstance().ServerError("Inventory Error: Source and Destination inventories cannot be the same.");
                 return;
             }
 
