@@ -54,57 +54,6 @@ namespace RPServer.Models.Inventory.Inventory
             return true;
         }
 
-        /// <summary>
-        /// Adds an existing item into the inventory. This is transfer of ownership or count adjustment (in the case of stackable items)
-        /// </summary>
-        /// <param name="item">The specified item</param>
-        /// <param name="count">This taken into account only if the Item is a StackableItem</param>
-        internal bool TransferItem(NonStackableItem item, uint count = 1)
-        {
-            var previousInventory = item.Inventory;
-
-            if (previousInventory == this)
-            {
-                Logger.GetInstance().ServerError("Inventory Error: Source and Destination inventories cannot be the same.");
-                return false;
-            }
-
-            switch (item)
-            {
-                // NonStackable
-                case NonStackableItem nonStackableItem:
-                    switch (nonStackableItem.Template)
-                    {
-                        case MultitionItemTemplate _:
-                            item.Inventory = this;
-                            return _items.Add(item);
-                        case SingletonItemTemplate singletonItemTemplate:
-                            if (HasItem(singletonItemTemplate)) return false;
-                            item.Inventory = this;
-                            return _items.Add(item);
-                    }
-                    break;
-                case StackableItem stackableItem:
-                    var existingItem = GetItemFirstOrNull(stackableItem.Template);
-                    if (existingItem == null)
-                    { // runs if this inventory does not have an item Instance with this template
-                        item.Inventory = this;
-                        return _items.Add(item);
-                    }
-                    // Since we have an existing item with the specified template let's increase it's count
-                    var existingStackableItem = existingItem as StackableItem;
-                    if (existingStackableItem == null)
-                    {
-                        Logger.GetInstance().ServerError("Inventory Error: Invalid Cast (2)");
-                        return false;
-                    }
-                    // At this the inventory MUST already have had an item with the same template, so we increase it's count
-                    existingStackableItem.Count += stackableItem.Count;
-                    break;
-            }
-        }
-
-        
         internal bool DespawnItem(SingletonItemTemplate template)
         {
             var item = GetItemFirstOrNull(template);
