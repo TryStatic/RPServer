@@ -136,9 +136,6 @@ namespace RPServer.Models.Inventory.Inventory
         /// Returns all items that have the specified item template 
         /// </summary>
         internal IEnumerable<Item.Item> GetItem(ItemTemplate template) => _items.Where(it => it.Template == template);
-
-
-
         #endregion
     }
 }
