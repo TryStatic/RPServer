@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using RPServer.Util;
@@ -44,6 +44,11 @@ namespace RPServer.Models.Inventory.Template
         {
             if(IsUsable()) ItemAction.Invoke(args);
         }
+        #endregion
+
+        #region ItemDropInfo
+        protected DropInfo DropInfo;
+        public bool IsDroppable => DropInfo != null;
         #endregion
 
         #region LoadingTemplates
