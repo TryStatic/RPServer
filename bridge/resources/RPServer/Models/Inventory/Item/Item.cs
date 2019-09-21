@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using RPServer.Models.Inventory.Template;
 using RPServer.Util;
@@ -148,6 +148,32 @@ namespace RPServer.Models.Inventory.Item
                                 // Rollback
                                 Logger.GetInstance().ServerError("Couldn't not remove item from source inventory. (1)");
                                 destItem.Count -= count;
+                                return false;
+                            }
+
+                            // We know it's not greater (checked at the beginning) and we know it's not equal so it's less.
+                            stackableItem.Count -= count;
+                            return true;
+                        }
+
+                        // Destination inventory doesn't have item that has the same template as the one we are trying to transfer.
+
+                        // We spawn it
+                        if (destinationInventory.SpawnItem((StackableItemTemplate)Template, count))
+                        { // if it did spawn
+
+                            // Try to remove it from our inventory
+                            if (stackableItem.Count == count)
+                            { // If you they are transferring all counts of that item
+                                if (sourceInventory.DespawnItem((StackableItemTemplate)Template, count)) return true;
+
+                                // Rollback
+                                Logger.GetInstance().ServerError("Couldn't not remove item from source inventory. (1)");
+                                var despawned = destinationInventory.DespawnItem((StackableItemTemplate) Template, count);
+                                if (!despawned)
+                                {
+                                    Logger.GetInstance().ServerError("Possible item duplication. (2)");
+                                }
                                 return false;
                             }
 
