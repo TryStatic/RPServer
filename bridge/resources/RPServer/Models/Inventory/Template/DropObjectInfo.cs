@@ -2,9 +2,9 @@
 
 namespace RPServer.Models.Inventory.Template
 {
-    internal class DropInfo
+    internal class DropObjectInfo
     {
-        public DropInfo(uint objectID, Vector3 defaultRotation)
+        public DropObjectInfo(uint objectID, Vector3 defaultRotation)
         {
             ObjectID = objectID;
             DefaultRotation = defaultRotation;

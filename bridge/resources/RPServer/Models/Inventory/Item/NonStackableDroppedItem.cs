@@ -10,8 +10,14 @@ namespace RPServer.Models.Inventory.Item
 
         internal override void Spawn()
         {
-            var dropInfo = Item.Template.GetDropInfo();
-            Object = NAPI.Object.CreateObject(dropInfo.ObjectID, Position, dropInfo.DefaultRotation, 255, Dimension);
+            // Object Spawning
+            var dropObjectInfo = Item.Template.GetDropObjectInfo();
+            if (dropObjectInfo != null)
+            {
+                Object = NAPI.Object.CreateObject(dropObjectInfo.ObjectID, Position, dropObjectInfo.DefaultRotation, 255, Dimension);
+            }
+
+            // Label Spawning
             TxtLabel = NAPI.TextLabel.CreateTextLabel($"{Item.Template.ItemName}", Position, 4.0f, 1.0f, 4, new Color(255, 255, 255), false, Dimension);
         }
 
