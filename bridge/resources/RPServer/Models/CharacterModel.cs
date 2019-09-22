@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dapper.Contrib.Extensions;
 using GTANetworkAPI;
+using RPServer.Models.Inventory.Inventory;
 using RPServer.Util;
 
 namespace RPServer.Models
@@ -10,7 +11,9 @@ namespace RPServer.Models
     [Table("characters")]
     internal class CharacterModel : Model<CharacterModel>
     {
+        public PlayerInventory Inventory = new PlayerInventory();
         public AppearanceModel Appearance;
+
         public HashSet<Alias> Aliases;
         public HashSet<VehicleModel> Vehicles;
 

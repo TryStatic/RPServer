@@ -24,7 +24,6 @@ namespace RPServer.Models.Inventory.Inventory
         /// <returns>bool value related to the success or failure of the operation</returns>
         internal bool SpawnItem(MultitionItemTemplate template) => _items.Add(new NonStackableItem(this, template) { Inventory = this });
 
-
         /// <summary>
         /// Spawns a new StackableItem into this inventory.
         /// </summary>
