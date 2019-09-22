@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GTANetworkAPI;
 using RPServer.Util;
 
 namespace RPServer.Models.Inventory.Template
@@ -47,12 +48,14 @@ namespace RPServer.Models.Inventory.Template
         #endregion
 
         #region ItemDropInfo
-        protected DropObjectInfo DropObjectInfo;
-        public bool HasDropObjectInfo => DropObjectInfo != null;
-        /// <summary>
-        /// Returns the ItemTemplate's DropObjectInfo or null if the template doesn't have any.
-        /// </summary>
-        public DropObjectInfo GetDropObjectInfo() => HasDropObjectInfo ? new DropObjectInfo(DropObjectInfo.ObjectID, DropObjectInfo.DefaultRotation): null;
+        private static readonly DropObjectInfo DefaultObjectInfo = new DropObjectInfo(NAPI.Util.GetHashKey("hei_prop_heist_box"), new Vector3());
+        private DropObjectInfo _dropObjectInfo;
+        protected DropObjectInfo DropObjectInfo
+        {
+            get => _dropObjectInfo ?? DefaultObjectInfo;
+            set => _dropObjectInfo = value;
+        }
+        public DropObjectInfo GetDropObjectInfo() => DropObjectInfo;
 
         #endregion
 

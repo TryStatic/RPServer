@@ -1,4 +1,5 @@
-﻿using RPServer.Util;
+﻿using GTANetworkAPI;
+using RPServer.Util;
 
 namespace RPServer.Models.Inventory.Template
 {
@@ -13,7 +14,10 @@ namespace RPServer.Models.Inventory.Template
             if(Loaded) return;
             var count = ItemTemplates.Count;
 
-            ItemTemplates.Add(new StackableItemTemplate("Money", "The standard currency."));
+            ItemTemplates.Add(new StackableItemTemplate("Money", "The standard currency.")
+            {
+                DropObjectInfo = new DropObjectInfo(NAPI.Util.GetHashKey("bkr_prop_money_sorted_01"), new Vector3())
+            });
             ItemTemplates.Add(new StackableItemTemplate("Note", "Some note."));
 
             Logger.GetInstance().ServerInfo($"\t\tLoaded {ItemTemplates.Count - count} Stackable item Templates...");
