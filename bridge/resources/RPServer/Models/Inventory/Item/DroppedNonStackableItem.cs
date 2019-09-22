@@ -2,11 +2,11 @@
 
 namespace RPServer.Models.Inventory.Item
 {
-    internal class NonStackableDroppedItem : DroppedItem
+    internal class DroppedNonStackableItem : DroppedItem
     {
         public NonStackableItem Item { get; }
 
-        public NonStackableDroppedItem(NonStackableItem item, Vector3 position, uint dimension) : base(position, dimension) => Item = item;
+        public DroppedNonStackableItem(NonStackableItem item, Vector3 position, uint dimension) : base(position, dimension) => Item = item;
 
         internal override void Spawn()
         {

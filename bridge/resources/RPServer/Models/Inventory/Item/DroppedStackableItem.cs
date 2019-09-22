@@ -2,12 +2,12 @@
 
 namespace RPServer.Models.Inventory.Item
 {
-    internal class StackableDroppedItem : DroppedItem
+    internal class DroppedStackableItem : DroppedItem
     {
         public StackableItem Item { get; }
         public uint Count { get; }
 
-        public StackableDroppedItem(StackableItem item, uint count, Vector3 position, uint dimension) : base(position, dimension)
+        public DroppedStackableItem(StackableItem item, uint count, Vector3 position, uint dimension) : base(position, dimension)
         {
             if (count == 0) count = 1;
 
