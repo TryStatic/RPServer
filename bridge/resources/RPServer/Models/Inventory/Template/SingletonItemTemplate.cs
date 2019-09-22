@@ -14,9 +14,13 @@ namespace RPServer.Models.Inventory.Template
             if (Loaded) return;
             var count = ItemTemplates.Count;
 
-            ItemTemplates.Add(new SingletonItemTemplate("Teddy Bear", "Just a Teddy Bear"));
+            ItemTemplates.Add(new SingletonItemTemplate("Teddy Bear", "Just a Teddy Bear")
+            {
+                Weight = 50.0f
+            });
             ItemTemplates.Add(new SingletonItemTemplate("Water Bottle", "A water bottle")
             {
+                Weight = 500.0f,
                 DropObjectInfo = new DropObjectInfo(NAPI.Util.GetHashKey("ng_proc_beerbottle_01a"), new Vector3())
             });
 

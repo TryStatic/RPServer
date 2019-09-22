@@ -18,6 +18,7 @@ namespace RPServer.Models.Inventory.Template
 
             ItemTemplates.Add(new MultitionItemTemplate("Dice", "Just an ordinary Dice")
             {
+                Weight = 20.0f,
                 ItemAction = args => // (Client client)
                 {
                     if (args == null || args.Length < 1) return;

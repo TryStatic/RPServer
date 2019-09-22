@@ -18,7 +18,10 @@ namespace RPServer.Models.Inventory.Template
             {
                 DropObjectInfo = new DropObjectInfo(NAPI.Util.GetHashKey("bkr_prop_money_sorted_01"), new Vector3())
             });
-            ItemTemplates.Add(new StackableItemTemplate("Note", "Some note."));
+            ItemTemplates.Add(new StackableItemTemplate("Note", "Some note.")
+            {
+                Weight = 10.0f
+            });
 
             Logger.GetInstance().ServerInfo($"\t\tLoaded {ItemTemplates.Count - count} Stackable item Templates...");
         }

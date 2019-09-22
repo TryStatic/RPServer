@@ -17,6 +17,8 @@ namespace RPServer.Models.Inventory.Template
         public string ItemName { get; }
         public string ItemDesc { get; }
 
+        public float Weight { protected set; get; } = 0.0f;
+
         private protected ItemTemplate(string itemName, string itemDesc)
         {
             ID = _lastUsedID++;
