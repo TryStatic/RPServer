@@ -9,20 +9,20 @@ namespace RPServer.Models.Inventory.Inventory
     internal abstract class Inventory
     {
         #region ItemManagement
-        private readonly HashSet<Item.Item> _items = new HashSet<Item.Item>();
+        protected readonly HashSet<Item.Item> _items = new HashSet<Item.Item>();
 
 
         /// <summary>
         /// Spawns a new SingletonItem into this inventory.
         /// </summary>
         /// <returns>bool value related to the success or failure of the operation</returns>
-        internal bool SpawnItem(SingletonItemTemplate template) => !HasItem(template) && _items.Add(new NonStackableItem(this, template) {Inventory = this});
+        internal virtual bool SpawnItem(SingletonItemTemplate template) => !HasItem(template) && _items.Add(new NonStackableItem(this, template) {Inventory = this});
 
         /// <summary>
         /// Spawns a new MultitionItem into this inventory.
         /// </summary>
         /// <returns>bool value related to the success or failure of the operation</returns>
-        internal bool SpawnItem(MultitionItemTemplate template) => _items.Add(new NonStackableItem(this, template) { Inventory = this });
+        internal virtual bool SpawnItem(MultitionItemTemplate template) => _items.Add(new NonStackableItem(this, template) { Inventory = this });
 
         /// <summary>
         /// Spawns a new StackableItem into this inventory.
@@ -30,7 +30,7 @@ namespace RPServer.Models.Inventory.Inventory
         /// <param name="template">The StackableItemTemplate in order to spawn the item</param>
         /// <param name="count">How many "instances" of that item the inventory should hold. MUST BE GREATER THAN 0</param>
         /// <returns>bool value related to the success or failure of the operation</returns>
-        internal bool SpawnItem(StackableItemTemplate template, uint count)
+        internal virtual bool SpawnItem(StackableItemTemplate template, uint count)
         {
             if (count == 0)
             {
@@ -53,7 +53,7 @@ namespace RPServer.Models.Inventory.Inventory
             return true;
         }
 
-        internal bool DespawnItem(SingletonItemTemplate template)
+        internal virtual bool DespawnItem(SingletonItemTemplate template)
         {
             var item = GetItemFirstOrNull(template);
             if (item == null) return false;
@@ -61,7 +61,7 @@ namespace RPServer.Models.Inventory.Inventory
             return _items.Remove(item);
         }
 
-        internal bool DespawnItem(MultitionItemTemplate template)
+        internal virtual bool DespawnItem(MultitionItemTemplate template)
         {
             var item = GetItemFirstOrNull(template);
             if (item == null) return false;
@@ -69,7 +69,7 @@ namespace RPServer.Models.Inventory.Inventory
             return _items.Remove(item);
         }
 
-        internal bool DespawnItem(StackableItemTemplate template, uint count)
+        internal virtual bool DespawnItem(StackableItemTemplate template, uint count)
         {
             var item = GetItemFirstOrNull(template);
             if (item == null) return false;
