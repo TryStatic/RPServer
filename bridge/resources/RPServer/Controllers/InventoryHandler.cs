@@ -1,4 +1,5 @@
-﻿using GTANetworkAPI;
+﻿using System;
+using GTANetworkAPI;
 using RPServer.Controllers.Util;
 using RPServer.InternalAPI;
 using RPServer.InternalAPI.Extensions;
@@ -34,13 +35,37 @@ namespace RPServer.Controllers
                                     switch (template)
                                     {
                                         case MultitionItemTemplate multitionItemTemplate:
-                                            targetClient.GetActiveChar().Inventory.SpawnItem(multitionItemTemplate);
+                                            if(targetClient.GetActiveChar().Inventory.CanAddItem(multitionItemTemplate))
+                                            {
+                                                targetClient.GetActiveChar().Inventory.SpawnItem(multitionItemTemplate);
+                                            }
+                                            else
+                                            {
+                                                var reason = targetClient.GetActiveChar().Inventory.RequestRefuseReason(multitionItemTemplate);
+                                                ChatHandler.SendCommandErrorText(client, reason.ToString());
+                                            }
                                             break;
                                         case SingletonItemTemplate singletonItemTemplate:
-                                            targetClient.GetActiveChar().Inventory.SpawnItem(singletonItemTemplate);
+                                            if (targetClient.GetActiveChar().Inventory.CanAddItem(singletonItemTemplate))
+                                            {
+                                                targetClient.GetActiveChar().Inventory.SpawnItem(singletonItemTemplate);
+                                            }
+                                            else
+                                            {
+                                                var reason = targetClient.GetActiveChar().Inventory.RequestRefuseReason(singletonItemTemplate);
+                                                ChatHandler.SendCommandErrorText(client, reason.ToString());
+                                            }
                                             break;
                                         case StackableItemTemplate stackableItemTemplate:
-                                            targetClient.GetActiveChar().Inventory.SpawnItem(stackableItemTemplate, 1);
+                                            if (targetClient.GetActiveChar().Inventory.CanAddItem(stackableItemTemplate))
+                                            {
+                                                targetClient.GetActiveChar().Inventory.SpawnItem(stackableItemTemplate, 1);
+                                            }
+                                            else
+                                            {
+                                                var reason = targetClient.GetActiveChar().Inventory.RequestRefuseReason(stackableItemTemplate);
+                                                ChatHandler.SendCommandErrorText(client, reason.ToString());
+                                            }
                                             break;
                                     }
                                 }
@@ -52,14 +77,37 @@ namespace RPServer.Controllers
                                         switch (template)
                                         {
                                             case MultitionItemTemplate multitionItemTemplate:
-                                                targetClient.GetActiveChar().Inventory.SpawnItem(multitionItemTemplate);
+                                                if (targetClient.GetActiveChar().Inventory.CanAddItem(multitionItemTemplate))
+                                                {
+                                                    targetClient.GetActiveChar().Inventory.SpawnItem(multitionItemTemplate);
+                                                }
+                                                else
+                                                {
+                                                    var reason = targetClient.GetActiveChar().Inventory.RequestRefuseReason(multitionItemTemplate);
+                                                    ChatHandler.SendCommandErrorText(client, reason.ToString());
+                                                }
                                                 break;
                                             case SingletonItemTemplate singletonItemTemplate:
-                                                targetClient.GetActiveChar().Inventory.SpawnItem(singletonItemTemplate);
+                                                if (targetClient.GetActiveChar().Inventory.CanAddItem(singletonItemTemplate))
+                                                {
+                                                    targetClient.GetActiveChar().Inventory.SpawnItem(singletonItemTemplate);
+                                                }
+                                                else
+                                                {
+                                                    var reason = targetClient.GetActiveChar().Inventory.RequestRefuseReason(singletonItemTemplate);
+                                                    ChatHandler.SendCommandErrorText(client, reason.ToString());
+                                                }
                                                 break;
                                             case StackableItemTemplate stackableItemTemplate:
-                                                targetClient.GetActiveChar().Inventory
-                                                    .SpawnItem(stackableItemTemplate, count);
+                                                if (targetClient.GetActiveChar().Inventory.CanAddItem(stackableItemTemplate, count))
+                                                {
+                                                    targetClient.GetActiveChar().Inventory.SpawnItem(stackableItemTemplate, count);
+                                                }
+                                                else
+                                                {
+                                                    var reason = targetClient.GetActiveChar().Inventory.RequestRefuseReason(stackableItemTemplate, count);
+                                                    ChatHandler.SendCommandErrorText(client, reason.ToString());
+                                                }
                                                 break;
                                         }
                                     }
@@ -94,7 +142,7 @@ namespace RPServer.Controllers
                 ChatHandler.SendClientMessage(client, "Item Templates: ");
                 foreach (var t in ItemTemplate.GetTemplates())
                 {
-                    ChatHandler.SendClientMessage(client, $"~: ID: {t.ID}, Name: {t.ItemName}, Desc: {t.ItemDesc}, Usable: {t.IsUsable()}");
+                    ChatHandler.SendClientMessage(client, $"~: ID: {t.ID}, Name: {t.ItemName}, Desc: {t.ItemDesc}, Weight: {t.Weight}g, Usable: {t.IsUsable()}");
                 }
                 ChatHandler.SendClientMessage(client, "/spawnitem [templateID] [Target] [Count]");
             }
@@ -115,8 +163,9 @@ namespace RPServer.Controllers
             {
                 case "list":
                 {
-                    ChatHandler.SendClientMessage(client, "Your items: ");
-                    foreach (var item in client.GetActiveChar().Inventory.GetItems())
+                    var inv = client.GetActiveChar().Inventory;
+                    ChatHandler.SendClientMessage(client, $"Your items: [Weight: {inv.CurrentWeight / inv.MaxInventoryWeight:P}]");
+                    foreach (var item in inv.GetItems())
                     {
                         switch (item)
                         {
